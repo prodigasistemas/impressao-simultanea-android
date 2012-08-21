@@ -1792,7 +1792,7 @@ public class DataManipulator {
 			values.put("data_ligacao_fornecimento", Util.dateToAnoMesDiaString(medidor.getDataLigacaoFornecimento()));
 			values.put("tipo_rateio", medidor.getTipoRateio());
 			values.put("leitura_instalacao_hidrometro", medidor.getLeituraInstalacaoHidrometro());
-			values.put("data_leitura", Util.dateToAnoMesDiaString(medidor.getDataLeitura()));
+			values.put("data_leitura", Util.dateToAnoMesDiaString(medidor.getDataLeitura()) + "" + Util.formataDataHora(medidor.getDataLeitura()));
 			values.put("leitura_anterior", medidor.getLeituraAnterior());
 			values.put("data_leitura_atual_faturamento", Util.dateToAnoMesDiaString(medidor.getDataLeituraAtualFaturamento()));
 			values.put("leitura", medidor.getLeitura());
