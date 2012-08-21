@@ -307,16 +307,11 @@ public class Util {
     }
 
     public static String getRetornoRotaDirectory(){
-    	String diretorioRetornoRota = null;
+//    	String diretorioRetornoRota = null;
     	
     	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
     	
-    	diretorioRetornoRota =  info.get(1) + "_";
-    	diretorioRetornoRota +=info.get(2) + "_";
-    	diretorioRetornoRota += info.get(3) + "_";
-    	diretorioRetornoRota += info.get(4).substring(4, 6) + "/" + info.get(4).substring(0, 4);
-    	
-        File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
+        File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO);
         if(!fileRotaDiretorio.exists()) {
         	fileRotaDiretorio.mkdirs();
         }
@@ -329,10 +324,11 @@ public class Util {
     	
     	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
     	
-    	rotaFileName =  info.get(1) + "_";
-    	rotaFileName +=info.get(2) + "_";
-    	rotaFileName += info.get(3) + "_";
-    	rotaFileName += info.get(4)+ ".txt";
+    	rotaFileName = "GCOMPLETO";
+    	rotaFileName +=  info.get(1);
+    	rotaFileName +=info.get(2);
+    	rotaFileName += info.get(3);
+    	rotaFileName += info.get(4) + ".txt";
     	
     	return rotaFileName;
     }

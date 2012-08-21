@@ -1,11 +1,14 @@
 package ui;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import com.IS.Fachada;
 
 import android.util.Log;
 
@@ -67,9 +70,10 @@ public class MessageDispatcher {
 		    InputStream resposta = null;
 		
 		    try {
+		    	
 				// Abrimos a conexão
-			    conexao = (HttpURLConnection) new URL(getUrlServidor()).openConnection();
-		
+			    conexao = (HttpURLConnection) new URL(getUrlServidor().concat(Fachada.IMPRESSAO_SIMULTANEA_ACTION_URL)).openConnection();
+			    
 				// Passamos os parametros, para a requisição
 				conexao.setDoOutput(true);
 				conexao.setDoInput(true);

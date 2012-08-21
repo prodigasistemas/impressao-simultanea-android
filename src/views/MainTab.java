@@ -22,7 +22,9 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -44,6 +46,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
+import background.EnviarImovelOnlineThread;
 import business.BusinessConta;
 import business.ControladorConta;
 import business.ControladorImovel;
@@ -65,6 +68,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	private ProgressDialog progress;
 	private ZebraPrinterConnection conexao;
 	private String dialogMessage = null;
+	private static int increment;
+	private EnviarImovelOnlineThread progThread;
+	private static Imovel imovelParaEnvio;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -104,6 +110,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    }
 
 	    tabHost.setCurrentTab(tabHost.getChildCount());
+	    
+	    setTabColor();
 	}
 	
 	// Instancia novas tabs
@@ -128,6 +136,19 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    
 	    tabHost.addTab(tabSpec);
 	}
+	
+	public static void setTabColor() {
+        for(int i=0;i<tabHost.getTabWidget().getChildCount();i++){
+            
+        	if (ControladorImovel.getInstancia().getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_CONCLUIDO){
+        		tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_green);
+            
+            }
+            else if(ControladorImovel.getInstancia().getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_PENDENTE){
+            	tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_white);            	
+            }
+        }
+    }
 	
     public boolean onKeyDown(int keyCode, KeyEvent event){
         
@@ -333,6 +354,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    			// Validar situacao do retorno do calculo
 	    			if (leituraInvalida == false) {
 	    				boolean erroImpressao = false;
+	    				imovelParaEnvio = getImovelSelecionado();
 	    				imprimirConta();
 	    				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 	    				
@@ -654,6 +676,26 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 ////				Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().removeElement( new Integer(getImovelSelecionado().getId()) );
 ////			}				
 //		}
+		
+		final Handler handler = new Handler() {
+	        public void handleMessage(Message msg) {
+	            
+	        	// Get the current value of the variable total from the message data and update the progress bar.
+	        	int cadastroOnline = msg.getData().getInt("envioImovelOnline" + String.valueOf(increment));
+
+//	            if (progThread.getCustomizedState() == EnviarImovelOnlineThread.DONE_OK){
+//
+//	            	// SETAR CADASTRO PARA TRANSMITIDO
+//				    increment++;
+//	            
+//	            }else if (progThread.getCustomizedState() == EnviarImovelOnlineThread.DONE_ERROR){
+//				    increment++;
+//	            }
+	         }
+	    };
+
+		// Thread responsavel por enviar o imovel apos cada impressao
+		new EnviarImovelOnlineThread(handler, this, increment, imovelParaEnvio).start();
 	}
 	
 	protected boolean isTabMedidorAguaNeeded(){

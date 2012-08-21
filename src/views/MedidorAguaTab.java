@@ -11,6 +11,7 @@ import business.ControladorRota;
 import com.IS.R;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;

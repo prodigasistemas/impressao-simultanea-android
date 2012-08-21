@@ -82,14 +82,14 @@ public class DataManipulator {
 		ArrayList<String> list = new ArrayList<String>();
 		Cursor cursor;
 
-		cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "matricula",	"endereco" }, condition, null, null, null,
+		cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "id", "matricula", "endereco" }, condition, null, null, null,
 				"inscricao asc");
 
 		int x = 0;
 		if (cursor.moveToFirst()) {
 			do {
 				
-				String endereco = String.format("[%d] %s", cursor.getInt(0), cursor.getString(1));
+				String endereco = String.format("(%d) %d - %s", cursor.getInt(0), cursor.getInt(1), cursor.getString(2));
 				list.add(endereco);
 				x = x + 1;
 			} while (cursor.moveToNext());
