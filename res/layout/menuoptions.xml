@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menuPrincipal"
+          android:title="@string/options_menu_principal"/>
+    <item android:id="@+id/listCadastros"
+          android:title="@string/options_lista_cadastro"/>
+    <item android:id="@+id/imovelAnterior"
+          android:icon="@drawable/anterior"
+          android:title="Imóvel Anterior" />
+    <item android:id="@+id/proximoImovel"
+          android:icon="@drawable/proximo"
+          android:title="Próximo Imóvel" />
+</menu>

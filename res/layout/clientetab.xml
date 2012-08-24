@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="@drawable/fundocadastro" 
+android:orientation="vertical">
+
+<LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/mainLinearLayout" 
+    android:orientation="vertical">
+    
+	<TextView android:id="@+id/txtUsuario" android:textSize="18dp" android:text="Usuário do imóvel:" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" > </TextView>
+	<EditText android:id="@+id/nomeUsuario" android:layout_width="fill_parent" android:layout_height="wrap_content" android:background="@drawable/edittext_rounded_corners" android:inputType="textCapCharacters">  <requestFocus></requestFocus> </EditText>
+	
+	<TextView android:text="Tipo de Pessoa:" android:id="@+id/txtTipo_pessoa" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+	<Spinner android:id="@+id/spinnerTipoPessoaUsuario" android:layout_height="wrap_content" android:drawSelectorOnTop="true" android:layout_width="fill_parent"></Spinner>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:text="CPF:" android:id="@+id/txtCpfCnpjUsuario" android:minWidth="180dp" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+		<TextView android:text="RG:" android:id="@+id/txtRgUsuario" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<EditText android:id="@+id/cpfCnpjUsuario" android:minWidth="150dp" android:maxLength="18" android:background="@drawable/edittext_rounded_corners" android:layout_width="wrap_content" android:layout_height="wrap_content" android:inputType="number"></EditText>
+		<EditText android:id="@+id/rgUsuario" android:maxLength="10" android:background="@drawable/edittext_rounded_corners" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="number"></EditText>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:text="UF:" android:id="@+id/uf" android:minWidth="110dp" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+		<TextView android:text="Sexo:" android:id="@+id/sexo" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<EditText android:id="@+id/ufUsuario" android:minWidth="50dp" android:background="@drawable/edittext_rounded_corners" android:layout_height="wrap_content" android:drawSelectorOnTop="true" android:layout_width="wrap_content" android:maxLength="2" android:inputType="textCapCharacters"></EditText>
+		<Spinner android:id="@+id/spinnerSexoUsuario" android:minWidth="200dp" android:layout_height="wrap_content" android:drawSelectorOnTop="true" android:layout_width="fill_parent"></Spinner>
+	</LinearLayout>
+	
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:text="Telefone:" android:id="@+id/txtTelefone" android:minWidth="150dp" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="Celular:" android:id="@+id/txtCelular" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<EditText android:id="@+id/foneUsuario" android:minWidth="150dp" android:background="@drawable/edittext_rounded_corners" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLength="13" android:inputType="phone"></EditText>
+		<EditText android:id="@+id/celularUsuario" android:background="@drawable/edittext_rounded_corners" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLength="13" android:inputType="phone"></EditText>
+	</LinearLayout>
+	
+	<TextView android:text="E-mail:" android:id="@+id/txtEmailUsuario" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+	<EditText android:id="@+id/emailUsuario" android:background="@drawable/edittext_rounded_corners" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="textEmailAddress"></EditText>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:text="Usuário é proprietário do imóvel:" android:id="@+id/txtUsuarioEProprietario" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<RadioGroup android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal" 	android:id="@+id/groupUsuarioEProprietario">
+			<RadioButton android:text="Não" android:id="@+id/radioNao" android:layout_width="wrap_content" android:layout_height="wrap_content"></RadioButton>
+			<RadioButton android:text="Sim" android:id="@+id/radioSim" android:layout_width="wrap_content" android:layout_height="wrap_content"></RadioButton>
+		</RadioGroup>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/linearLayoutUsuarioEProprietario">
+	</LinearLayout>
+
+	<TextView android:text="Responsável pelo Pagamento:" android:id="@+id/responsavelPagamento" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+	<Spinner android:layout_height="wrap_content" android:id="@+id/spinnerDefineResponsavel" android:drawSelectorOnTop="true" android:layout_width="fill_parent"></Spinner>
+	
+	<LinearLayout     android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/linearLayoutResponsavelPagamento">
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:paddingTop="5dp" android:paddingRight="5dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayoutPeriodo">
+		<TextView android:id="@+id/list_item_text" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:ellipsize="end" />
+		<Button android:id="@+id/buttonSave" android:text="  OK  " android:textColor="@color/white" android:textSize="20dp" android:background="@drawable/button_rounded_corners" android:gravity="right" android:layout_weight="0" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+	</LinearLayout>
+	    	    
+</LinearLayout>
+</ScrollView>

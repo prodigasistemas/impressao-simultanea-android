@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="@drawable/fundocadastro" 
+android:orientation="vertical">
+
+<LinearLayout 
+    android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+
+ 	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+	 	<TextView android:text="Possui Hidrômetro:" android:id="@+id/txtTipoMedicao" android:paddingTop="10dp" android:minWidth="150dp" android:textSize="15dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
+	 	<RadioGroup android:id="@+id/radioGroupPossuiHidrometro" android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+			<RadioButton android:text="Sim" android:id="@+id/tipoMedicaoRadioSim" android:minWidth="70dp" android:layout_height="wrap_content" android:layout_width="wrap_content"></RadioButton>
+			<RadioButton android:text="Não" android:id="@+id/tipoMedicaoRadioNao" android:layout_height="wrap_content" android:layout_width="wrap_content"></RadioButton>
+		</RadioGroup>
+  	</LinearLayout>
+  	
+	<LinearLayout     android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/linearLayoutDadosHidrometro">
+	</LinearLayout>
+	
+	<LinearLayout     android:orientation="horizontal" android:paddingTop="5dp" android:paddingRight="5dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayoutPeriodo">
+		<TextView android:id="@+id/list_item_text" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:ellipsize="end" />
+		<Button android:id="@+id/buttonSave" android:text="  OK  " android:textColor="@color/white" android:textSize="20dp" android:background="@drawable/button_rounded_corners" android:gravity="right" android:layout_weight="0" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+	</LinearLayout>
+	    	    
+</LinearLayout>
+</ScrollView>

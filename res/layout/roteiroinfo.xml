@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="@drawable/fundocadastro" 
+android:orientation="vertical">
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:id="@+id/mainLinearLayout" 
+    android:layout_height="fill_parent">
+
+    <ImageView android:id="@+id/imageLogo" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/logo_cosanpa" />
+	    	    	    
+    
+	<TextView android:id="@+id/info" android:text="Informações" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/textColor" android:gravity="center" android:textSize="25dp" android:layout_marginTop="10dp" android:layout_marginBottom="15dp"/>
+ 	
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtGrupo" android:text="Grupo: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorGrupo" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtLocalidade" android:text="Localidade: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorLocalidade" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtSetor" android:text="Setor: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorSetor" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtRota" android:text="Rota: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorRota" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtAnoMes" android:text="Mês Referência: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorAnoMesReferencia" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtTotalImoveis" android:text="Total de Imóveis: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorTotalImoveis" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+
+	<LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+		<TextView android:id="@+id/txtUsuario" android:text="Usuário: " android:textSize="20dp" android:textColor="@color/textColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="15dp"> </TextView>
+		<TextView android:id="@+id/valorUsuario" android:text="Indefinido" android:textSize="20dp" android:textColor="@color/adicionalColor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginBottom="7dp"> </TextView>
+	</LinearLayout>
+	
+</LinearLayout>
+</ScrollView>

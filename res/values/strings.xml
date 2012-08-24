@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="myColor">#45A1C0</color>
+    <color name="textColorYellowBackground">#001A5C</color>
+    <color name="textColor">#FFFFFF</color>
+	<color name="adicionalColor">#FFF4A1</color>
+    <color name="transparent">#000000</color>
+	<color name="colorBege1">#FFBB59</color>
+    <color name="colorbege2">#E09639</color>
+    <color name="white">#FFFFFF</color>
+    
+    <string name="app_name">ImpressaoSimultanea</string>
+    <string name="user">Usuário</string>
+    <string name="password">Senha</string>
+    <string name="auth_problem">Dados Incorretos</string>
+    <string name="menu_cadastros">Lista de Imóveis</string>
+    <string name="menu_info">Informações do Roteiro</string>
+    <string name="menu_consulta">Consultar Imóvel</string>
+    <string name="menu_relatorio">Relatórios</string>
+    <string name="menu_cadastros_concluidos">Enviar Concluídos </string>
+    <string name="menu_finalizar">Finalizar Roteiro</string>
+    <string name="menu_novo_roteiro">Limpar Tudo</string>
+    <string name="menu_arquivo_completo">Arquivo Completo</string>
+    
+    	<string-array name="consulta">
+        <item>Todos</item>
+	    <item>Matrícula</item>
+        <item>CPF</item>
+        <item>CNPJ</item>
+	</string-array>
+
+	<string-array name="filtro">
+        <item>Todos</item>
+        <item>Visitados com Sucesso</item>
+        <item>Visitados com Anormalidade</item>
+        <item>Não Visitados</item>
+        <item>Novos Cadastros</item>
+        <item>Transmitidos</item>
+        <item>Não Transmitidos</item>
+	</string-array>
+
+    <string name="options_menu_principal">Menu Principal</string>
+    <string name="options_lista_cadastro">Lista de Imóveis</string>
+	<string name="options_proximo">Próximo</string>
+	<string name="options_anterior">Anterior</string>
+	<string name="options_sair">Sair</string>
+	                
+	
+    
+
+</resources>
