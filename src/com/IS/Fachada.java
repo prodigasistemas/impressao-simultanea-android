@@ -14,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,7 +168,7 @@ public class Fachada extends Activity {
 	        		    
 	        	      if ( strUsr.equals(Controlador.getInstancia().getDadosGerais().getLogin()) && 
 	        	    	(Criptografia.encode(strPass).equals(Controlador.getInstancia().getDadosGerais().getSenha())) ){
-
+	        	    	  
 	        	    	  Controlador.getInstancia().setPermissionGranted(true);
 	        	    	  removeDialog(Constantes.DIALOG_ID_PASSWORD);
 	        	    	  
