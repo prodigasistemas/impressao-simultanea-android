@@ -268,6 +268,23 @@ public class Controlador {
 				    if (tipoRegistro == Constantes.REGISTRO_TIPO_IMOVEL) {
 				    	dmCadastro.insertImovel(line);
 
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_DADOS_CATEGORIA) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_LIGACAO) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_DEBITO) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_CREDITO) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_IMPOSTO) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_CONTA) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_MEDIDOR) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA) {
+
+				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR) {
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_GERAL) {
 				    	dmCadastro.insertDadosGerais(line);

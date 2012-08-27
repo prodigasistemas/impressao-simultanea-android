@@ -15,12 +15,7 @@ public class Constantes {
     public static final int DIALOG_ID_AVISO = 5;
     public static final int DIALOG_ID_ERRO = 6;
     public static final int DIALOG_ID_ERRO_GPS_DESLIGADO = 7;
-    public static final int DIALOG_ID_NOVO_IMOVEL_ANTES_PRIMEIRO = 8;
-    public static final int DIALOG_ID_NOVO_IMOVEL_APOS_ULTIMO = 9;
-    public static final int DIALOG_ID_ADD_NOVO_IMOVEL = 10;
-    public static final int DIALOG_ID_ADD_NOVO_IMOVEL_ANTES_PRIMEIRO = 11;
-    public static final int DIALOG_ID_ADD_NOVO_IMOVEL_APOS_ULTIMO = 12;
-    public static final int DIALOG_ID_CONFIRM_BACK = 13;
+    public static final int DIALOG_ID_CONFIRM_BACK = 8;
        
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
@@ -28,6 +23,8 @@ public class Constantes {
     public static final int REGISTRO_TIPO_IMOVEL = 1;
     public static final int REGISTRO_TIPO_DADOS_CATEGORIA = 2;
     public static final int REGISTRO_TIPO_LIGACAO = 3;
+    public static final int REGISTRO_TIPO_DEBITO = 4;
+    public static final int REGISTRO_TIPO_CREDITO = 5;
     public static final int REGISTRO_TIPO_IMPOSTO = 6;
     public static final int REGISTRO_TIPO_CONTA = 7;
     public static final int REGISTRO_TIPO_MEDIDOR = 8;

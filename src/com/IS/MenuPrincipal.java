@@ -40,6 +40,7 @@ public class MenuPrincipal extends Activity {
 	static final int MENU_FINALIZAR = 5;
 	static final int MENU_RELATORIO = 6;
 	static final int MENU_NOVO_ROTEIRO = 7;
+	static final int MENU_SELECIONAR_IMPRESSORA = 8;
 
 	private ProgressDialog progDialog;
 	private GerarArquivoCompletoThread progThread;
@@ -56,7 +57,8 @@ public class MenuPrincipal extends Activity {
             R.drawable.menu_cadastros_concluidos,
             R.drawable.menu_finalizar,
             R.drawable.menu_relatorio,
-            R.drawable.menu_novo_roteiro
+            R.drawable.menu_novo_roteiro,
+            R.drawable.menu_select_impressora
     };
 
     //---the texts to display---
@@ -68,7 +70,8 @@ public class MenuPrincipal extends Activity {
             R.string.menu_cadastros_concluidos,
             R.string.menu_finalizar,
             R.string.menu_relatorio,
-            R.string.menu_novo_roteiro
+            R.string.menu_novo_roteiro,
+            R.string.menu_selecionar_impressora
     };
 
     @Override    

@@ -15,7 +15,7 @@ import android.os.Message;
 // the thread by subclassing Thread and overriding its run() method.  Also provide
 // a setState(state) method to stop the thread gracefully.
         
-public class EnviarCadastroOnlineThread extends Thread {	
+public class EnviarImovelOnlineThread extends Thread {	
     
     // Class constants defining state of the thread
     public final static int DONE_OK = 2;
@@ -30,9 +30,9 @@ public class EnviarCadastroOnlineThread extends Thread {
 
     // Constructor with an argument that specifies Handler on main thread
     // to which messages will be sent by this thread.
-    public EnviarCadastroOnlineThread(Handler h, Context context, int increment) {
+    public EnviarImovelOnlineThread(Handler h, Context context, int increment) {
     	this.mHandler = h;
-        EnviarCadastroOnlineThread.context = context;
+        EnviarImovelOnlineThread.context = context;
         this.total = 0;
         this.increment = increment;
     }

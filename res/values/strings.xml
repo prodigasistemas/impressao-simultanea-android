@@ -22,31 +22,31 @@
     <string name="menu_finalizar">Finalizar Roteiro</string>
     <string name="menu_novo_roteiro">Limpar Tudo</string>
     <string name="menu_arquivo_completo">Arquivo Completo</string>
+    <string name="menu_selecionar_impressora">Selecionar Impressora</string>
     
-    	<string-array name="consulta">
+    <string-array name="consulta">
         <item>Todos</item>
 	    <item>Matrícula</item>
-        <item>CPF</item>
-        <item>CNPJ</item>
+        <item>Sequencial Rota</item>
+        <item>Quadra</item>
 	</string-array>
 
 	<string-array name="filtro">
         <item>Todos</item>
-        <item>Visitados com Sucesso</item>
-        <item>Visitados com Anormalidade</item>
-        <item>Não Visitados</item>
-        <item>Novos Cadastros</item>
+        <item>Concluídos com Sucesso</item>
+        <item>Concluídos com Anormalidade</item>
+        <item>Pendentes</item>
+        <item>Retidos</item>
         <item>Transmitidos</item>
         <item>Não Transmitidos</item>
 	</string-array>
 
+	<string name="options_imprimir">Imprimir</string>
+	<string name="options_localizar_pendente">Localizar Pendente</string>
     <string name="options_menu_principal">Menu Principal</string>
     <string name="options_lista_cadastro">Lista de Imóveis</string>
 	<string name="options_proximo">Próximo</string>
 	<string name="options_anterior">Anterior</string>
-	<string name="options_sair">Sair</string>
-	                
-	
     
 
 </resources>
