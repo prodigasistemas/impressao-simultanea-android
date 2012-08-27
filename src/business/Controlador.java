@@ -299,14 +299,15 @@ public class Controlador {
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA) {
 				    	dmCadastro.insertTarifacaoMinima(line);
+
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR) {
 				    	dmCadastro.insertTarifacaoComplementar(line);
+				    
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_GERAL) {
-//				    	dmCadastro.insertDadosGerais(line);
+				    	dmCadastro.insertDadosGerais(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_ANORMALIDADE) {
-//				    	dmCadastro.insertAnormalidade(line);
-				    
+				    	dmCadastro.insertAnormalidade(line);
 				    }
 				    
 				    if (linhasLidas < qtdRegistros){
