@@ -20,6 +20,15 @@ public class Constantes {
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
     
+    /**
+     * Medição Tipo
+     */
+    public static final int LIGACAO_AGUA = 1;
+    public static final int LIGACAO_POCO = 2;
+
+    public static final String AGUA = "Água";
+    public static final String POCO = "Poço";
+
     public static final int REGISTRO_TIPO_IMOVEL = 1;
     public static final int REGISTRO_TIPO_DADOS_CATEGORIA = 2;
     public static final int REGISTRO_TIPO_LIGACAO = 3;

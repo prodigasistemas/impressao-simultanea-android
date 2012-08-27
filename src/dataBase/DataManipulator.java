@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import model.Conta;
 import model.DadosGerais;
+import model.Medidor;
 
 import util.Constantes;
 import util.ParserUtil;
@@ -24,6 +26,7 @@ public class DataManipulator
     private static Context context;
     private DbHelper openHelper;
     static SQLiteDatabase db;
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public DataManipulator(Context context) {
         DataManipulator.context = context;
@@ -47,6 +50,14 @@ public class DataManipulator
     	return Controlador.getInstancia().getDadosGerais();
     }
 
+    public Medidor getMedidorSelecionado(){
+    	return Controlador.getInstancia().getMedidorSelecionado();
+    }
+    
+    public Conta getContaSelecionado(){
+    	return Controlador.getInstancia().getContaSelecionado();
+    }
+    
     public void deleteTable(String tableName) {
         db.delete(tableName, null, null);
     }
@@ -194,6 +205,67 @@ public class DataManipulator
         }
         cursor.close();
         return list;
+	}
+
+	public void SelectConta(long idImovel){
+
+		Cursor cursor = db.query(Constantes.TABLE_CONTA, null, "id_imovel = " + idImovel, null, null, null,  "id asc");
+
+		if (cursor.moveToFirst()) {
+        	getContaSelecionado().setAnoMes(cursor.getString(1));
+        	getContaSelecionado().setValor(cursor.getString(2));
+        	getContaSelecionado().setDataVencimento(cursor.getString(3));
+        	getContaSelecionado().setValorAcrescimosImpontualidade(cursor.getString(4));
+        }
+        
+		if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+         }
+         cursor.close();
+ 	}
+    
+	public void selectMedidor(long id){
+    	
+		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"tipo_medicao",
+        														        "numero_hidrometro",
+        														        "data_instalacao_hidrometro",
+        														        "num_digitos_leitura_hidrometro",
+        														        "leitura_anterior_faturamento",
+        														        "data_leitura_anterior_faturamento",
+														        		"codigo_situacao_leitura_anterior",
+        														        "leitura_esperada_inicial",
+        														        "leitura_esperada_final",
+														        		"consumo_medio",
+        														        "local_instalacao",
+        														        "leitura_anterior_informada",
+														        		"data_leitura_anterior_informada",
+        														        "data_ligacao_fornecimento",
+        														        "tipo_rateio",
+														        		"leitura_instalacao_hidrometro"}, "id = " + id, null, null, null,  "id asc");
+        
+		if (cursor.moveToFirst()) {
+        	getMedidorSelecionado().setTipoMedicao(cursor.getString(1));
+        	getMedidorSelecionado().setNumeroHidrometro(cursor.getString(2));
+        	getMedidorSelecionado().setDataInstalacaoHidrometro(cursor.getString(3));
+        	getMedidorSelecionado().setNumDigitosLeituraHidrometro(cursor.getString(4));
+        	getMedidorSelecionado().setLeituraAnteriorFaturamento(cursor.getString(5));
+        	getMedidorSelecionado().setDataLeituraAnteriorFaturado(cursor.getString(6));
+        	getMedidorSelecionado().setCodigoSituacaoLeituraAnterior(cursor.getString(7));
+        	getMedidorSelecionado().setLeituraEsperadaInicial(cursor.getString(8));
+        	getMedidorSelecionado().setLeituraEsperadaFinal(cursor.getString(9));
+        	getMedidorSelecionado().setConsumoMedio(cursor.getString(10));
+        	getMedidorSelecionado().setLocalInstalacao(cursor.getString(11));
+        	getMedidorSelecionado().setLeituraAnteriorInformada(cursor.getString(12));
+        	getMedidorSelecionado().setDataLeituraAnteriorInformada(cursor.getString(13));
+        	getMedidorSelecionado().setDataLigacaoFornecimento(cursor.getString(14));
+        	getMedidorSelecionado().setTipoRateio(cursor.getString(15));
+        	getMedidorSelecionado().setLeituraInstalacaoHidrometro(cursor.getString(16));
+        }
+        
+        if (cursor != null && !cursor.isClosed()) {
+           cursor.close();
+        }
+        cursor.close();
 	}
 
 	public void selectGeral(){
@@ -485,23 +557,46 @@ public class DataManipulator
 
 	   return db.insert(Constantes.TABLE_ANORMALIDADE, null, initialValues);
 	}
-    		
+
+	public long insertConta(String linhaArquivo){
+
+		ParserUtil parser = new ParserUtil(linhaArquivo);
+		parser.obterDadoParser(11);
+		ContentValues initialValues = new ContentValues();
+    	
+		initialValues.put("id_imovel", 1);
+		initialValues.put("ano_mes_referencia_conta", parser.obterDadoParser(6));
+		initialValues.put("valor_conta", parser.obterDadoParser(14));
+		initialValues.put("data_vencimento_conta", parser.obterDadoParser(8));
+		initialValues.put("valor_acresc_impontualidade", parser.obterDadoParser(8));
+   	   	
+	   return db.insert(Constantes.TABLE_CONTA, null, initialValues);
+	}
+		
 	public long insertMedidor(String linhaArquivo){
 
-	   ParserUtil parser = new ParserUtil(linhaArquivo);
-	   parser.obterDadoParser(2);
-	   ContentValues initialValues = new ContentValues();
-
-	   initialValues.put("matricula", String.valueOf(Integer.parseInt(parser.obterDadoParser(9))));
-	   initialValues.put("possui_medidor", parser.obterDadoParser(1));
-	   initialValues.put("numero_hidrometro", parser.obterDadoParser(10));
-	   initialValues.put("marca", parser.obterDadoParser(2));
-	   initialValues.put("capacidade", parser.obterDadoParser(5));
-	   initialValues.put("tipo_caixa_protecao", parser.obterDadoParser(2));
-	   initialValues.put("latitude", String.valueOf(Constantes.NULO_DOUBLE));
-	   initialValues.put("longitude", String.valueOf(Constantes.NULO_DOUBLE));
-   	   initialValues.put("data", "");
-
+		ParserUtil parser = new ParserUtil(linhaArquivo);
+		parser.obterDadoParser(11);
+		ContentValues initialValues = new ContentValues();
+    	
+		initialValues.put("id_imovel", 1);
+		initialValues.put("tipo_medicao", parser.obterDadoParser(1));
+		initialValues.put("numero_hidrometro", parser.obterDadoParser(11));
+		initialValues.put("data_instalacao_hidrometro", parser.obterDadoParser(8));
+		initialValues.put("num_digitos_leitura_hidrometro", parser.obterDadoParser(1));
+		initialValues.put("leitura_anterior_faturamento", parser.obterDadoParser(7));
+		initialValues.put("data_leitura_anterior_faturamento", parser.obterDadoParser(8));
+		initialValues.put("codigo_situacao_leitura_anterior", parser.obterDadoParser(1));
+		initialValues.put("leitura_esperada_inicial", parser.obterDadoParser(7));
+   	   	initialValues.put("leitura_esperada_final", parser.obterDadoParser(7));
+   	   	initialValues.put("consumo_medio", parser.obterDadoParser(6));
+   	   	initialValues.put("local_instalacao", parser.obterDadoParser(20));
+   	   	initialValues.put("leitura_anterior_informada", parser.obterDadoParser(7));
+   	   	initialValues.put("data_leitura_anterior_informada", parser.obterDadoParser(8));
+   	   	initialValues.put("data_ligacao_fornecimento", parser.obterDadoParser(8));
+   	   	initialValues.put("tipo_rateio", parser.obterDadoParser(1));
+   	   	initialValues.put("leitura_instalacao_hidrometro", parser.obterDadoParser(7));
+   	   	
 	   return db.insert(Constantes.TABLE_MEDIDOR, null, initialValues);
 	}
 		

@@ -1,5 +1,7 @@
 package dataBase;
 
+import java.util.Date;
+
 import util.Constantes;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -34,15 +36,20 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_IMPOSTO_QUERY =
         	"CREATE TABLE imposto (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
 
-    private static final String DATABASE_TARIFA_MINIMA_QUERY =
-        	"CREATE TABLE tarifa_minima (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
-
-    private static final String DATABASE_TARIFA_COMPLEMENTAR_QUERY =
-        	"CREATE TABLE tarifa_complementar (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
-
+    private static final String DATABASE_CONTA_QUERY =
+        	"CREATE TABLE conta (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER, ano_mes_referencia_conta TEXT, valor_conta TEXT, data_vencimento_conta Date, valor_acresc_impontualidade TEXT )";
+    
     private static final String DATABASE_MEDIDOR_QUERY =
-    	"CREATE TABLE medidor (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER, matricula TEXT not null, possui_medidor TEXT, numero_hidrometro TEXT, marca TEXT, capacidade TEXT, tipo_caixa_protecao TEXT, latitude TEXT, longitude TEXT, data TEXT)";
+    	"CREATE TABLE medidor (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER not null, tipo_medicao TEXT, numero_hidrometro TEXT, data_instalacao_hidrometro TEXT, num_digitos_leitura_hidrometro TEXT, leitura_anterior_faturamento TEXT, " +  
+    	"data_leitura_anterior_faturamento TEXT, codigo_situacao_leitura_anterior TEXT, leitura_esperada_inicial TEXT, leitura_esperada_final TEXT, consumo_medio TEXT, local_instalacao TEXT, leitura_anterior_informada TEXT,  TEXT," +
+		"data_leitura_anterior_informada TEXT, data_ligacao_fornecimento TEXT, tipo_rateio TEXT, leitura_instalacao_hidrometro TEXT)";
 
+    private static final String DATABASE_TARIFA_MINIMA_QUERY =
+    		"CREATE TABLE tarifa_minima (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+    
+    private static final String DATABASE_TARIFA_COMPLEMENTAR_QUERY =
+    		"CREATE TABLE tarifa_complementar (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+    
     private static final String DATABASE_GERAL_QUERY =
     	"CREATE TABLE geral (id INTEGER PRIMARY KEY autoincrement, ano_mes_faturamento TEXT, codigo_febraban TEXT, telefone0800 TEXT, cnpj_empresa TEXT, " +
     	"inscricao_estadual_empresa TEXT, login TEXT, senha TXT, indicador_transmissao_offline TEXT, versao_celular TEXT, id_rota TEXT, data_inicio TEXT, data_fim TEXT, " +
@@ -82,9 +89,10 @@ public class DbHelper extends SQLiteOpenHelper {
     	db.execSQL(DATABASE_DEBITO_QUERY);
     	db.execSQL(DATABASE_CREDITO_QUERY);
     	db.execSQL(DATABASE_IMPOSTO_QUERY);
+    	db.execSQL(DATABASE_CONTA_QUERY);
+    	db.execSQL(DATABASE_MEDIDOR_QUERY);
     	db.execSQL(DATABASE_TARIFA_MINIMA_QUERY);
     	db.execSQL(DATABASE_TARIFA_COMPLEMENTAR_QUERY);
-    	db.execSQL(DATABASE_MEDIDOR_QUERY);
      	db.execSQL(DATABASE_GERAL_QUERY);
      	db.execSQL(DATABASE_ANORMALIDADE_QUERY);
 

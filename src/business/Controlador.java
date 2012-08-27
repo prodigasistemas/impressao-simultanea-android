@@ -14,7 +14,9 @@ import dataBase.DataManipulator;
 //import model.AnormalidadeImovel;
 //import model.Registro;
 //import model.Cliente;
+import model.Conta;
 import model.DadosGerais;
+import model.Medidor;
 //import model.Imovel;
 //import model.Medidor;
 //import model.Servicos;
@@ -39,8 +41,9 @@ public class Controlador {
     
 //    private static Cliente clienteSelecionado = new Cliente();
 //    private static Imovel imovelSelecionado = new Imovel();
-//    private static Medidor medidorSelecionado = new Medidor();
 //    private static Servicos servicosSelecionado = new Servicos();
+    private static Conta contaSelecionado = new Conta();
+    private static Medidor medidorSelecionado = new Medidor();
     private static DadosGerais dadosGerais = new DadosGerais();
 //    private static Registro anormalidades = new Registro();
 //    private static AnormalidadeImovel anormalidadeImovelSelecionado = new AnormalidadeImovel();
@@ -71,9 +74,13 @@ public class Controlador {
 //    	return Controlador.imovelSelecionado;
 //    }
 //    
-//    public Medidor getMedidorSelecionado(){
-//    	return Controlador.medidorSelecionado;
-//    }
+    public Conta getContaSelecionado(){
+    	return Controlador.contaSelecionado;
+    }
+
+    public Medidor getMedidorSelecionado(){
+    	return Controlador.medidorSelecionado;
+    }
 //    
 //    public Servicos getServicosSelecionado(){
 //    	return Controlador.servicosSelecionado;
@@ -103,9 +110,13 @@ public class Controlador {
 //    	Controlador.imovelSelecionado = imovelSelecionado;
 //    }
 //    
-//    public void setMedidorSelecionado(Medidor medidorSelecionado){
-//    	Controlador.medidorSelecionado = medidorSelecionado;
-//    }
+    public void setContaSelecionado(Conta contaSelecionado){
+    	Controlador.contaSelecionado = contaSelecionado;
+    }
+
+    public void setMedidorSelecionado(Medidor medidorSelecionado){
+    	Controlador.medidorSelecionado = medidorSelecionado;
+    }
 //    
 //    public void setServicosSelecionado(Servicos servicosSelecionado){
 //    	Controlador.servicosSelecionado = servicosSelecionado;
@@ -266,7 +277,7 @@ public class Controlador {
 				    int tipoRegistro = Integer.parseInt(line.substring(0, 2));
 				    
 				    if (tipoRegistro == Constantes.REGISTRO_TIPO_IMOVEL) {
-				    	dmCadastro.insertImovel(line);
+//				    	dmCadastro.insertImovel(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_DADOS_CATEGORIA) {
 
@@ -279,18 +290,20 @@ public class Controlador {
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_IMPOSTO) {
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_CONTA) {
+				    	dmCadastro.insertConta(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_MEDIDOR) {
+				    	dmCadastro.insertMedidor(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA) {
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR) {
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_GERAL) {
-				    	dmCadastro.insertDadosGerais(line);
+//				    	dmCadastro.insertDadosGerais(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_ANORMALIDADE) {
-				    	dmCadastro.insertAnormalidade(line);
+//				    	dmCadastro.insertAnormalidade(line);
 				    
 				    }
 				    

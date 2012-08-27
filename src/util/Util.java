@@ -21,334 +21,8 @@ import android.widget.EditText;
 
 public class Util {
 
-	static boolean isUpdatingCep;
-	static boolean isUpdatingPhone;
-	static boolean isUpdatingCpfCnpj;
-	static boolean isCpfProprietarioOk = false;
-	static boolean isCnpjProprietarioOk = false;
-	static boolean isCpfUsuarioOk = false;
-	static boolean isCnpjUsuarioOk = false;
-	static boolean isCpfResponsavelOk = false;
-	static boolean isCnpjResponsavelOk = false;
-	static boolean isUpdatingConsulta = false;
 	static TextWatcher consultaTextWatcher = null;
-	
-	
-	public static boolean getCpfProprietarioOk(){
-		return isCpfProprietarioOk;
-	}
-
-	public static boolean getCnpjProprietarioOk(){
-		return isCnpjProprietarioOk;
-	}
-
-	public static boolean getCpfUsuarioOk(){
-		return isCpfUsuarioOk;
-	}
-
-	public static boolean getCnpjUsuarioOk(){
-		return isCnpjUsuarioOk;
-	}
-
-	public static boolean getCpfResponsavelOk(){
-		return isCpfResponsavelOk;
-	}
-
-	public static boolean getCnpjResponsavelOk(){
-		return isCnpjResponsavelOk;
-	}
-
-	// Define a variavel editText para tratar os eventos de textChanged considerando mascara para CEP.
-	public static void addTextChangedListenerCepMask(final EditText edt){
-    	edt.addTextChangedListener(new TextWatcher() {  
-    	    
-    		
-    		public void beforeTextChanged(CharSequence s, int start, int count, int after) {  
-    	    }  
-    	      
-    		
-    	    public void onTextChanged(CharSequence s, int start, int before, int after) {  
-    	      
-    			// Quando o texto é alterado o onTextChange é chamado. Essa flag evita a chamada infinita desse método  
-    			if (isUpdatingCep){
-    				isUpdatingCep = false;  
-    				return;  
-    			}  
-    	      
-    			boolean hasMask = s.toString().indexOf('-') > -1;  
-    	      
-    			// Remove o '-' da String  
-    			String str = s.toString().replaceAll("[-]", "");  
-    	      
-    			if (after > before) {  
-
-    				// Se tem mais de 5 caracteres (sem máscara) coloca o '-'  
-    				if (str.length() > 5) {  
-    					str = str.substring(0,5) + '-' + str.substring(5);  
-    				}  
-    				
-    				// Seta a flag pra evitar chamada infinita  
-    				isUpdatingCep = true;  
-    				
-    				// seta o novo texto  
-    				edt.setText(str);  
-    				
-    				// seta a posição do cursor  
-    				if(start == 5){
-        				edt.setSelection(start + 2);  
-    				}else{
-        				edt.setSelection(start + 1);  
-    				}
-    	      
-    			} else {  
-    				isUpdatingCep = true;  
-    				
-    				if (str.length() > 5){
-    					str = str.substring(0,5) + '-' + str.substring(5);
-    				}else{
-        				edt.setText(str);  
-    				}
-    				
-    				// Se estiver apagando posiciona o cursor no local correto. Isso trata a deleção dos caracteres da máscara.  
-    				edt.setSelection(Math.max(0, Math.min(hasMask ? start + 1 - before : start, str.length() ) ) );  
-    			}  
-    		}  
-    	         
-    		
-    	    public void afterTextChanged(Editable s) {  
-    	    }  
-        });
-		
-	}
-
-	// Define a variavel editText para tratar os eventos de textChanged considerando mascara para Telefone.
-	public static void addTextChangedListenerPhoneMask(final EditText edt){
-    	edt.addTextChangedListener(new TextWatcher() {  
-    	    
-    		
-    		public void beforeTextChanged(CharSequence s, int start, int count, int after) {  
-    	    }  
-    	      
-    		
-    	    public void onTextChanged(CharSequence s, int start, int before, int after) {  
-    	      
-    			// Quando o texto é alterado o onTextChange é chamado. Essa flag evita a chamada infinita desse método  
-    			if (isUpdatingPhone){
-    				isUpdatingPhone = false;  
-    				return;  
-    			}  
-    	      
-    			// Remove o '-' da String  
-    			String str = s.toString().replaceAll("[-]", "").replaceAll("[(]", "").replaceAll("[)]", "");  
-    	      
-    			if (after > before) {  
-
-    				str = '(' + str;  
-    				
-    				if (str.length() > 3) {  
-    					str = str.substring(0,3) + ')' + str.substring(3);  
-    				}  
-    				
-    				if (str.length() > 8) {  
-    					str = str.substring(0,8) + '-' + str.substring(8);  
-    				}  
-    				
-    				// Seta a flag pra evitar chamada infinita  
-    				isUpdatingPhone = true;  
-    				
-    				// seta o novo texto  
-    				edt.setText(str);  
-    				
-    				// seta a posição do cursor  
-    				if(start == 0 || start == 3 || start == 8 ){
-        				edt.setSelection(start + 2);  
-    				}else{
-        				edt.setSelection(start + 1);  
-    				}
-    	      
-    			} else {  
-    				isUpdatingPhone = true;  
-    				
-    				if(str.length() > 0){
-        				str = '(' + str;
-    				}
-    				
-    				if (str.length() > 3) {  
-    					str = str.substring(0,3) + ')' + str.substring(3);  
-    				}
-
-    				if (str.length() > 8) {  
-    					str = str.substring(0,8) + '-' + str.substring(8);  
-    				}
-
-    				edt.setText(str);  
-    				
-    				// Se estiver apagando posiciona o cursor no local correto. Isso trata a deleção dos caracteres da máscara.  
-    				edt.setSelection(Math.max(0, Math.min(start + 1 - before, str.length() ) ) ); 
-    			}  
-    		}  
-    	         
-    		
-    	    public void afterTextChanged(Editable s) {  
-    	    }  
-        });
-	}
-	
-	// Define a variável editText para tratar os eventos de textChanged de Consulta.
-	public static void addTextChangedListenerConsultaVerifierAndMask(final EditText edt, final int metodoBusca){
-		
-		if (consultaTextWatcher != null){
-			edt.removeTextChangedListener(consultaTextWatcher);
-		}
-		
-		consultaTextWatcher = new TextWatcher(){  
-    	    
-    		
-    		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}  
-    	      
-    		
-    	    public void onTextChanged(CharSequence s, int start, int before, int after) {  
-    	         
-    			// Quando o texto é alterado o onTextChange é chamado. Essa flag evita a chamada infinita desse método  
-    			if (isUpdatingConsulta){
-    				isUpdatingConsulta = false;  
-    				return;  
-    			}  
-    	      
-				// Se for CPF
-    			if (metodoBusca == Constantes.METODO_BUSCA_CPF){
-	    			
-					// Remove o '-'  e o '.'da String  
-	    			String str = s.toString().replaceAll("[-]", "").replaceAll("[.]", "");  
-	    	      
-	    			if (after > before && before < 12) {  
-
-	    				if (str.length() > 3) {  
-	    					str = str.substring(0,3) + '.' + str.substring(3);  
-	    				}  
-	    				
-	    				if (str.length() > 7) {  
-	    					str = str.substring(0,7) + '.' + str.substring(7);  
-	    				}  
-	    				
-	    				if (str.length() > 11) {  
-	    					str = str.substring(0,11) + '-' + str.substring(11);  
-	    				}  
-	    				
-	    				if (str.length() > 14) {  
-	    					str = str.substring(0,14);  
-	    				}
-	    				
-	    				// Seta a flag pra evitar chamada infinita  
-	    				isUpdatingConsulta = true;  
-	    				
-	    				// seta o novo texto  
-	    				edt.setText(str);  
-	    				
-	    				// seta a posição do cursor  
-	    				if(start == 3 || start == 7 || start == 11 ){
-	        				edt.setSelection(start + 2);  
-	    				}else if (start == 14){
-	        				edt.setSelection(start);  
-	    				}else{
-	        				edt.setSelection(start + 1);  
-	    				}
-	    	      
-	    			} else {  
-	    				isUpdatingConsulta = true;  
-	    				
-	    				if (str.length() > 3) {  
-	    					str = str.substring(0,3) + '.' + str.substring(3);  
-	    				}
-
-	    				if (str.length() > 7) {  
-	    					str = str.substring(0,7) + '.' + str.substring(7);  
-	    				}
-
-	    				if (str.length() > 11) {  
-	    					str = str.substring(0,11) + '-' + str.substring(11);  
-	    				}
-
-	    				if (str.length() > 18) {  
-	    					str = str.substring(0,18);  
-	    				}
-	    				
-	    				edt.setText(str);  
-	    				
-	    				// Se estiver apagando posiciona o cursor no local correto. Isso trata a deleção dos caracteres da máscara.  
-	    				edt.setSelection(Math.max(0, Math.min(start + 1 - before, str.length() ) ) ); 
-	    			}  
-				// Se for CNPJ
-    			}else if (metodoBusca == Constantes.METODO_BUSCA_CNPJ){
-					
-	    			// Remove o '-'  e '.'da String  
-	    			String str = s.toString().replaceAll("[-]", "").replaceAll("[.]", "").replaceAll("[/]", "");  
-
-	    			if (after > before && before < 18) {  
-
-	    				if (str.length() > 2) {  
-	    					str = str.substring(0,2) + '.' + str.substring(2);  
-	    				}  
-	    				
-	    				if (str.length() > 6) {  
-	    					str = str.substring(0,6) + '.' + str.substring(6);  
-	    				}  
-	    				
-	    				if (str.length() > 10) {  
-	    					str = str.substring(0,10) + '/' + str.substring(10);  
-	    				}  
-	    				
-	    				if (str.length() > 15) {  
-	    					str = str.substring(0,15) + '-' + str.substring(15);  
-	    				}  
-	    				
-	    				// Seta a flag pra evitar chamada infinita  
-	    				isUpdatingConsulta = true;  
-	    				
-	    				// seta o novo texto  
-	    				edt.setText(str);  
-	    				
-	    				// seta a posição do cursor  
-	    				if(start == 2 || start == 6 || start == 10 || start == 15 ){
-	        				edt.setSelection(start + 2);  
-	    				}else{
-	        				edt.setSelection(start + 1);  
-	    				}
-	    	      
-	    			} else {  
-	    				isUpdatingConsulta = true;  
-	    				
-	    				if (str.length() > 2) {  
-	    					str = str.substring(0,2) + '.' + str.substring(2);  
-	    				}
-
-	    				if (str.length() > 6) {  
-	    					str = str.substring(0,6) + '.' + str.substring(6);  
-	    				}
-
-	    				if (str.length() > 10) {  
-	    					str = str.substring(0,10) + '/' + str.substring(10);  
-	    				}
-
-	    				if (str.length() > 15) {  
-	    					str = str.substring(0,15) + '-' + str.substring(15);  
-	    				}
-
-	    				edt.setText(str);  
-	    				
-	    				// Se estiver apagando posiciona o cursor no local correto. Isso trata a deleção dos caracteres da máscara.  
-	    				edt.setSelection(Math.max(0, Math.min(start + 1 - before, str.length() ) ) ); 
-	    			}  
-				}
-    		}
-
 			
-    	    public void afterTextChanged(Editable s) {}  
-        };
-		
-		edt.addTextChangedListener(consultaTextWatcher);
-	}
-		
     /**
      * Verifica se o valor da String.trim() veio como null ou como
      * Constantes.NULO_DOUBLE, setando como Constantes.NULO_DOUBLE caso
@@ -733,5 +407,115 @@ public class Util {
 		// retorna o array de bytes
 	return resposta;
     }
+
+    /**
+     * Troca letrar por numeros, na seguinte sequencia: A - 1 B - 2 C - 3 D - 4
+     * . . . Z - 26
+     * 
+     * @param string
+     *            string a ser convertida
+     * @return long com a representacao
+     */
+    public static double convertendoLetraParaNumeros(String string) {
+
+		char[] hidrometro = string.toUpperCase().toCharArray();
+		String retorno = "";
+	
+		for (int i = 0; i < hidrometro.length; i++) {
+	
+		    if (hidrometro[i] == 'A') {
+			retorno += "1";
+		    } else if (hidrometro[i] == 'B') {
+			retorno += "2";
+		    } else if (hidrometro[i] == 'C') {
+			retorno += "3";
+		    } else if (hidrometro[i] == 'D') {
+			retorno += "4";
+		    } else if (hidrometro[i] == 'E') {
+			retorno += "5";
+		    } else if (hidrometro[i] == 'F') {
+			retorno += "6";
+		    } else if (hidrometro[i] == 'G') {
+			retorno += "7";
+		    } else if (hidrometro[i] == 'H') {
+			retorno += "9";
+		    } else if (hidrometro[i] == 'I') {
+			retorno += "9";
+		    } else if (hidrometro[i] == 'J') {
+			retorno += "10";
+		    } else if (hidrometro[i] == 'K') {
+			retorno += "11";
+		    } else if (hidrometro[i] == 'L') {
+			retorno += "12";
+		    } else if (hidrometro[i] == 'M') {
+			retorno += "13";
+		    } else if (hidrometro[i] == 'N') {
+			retorno += "14";
+		    } else if (hidrometro[i] == 'O') {
+			retorno += "15";
+		    } else if (hidrometro[i] == 'P') {
+			retorno += "16";
+		    } else if (hidrometro[i] == 'Q') {
+			retorno += "17";
+		    } else if (hidrometro[i] == 'R') {
+			retorno += "18";
+		    } else if (hidrometro[i] == 'S') {
+			retorno += "19";
+		    } else if (hidrometro[i] == 'T') {
+			retorno += "20";
+		    } else if (hidrometro[i] == 'U') {
+			retorno += "21";
+		    } else if (hidrometro[i] == 'V') {
+			retorno += "22";
+		    } else if (hidrometro[i] == 'W') {
+			retorno += "23";
+		    } else if (hidrometro[i] == 'X') {
+			retorno += "24";
+		    } else if (hidrometro[i] == 'Y') {
+			retorno += "25";
+		    } else if (hidrometro[i] == 'Z') {
+			retorno += "26";
+		    } else if (hidrometro[i] == '\\') {
+			retorno += "27";
+		    } else if (hidrometro[i] == '/') {
+			retorno += "28";
+		    } else if (hidrometro[i] == ' ') {
+			retorno += "29";
+		    } else if (hidrometro[i] == '.') {
+			retorno += "30";
+		    } else if (hidrometro[i] == ',') {
+			retorno += "31";
+		    } else if (hidrometro[i] == '#') {
+			retorno += "32";
+		    } else if (hidrometro[i] == '-') {
+			retorno += "33";
+		    } else if (hidrometro[i] == ';'){
+			retorno += "34";
+		    } else if (hidrometro[i] == '`'){
+			retorno += "35";		
+		    } else if (hidrometro[i] == 'À'){
+			retorno += "36";
+		    } else if (hidrometro[i] == '='){
+			retorno += "37";
+		    } else {
+			retorno += hidrometro[i];
+		    }
+		}
+	
+		double retornoLong = 0d;
+		try {
+		    if (retorno != null && !retorno.equals("")) {
+			retornoLong = Double.parseDouble(retorno);
+		    }
+		} catch (NumberFormatException e) {
+		    e.printStackTrace();
+		    System.out.println("Hidrometro caractere: "+ retorno);
+//		    Util.perguntarAcao( "Número do Hidrometro com problema: " + string + ". Visualizado ?", false, false );
+		    throw e;
+		}
+	
+		return retornoLong;
+    }
+
 
 }
