@@ -276,6 +276,8 @@ public class Controlador {
 
 				    int tipoRegistro = Integer.parseInt(line.substring(0, 2));
 				    
+				    Log.i("Tipo linha", ""+tipoRegistro);
+				    
 				    if (tipoRegistro == Constantes.REGISTRO_TIPO_IMOVEL) {
 //				    	dmCadastro.insertImovel(line);
 
@@ -296,9 +298,9 @@ public class Controlador {
 				    	dmCadastro.insertMedidor(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA) {
-
+				    	dmCadastro.insertTarifacaoMinima(line);
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR) {
-
+				    	dmCadastro.insertTarifacaoComplementar(line);
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_GERAL) {
 //				    	dmCadastro.insertDadosGerais(line);
 

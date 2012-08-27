@@ -17,6 +17,7 @@ import business.ControladorAcessoOnline;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 public class Util {
@@ -104,7 +105,7 @@ public class Util {
     }
 
     public static Date getData(String data) {
-
+    	
     	if (data.equals(Constantes.NULO_STRING)) {
     	    return null;
     	} else {
@@ -313,9 +314,9 @@ public class Util {
     	
     	Controlador.getInstancia().getCadastroDataManipulator().selectGeral();
 
-    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
-    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
-    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
+//    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
+//    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
+//    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
     	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getAnoMesFaturamento();
     	
         File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
@@ -331,9 +332,9 @@ public class Util {
     	
     	Controlador.getInstancia().getCadastroDataManipulator().selectGeral();
     	
-    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
-    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
-    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
+//    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
+//    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
+//    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
     	rotaFileName += Controlador.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
     	
     	return rotaFileName;

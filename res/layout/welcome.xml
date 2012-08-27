@@ -18,7 +18,7 @@
         android:layout_weight="0.56"
         android:gravity="center"
 		android:typeface="serif"
-        android:text="Sistema de Recadastramento de Imóveis"
+        android:text="Leitura e Impressão Simultânea"
         android:textColor="@color/textColor"
         android:textSize="30dp" />
 

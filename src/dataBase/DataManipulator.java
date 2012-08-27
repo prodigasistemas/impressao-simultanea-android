@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import business.Controlador;
 
 import java.text.SimpleDateFormat;
@@ -270,43 +271,68 @@ public class DataManipulator
 
 	public void selectGeral(){
     	
-		Cursor cursor = db.query(Constantes.TABLE_GERAL, new String[] {"codigo_febraban",
-            														    "ano_mes_faturamento",
-            														    "telefone0800",
-            														    "cnpj_empresa",
-            														    "inscricao_estadual_empresa",
-            														    "login",
-            														    "senha",
-            														    "indicador_transmissao_offline",
-            														    "versao_celular",
-            														    "data_inicio",
-            														    "data_fim",
-            														    "id_rota",
-            														    "localidade",
-            														    "setor",
-            														    "rota",
-            														    "grupo_faturamento"}, null, null, null, null,  "id asc");
+		Cursor cursor = db.query(Constantes.TABLE_GERAL, new String[] {
+																"data_referencia_arrecadacao",
+																"ano_mes_faturamento",
+																"codigo_empresa_febraban",
+																"telefone0800",
+																"cnpj_empresa",
+																"inscricao_estadual_empresa",
+																"valor_minim_emissao_conta",
+																"percent_tolerancia_rateio",
+																"decremento_maximo_consumo_economia",
+																"incremento_maximo_consumo_economia",
+																"indc_tarifa_catgoria",
+																"login",
+																"senha",
+																"data_ajuste_leitura",
+																"indicador_ajuste_consumo",
+																"indicador_transmissao_offline",
+																"versao_celular",
+																"indc_atualizar_sequencia_rota",
+																"indc_bloquear_reemissao_conta",
+																"qtd_dias_ajuste_consumo",
+																"indicador_rota_dividida",
+																"id_rota",
+																"modulo_verificador_codigo_barras",
+																"data_inicio",
+																"data_fim",
+																"data_referencia_arrecadada"
+																		}, null, null, null, null,  "id asc");
 
         if (cursor.moveToFirst()) {
-       	 
-     	   getDadosGerais().setCodigoEmpresaFebraban(cursor.getString(0));
-     	   getDadosGerais().setAnoMesFaturamento(cursor.getString(1));
-    	   getDadosGerais().setTelefone0800(cursor.getString(2));
-    	   getDadosGerais().setCnpjEmpresa(cursor.getString(3));
-    	   getDadosGerais().setInscricaoEstadualEmpresa(cursor.getString(4));
-    	   getDadosGerais().setLogin(cursor.getString(5));
-    	   getDadosGerais().setSenha(cursor.getString(6));
-    	   getDadosGerais().setIndicadorTransmissaoOffline(cursor.getString(7));
-    	   getDadosGerais().setVersaoCelular(cursor.getString(8));
-    	   getDadosGerais().setDataInicio(cursor.getString(9));
-    	   getDadosGerais().setDataFim(cursor.getString(10));
-    	   getDadosGerais().setIdRota(cursor.getString(11));
-    	   getDadosGerais().setLocalidade(cursor.getString(12));
-    	   getDadosGerais().setSetor(cursor.getString(13));
-    	   getDadosGerais().setRota(cursor.getString(14));
-    	   getDadosGerais().setGrupoFaturamento(cursor.getString(15));
 
+        	getDadosGerais().setDataReferenciaArrecadacao(cursor.getString(0));
+        	getDadosGerais().setAnoMesFaturamento(cursor.getString(1));
+     	    getDadosGerais().setCodigoEmpresaFebraban(cursor.getString(2));
+     	    getDadosGerais().setTelefone0800(cursor.getString(3));
+     	    getDadosGerais().setCnpjEmpresa(cursor.getString(4));
+     	    getDadosGerais().setInscricaoEstadualEmpresa(cursor.getString(5));
+     	    getDadosGerais().setValorMinimEmissaoConta(cursor.getString(6));
+     	    getDadosGerais().setPercentToleranciaRateio(cursor.getString(7));
+     	    getDadosGerais().setDecrementoMaximoConsumoEconomia(cursor.getString(8));
+     	    getDadosGerais().setIncrementoMaximoConsumoEconomia(cursor.getString(9));
+     	    getDadosGerais().setIndcTarifaCatgoria(cursor.getString(10));
+     	    getDadosGerais().setLogin(cursor.getString(11));
+     	    getDadosGerais().setSenha(cursor.getString(12));
+
+     	    getDadosGerais().setDataAjusteLeitura(cursor.getString(13));
+     	    getDadosGerais().setIndicadorAjusteConsumo(cursor.getString(14));
+     	    getDadosGerais().setIndicadorTransmissaoOffline(cursor.getString(15));
+     	    getDadosGerais().setVersaoCelular(cursor.getString(16));
+     	    getDadosGerais().setIndcAtualizarSequencialRota(cursor.getString(17));
+    	   	getDadosGerais().setIndcBloquearReemissaoConta(cursor.getString(18));
+    	   	getDadosGerais().setQtdDiasAjusteConsumo(cursor.getString(19));
+    	   	getDadosGerais().setIndicadorRotaDividida(cursor.getString(20));
+    	   	getDadosGerais().setIdRota(cursor.getString(21));
+    	   	getDadosGerais().setModuloVerificadorCodigoBarras(cursor.getString(22));
+    	   	getDadosGerais().setDataInicio(cursor.getString(23));
+    	   	getDadosGerais().setDataFim(cursor.getString(24));
+//    	   	getDadosGerais().setDataReferenciaArrecadacao(cursor.getString(8));
+
+    	   
         }
+        
         if (cursor != null && !cursor.isClosed()) {
            cursor.close();
         }
@@ -435,22 +461,31 @@ public class DataManipulator
 		parser.obterDadoParser(2);
 		ContentValues initialValues = new ContentValues();
 	   
-		initialValues.put("codigo_febraban", parser.obterDadoParser(4));
+		initialValues.put("codigo_empresa_febraban", parser.obterDadoParser(4));
+		initialValues.put("data_referencia_arrecadacao", parser.obterDadoParser(8));
 		initialValues.put("ano_mes_faturamento", parser.obterDadoParser(6));
 		initialValues.put("telefone0800", parser.obterDadoParser(12));
 		initialValues.put("cnpj_empresa", parser.obterDadoParser(14));
 		initialValues.put("inscricao_estadual_empresa", parser.obterDadoParser(20));
+		initialValues.put("valor_minim_emissao_conta", parser.obterDadoParser(14));
+		initialValues.put("percent_tolerancia_rateio", parser.obterDadoParser(4));
+		initialValues.put("decremento_maximo_consumo_economia", parser.obterDadoParser(6));
+		initialValues.put("incremento_maximo_consumo_economia", parser.obterDadoParser(6));
+		initialValues.put("indc_tarifa_catgoria", parser.obterDadoParser(1));
 		initialValues.put("login", parser.obterDadoParser(11));
 		initialValues.put("senha", parser.obterDadoParser(40));
+		initialValues.put("data_ajuste_leitura", parser.obterDadoParser(8));
+		initialValues.put("indicador_ajuste_consumo", parser.obterDadoParser(1));
 		initialValues.put("indicador_transmissao_offline", parser.obterDadoParser(1));
 		initialValues.put("versao_celular", parser.obterDadoParser(10));
+		initialValues.put("indc_bloquear_reemissao_conta", parser.obterDadoParser(1));
+		initialValues.put("indc_atualizar_sequencia_rota", parser.obterDadoParser(1));
+		initialValues.put("qtd_dias_ajuste_consumo", parser.obterDadoParser(2));
+		initialValues.put("modulo_verificador_codigo_barras", parser.obterDadoParser(2));
 		initialValues.put("data_inicio", parser.obterDadoParser(8));
 		initialValues.put("data_fim", parser.obterDadoParser(8));
 		initialValues.put("id_rota", parser.obterDadoParser(4));
-		initialValues.put("localidade", parser.obterDadoParser(3));
-		initialValues.put("setor", parser.obterDadoParser(3));
-		initialValues.put("rota", parser.obterDadoParser(2));
-		initialValues.put("grupo_faturamento", parser.obterDadoParser(3));
+		initialValues.put("indicador_rota_dividida", parser.obterDadoParser(2));
 
 		return db.insert(Constantes.TABLE_GERAL, null, initialValues);
 	}
@@ -554,6 +589,14 @@ public class DataManipulator
 	   
 	   initialValues.put("codigo", parser.obterDadoParser(3));
 	   initialValues.put("descricao", parser.obterDadoParser(25));
+	   initialValues.put("indicador_leitura", parser.obterDadoParser(1));
+	   initialValues.put("id_consumo_a_cobrar_com_leitura", parser.obterDadoParser(2));
+	   initialValues.put("id_consumo_a_cobrar_sem_leitura", parser.obterDadoParser(2));
+	   initialValues.put("id_leitura_faturar_com_leitura", parser.obterDadoParser(2));
+	   initialValues.put("id_leitura_faturar_sem_leitura", parser.obterDadoParser(2));
+	   initialValues.put("indc_uso", parser.obterDadoParser(1));
+	   initialValues.put("numero_fator_sem_leitura", parser.obterDadoParser(4));
+	   initialValues.put("numero_fator_com_leitura", parser.obterDadoParser(4));
 
 	   return db.insert(Constantes.TABLE_ANORMALIDADE, null, initialValues);
 	}
@@ -598,6 +641,37 @@ public class DataManipulator
    	   	initialValues.put("leitura_instalacao_hidrometro", parser.obterDadoParser(7));
    	   	
 	   return db.insert(Constantes.TABLE_MEDIDOR, null, initialValues);
+	}
+	
+	public long insertTarifacaoComplementar(String linhaArquivo) {
+		ParserUtil parser = new ParserUtil(linhaArquivo);
+		parser.obterDadoParser(2);
+		ContentValues initialValues = new ContentValues();
+		
+		initialValues.put("codigo", parser.obterDadoParser(2));
+		initialValues.put("data_inicio_vigencia", parser.obterDadoParser(8));
+		initialValues.put("codigo_categoria", parser.obterDadoParser(1));
+		initialValues.put("codigo_subcategoria", parser.obterDadoParser(3));
+		initialValues.put("limite_inicial_faixa", parser.obterDadoParser(6));
+		initialValues.put("limite_final_faixa", parser.obterDadoParser(6));
+		initialValues.put("valor_m3_faixa", parser.obterDadoParser(14));
+		
+		return db.insert(Constantes.TABLE_TARIFACAO_COMPLEMENTAR, null, initialValues);
+	}
+	
+	public long insertTarifacaoMinima(String linhaArquivo) {
+		ParserUtil parser = new ParserUtil(linhaArquivo);
+		parser.obterDadoParser(2);
+		ContentValues initialValues = new ContentValues();
+		
+		initialValues.put("codigo", parser.obterDadoParser(2));
+		initialValues.put("data_vigencia", parser.obterDadoParser(8));
+		initialValues.put("codigo_categoria", parser.obterDadoParser(1));
+		initialValues.put("codigo_subcategoria", parser.obterDadoParser(3));
+		initialValues.put("consumo_minimo_subcategoria", parser.obterDadoParser(6));
+		initialValues.put("tarifa_minima_categoria", parser.obterDadoParser(14));
+		
+		return db.insert(Constantes.TABLE_TARIFACAO_MINIMA, null, initialValues);
 	}
 		
 	public void salvarConfiguracaoElement(String parametroName, int value){
