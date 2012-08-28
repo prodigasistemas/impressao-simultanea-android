@@ -282,6 +282,7 @@ public class Controlador {
 //				    	dmCadastro.insertImovel(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_DADOS_CATEGORIA) {
+				    	dmCadastro.insertDadosCategoria(line);
 
 				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_LIGACAO) {
 
@@ -326,7 +327,7 @@ public class Controlador {
 		        // Send message (with current value of total as data) to Handler on UI thread
 		        // so that it can update the progress bar.
 		        Message msg = mHandler.obtainMessage();
-		        b.putInt("total", linhasLidas);
+		        b.putInt("total", qtdRegistros);
 		        msg.setData(b);
 		        mHandler.sendMessage(msg);
 

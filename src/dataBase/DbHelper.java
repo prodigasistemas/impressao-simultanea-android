@@ -2,6 +2,9 @@ package dataBase;
 
 import java.util.Date;
 
+import model.DadosFaturamento;
+import model.DadosTarifa;
+
 import util.Constantes;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,11 +24,22 @@ public class DbHelper extends SQLiteOpenHelper {
     	"sub_categoria_industrial_1 TEXT, sub_categoria_industrial_2 TEXT, sub_categoria_industrial_3 TEXT, sub_categoria_industrial_4 TEXT," +
     	"tipo_fonte_abastecimento TEXT, imovel_status TEXT, imovel_enviado TEXT, latitude TEXT, longitude TEXT, data TEXT)";
 
+    
+    private int codigoCategoria;
+    private String descricaoCategoria;
+    private String codigoSubcategoria;
+    private String descricaoSubcategoria;
+    private int qtdEconomiasSubcategoria;
+    private String descricaoAbreviadaCategoria;
+    private String descricaoAbreviadaSubcategoria;
+    private String fatorEconomiaCategoria;
+
     private static final String DATABASE_DADOS_CATEGORIA_QUERY =
-        "CREATE TABLE dados_categoria (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+        "CREATE TABLE dados_categoria (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER, codigo_categoria TEXT, descricao_categoria TEXT, codigo_subcategoria TEXT, descricao_subcategoria TEXT, " +
+        "quantidade_econominas_subcategoria TEXT, descricao_abreviada_categoria TEXT, descricao_abreviada_subcategoria TEXT, fator_economia_categoria TEXT)";
 
     private static final String DATABASE_LIGACAO_QUERY =
-        "CREATE TABLE ligacao (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+        "CREATE TABLE ligacao (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER, ano_mes_ligacao TEXT, tipo_ligacao TEXT, consumo TEXT, anormalidade_leitura TEXT, anormalidade_consumo TEXT)";
 
     private static final String DATABASE_DEBITO_QUERY =
     	"CREATE TABLE debito (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";

@@ -518,5 +518,272 @@ public class Util {
 		return retornoLong;
     }
 
+    public static double strToDouble(String str) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(str);
+		buffer.insert(str.length() - 2, '.');
+	
+		return Double.valueOf(buffer.toString()).doubleValue();
+    }
+	
+    public static int pow(int arg, int times) {
+		int ret = 1;
+		for (int i = 1; i <= times; i++) {
+		    ret = ret * arg;
+		}
+		return ret;
+    }
+
+    /**
+     * Arredonda as casas decimais.
+     * 
+     * @param valor
+     *            O valor a ser arrendondado.
+     * @param casasDecimais
+     *            O número de casas decimais.
+     * @return O valor arredondado. Ex.: arredondar(abcd.xyzw, 3) = abcd.xyz,
+     *         para w <5 = abcd.xyk, para w >= 5 e k = z + 1
+     */
+    public static double arredondar(double valor, int casasDecimais) {
+
+		int mult = pow(10, casasDecimais);
+		valor = (double) valor * mult;
+		int inteiro = (int) Math.floor(valor + 0.5);
+		valor = (double) inteiro / mult;
+		return valor;
+    }
+    
+    /**
+     * Diferença entre datas em dias
+     * 
+     * @param data1
+     * @param data2
+     * @return
+     */
+    public static long obterModuloDiferencasDatasDias(Date data1, Date data2) {
+		long dias;
+		long umDia = 86400000; // um dia possui 86400000ms
+		long date1, date2;
+		date1 = data1.getTime();
+		date2 = data2.getTime();
+		dias = (date2 - date1) / umDia;
+		return (dias < 0) ? dias * -1 : dias;
+    }
+
+    /**
+     * Diferença entre datas em dias
+     * 
+     * @param data1
+     * @param data2
+     * @return
+     */
+    public static long obterDiferencasDatasDias(Date data1, Date data2) {
+		long dias;
+		long umDia = 86400000; // um dia possui 86400000ms
+		long date1, date2;
+		date1 = data1.getTime();
+		date2 = data2.getTime();
+		dias = (date2 - date1) / umDia;
+		return dias;
+    }
+
+    /**
+     * Subtrai a data no formato AAAAMM Exemplo 200508 retorna 200507 Author:
+     * Sávio Luiz Data: 20/01/2006
+     * 
+     * @param data
+     *            com a barra
+     * @return Uma data no formato yyyyMM (sem a barra)
+     */
+    public static int subtrairMesDoAnoMes(int anoMes, int qtdMeses) {
+
+		String dataFormatacao = "" + anoMes;
+	
+		int ano = Integer.parseInt(dataFormatacao.substring(0, 4));
+		int mes = Integer.parseInt(dataFormatacao.substring(4, 6));
+	
+		int mesTemp = (mes - qtdMeses);
+	
+		if (mesTemp <= 0) {
+		    mesTemp = (12 + mes) - qtdMeses;
+		    ano = ano - 1;
+		}
+	
+		String anoMesSubtraido = null;
+		String tamanhoMes = "" + mesTemp;
+	
+		if (tamanhoMes.length() == 1) {
+		    anoMesSubtraido = ano + "0" + mesTemp;
+		
+		} else {
+		    anoMesSubtraido = ano + "" + mesTemp;
+		}
+		
+		return Integer.parseInt(anoMesSubtraido);
+    }
+
+    public static int obterMes(int anoMes) {
+
+		String dataFormatacao = "" + anoMes;
+	
+		int mes = Integer.parseInt(dataFormatacao.substring(4, 6));
+	
+		return mes;
+    }
+
+    public static int obterAno(int anoMes) {
+
+		String dataFormatacao = "" + anoMes;
+	
+		int ano = Integer.parseInt(dataFormatacao.substring(0, 4));
+	
+		return ano;
+    }
+
+    /**
+     * Método que recebe um java.util.Date e retorna uma String no formato
+     * dia/mês/ano.
+     * 
+     * @param date
+     *            Data a ser formatada.
+     * @return String no formato dia/mês/ano.
+     */
+    public static String dateToString(Date date) {
+		StringBuffer retorno = new StringBuffer();
+	
+		if (date != null && !date.equals("")) {
+	
+		    Calendar calendar = Calendar.getInstance();
+		    calendar.setTime(date);
+		    // Dia
+		    retorno.append(Util.adicionarZerosEsquerdaNumero(2, calendar.get(Calendar.DAY_OF_MONTH) + ""));
+		    retorno.append("/");
+		    // Mes
+		    retorno.append(Util.adicionarZerosEsquerdaNumero(2, calendar.get(Calendar.MONTH) + 1 + ""));
+		    // Ano
+		    retorno.append("/");
+		    retorno.append(calendar.get(Calendar.YEAR));
+		}
+	
+		return retorno.toString();
+    }
+
+    /**
+     * Método que recebe um java.util.Date e retorna uma String no formato
+     * Hora:Minuto:Segundo.
+     * 
+     * @param date
+     *            Data a ser formatada.
+     * @return String no formato Hora:Minuto:Segundo.
+     */
+    public static String dateToHoraString(Date date) {
+		StringBuffer retorno = new StringBuffer();
+	
+		if (date != null && !date.equals("")) {
+	
+		    Calendar calendar = Calendar.getInstance();
+		    calendar.setTime(date);
+		    // Hora
+		    retorno.append(Util.adicionarZerosEsquerdaNumero(2, calendar.get(Calendar.HOUR_OF_DAY) + ""));
+		    retorno.append(":");
+		    // Minuto
+		    retorno.append(Util.adicionarZerosEsquerdaNumero(2, calendar.get(Calendar.MINUTE) + 1 + ""));
+		    // Segundo
+		    retorno.append(":");
+		    retorno.append(Util.adicionarZerosEsquerdaNumero(2, calendar.get(Calendar.SECOND) + ""));
+		}
+	
+		return retorno.toString();
+    }
+
+    /**
+     * Compara duas datas sem verificar a hora.
+     * 
+     * @param data1
+     *            A primeira data
+     * @param data2
+     *            A segunda data
+     * @author Rafael Francisco Pinto
+     * @return -1 se a data1 for menor que a data2, 0 se as datas forem iguais, 1
+     *         se a data1 for maior que a data2.
+     */
+    public static int compararData(Date data1, Date data2) {
+
+		Calendar calendar1;
+		Calendar calendar2;
+	
+		int ano1;
+		int ano2;
+		int mes1;
+		int mes2;
+		int dia1;
+		int dia2;
+	
+		int resultado;
+	
+		calendar1 = Calendar.getInstance();
+		calendar1.setTime(data1);
+	
+		ano1 = calendar1.get(Calendar.YEAR);
+		mes1 = calendar1.get(Calendar.MONTH);
+		dia1 = calendar1.get(Calendar.DAY_OF_MONTH);
+	
+		calendar2 = Calendar.getInstance();
+		calendar2.setTime(data2);
+	
+		ano2 = calendar2.get(Calendar.YEAR);
+		mes2 = calendar2.get(Calendar.MONTH);
+		dia2 = calendar2.get(Calendar.DAY_OF_MONTH);
+	
+		if (ano1 == ano2) {
+	
+		    if (mes1 == mes2) {
+	
+			if (dia1 == dia2) {
+			    resultado = 0;
+			} else if (dia1 < dia2) {
+			    resultado = -1;
+			} else {
+			    resultado = 1;
+			}
+		    } else if (mes1 < mes2) {
+			resultado = -1;
+		    } else {
+			resultado = 1;
+		    }
+		} else if (ano1 < ano2) {
+		    resultado = -1;
+		} else {
+		    resultado = 1;
+		}
+		return resultado;
+    }
+
+    /**
+     * Retorna a descrição abreviada do ano Mes
+     * 
+     * @param anoMes
+     * @author Rafael Francisco Pinto
+     */
+
+    public static String retornaDescricaoAnoMes(String anoMes) {
+
+		int mes = Integer.parseInt(anoMes.substring(4, 6));
+		String ano = anoMes.substring(0, 4);
+	
+		String descricao = retornaDescricaoMes(mes) + "/" + ano;
+	
+		return descricao;
+    }
+
+    public static String retornaDescricaoMes(int mes) {
+
+		String meses[] = { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+	
+		String mesPorExtenso = meses[mes - 1];// mes-1 pq o indice do array
+		// começa no zero
+	
+		return mesPorExtenso;
+    }
 
 }

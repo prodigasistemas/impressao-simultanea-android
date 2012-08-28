@@ -26,6 +26,12 @@ public class Constantes {
     public static final int LIGACAO_AGUA = 1;
     public static final int LIGACAO_POCO = 2;
 
+    /**
+     * Situações de ligação
+     */
+    public static final String LIGADO = "3";
+    public static final String CORTADO = "5";
+
     public static final String AGUA = "Água";
     public static final String POCO = "Poço";
 
@@ -93,5 +99,24 @@ public class Constantes {
     public static final int IMOVEL_RETIDO = 3;
     public static final int IMOVEL_TRANSMITIDO = 4;
     public static final int IMOVEL_NAO_TRANSMITIDO = 5;
+
+    /**
+     * COD. FEBRABAN da COSANPA
+     */
+    public static final String CODIGO_FEBRABAN_COSANPA = "0022";
+    /**
+     * COD. FEBRABAN da COMPESA
+     */
+    public static final String CODIGO_FEBRABAN_COMPESA = "0018";
+
+    /**
+     * COD. FEBRABAN da CAER
+     */
+    public static final String CODIGO_FEBRABAN_CAER = "0004";
+
+    /**
+     * COD. FEBRABAN da CAERN
+     */
+    public static final String CODIGO_FEBRABAN_CAERN = "0006";
 
 }

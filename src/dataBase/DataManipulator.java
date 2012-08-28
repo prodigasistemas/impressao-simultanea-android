@@ -580,7 +580,27 @@ public class DataManipulator
 			   Controlador.getInstancia().setCadastroSelecionado(db.insert(Constantes.TABLE_ANORMALIDADE_IMOVEL, null, initialValues));
 		   }
 	}
+	
+	public long insertDadosCategoria(String linhaArquivo){
 
+		   ParserUtil parser = new ParserUtil(linhaArquivo);
+		   parser.obterDadoParser(11);
+		   ContentValues initialValues = new ContentValues();
+		   
+		   initialValues.put("id_imovel", 1);
+		   initialValues.put("codigo_categoria", parser.obterDadoParser(1));
+		   initialValues.put("descricao_categoria", parser.obterDadoParser(15));
+		   initialValues.put("codigo_subcategoria", parser.obterDadoParser(3));
+		   initialValues.put("descricao_subcategoria", parser.obterDadoParser(50));
+		   initialValues.put("quantidade_econominas_subcategoria", parser.obterDadoParser(4));
+		   initialValues.put("descricao_abreviada_categoria", parser.obterDadoParser(3));
+		   initialValues.put("descricao_abreviada_subcategoria", parser.obterDadoParser(20));
+		   initialValues.put("fator_economia_categoria", parser.obterDadoParser(2));
+
+		   return db.insert(Constantes.TABLE_DADOS_CATEGORIA, null, initialValues);
+	}
+
+	
 	public long insertAnormalidade(String linhaArquivo){
 
 	   ParserUtil parser = new ParserUtil(linhaArquivo);
@@ -601,6 +621,22 @@ public class DataManipulator
 	   return db.insert(Constantes.TABLE_ANORMALIDADE, null, initialValues);
 	}
 
+	public long insertLigacao(String linhaArquivo){
+
+		ParserUtil parser = new ParserUtil(linhaArquivo);
+		parser.obterDadoParser(11);
+		ContentValues initialValues = new ContentValues();
+    	
+		initialValues.put("id_imovel", 1);
+		initialValues.put("ano_mes_ligacao", parser.obterDadoParser(1));
+		initialValues.put("tipo_ligacao", parser.obterDadoParser(6));
+		initialValues.put("consumo", parser.obterDadoParser(6));
+		initialValues.put("anormalidade_leitura", parser.obterDadoParser(2));
+		initialValues.put("anormalidade_consumo", parser.obterDadoParser(2));
+   	   	
+		return db.insert(Constantes.TABLE_CONTA, null, initialValues);
+	}
+		
 	public long insertConta(String linhaArquivo){
 
 		ParserUtil parser = new ParserUtil(linhaArquivo);
