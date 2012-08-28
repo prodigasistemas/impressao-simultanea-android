@@ -17,6 +17,7 @@ import dataBase.DataManipulator;
 import model.Conta;
 import model.DadosGerais;
 import model.Medidor;
+import model.SituacaoTipo;
 //import model.Imovel;
 //import model.Medidor;
 //import model.Servicos;
@@ -31,6 +32,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import static util.Constantes.*;
 
 public class Controlador {
 
@@ -255,6 +257,7 @@ public class Controlador {
      */
     public void carregarDadosParaRecordStore(BufferedReader input, Handler mHandler, Context context) {
 		String line = "";
+		int matricula = 0;
 		
 		if (input != null){
 			
@@ -276,39 +279,64 @@ public class Controlador {
 
 				    int tipoRegistro = Integer.parseInt(line.substring(0, 2));
 				    
-				    Log.i("Tipo linha", ""+tipoRegistro);
+//				    Log.i("Tipo linha", ""+tipoRegistro);
 				    
-				    if (tipoRegistro == Constantes.REGISTRO_TIPO_IMOVEL) {
-//				    	dmCadastro.insertImovel(line);
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_DADOS_CATEGORIA) {
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_LIGACAO) {
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_DEBITO) {
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_CREDITO) {
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_IMPOSTO) {
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_CONTA) {
-				    	dmCadastro.insertConta(line);
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_MEDIDOR) {
-				    	dmCadastro.insertMedidor(line);
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA) {
-				    	dmCadastro.insertTarifacaoMinima(line);
-
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR) {
-				    	dmCadastro.insertTarifacaoComplementar(line);
+				    switch (tipoRegistro) {
 				    
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_GERAL) {
-				    	dmCadastro.insertDadosGerais(line);
+						case REGISTRO_TIPO_IMOVEL:
+							dmCadastro.insertImovel(line);
+					    	dmCadastro.insertSituacaoTipo(SituacaoTipo.getInstancia());
+							break;
+							
+						case REGISTRO_TIPO_DADOS_CATEGORIA:
+							
+							break;
+							
+						case REGISTRO_TIPO_HISTORICO_CONSUMO:
+							dmCadastro.insertHistoricoConsumo(line);
+							break;
+							
+						case REGISTRO_TIPO_DEBITO:
+							dmCadastro.insertDebito(line);
+							break;
+							
+						case REGISTRO_TIPO_CREDITO:
+							dmCadastro.insertCredito(line);
+							break;
+							
+						case REGISTRO_TIPO_IMPOSTO:
+							
+							break;
+							
+						case REGISTRO_TIPO_CONTA:
+							dmCadastro.insertConta(line);
+							break;
+							
+						case REGISTRO_TIPO_MEDIDOR:
+							dmCadastro.insertMedidor(line);
+							break;
+							
+						case REGISTRO_TIPO_TARIFACAO_MINIMA:
+							dmCadastro.insertTarifacaoMinima(line);
+							break;
+							
+						case REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR:
+							dmCadastro.insertTarifacaoComplementar(line);
+							break;
+							
+						case REGISTRO_TIPO_GERAL:
+							dmCadastro.insertDadosGerais(line);
+							break;
+							
+						case REGISTRO_TIPO_ANORMALIDADE:
+							dmCadastro.insertAnormalidade(line);
+							break;
+	
+						default:
+							Log.e("Erro no switch - classe Controlador", String.format("tipo registro: %d", tipoRegistro));
+							break;
+					}
 
-				    }else if (tipoRegistro == Constantes.REGISTRO_TIPO_ANORMALIDADE) {
-				    	dmCadastro.insertAnormalidade(line);
-				    }
 				    
 				    if (linhasLidas < qtdRegistros){
 				        // Send message (with current value of total as data) to Handler on UI thread

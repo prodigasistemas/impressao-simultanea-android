@@ -8,6 +8,8 @@ import util.Util;
 public class TarifacaoMinima {
 
 	private int codigo;
+	
+	private int matricula;
 
 	private Date dataVigencia;
 
@@ -20,6 +22,16 @@ public class TarifacaoMinima {
 	private double tarifaMinimaCategoria;
 
 	private Vector faixas;
+	
+	
+
+	public int getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(int matricula) {
+		this.matricula = matricula;
+	}
 
 	public void setcodigo(String codigo) {
 		this.codigo = Util.verificarNuloInt(codigo);

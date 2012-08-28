@@ -5,6 +5,8 @@ import java.util.Date;
 public class TarifacaoComplementar {
 
 	private int id;
+	
+	private int matricula;
 
 	private int codigo;
 	
@@ -26,6 +28,14 @@ public class TarifacaoComplementar {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(int matricula) {
+		this.matricula = matricula;
 	}
 
 	public int getCodigo() {

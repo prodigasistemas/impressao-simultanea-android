@@ -1,7 +1,5 @@
 package dataBase;
 
-import java.util.Date;
-
 import util.Constantes;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,43 +10,50 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 1;
 
-    private static final String DATABASE_IMOVEL_QUERY =
-    	"CREATE TABLE imovel (id INTEGER PRIMARY KEY autoincrement, matricula TEXT not null, codigo_cliente TEXT, inscricao TEXT, rota TEXT, face TEXT, codigo_municipio TEXT, numero_iptu TEXT, numero_celpa TEXT, numero_pontos_uteis TEXT, " +
-    	"logradouro_imovel TEXT, numero_imovel TEXT, complemento_imovel TEXT, bairro_imovel TEXT, cep_imovel TEXT, municipio_imovel TEXT, codigo_logradouro_imovel TEXT, " +
-    	"sub_categoria_residencial_1 TEXT, sub_categoria_residencial_2 TEXT, sub_categoria_residencial_3 TEXT, sub_categoria_residencial_4 TEXT, " +
-    	"sub_categoria_comercial_1 TEXT, sub_categoria_comercial_2 TEXT, sub_categoria_comercial_3 TEXT, sub_categoria_comercial_4 TEXT, " +
-    	"sub_categoria_publica_1 TEXT, sub_categoria_publica_2 TEXT, sub_categoria_publica_3 TEXT, sub_categoria_publica_4 TEXT, " +
-    	"sub_categoria_industrial_1 TEXT, sub_categoria_industrial_2 TEXT, sub_categoria_industrial_3 TEXT, sub_categoria_industrial_4 TEXT," +
-    	"tipo_fonte_abastecimento TEXT, imovel_status TEXT, imovel_enviado TEXT, latitude TEXT, longitude TEXT, data TEXT)";
-
+	private static final String DATABASE_IMOVEL_QUERY = "CREATE TABLE imovel (matricula INTEGER PRIMARY KEY, nome_gerencia_regional TEXT, nome_escritorio TEXT, nome_usuario TEXT, data_vencimento DATE, data_validade_conta DATE, inscricao TEXT, " +
+			"endereco TEXT, ano_mes_conta TEXT, digito_verificador_conta TEXT, codigo_responsavel TEXT, nome_responsavel TEXT, endereco_entrega TEXT, situacao_lig_agua TEXT, situacao_lig_esgoto TEXT, descricao_banco TEXT, codigo_agencia TEXT, matricula_condominio TEXT, indc_condominio TEXT, " +
+			"codigo_perfil TEXT, consumo_medio TEXT, indc_faturamento_agua TEXT, indc_faturamento_esgoto TEXT, indc_emissao_conta TEXT, consumo_min_agua TEXT, consumo_min_esgoto TEXT, percent_coleta_esgoto TEXT, percent_cobranca_esgoto TEXT, tipo_poco TEXT, codigo_tarifa TEXT, consumo_estouro TEXT, " +
+			"alto_consumo TEXT, baixo_consumo TEXT, fator_mult_estouro TEXT, fator_mult_media_alto_consumo TEXT, percent_baixo_consumo TEXT, consumo_maximo TEXT, grupo_faturamento TEXT, codigo_rota TEXT, numero_conta TEXT, tipo_calculo_tarifa TEXT, endereco_atendimento TEXT, telefone_localidade_ddd TEXT," +
+			" sequencial_rota TEXT, mensagem_conta1 TEXT, mensagem_conta2 TEXT, mensagem_conta3 TEXT, turbidez_padrao TEXT, ph_padrao TEXT, cor_padrao TEXT, cloro_padrao TEXT, fluor_padrao TEXT, ferro_padrao TEXT, coliformes_totais_padrao TEXT, coliformes_fecais_padrao TEXT, nitrato_padrao TEXT, " +
+			"coliformes_termo_tolerantes_padrao TEXT, am_referencia_qualidade_agua TEXT, numero_cloro_residual TEXT, numero_turbidez TEXT, numero_ph TEXT, numero_cor TEXT, numero_fluor TEXT, numero_ferro TEXT, numero_coliformes_totais TEXT, numero_coliformes_fecais TEXT, numero_nitrato TEXT, " +
+			"numero_coliformes_termo_tolerantes TEXT, descricao_fonte_capacitacao TEXT, quantidade_turbidez_exigidas TEXT, quantidade_cor_exigidas TEXT, quantidade_cloro_exigidas TEXT, quantidade_fluor_exigidas TEXT, quantidade_coliformes_totais_exigidas TEXT, quantidade_coliformes_fecais_exigidas TEXT, " +
+			"quantidade_coliformes_termo_tolerantes_exigidas TEXT, quantidade_turbidez_analisadas TEXT, quantidade_cor_analisadas TEXT, quantidade_cloro_analisadas TEXT, quantidade_fluor_analisadas TEXT, quantidade_coliformes_totais_analisadas TEXT, quantidade_coliformes_fecais_analisadas TEXT, " +
+			"quantidade_coliformes_termo_tolerantes_analisadas TEXT, quantidade_turbidez_conforme TEXT, quantidade_cor_conforme TEXT, quantidade_cloro_conforme TEXT, quantidade_fluor_conforme TEXT, quantidade_coliformes_totais_conforme TEXT, quantidade_coliformes_fecais_conforme TEXT, " +
+			"quantidade_coliformes_termo_tolerantes_conforme TEXT, consumo_minimo_imovel TEXT, consumo_minimo_imovel_nao_medido TEXT, numero_documento_notificacao_debito TEXT, numero_codigo_barra_notificacao_debito TEXT, cpf_cnpj_cliente TEXT, data_leitura_anterior_nao_medido DATE, indicador_abastecimento_agua TEXT," +
+			" indicador_imovel_sazonal TEXT, indicador_paralizar_faturamento_agua TEXT, indicador_paralizar_faturamento_esgoto TEXT, opcao_debito_automatico TEXT, percentual_alternativo_esgoto TEXT, consumo_percentual_alternativo_esgoto TEXT, data_emissao_documento DATE, quantidade_contas_impressas TEXT, contagem_validacao_agua TEXT," +
+			" contagem_validacao_poco TEXT, leitura_gravada_anterior TEXT, anormalidade_gravada_anterior TEXT, data_impressao_nao_medido DATE, valor_residual_credito TEXT, quantidade_imoveis_condominio TEXT, indc_adicionou_dados_iniciais_helper_rateio TEXT, valor_rateio_agua TEXT, valor_rateio_esgoto TEXT, consumo_rateio_agua TEXT, " +
+			"consumo_rateio_esgoto TEXT)";
+	
+	
+	
     private static final String DATABASE_DADOS_CATEGORIA_QUERY =
         "CREATE TABLE dados_categoria (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
 
-    private static final String DATABASE_LIGACAO_QUERY =
-        "CREATE TABLE ligacao (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+    private static final String DATABASE_HISTORICO_CONSUMO_QUERY =
+        "CREATE TABLE historico_consumo (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_ligacao TEXT, ano_mes_referencia TEXT, consumo TEXT, anormalidade_leitura TEXT, anormalidade_consumo TEXT)";
 
     private static final String DATABASE_DEBITO_QUERY =
-    	"CREATE TABLE debito (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+    	"CREATE TABLE debito (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, descricao TEXT, valor TEXT, codigo TEXT, indc_uso TEXT)";
     
     private static final String DATABASE_CREDITO_QUERY =
-    	"CREATE TABLE credito (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+    	"CREATE TABLE credito (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, descricao TEXT, valor TEXT, codigo TEXT, indc_uso TEXT)";
     
     private static final String DATABASE_IMPOSTO_QUERY =
         "CREATE TABLE imposto (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
 
     private static final String DATABASE_CONTA_QUERY =
-        "CREATE TABLE conta (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER, ano_mes_referencia_conta TEXT, valor_conta TEXT, data_vencimento_conta Date, valor_acresc_impontualidade TEXT )";
+        "CREATE TABLE conta (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER, ano_mes_referencia_conta TEXT, valor_conta TEXT, data_vencimento_conta Date, valor_acresc_impontualidade TEXT )";
 
     private static final String DATABASE_TARIFACAO_MINIMA_QUERY =
-        "CREATE TABLE tarifacao_minima (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER, codigo TEXT, data_vigencia DATE, codigo_categoria TEXT, codigo_subcategoria TEXT, consumo_minimo_subcategoria TEXT," +
+        "CREATE TABLE tarifacao_minima (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, codigo TEXT, data_vigencia DATE, codigo_categoria TEXT, codigo_subcategoria TEXT, consumo_minimo_subcategoria TEXT," +
         "tarifa_minima_categoria TEXT)";
 
     private static final String DATABASE_TARIFACAO_COMPLEMENTAR_QUERY =
-        "CREATE TABLE tarifacao_complementar (id INTEGER PRIMARY KEY autoincrement, id_imovel TEXT, codigo TEXT, data_inicio_vigencia DATE, codigo_categoria TEXT, codigo_subcategoria TEXT, limite_inicial_faixa TEXT," +
+        "CREATE TABLE tarifacao_complementar (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, codigo TEXT, data_inicio_vigencia DATE, codigo_categoria TEXT, codigo_subcategoria TEXT, limite_inicial_faixa TEXT," +
         "limite_final_faixa TEXT, valor_m3_faixa TEXT)";
     
     private static final String DATABASE_MEDIDOR_QUERY =
-    	"CREATE TABLE medidor (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER not null, tipo_medicao TEXT, numero_hidrometro TEXT, data_instalacao_hidrometro TEXT, num_digitos_leitura_hidrometro TEXT, leitura_anterior_faturamento TEXT, " +  
+    	"CREATE TABLE medidor (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_medicao TEXT, numero_hidrometro TEXT, data_instalacao_hidrometro TEXT, num_digitos_leitura_hidrometro TEXT, leitura_anterior_faturamento TEXT, " +  
     	"data_leitura_anterior_faturamento TEXT, codigo_situacao_leitura_anterior TEXT, leitura_esperada_inicial TEXT, leitura_esperada_final TEXT, consumo_medio TEXT, local_instalacao TEXT, leitura_anterior_informada TEXT,  TEXT," +
 		"data_leitura_anterior_informada TEXT, data_ligacao_fornecimento TEXT, tipo_rateio TEXT, leitura_instalacao_hidrometro TEXT)";
 
@@ -71,7 +76,9 @@ public class DbHelper extends SQLiteOpenHelper {
         "CREATE TABLE dados_relatorio (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
     
     private static final String DATABASE_SITUACAO_TIPO_QUERY =
-        "CREATE TABLE situacao_tipo (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+        "CREATE TABLE situacao_tipo (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_situacao_especial_feturamento TEXT, id_anormalidade_consumo_sem_leitura TEXT, id_anormalidade_consumo_com_leitura TEXT, id_anormalidade_leitura_sem_leitura TEXT, " +
+        "id_anormalidade_leitura_com_leitura TEXT, consumo_agua_medido_historico_faturamento TEXT, consumo_agua_nao_medido_historico_faturamento TEXT, volume_esgoto_medido_historico_faturamento TEXT, volume_esgoto_nao_medido_historico_faturamento TEXT, indc_valida_agua TEXT," +
+        " indc_valida_esgoto TEXT)";
     
     private static final String DATABASE_ANORMALIDADE_QUERY =
         "CREATE TABLE anormalidade (id INTEGER PRIMARY KEY autoincrement, codigo INTEGER, descricao TEXT, indicador_leitura INTEGER, id_consumo_a_cobrar_sem_leitura INTEGER, " +
@@ -90,7 +97,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
     	db.execSQL(DATABASE_IMOVEL_QUERY);
     	db.execSQL(DATABASE_DADOS_CATEGORIA_QUERY);
-    	db.execSQL(DATABASE_LIGACAO_QUERY);
+    	db.execSQL(DATABASE_HISTORICO_CONSUMO_QUERY);
     	db.execSQL(DATABASE_DEBITO_QUERY);
     	db.execSQL(DATABASE_CREDITO_QUERY);
     	db.execSQL(DATABASE_IMPOSTO_QUERY);
