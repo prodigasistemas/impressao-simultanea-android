@@ -7,6 +7,7 @@ import util.Util;
 
 public class Medidor {
 
+	private int matricula;
     private int tipoMedicao;
     private String numeroHidrometro;
     private Date dataInstalacaoHidrometro;
@@ -42,8 +43,16 @@ public class Medidor {
     
 	public Medidor(){
 	}
+	
+    public int getMatricula() {
+		return matricula;
+	}
 
-    public void setDataInstalacaoHidrometro(String dataInstalacaoHidrometro) {
+	public void setMatricula(int matricula) {
+		this.matricula = matricula;
+	}
+
+	public void setDataInstalacaoHidrometro(String dataInstalacaoHidrometro) {
     	this.dataInstalacaoHidrometro = Util.
     			getData(Util.verificarNuloString(dataInstalacaoHidrometro));
     }

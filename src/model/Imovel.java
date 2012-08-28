@@ -45,19 +45,16 @@ public class Imovel {
     private double fatorMultMediaAltoConsumo;
     private double percentBaixoConsumo;
     private int consumoMaximo;
-    private int numeroConta;
-    private int tipoCalculoTarifa;
     private int grupoFaturamento;
     private int codigoRota;
+    private int numeroConta;
+    private int tipoCalculoTarifa;
     private String enderecoAtendimento;
     private String telefoneLocalidadeDDD;
     private int sequencialRota;
     private String mensagemConta1;
     private String mensagemConta2;
     private String mensagemConta3;
-    private String mensagemEstouroConsumo1;
-    private String mensagemEstouroConsumo2;
-    private String mensagemEstouroConsumo3;
     private String turbidezPadrao;
     private String phPadrao;
     private String corPadrao;
@@ -103,53 +100,63 @@ public class Imovel {
     private int quantidadeColiformesTermoTolerantesConforme;
     private int consumoMinimoImovel;
     private int consumoMinimoImovelNaoMedido;
-    private int id;
-
-    //==============
-    private Consumo consumoEsgoto;
-    private Consumo consumoAgua;
-    private int indcImovelImpresso = Constantes.NAO;
-    private int quantidadeContasImpressas = 0;
-    private int contagemValidacaoAgua;
-    private int contagemValidacaoPoco;
-    private int indcImovelCalculado = Constantes.NAO;
-    private int indcGeracao = Constantes.SIM;
-    private int indcImoveisVisitados = 0;
-    private int anormalidadeSemHidrometro = Constantes.NULO_INT;
-    private int indcImovelContado = Constantes.NAO;
     private String numeroDocumentoNotificacaoDebito;
     private String numeroCodigoBarraNotificacaoDebito;
     private String cpfCnpjCliente;
-    private int leituraGravadaAnterior;
-    private int anormalidadeGravadaAnterior;
-
-    private SituacaoTipo situacaoTipo;
-
     private Date dataLeituraAnteriorNaoMedido;
-    private Date dataImpressaoNaoMedido;
-
-    private double valorResidualCredito;
-    private int indcImovelEnviado = Constantes.NAO;
-    private int quantidadeImoveisCondominio;
-    private int idImovelCondominio = Constantes.NULO_INT;
     private short indicadorAbastecimentoAgua;
     private short indicadorImovelSazonal;
-    private int opcaoDebitoAutomatico = Constantes.NULO_INT;
-
-    private EfetuarRateioConsumoDispositivoMovelHelper efetuarRateioConsumoDispositivoMovelHelper;
-    private boolean indcAdicionouDadosIniciaisHelperRateio = false;
-
     private int indicadorParalizarFaturamentoAgua = Constantes.NAO;
     private int indicadorParalizarFaturamentoEsgoto = Constantes.NAO;
-    private Date dataEmissaoDocumento;
+    private int opcaoDebitoAutomatico = Constantes.NULO_INT;
     private double percentualAlternativoEsgoto;
     private int consumoPercentualAlternativoEsgoto;
-    private int sequencialRotaMarcacao = Constantes.NULO_INT;
+    private Date dataEmissaoDocumento;
+    
+    
 
+    
+    
+    
+    
+    // ================= Estao no banco, mas nao estao na rota (.txt) ===================
+    private int quantidadeContasImpressas = 0;
+    private int contagemValidacaoAgua;
+    private int contagemValidacaoPoco;
+    
+    private int leituraGravadaAnterior;
+    private int anormalidadeGravadaAnterior;
+    private Date dataImpressaoNaoMedido;
+    private double valorResidualCredito;
+    private int quantidadeImoveisCondominio;
+    
+    private boolean indcAdicionouDadosIniciaisHelperRateio = false;
     private double valorRateioAgua;
     private double valorRateioEsgoto;
     private int consumoRateioAgua;
     private int consumoRateioEsgoto;
+    // ====================================================================================
 
 
+    
+  //===== Nao estao no banco de dados!! =========
+    private Consumo consumoEsgoto;
+    private Consumo consumoAgua;
+    private SituacaoTipo situacaoTipo;
+    private EfetuarRateioConsumoDispositivoMovelHelper efetuarRateioConsumoDispositivoMovelHelper;
+    private int indcImovelImpresso = Constantes.NAO;
+    private int indcImovelCalculado = Constantes.NAO;
+    private int indcGeracao = Constantes.SIM;
+    private int anormalidadeSemHidrometro = Constantes.NULO_INT;
+    private int indcImovelContado = Constantes.NAO;
+    private int indcImovelEnviado = Constantes.NAO;
+    private int idImovelCondominio = Constantes.NULO_INT;
+    private int sequencialRotaMarcacao = Constantes.NULO_INT;
+    private String mensagemEstouroConsumo1;
+    private String mensagemEstouroConsumo2;
+    private String mensagemEstouroConsumo3;
+    //=============================================
+    
+    
+    
 }
