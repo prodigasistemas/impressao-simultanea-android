@@ -52,7 +52,25 @@ public class DadosGerais {
 
 	private int id;
 	
-	
+    private static DadosGerais instancia;
+
+    public DadosGerais() {}
+    
+    public void adicionaDadosGerais(DadosGerais dadosGerais) {
+    	DadosGerais.instancia = dadosGerais;
+
+    }
+
+    public DadosGerais getDadosGerais() {
+    	return DadosGerais.instancia;
+
+    }
+
+    public static DadosGerais getInstancia() {
+
+    	return DadosGerais.instancia;
+    }
+
 
 	public short getIndcBloquearReemissaoConta() {
 		return indcBloquearReemissaoConta;
@@ -165,13 +183,7 @@ public class DadosGerais {
 		this.indcTarifaCatgoria = Util.verificarNuloShort(indcTarifaCatgoria);
 	}
 
-	public String getRecordStoreName() {
-
-		return "imovelReg11";
-	}
-
 	public void setId(int id) {
-
 		this.id = id;
 	}
 
@@ -322,6 +334,4 @@ public class DadosGerais {
 		return CALCULO_POR_CATEGORA;
 	}
 	
-	
-
 }

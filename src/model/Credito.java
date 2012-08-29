@@ -4,16 +4,13 @@ import util.Util;
 
 public class Credito {
 
+    public final static String DESCRICAO_CERDITO_NITRATO = "DEDUCAO JUDICIAL";
+
 	private int id;
-
 	private int matricula;
-
 	private String codigo;
-
 	private String descricao;
-
 	private double valor;
-
 	private short indcUso;
 
 	public void setDescricao(String descricao) {

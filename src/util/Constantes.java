@@ -122,4 +122,10 @@ public class Constantes {
      */
     public static final String CODIGO_FEBRABAN_CAERN = "0006";
 
+    
+    /**
+     * Valor constante padrão para a leitura inválida.
+     */
+    public static final int LEITURA_INVALIDA = -1;
+
 }

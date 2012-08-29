@@ -554,6 +554,30 @@ public class Util {
     }
     
     /**
+     * Recebe um número double que será arredondado para um inteiro, levando o
+     * seguinte criterio: - Se a parte fracionada do numero for superior a 0,5
+     * adicionamos 1 ao inteiro retornado, senão, retornamos apenas a parte
+     * inteira sem o incremento
+     * 
+     * @author Bruno / Sávio
+     * @date 09/12/2009
+     * @param numero
+     *            Número double para ser convertido para inteiro
+     * @return
+     */
+    public static int arredondar(double numero) {
+		int inteiro = (int) numero;
+		double fracionado = numero - inteiro;
+	
+		if (fracionado >= .5) {
+		    ++inteiro;
+		}
+	
+		return inteiro;
+    }
+
+    
+    /**
      * Diferença entre datas em dias
      * 
      * @param data1

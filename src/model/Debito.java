@@ -9,6 +9,8 @@ public class Debito {
 	private double valor;
 	private short indcUso;
 
+    public final static String TARIFA_CORTADO_DEC_18_251_94 = "2500";
+
 	public void setDescricao(String descricao) {
 		this.descricao = Util.verificarNuloString(descricao);
 	}

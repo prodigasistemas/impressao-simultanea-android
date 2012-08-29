@@ -62,7 +62,7 @@ public class TarifacaoMinima {
 				.verificarNuloDouble(tarifaMinimaCategoria);
 	}
 
-	public int getcodigo() {
+	public int getCodigo() {
 		return codigo;
 	}
 
