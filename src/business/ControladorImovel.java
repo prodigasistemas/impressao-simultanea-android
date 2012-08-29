@@ -1,57 +1,47 @@
 package business;
 
+import static util.Constantes.REGISTRO_TIPO_ANORMALIDADE;
+import static util.Constantes.REGISTRO_TIPO_CONTA;
+import static util.Constantes.REGISTRO_TIPO_CREDITO;
+import static util.Constantes.REGISTRO_TIPO_DADOS_CATEGORIA;
+import static util.Constantes.REGISTRO_TIPO_DEBITO;
+import static util.Constantes.REGISTRO_TIPO_GERAL;
+import static util.Constantes.REGISTRO_TIPO_HISTORICO_CONSUMO;
+import static util.Constantes.REGISTRO_TIPO_IMOVEL;
+import static util.Constantes.REGISTRO_TIPO_IMPOSTO;
+import static util.Constantes.REGISTRO_TIPO_MEDIDOR;
+import static util.Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR;
+import static util.Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import background.CarregarRotaThread;
-
-import com.IS.Fachada;
-
-import dataBase.DataManipulator;
-
-//import model.AnormalidadeImovel;
-//import model.Registro;
-//import model.Cliente;
 import model.Conta;
 import model.DadosGerais;
+import model.Imovel;
 import model.Medidor;
 import model.SituacaoTipo;
-//import model.Imovel;
-//import model.Medidor;
-//import model.Servicos;
-
-import ui.ArquivoRetorno;
-import ui.MessageDispatcher;
 import util.Constantes;
-
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import static util.Constantes.*;
+import dataBase.DataManipulator;
 
-public class Controlador {
+public class ControladorImovel {
 
-    public static Controlador instancia;
+    public static ControladorImovel instancia;
     private boolean permissionGranted = false;
     private int qtdRegistros = 0;
     private static int linhasLidas = 0;
+    private static Imovel imovelSelecionado;
     
-//    private static Cliente clienteSelecionado = new Cliente();
-//    private static Imovel imovelSelecionado = new Imovel();
-//    private static Servicos servicosSelecionado = new Servicos();
     private static Conta contaSelecionado = new Conta();
     private static Medidor medidorSelecionado = new Medidor();
     private static DadosGerais dadosGerais = new DadosGerais();
-//    private static Registro anormalidades = new Registro();
-//    private static AnormalidadeImovel anormalidadeImovelSelecionado = new AnormalidadeImovel();
-//    private static Registro ramosAtividade = new Registro();
-//    
-    
     private static long idCadastroSelecionado = 0;
     private static int cadastroListPosition = -1;
 
@@ -59,29 +49,25 @@ public class Controlador {
     
 	DataManipulator dmCadastro;
     
-    public static Controlador getInstancia() {
+    public static ControladorImovel getInstancia() {
 
-    	if (Controlador.instancia == null) {
-			Controlador.instancia = new Controlador();
+    	if (ControladorImovel.instancia == null) {
+			ControladorImovel.instancia = new ControladorImovel();
 
 		}
-		return Controlador.instancia;
+		return ControladorImovel.instancia;
     }
 
-//    public Cliente getClienteSelecionado(){
-//    	return Controlador.clienteSelecionado;
-//    }
-//    
-//    public Imovel getImovelSelecionado(){
-//    	return Controlador.imovelSelecionado;
-//    }
-//    
+    public Imovel getImovelSelecionado(){
+    	return ControladorImovel.imovelSelecionado;
+    }
+    
     public Conta getContaSelecionado(){
-    	return Controlador.contaSelecionado;
+    	return ControladorImovel.contaSelecionado;
     }
 
     public Medidor getMedidorSelecionado(){
-    	return Controlador.medidorSelecionado;
+    	return ControladorImovel.medidorSelecionado;
     }
 //    
 //    public Servicos getServicosSelecionado(){
@@ -89,7 +75,7 @@ public class Controlador {
 //    }
 //    
     public DadosGerais getDadosGerais(){
-    	return Controlador.dadosGerais;
+    	return ControladorImovel.dadosGerais;
     }
 //    
 //    public Registro getAnormalidades(){
@@ -113,11 +99,11 @@ public class Controlador {
 //    }
 //    
     public void setContaSelecionado(Conta contaSelecionado){
-    	Controlador.contaSelecionado = contaSelecionado;
+    	ControladorImovel.contaSelecionado = contaSelecionado;
     }
 
     public void setMedidorSelecionado(Medidor medidorSelecionado){
-    	Controlador.medidorSelecionado = medidorSelecionado;
+    	ControladorImovel.medidorSelecionado = medidorSelecionado;
     }
 //    
 //    public void setServicosSelecionado(Servicos servicosSelecionado){
@@ -129,7 +115,7 @@ public class Controlador {
 //    }
 //    
     public void setDadosGerais(DadosGerais dadosGerais){
-    	Controlador.dadosGerais = dadosGerais;
+    	ControladorImovel.dadosGerais = dadosGerais;
     }
 //    
 //    public void setAnormalidades(Registro anormalidades){
@@ -187,13 +173,13 @@ public class Controlador {
     		return 0;
  
     	}else{
-        	return Integer.parseInt(Controlador.getInstancia().getCadastroDataManipulator().selectIdImoveis(condition).get(listPosition));
+        	return Integer.parseInt(ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(condition).get(listPosition));
      	}
     }
     
     public int getCadastroListPositionById(long id){
     	int position = 0;
-    	ArrayList<String> listIds = (ArrayList<String>) Controlador.getInstancia().getCadastroDataManipulator().selectIdImoveis(null);
+    	ArrayList<String> listIds = (ArrayList<String>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(null);
     	
     	for(int i = 0; i < listIds.size(); i++){
     		if (id == Long.parseLong(listIds.get(i))){

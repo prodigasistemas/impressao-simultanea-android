@@ -10,7 +10,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 1;
 
-	private static final String DATABASE_IMOVEL_QUERY = "CREATE TABLE imovel (matricula INTEGER PRIMARY KEY, nome_gerencia_regional TEXT, nome_escritorio TEXT, nome_usuario TEXT, data_vencimento DATE, data_validade_conta DATE, inscricao TEXT, " +
+	private static final String DATABASE_IMOVEL_QUERY = "CREATE TABLE imovel (id INTEGER PRIMARY KEY, matricula INTEGER, nome_gerencia_regional TEXT, nome_escritorio TEXT, nome_usuario TEXT, data_vencimento DATE, data_validade_conta DATE, inscricao TEXT, " +
 			"endereco TEXT, ano_mes_conta TEXT, digito_verificador_conta TEXT, codigo_responsavel TEXT, nome_responsavel TEXT, endereco_entrega TEXT, situacao_lig_agua TEXT, situacao_lig_esgoto TEXT, descricao_banco TEXT, codigo_agencia TEXT, matricula_condominio TEXT, indc_condominio TEXT, " +
 			"codigo_perfil TEXT, consumo_medio TEXT, indc_faturamento_agua TEXT, indc_faturamento_esgoto TEXT, indc_emissao_conta TEXT, consumo_min_agua TEXT, consumo_min_esgoto TEXT, percent_coleta_esgoto TEXT, percent_cobranca_esgoto TEXT, tipo_poco TEXT, codigo_tarifa TEXT, consumo_estouro TEXT, " +
 			"alto_consumo TEXT, baixo_consumo TEXT, fator_mult_estouro TEXT, fator_mult_media_alto_consumo TEXT, percent_baixo_consumo TEXT, consumo_maximo TEXT, grupo_faturamento TEXT, codigo_rota TEXT, numero_conta TEXT, tipo_calculo_tarifa TEXT, endereco_atendimento TEXT, telefone_localidade_ddd TEXT," +
