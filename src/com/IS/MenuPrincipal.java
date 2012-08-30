@@ -1,6 +1,8 @@
 package com.IS;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -25,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +55,7 @@ import com.IS.R.color;
 @SuppressLint("NewApi")
 public class MenuPrincipal extends Activity {
 	
-	static final int MENU_LISTA_IMOVEIS = 0;
+	static final int MENU_LISTA_CADASTROS = 0;
 	static final int MENU_INFO = 1;
 	static final int MENU_CONSULTA = 2;
 	static final int MENU_ARQUIVO_COMPLETO = 3;
@@ -127,7 +130,7 @@ public class MenuPrincipal extends Activity {
         	public void onItemClick(AdapterView parent, View v, int position, long id){        
         		String text = parent.getItemAtPosition(position).toString();
 				
-            	if (position == MENU_LISTA_IMOVEIS){
+            	if (position == MENU_LISTA_CADASTROS){
             		
             		// Verifica se GPS esta ligado
             		/* Use the LocationManager class to obtain GPS locations */
@@ -171,18 +174,23 @@ public class MenuPrincipal extends Activity {
         				}
         	    	}
         	    	
-        	    	if (statusOk){
+//        	    	if (statusOk){
                 		showDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
         	    	
-        	    	}else{
-            		
-        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
-            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
-            	    	
-        	    	}
+//        	    	}else{
+//            		
+//        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+//            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+//            	    	
+//        	    	}
             		
             	}else if (position == MENU_CADASTROS_CONCLUIDOS){
-					showDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
+					if (ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size() > 0) {
+						showDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
+					} else {
+						dialogMessage = "Não existem imóveis a serem transmitidos";
+	            		showDialog(Constantes.DIALOG_ID_ERRO);
+					}
             	}else if (position == MENU_FINALIZAR){
             		boolean statusOk = true;
         	    	
@@ -197,13 +205,18 @@ public class MenuPrincipal extends Activity {
         				}
         	    	}
         	    	
-        	    	if (statusOk) {
-        	    		showDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
-        	    	} else {
-            		
-        	    		dialogMessage = "Não é permitido Finalizar Rota. Ainda há " + imoveisPendentes + " imóveis não visitados.";
-            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
-        	    	}
+//        	    	if (statusOk) {
+        	    		if (envio()) {
+        	    			finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, MenuPrincipal.this, increment);
+        	    			finalizarRotaThread.start();
+        	    		} else {
+        	    			showDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
+        	    		}
+//        	    	} else {
+//            		
+//        	    		dialogMessage = "Não é permitido Finalizar Rota. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+//            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+//        	    	}
             	}else if (position == MENU_RELATORIO){
 					Intent myIntent = new Intent(getApplicationContext(),TelaRelatorio.class);
 	        		startActivity(myIntent);
@@ -259,21 +272,20 @@ public class MenuPrincipal extends Activity {
 	}
 	
     // Handler on the main (UI) thread that will receive messages from the second thread and update the progress.
-    final Handler handler = new Handler() {
+    final Handler arquivoCompletoHandler = new Handler() {
         public void handleMessage(Message msg) {
             
         	// Get the current value of the variable total from the message data and update the progress bar.
         	int totalArquivoCompleto = msg.getData().getInt("arquivoCompleto" + String.valueOf(increment));
             progDialog.setProgress(totalArquivoCompleto);
             
-            if (totalArquivoCompleto >= ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis() || 
-            	progThread.getCustomizedState() == CarregarRotaThread.DONE){
+            if (msg.getData().getBoolean("geracaoDoArquivoCompletoConcluido")){
                 
             	dismissDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
             	
 	    		dialogMessage = "Arquivo de retorno COMPLETO gerado com sucesso. Enviar o arquivo ao supervisor para carregar via cabo USB.";
     	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
-			    increment += 13;
+			    increment += 15;
             }
          }
     };
@@ -286,30 +298,28 @@ public class MenuPrincipal extends Activity {
         	int totalArquivoCompleto = msg.getData().getInt("imoveisNaoTransmitidos" + String.valueOf(increment));
             progDialog.setProgress(totalArquivoCompleto);
             
-            if (totalArquivoCompleto >= ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis() 
-            		|| 	enviarImoveisThread.getCustomizedState() == EnviarImoveisConcluidosThread.DONE
-            	){
+            if (msg.getData().getBoolean("geracaoDosImoveisNaoTransmitidosConcluido")){
                 
             	dismissDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
             	
-            	if (enviarImoveisThread.idsImoveisAEnviar.size() == 0) {
-            		dialogMessage = "Não existem imóveis a serem transmitidos";
-            		showDialog(Constantes.DIALOG_ID_ERRO);
-            	} else {
-            		
-            		dialogMessage = mensagemRetorno;
-            	
-		    		if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
-//		    			dialogMessage = "Ocorreu um erro na trasmissão dos imóveis!";
-		    			showDialog(Constantes.DIALOG_ID_ERRO);
-		    		} else {
-//		    			dialogMessage = "Imóveis transmitidos com sucesso!";
-		    			showDialog(Constantes.DIALOG_ID_SUCESSO);
-		    		}
-            	}
-	    		
-			    increment += 13;
+            	showDialog(Constantes.DIALOG_ID_SPINNER+increment);
             }
+            
+            if (msg.getData().getBoolean("recebeuResposta")) {
+            	
+            	dismissDialog(Constantes.DIALOG_ID_SPINNER+increment);
+            	
+            	increment += 15;
+            	
+            	dialogMessage = mensagemRetorno;
+            	
+            	if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
+            		showDialog(Constantes.DIALOG_ID_ERRO);
+	    		} else {
+	    			showDialog(Constantes.DIALOG_ID_SUCESSO);
+	    		}
+            }
+            
          }
     };
     
@@ -317,28 +327,37 @@ public class MenuPrincipal extends Activity {
         @SuppressWarnings({ "deprecation", "static-access" })
 		public void handleMessage(Message msg) {
             
-        	// Get the current value of the variable total from the message data and update the progress bar.
-        	int totalArquivoCompleto = msg.getData().getInt("finalizarRota" + String.valueOf(increment));
-            progDialog.setProgress(totalArquivoCompleto);
+            if (msg.getData().getBoolean("arquivoJaExistente")) {
+            	showDialog(Constantes.DIALOG_ID_SPINNER+increment);
+            } else {
+            	
+            	int totalArquivoCompleto = msg.getData().getInt("finalizarRota" + String.valueOf(increment));
+                progDialog.setProgress(totalArquivoCompleto);
             
-            if (totalArquivoCompleto >= ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis() 
-            		|| 	finalizarRotaThread.getCustomizedState() == EnviarImoveisConcluidosThread.DONE
-            	){
-                
-            	dismissDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
+	            if (msg.getData().getBoolean("geracaoDosImoveisParaFinalizaRotaConcluido")){
+	                
+	            	dismissDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
+	            	
+	            	showDialog(Constantes.DIALOG_ID_SPINNER+increment);
+	            }
+            }
+            
+            if (msg.getData().getBoolean("recebeuResposta")) {
+            	
+            	if (!msg.getData().getBoolean("arquivoJaExistente"))
+            		dismissDialog(Constantes.DIALOG_ID_SPINNER+increment);
+            	
+            	increment += 15;
             	
             	dialogMessage = mensagemRetorno;
             	
-	    		if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
-//		   			dialogMessage = "Ocorreu um erro na trasmissão dos imóveis!";
-		   			showDialog(Constantes.DIALOG_ID_ERRO);
-		   		} else {
-//		   			dialogMessage = "Imóveis transmitidos com sucesso!";
-		    		showDialog(Constantes.DIALOG_ID_SUCESSO);
-		    	}
-
-		    		increment += 13;
+            	if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
+            		showDialog(Constantes.DIALOG_ID_ERRO);
+	    		} else {
+	    			showDialog(Constantes.DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA+increment);
+	    		}
             }
+            
          }
     };
 
@@ -368,9 +387,8 @@ public class MenuPrincipal extends Activity {
 	        		removeDialog(id);
 	        		ControladorRota.getInstancia().finalizeDataManipulator();
 	        		ControladorRota.getInstancia().deleteDatabase();
-	        		ControladorRota.getInstancia().cleanControladorRota();
-//	        		ControladorRota.getInstancia().setPermissionGranted(false);
-//	        		ControladorRota.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
+	        		ControladorRota.getInstancia().setPermissionGranted(false);
+	        		ControladorRota.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
 	        		
 	        	    Toast.makeText(getBaseContext(),"Todas as informações foram apagadas com sucesso!",Toast.LENGTH_LONG).show();
 
@@ -387,21 +405,9 @@ public class MenuPrincipal extends Activity {
 		    	progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	            progDialog.setCancelable(false);
-				progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-
-				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
-				            return true; // Pretend we processed it
-				        
-				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
-				            return true; // Pretend we processed it
-				        }
-				        return false; // Any other keys are still processed as normal
-				    }
-				});
 	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
 	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveisNaoInformativos());
-	            progThread = new GerarArquivoCompletoThread(handler, this, increment);
+	            progThread = new GerarArquivoCompletoThread(arquivoCompletoHandler, this, increment);
 	            progThread.start();
 	            return progDialog;
 	            
@@ -440,46 +446,13 @@ public class MenuPrincipal extends Activity {
 	    } else if (id == Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment) {
 	    	progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			progDialog.setCancelable(false);
-			progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-
-			    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-			        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
-			            return true; // Pretend we processed it
-			        
-			        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
-			            return true; // Pretend we processed it
-			        }
-			        return false; // Any other keys are still processed as normal
-			    }
-			});
+            progDialog.setCancelable(false);
             progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
             progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size());
             enviarImoveisThread = new EnviarImoveisConcluidosThread(imoveisNaoTransmitidosHandler, this, increment);
             enviarImoveisThread.start();
             return progDialog;
 	    } else if (id == Constantes.DIALOG_ID_FINALIZA_ROTA+increment) {
-	    	if (envio()) {
-	    		progDialog = new ProgressDialog(this);
-	            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				progDialog.setCancelable(false);
-				progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-
-				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
-				            return true; // Pretend we processed it
-				        
-				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
-				            return true; // Pretend we processed it
-				        }
-				        return false; // Any other keys are still processed as normal
-				    }
-				});
-	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
-	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
-	            finalizarRotaThread.start();
-	            return progDialog;
-	    	} else {
 	    		progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 				progDialog.setCancelable(false);
@@ -500,7 +473,6 @@ public class MenuPrincipal extends Activity {
 	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
 	            finalizarRotaThread.start();
 	            return progDialog;
-	    	}
 	    } else if (id == Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA) {
 	    	
 	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -527,6 +499,41 @@ public class MenuPrincipal extends Activity {
 	        AlertDialog messageDialog = builder.create();
 	        return messageDialog;
 
+	    } else if (id == Constantes.DIALOG_ID_SPINNER+increment) {
+	    	progDialog = new ProgressDialog(MenuPrincipal.this);
+            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDialog.setCancelable(false);
+            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
+            
+            return progDialog;
+	    } else if (id == Constantes.DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA+increment) {
+	    	
+	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			  
+			final View layoutCustonDialog = inflater.inflate(R.layout.custon_dialog, (ViewGroup) findViewById(R.id.layout_root));
+	        ((TextView)layoutCustonDialog.findViewById(R.id.messageDialog)).setText(dialogMessage);
+	        ((ImageView)layoutCustonDialog.findViewById(R.id.imageDialog)).setImageResource(R.drawable.save);
+	    	
+	    	builder = new AlertDialog.Builder(this);
+	    	builder.setView(layoutCustonDialog);
+	        builder.setTitle("Sucesso!");
+	        
+	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+	        	public void onClick(DialogInterface dialog, int which) {
+	        		removeDialog(id);
+	        		ControladorRota.getInstancia().finalizeDataManipulator();
+	        		ControladorRota.getInstancia().deleteDatabase();
+	        		ControladorRota.getInstancia().setPermissionGranted(false);
+	        		ControladorRota.getInstancia().initiateDataManipulator(MenuPrincipal.this);
+	        		
+        		    Intent myIntent = new Intent(MenuPrincipal.this, Fachada.class);
+        	        startActivity(myIntent);
+
+	        	}
+	        });
+	        
+	        AlertDialog passwordDialog = builder.create();
+	        return passwordDialog;
 	    }
 
 	    return null;

@@ -43,6 +43,12 @@ public class FinalizarRotaThread extends Thread {
 		try {
 			File f = null;
 			if ((f = arquivoFinalizacaoRota()) != null) {
+				Bundle b = new Bundle();
+		        Message msg = handler.obtainMessage();
+		        b.putBoolean("arquivoJaExistente", true);
+		        msg.setData(b);
+		        handler.sendMessage(msg);
+
 				String s = "";
 				BufferedReader reader = new BufferedReader(new FileReader(f));
 				String line;
@@ -57,6 +63,12 @@ public class FinalizarRotaThread extends Thread {
 			} else {
 			
 				idsImoveisAEnviar = ArquivoRetorno.getInstancia().gerarArquivoParaEnvio(handler, context, increment, Constantes.TIPO_ENVIO_FINALIZAR_ROTA);
+//				idsImoveisAEnviar = ArquivoRetorno.getInstancia().gerarArquivoRetorno(handler, context, increment, Constantes.TIPO_GERACAO_FINALIZAR_ROTA);
+				Bundle b = new Bundle();
+		        Message msg = handler.obtainMessage();
+		        b.putBoolean("geracaoDosImoveisParaFinalizaRotaConcluido", true);
+		        msg.setData(b);
+		        handler.sendMessage(msg);
 			
 				ControladorAcessoOnline.getInstancia().finalizarRota(ArquivoRetorno.getInstancia().getConteudoArquivoRetorno().getBytes());
 			}
@@ -73,7 +85,7 @@ public class FinalizarRotaThread extends Thread {
 				File file = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
 				boolean bool = file.delete();
 				
-				MenuPrincipal.mensagemRetorno = "Imóveis transmitidos com sucesso!";
+				MenuPrincipal.mensagemRetorno = "Roteiro finalizado com sucesso. Todas as informações da rota serão apagadas.";
 			} else {
 				
 				// TODO: Testar mensagens de erro vindas do GSAN
@@ -88,13 +100,14 @@ public class FinalizarRotaThread extends Thread {
 			
 			mState = DONE;
 			
+			Bundle b2 = new Bundle();
+	        Message msg2 = handler.obtainMessage();
+	        b2.putBoolean("recebeuResposta", true);
+	        msg2.setData(b2);
+	        handler.sendMessage(msg2);
 			
-			Bundle b = new Bundle();
-	        // Send message (with current value of total as data) to Handler on UI thread
-	        Message msg = handler.obtainMessage();
-	        b.putInt("finalizarRota" + String.valueOf(increment), 100);
-	        msg.setData(b);
-	        handler.sendMessage(msg);
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -110,7 +110,7 @@ public class BusinessConta {
     @SuppressWarnings("unchecked")
     public static Consumo chamarCalculoConsumo() {
 
-		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null && !getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)) {
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
 		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
 	
@@ -119,7 +119,7 @@ public class BusinessConta {
 		    }
 		}
 	
-		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
+		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null && !getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)) {
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeitura(MedidorPocoTab.getLeitura());
 		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
 
@@ -186,6 +186,10 @@ public class BusinessConta {
 			for (DadosCategoria dc : getImovelSelecionado().getDadosCategoria()) {
 				if (dc.getFaturamentoAgua() != null) {
 					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoAgua())).intValue());
+					
+					if (ControladorRota.getInstancia().getDataManipulator().selectDadosFaturamentoFaixa(idFaturamento, Constantes.LIGACAO_AGUA).size() > 0)
+						break;
+					
 					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().indexOf(dc)).getFaturamentoAgua().getFaixas();
 					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
 						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
@@ -195,6 +199,9 @@ public class BusinessConta {
 					
 				} else if (dc.getFaturamentoEsgoto() != null) {
 					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoEsgoto())).intValue());
+					
+					if (ControladorRota.getInstancia().getDataManipulator().selectDadosFaturamentoFaixa(idFaturamento, Constantes.LIGACAO_POCO).size() > 0)
+						break;
 					
 					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(dc.getId()-1).getFaturamentoEsgoto().getFaixas();
 					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {

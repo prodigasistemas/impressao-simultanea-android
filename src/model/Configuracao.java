@@ -158,7 +158,7 @@ public class Configuracao {
 	
 		    int anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade();
 	
-		    if (anormalidade == 0) {
+		    if (anormalidade == Constantes.NULO_INT) {
 		    	this.setContadorVisitadosSemAnormalidade(Configuracao.getInstancia().getContadorVisitadosSemAnormalidade() + 1);
 			
 		    } else {

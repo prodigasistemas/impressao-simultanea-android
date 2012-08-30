@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="views.MainTab" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
+        <activity android:name="views.MainTab" android:launchMode="singleTask" android:configChanges="orientation" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
 
         <activity android:name=".ListaRotas" android:screenOrientation="portrait" configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar">

@@ -2,14 +2,18 @@ package util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import model.Consumo;
+import model.Credito;
 import model.DadosCategoria;
 import model.DadosFaturamentoFaixa;
 import model.DadosQualidadeAgua;
+import model.Debito;
 import model.HistoricoConsumo;
 import model.Imovel;
+import model.Imposto;
 import model.Medidor;
 import ui.FileManager;
 import android.util.Log;
@@ -22,23 +26,21 @@ import com.IS.Fachada;
 public class ImpressaoContaCosanpa {
 
     private static ImpressaoContaCosanpa instancia;
-    private static Imovel imovel = ControladorImovel.getInstancia().getImovelSelecionado();
+    private static Imovel imovel;
     
     // Numero do Hidrometro
-    private String numeroMedidor = "NÃO MEDIDO";
+    private String numeroMedidor = "NAO MEDIDO";
     private String dataInstalacao = Constantes.NULO_STRING;
-    private String situacaoAgua = imovel
-    		.getDescricaoSitLigacaoAgua(new Integer(imovel.getSituacaoLigAgua()));
-    private String situacaoEsgoto = imovel
-    		.getDescricaoSitLigacaoEsgoto(new Integer(imovel.getSituacaoLigEsgoto()));
+    private String situacaoAgua;
+    private String situacaoEsgoto;
     private String leituraAnteriorInformada = Constantes.NULO_STRING;
     private  String leituraAtualInformada = Constantes.NULO_STRING;
     private String leituraAnteriorFaturada = Constantes.NULO_STRING;
     private String leituraAtualFaturada = Constantes.NULO_STRING;
     private String consumo = Constantes.NULO_STRING;
     private String diasConsumo = Constantes.NULO_STRING;
-    private Consumo consumoAgua = imovel.getConsumoAgua();
-    private Consumo consumoEsgoto = imovel.getConsumoEsgoto();;
+    private Consumo consumoAgua;
+    private Consumo consumoEsgoto;
     private Medidor medidorAgua;
     private Medidor medidorPoco;
     private String dataLeituraAnteriorInformada = "";
@@ -49,6 +51,9 @@ public class ImpressaoContaCosanpa {
     private int tipoConsumo = 0;
     private String economias = "";
     private String endereco = "";
+    private String valorDebitos = "";
+    private String valorCreditos = "";
+    private String valorImpostos = "";
     
     // Historico consumo
     private String anoMesReferencia = "";
@@ -119,10 +124,8 @@ public class ImpressaoContaCosanpa {
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
         		"T 0 0 285 64 "+ ControladorRota.getInstancia().getDadosGerais().getInscricaoEstadualEmpresa().trim() + "\n" +
         		"T 0 0 222 81 "+ imovel.getGrupoFaturamento() + "\n" +
-//        		"T 0 0 140 108 \n"+
 //        		formarLinha(0, 0, 140, 108, (imovel.getEnderecoAtendimento() != null && !imovel.getEnderecoAtendimento().equals("") ? imovel.getEnderecoAtendimento() + " - " : "")
 //        				+ (imovel.getTelefoneLocalidadeDDD() != null && !imovel.getTelefoneLocalidadeDDD().equals("") ? imovel.getTelefoneLocalidadeDDD().trim() : ""), 0, 0) +
-        		"T 0 2 52 172 "+imovel.getNomeUsuario() + "\n"+
         		"T 0 2 52 199 \n"+
         		endereco +
         		"T 7 0 15 250 "+Util.formatarInscricao(imovel.getInscricao())+"\n"+
@@ -151,7 +154,6 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 313 412 DATA\n"+
         		"T 7 0 285 436 "+ dataLeituraAnteriorFaturada + "\n" +
         		"T 7 0 285 460 "+ dataLeituraAtualFaturada + "\n" +
-//        		"T 7 0 418 412 CONSUMO (m3)\n"+
         		txtConsumo +
         		"T 7 0 511 436 "+ consumo + "\n" +
         		"T 7 0 745 412 DIAS\n"+
@@ -159,7 +161,6 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 37 436 ANTERIOR\n"+
         		"T 7 0 37 460 ATUAL\n"+
         		"T "+ hcMensagem +
-//        		"T 0 2 44 522 "+ anoMesReferencia + "\n" +
         		anoMesReferencia +
         		historicoConsumo +
         		"T 7 0 75 672 MEDIA(m3):\n"+
@@ -202,8 +203,11 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 687 708 TOTAL(R$)\n"+
         		// Retornando "" (String vazia)
         		tarifacaoAgua +
-//        		tarifacaoEsgoto +
-//        		rateioAguaEsgoto +
+        		tarifacaoEsgoto +
+        		rateioAguaEsgoto +
+        		valorDebitos +
+        		valorCreditos +
+        		valorImpostos +
         		"T 7 1 160 1210 "+ dataVencimentoConta + "\n" +
         		"T 4 0 640 1210 "+ valorConta + "\n" +
         		"T 0 2 424 1265 OPCAO PELO DEB. AUTOMATICO: \n"+
@@ -214,35 +218,27 @@ public class ImpressaoContaCosanpa {
         		"T 0 2 558 1456 "+ dataVencimento + "\n" +
         		"T 0 2 694 1456 "+ totalAPagar + "\n" +
         		repNumericaCodBarra +
-        		"B I2OF5 1 2 90 35 1538 "+ repCodigoBarrasSemDigitoVerificador + "\n" +
+        		repCodigoBarrasSemDigitoVerificador +
         		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
         		"T 5 0 352 1661 4\n"+
         		"FORM\n"+
         		"PRINT\n";
     	
+//    	instancia = null;
+    	
     	return comando;
     }
-    		
     
-
-    
-    protected static ImpressaoContaCosanpa getInstancia(int imovelId) {
-		if (instancia == null) {
-		    instancia = new ImpressaoContaCosanpa();
-		}
-		return instancia;
-    }
-    
-    public static ImpressaoContaCosanpa getInstancia() {
-    	if (instancia == null) {
-    		instancia = new ImpressaoContaCosanpa();
-    	}
-    	
-    	return instancia;
-    }
+//    public static ImpressaoContaCosanpa getInstancia() {
+//    	if (instancia == null) {
+//    		instancia = new ImpressaoContaCosanpa();
+//    	}
+//    	
+//    	return instancia;
+//    }
     
     public String getComando(Imovel imovel) {
-
+    	this.imovel = imovel;
     	getDados(imovel);
     	return montarComando();
     }
@@ -255,6 +251,11 @@ public class ImpressaoContaCosanpa {
     	
     	List dc = imovel.getDadosCategoria();
     	List quantidadeEconomias = categoriasEconomias(dc);
+    	
+    	situacaoAgua = imovel.getDescricaoSitLigacaoAgua(new Integer(imovel.getSituacaoLigAgua()));
+    	situacaoEsgoto = imovel.getDescricaoSitLigacaoEsgoto(new Integer(imovel.getSituacaoLigEsgoto()));
+    	consumoAgua = imovel.getConsumoAgua();
+        consumoEsgoto = imovel.getConsumoEsgoto();;
     	
     	String cpfCnpjFormatado = "";
  	    if (imovel.getCpfCnpjCliente() != null && !imovel.getCpfCnpjCliente().equals("")) {
@@ -375,12 +376,41 @@ public class ImpressaoContaCosanpa {
 				}
 	
 			}
+	    } else if (medidorAgua == null && medidorPoco == null) {
+
+	    	List<HistoricoConsumo> histConsumo = imovel.getHistoricosConsumo();
+		    
+	    	if (histConsumo.size() > 0) {
+				int sumConsumo = 0;
+				for (int i = 0; i < histConsumo.size(); i++) {
+				    HistoricoConsumo reg3 = histConsumo.get(i);
+				    sumConsumo += Integer.parseInt(reg3.getConsumo());
+				}
+				media = (int) (sumConsumo / histConsumo.size()) + "";
+		    }
+
+
+			if (consumoAgua != null) {
+	
+	//		    if (consumoAgua.getLeituraAtual() != Constantes.NULO_INT) {
+	//		    	leituraAtual = consumoAgua.getLeituraAtual() + "";
+	//		    } else {
+			    	leituraAtualInformada = "";
+				    dataLeituraAtualInformada = "";
+	//		    }
+	
+			    consumo = consumoAgua.getConsumoCobradoMes() + "";
+			 // Daniel - Numero de dias de consumo nunca deve ser ZERO mesmo para imoveis fixos.
+			    diasConsumo =  Long.toString(Util.quantidadeDiasMes(Calendar.getInstance())) + "";
+			}
 	    }
 	    
 	    if (imovel.getConsumoAgua() != null){
-			String anormalidadeConsumo = Util.validarAnormalidadeConsumo(imovel.getConsumoAgua());
+			anormalidadeConsumo = Util.validarAnormalidadeConsumo(imovel.getConsumoAgua());
 			if( anormalidadeConsumo != null){
-				anormalidadeConsumo = formarLinha(0, 2, 460, 460, "ANORM. CONSUMO: " + anormalidadeConsumo, 0, 0);
+				anormalidadeConsumo = formarLinha(0, 2, 430, 460, "ANORM. CONSUMO: " + anormalidadeConsumo, 0, 0);
+			} else {
+				anormalidadeConsumo = Constantes.NULO_STRING;
 			}
 		}
 	    
@@ -402,16 +432,16 @@ public class ImpressaoContaCosanpa {
 	    if (historicosConsumo.size() > 0) {
 	    	hcMensagem += "LINE 115 525 115 665 1\n"; 
 	    	for (HistoricoConsumo hc : historicosConsumo) {
-	    		anoMesReferencia += formarLinha(0, 2, 44, 520, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
+	    		anoMesReferencia += formarLinha(0, 2, 44, 522, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
 				
 				String anormalidade = "";
 			    if (hc.getAnormalidadeLeitura() != Constantes.NULO_INT && hc.getAnormalidadeLeitura() != 0) {
-			    	anormalidade = " A. Leit.:" + hc.getAnormalidadeLeitura() + "";
+			    	anormalidade = "A. Leit.:" + hc.getAnormalidadeLeitura() + "";
 			    } else if (hc.getAnormalidadeConsumo() != Constantes.NULO_INT && hc.getAnormalidadeConsumo() != 0) {
-			    	anormalidade = " A. Cons.:" + hc.getAnormalidadeConsumo() + "";
+			    	anormalidade = "A. Cons.:" + hc.getAnormalidadeConsumo() + "";
 			    }
 			    
-			    historicoConsumo += formarLinha(0, 2, 127, 522, Util.verificarNuloInt(hc.getConsumo()) + "m3" + anormalidade, 0, k*25);
+			    historicoConsumo += formarLinha(0, 2, 127, 522, Util.verificarNuloInt(hc.getConsumo()) + " m3 " + anormalidade, 0, k*25);
 			    k++;
 			}
 	    } else {
@@ -491,7 +521,7 @@ public class ImpressaoContaCosanpa {
 	    int quantidadeLinhasAtual = 0;
 	    int quantidadeMaximaLinhas = 18;
 	    List linhaAgua = gerarLinhasTarifaAgua(consumoAgua);
-	    Log.i("Linhas", ">>>" + ((String) linhaAgua.get(0) == null));
+//	    Log.i("Linhas", ">>>" + ((String) linhaAgua.get(0) == null));
 	    tarifacaoAgua = (String) linhaAgua.get(0);
 	    ultimaLinhaAgua = (((Integer) linhaAgua.get(1)).intValue());
 	    if (ultimaLinhaAgua != 0) {
@@ -537,6 +567,71 @@ public class ImpressaoContaCosanpa {
 			}
 	    }
 	    
+	    int indicadorDiscriminarDescricao = retornaIndicadorDiscriminar(quantidadeMaximaLinhas, quantidadeLinhasAtual, 'd');
+	    List debitos = this.gerarLinhasDebitosCobrados(indicadorDiscriminarDescricao);
+	    int ultimaLinhaDebito = ultimaLinhaRateio;
+	    for (int i = 0; i < debitos.size(); i++) {
+		String[] debito = (String[]) debitos.get(i);
+		ultimaLinhaDebito = ultimaLinhaRateio + ((i + 1) * 34);
+		quantidadeLinhasAtual++;
+		// int deslocaDireitaColuna;
+		// if( i == 0 || i == 1 || i==2 ){
+		// deslocaDireitaColuna = i;
+		// } else {
+		// deslocaDireitaColuna = 2;
+		// }
+		if (debito[0] != null) {
+		    valorDebitos += formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaRateio);
+		}
+		if (debito[1] != null) {
+		    valorDebitos += formarLinha(7, 0, 571, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaRateio);
+		}
+		if (debito[2] != null) {
+		    valorDebitos += formarLinha(7, 0, 697, 733, debito[2], 0, (i + 1) * 34 + ultimaLinhaRateio);
+		}
+	    }
+	    indicadorDiscriminarDescricao = retornaIndicadorDiscriminar(quantidadeMaximaLinhas, quantidadeLinhasAtual, 'c');
+	    List creditos = this.gerarLinhasCreditosRealizados(indicadorDiscriminarDescricao);
+	    int ultimaLinhaCredito = ultimaLinhaDebito;
+	    for (int i = 0; i < creditos.size(); i++) {
+		String[] credito = (String[]) creditos.get(i);
+		ultimaLinhaCredito = ultimaLinhaDebito + ((i + 1) * 34);
+		// int deslocaDireitaColuna;
+		// if( i == 0 || i == 1 || i==2 ){
+		// deslocaDireitaColuna = i;
+		// } else {
+		// deslocaDireitaColuna = 2;
+		// }
+		if (credito[0] != null) {
+		    valorCreditos += formarLinha(7, 0, 53, 733, credito[0], 0, (i + 1) * 34 + ultimaLinhaDebito);
+		}
+		if (credito[1] != null) {
+		    valorCreditos += formarLinha(7, 0, 571, 733, credito[1], 0, (i + 1) * 34 + ultimaLinhaDebito);
+		}
+		if (credito[2] != null) {
+		    valorCreditos += formarLinha(7, 0, 697, 733, credito[2], 0, (i + 1) * 34 + ultimaLinhaDebito);
+		}
+	    }
+	    List impostos = this.gerarLinhasImpostosRetidos();
+	    for (int i = 0; i < impostos.size(); i++) {
+		String[] imposto = (String[]) impostos.get(i);
+		int deslocaDireitaColuna;
+		if (i == 0 || i == 1) {
+		    deslocaDireitaColuna = i;
+		} else {
+		    deslocaDireitaColuna = 1;
+		}
+		if (imposto[0] != null) {
+		    valorImpostos += formarLinha(7, 0, 53, 733, imposto[0], deslocaDireitaColuna * 10, (i + 1) * 34 + ultimaLinhaCredito);
+		}
+		if (imposto[1] != null) {
+		    valorImpostos += formarLinha(7, 0, 571, 733, imposto[1], 0, (i + 1) * 34 + ultimaLinhaCredito);
+		}
+		if (imposto[2] != null) {
+		    valorImpostos += formarLinha(7, 0, 697, 733, imposto[2], 0, (i + 1) * 34 + ultimaLinhaCredito);
+		}
+	    }
+	    
 	    dataVencimentoConta = Util.dateToString(imovel.getDataVencimento());
 	    
 	    valorConta = Util.formatarDoubleParaMoedaReal(imovel.getValorConta());
@@ -570,10 +665,10 @@ public class ImpressaoContaCosanpa {
 					+ representacaoNumericaCodBarra.substring(47, 48);
 				repNumericaCodBarra += formarLinha(5, 0, 66, 1515, representacaoNumericaCodBarraFormatada, 0, 0);
 				String representacaoCodigoBarrasSemDigitoVerificador = representacaoNumericaCodBarra.substring(0, 11) + representacaoNumericaCodBarra.substring(12, 23) + representacaoNumericaCodBarra.substring(24, 35) + representacaoNumericaCodBarra.substring(36, 47);
-				repCodigoBarrasSemDigitoVerificador += representacaoCodigoBarrasSemDigitoVerificador;
+				repCodigoBarrasSemDigitoVerificador += "B I2OF5 1 2 90 35 1538 " + representacaoCodigoBarrasSemDigitoVerificador + "\n";
 
 	    } else {
-			repCodigoBarrasSemDigitoVerificador = formarLinha(4, 0, 182, 1538, "DÉBITO AUTOMÁTICO", 0, 0);
+			repCodigoBarrasSemDigitoVerificador = formarLinha(4, 0, 182, 1538, "DEBITO AUTOMATICO", 0, 0);
 	    }
 	    
 	    grupoFaturamento = ""+imovel.getGrupoFaturamento();
@@ -898,5 +993,235 @@ public class ImpressaoContaCosanpa {
     	}
     	return retorno;
         }
+    
+    private static int retornaIndicadorDiscriminar(int quantidadeMaximaLinhas, int quantidadeLinhasAtual, char servicos) {
+    	int indicadorDiscriminarDescricao = 1;
+    	int linhasRestantesDescricao = 0;
+    	switch (servicos) {
+    	case 'd':
+    	    // linhas que ainda aparecerão depois do débio (crédito e imposto)
+    	    // linhas de crédito
+    	    if (imovel.getCreditos(Constantes.SIM).size() > 0) {
+    		linhasRestantesDescricao = linhasRestantesDescricao + 1;
+    	    }
+    	    // linhas de imposto
+    	    if (imovel.getImpostos().size() > 0) {
+    		linhasRestantesDescricao = linhasRestantesDescricao + 2;
+    	    }
+    	    // linhas de débito
+    	    if (imovel.getDebitos(Constantes.SIM).size() > 0) {
+    		// linhasRestantesDescricao = linhasRestantesDescricao + 1;
+    		int limiteDescriminar = quantidadeMaximaLinhas - quantidadeLinhasAtual - linhasRestantesDescricao;
+    		int quantidadeDebitos = imovel.getDebitos(Constantes.SIM).size();
+    		if (quantidadeDebitos > limiteDescriminar) {
+    		    indicadorDiscriminarDescricao = 2;
+    		}
+    	    }
+    	    break;
+    	case 'c':
+    	    // linhas que ainda aparecerão depois do débio (crédito e imposto)
+    	    // linhas de imposto
+    	    if (imovel.getImpostos().size() > 0) {
+    		linhasRestantesDescricao = linhasRestantesDescricao + 2;
+    	    }
+    	    // linhas de credito
+    	    if (imovel.getCreditos(Constantes.SIM).size() > 0) {
+    		// linhasRestantesDescricao = linhasRestantesDescricao + 1;
+    		int limiteDescriminar = quantidadeMaximaLinhas - quantidadeLinhasAtual - linhasRestantesDescricao;
+    		int quantidadeCreditos = imovel.getCreditos(Constantes.SIM).size();
+    		if (quantidadeCreditos > limiteDescriminar) {
+    		    indicadorDiscriminarDescricao = 2;
+    		}
+    	    }
+    	    break;
+    	}
+    	return indicadorDiscriminarDescricao;
+        }
+    
+    /**
+     * [SB0005] - Gerar Linhas da Debitos Cobrados
+     * 
+     * @return Os dados estão dividos em 3 partes Descricao, de indice 0
+     *         Consumo, de indice 1 Valor, de indice 2
+     */
+    private List gerarLinhasDebitosCobrados(int indicadorDiscriminarDescricao) {
+	List retorno = new ArrayList();
+	// Os dados estão dividos em 3 partes
+	// Descricao, de indice 0
+	// Consumo, de indice 1
+	// Valor, de indice 2
+	String[] dados = new String[3];
+	// 3
+	if (imovel.getDebitos(Constantes.SIM).size() > 0) {
+	    // caso seja para discriminar os dados dos débitos
+	    if (indicadorDiscriminarDescricao == 1) {
+		for (int i = 0; i < imovel.getDebitos(Constantes.SIM).size(); i++) {
+		    dados = new String[3];
+		    Debito dadosDebitosCobrados = imovel.getDebitos(Constantes.SIM).get(i);
+		    // 1.1.2
+		    dados[0] = dadosDebitosCobrados.getDescricao();
+		    // 1.1.3
+		    dados[2] = Util.formatarDoubleParaMoedaReal(dadosDebitosCobrados.getValor());
+		    retorno.add(dados);
+		}
+	    } else {
+		double soma = 0d;
+		for (int i = 0; i < imovel.getDebitos(Constantes.SIM).size(); i++) {
+		    Debito dadosDebitosCobrados = imovel.getDebitos(Constantes.SIM).get(i);
+		    soma += dadosDebitosCobrados.getValor();
+		}
+		dados = new String[3];
+		// 1.1.2
+		dados[0] = "DEBITOS";
+		// 1.1.3
+		dados[2] = Util.formatarDoubleParaMoedaReal(soma);
+		retorno.add(dados);
+	    }
+	}
+	return retorno;
+    }
+    
+    /**
+     * [SB0006] - Gerar Linhas de Creditos Realizados
+     * 
+     * @return Os dados estão dividos em 3 partes Descricao, de indice 0
+     *         Consumo, de indice 1 Valor, de indice 2
+     */
+    private List gerarLinhasCreditosRealizados(int indicadorDiscriminarDescricao) {
+	List retorno = new ArrayList();
+	// Os dados estão dividos em 3 partes
+	// Descricao, de indice 0
+	// Consumo, de indice 1
+	// Valor, de indice 2
+	String[] dados = new String[3];
+	// 3
+	if (imovel.getCreditos(Constantes.SIM).size() > 0) {
+	    // caso seja para discriminar os dados dos créditos
+	    if (indicadorDiscriminarDescricao == 1) {
+		// caso o valor do crédito seja maior que o valor da conta sem o
+		// crédito
+		double valorContaSemCreditos = 0d;
+		double valorContaResidual = 0d;
+		boolean valorCreditoMaiorValorConta = false;
+		boolean naoEmitirMaisCreditos = false;
+		if (imovel.getValorResidualCredito() != 0d) {
+		    valorContaSemCreditos = imovel.getValorContaSemCreditos();
+		    valorCreditoMaiorValorConta = true;
+		}
+		for (int i = 0; i < imovel.getCreditos(Constantes.SIM).size(); i++) {
+		    Credito dadosCreditosRealizado = imovel.getCreditos(Constantes.SIM).get(i);
+		    // caso o valor dos créditos n seja maior que o valor da
+		    // conta sem os créditos
+		    
+		    // Daniel - Verificar se o imovel deve ou nao considerar Bonus Social.
+	    	if( ( (imovel.getCreditos(Constantes.SIM).get(i))).getCodigo().equalsIgnoreCase(Imovel.CODIGO_BONUS_SOCIAL)  &&
+		    		Integer.parseInt(imovel.getCodigoPerfil()) == Imovel.PERFIL_BONUS_SOCIAL &&
+		    		imovel.getConsumoAgua() != null &&
+		    		imovel.getConsumoAgua().getConsumoCobradoMes() > 10 ){
+		    		
+		    		continue;
+	    	}
+	    	
+		    if (!valorCreditoMaiorValorConta) {
+		    	dados = new String[3];
+				// 1.1.2
+				dados[0] = dadosCreditosRealizado.getDescricao();
+				// 1.1.3
+				dados[2] = Util.formatarDoubleParaMoedaReal(dadosCreditosRealizado.getValor());
+				retorno.add(dados);
+
+		    }
+		    // //caso o valor dos créditos seja maior que o valor das
+		    // contas sem os créditos
+		    else {
+				if (!naoEmitirMaisCreditos) {
+				    double valorCredito = dadosCreditosRealizado.getValor();
+				    valorContaResidual = valorContaSemCreditos - valorCredito;
+				    // emite as créditos até o valor dos creditos ser
+				    // menor que o valor da conta
+				    if (valorContaResidual < 0d) {
+//				    	valorContaResidual = valorContaResidual * -1;
+				    	naoEmitirMaisCreditos = true;
+	
+					    dados = new String[3];
+					    // 1.1.2
+					    dados[0] = dadosCreditosRealizado.getDescricao();
+					    // 1.1.3
+	//				    dados[2] = Util.formatarDoubleParaMoedaReal(valorCredito);
+					    dados[2] = Util.formatarDoubleParaMoedaReal(valorContaSemCreditos);
+					    
+					    retorno.add(dados);
+	
+				    }else{
+				    	
+				    	valorContaSemCreditos = valorContaSemCreditos - valorCredito;
+
+				    	dados = new String[3];
+					    // 1.1.2
+					    dados[0] = dadosCreditosRealizado.getDescricao();
+					    // 1.1.3
+					    dados[2] = Util.formatarDoubleParaMoedaReal(valorCredito);
+	//				    dados[2] = Util.formatarDoubleParaMoedaReal(valorContaSemCreditos);
+					    
+					    retorno.add(dados);			    	
+				    }
+				}
+		    }
+		}
+	    } else {
+		double soma = imovel.getValorCreditos();
+		// for ( int i = 0; i < imovel.getRegistros5().size(); i++ ){
+		//
+		// RegistroDescricaoValor dadosCreditosRealizado = (
+		// RegistroDescricaoValor ) imovel.getRegistros5().elementAt( i
+		// );
+		// soma += dadosCreditosRealizado.getValor();
+		// }
+		dados = new String[3];
+		// 1.1.2
+		dados[0] = "CREDITOS";
+		// 1.1.3
+		dados[2] = Util.formatarDoubleParaMoedaReal(soma);
+		retorno.add(dados);
+	    }
+	}
+	return retorno;
+    }
+    
+    /**
+     * [SB0007] - Gerar Linhas Impostos Retidos
+     * 
+     * @return Os dados estão dividos em 3 partes Descricao, de indice 0
+     *         Consumo, de indice 1 Valor, de indice 2
+     */
+    private List gerarLinhasImpostosRetidos() {
+	List retorno = new ArrayList();
+	// Os dados estão dividos em 3 partes
+	// Descricao, de indice 0
+	// Consumo, de indice 1
+	// Valor, de indice 2
+	String[] dados = new String[3];
+	// 3
+	if (imovel.getImpostos().size() > 0) {
+	    String dadosImposto = "";
+	    for (int i = 0; i < imovel.getImpostos().size(); i++) {
+		Imposto imoReg6 = imovel.getImpostos().get(i);
+		String descricaoImposto = imoReg6.getDescricaoImposto();
+		String percentualAliquota = Util.formatarDoubleParaMoedaReal(imoReg6.getPercentualAlicota());
+		dadosImposto += descricaoImposto + "-" + percentualAliquota + "% ";
+	    }
+	    dados = new String[3];
+	    // 1.1.2
+	    dados[0] = "DED. IMPOSTOS LEI FEDERAL N.9430 DE 27/12/1996";
+	    // 1.1.3
+	    dados[2] = Util.formatarDoubleParaMoedaReal(imovel.getValorImpostos());
+	    retorno.add(dados);
+	    dados = new String[3];
+	    // 1.1.2
+	    dados[0] = dadosImposto;
+	    retorno.add(dados);
+	}
+	return retorno;
+    }
     
 }

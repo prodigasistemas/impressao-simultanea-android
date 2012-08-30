@@ -10,9 +10,11 @@ import ui.ArquivoRetorno;
 import ui.MessageDispatcher;
 import util.Constantes;
 import util.Util;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import business.ControladorAcessoOnline;
 import business.ControladorRota;
@@ -44,7 +46,21 @@ public class EnviarImoveisConcluidosThread extends Thread {
 			idsImoveisAEnviar = ArquivoRetorno.getInstancia().gerarArquivoParaEnvio(handler, context, increment, Constantes.TIPO_ENVIO_IMOVEIS_NAO_TRANSMITIDOS);
 //			idsImoveisAEnviar = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
 			
+			mState = DONE;
+			
+			Bundle b = new Bundle();
+	        // Send message (with current value of total as data) to Handler on UI thread
+	        Message msg = handler.obtainMessage();
+	        b.putBoolean("geracaoDosImoveisNaoTransmitidosConcluido", true);
+	        msg.setData(b);
+	        handler.sendMessage(msg);
+	        
 			if (idsImoveisAEnviar.size() > 0) {
+//				enviando = true;
+				Bundle b1 = new Bundle();
+		        Message msg1 = handler.obtainMessage();
+		        msg1.setData(b1);
+		        handler.sendMessage(msg1);
 				ControladorAcessoOnline.getInstancia().enviarCadastro(ArquivoRetorno.getInstancia().getConteudoArquivoRetorno().getBytes());
 				
 				if (ControladorAcessoOnline.getInstancia().isRequestOK()) {
@@ -55,6 +71,8 @@ public class EnviarImoveisConcluidosThread extends Thread {
 						
 						ControladorRota.getInstancia().getDataManipulator().salvarImovel(imovel);
 					}
+					
+					MenuPrincipal.mensagemRetorno = "Imóveis transmitidos com sucesso!";
 					
 					File file = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
 					boolean bool = file.delete();
@@ -67,21 +85,19 @@ public class EnviarImoveisConcluidosThread extends Thread {
 				    	MenuPrincipal.mensagemRetorno = "Ocorreu um erro na trasmissão dos imóveis!";
 				    }
 				}
+				
+				Bundle b2 = new Bundle();
+		        Message msg2 = handler.obtainMessage();
+		        b2.putBoolean("recebeuResposta", true);
+		        msg2.setData(b2);
+		        handler.sendMessage(msg2);	
+				
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		mState = DONE;
 		
-		
-		Bundle b = new Bundle();
-        // Send message (with current value of total as data) to Handler on UI thread
-        Message msg = handler.obtainMessage();
-        b.putInt("imoveisNaoTransmitidos" + String.valueOf(increment), 100);
-        msg.setData(b);
-        handler.sendMessage(msg);
 
 	}
 

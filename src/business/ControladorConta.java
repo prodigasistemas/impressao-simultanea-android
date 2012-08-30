@@ -571,7 +571,7 @@ public class ControladorConta {
     	consumo.setAnormalidadeConsumo(Constantes.NULO_INT);
           
     	// seta a anormalidade informada na anormalidade de leitura faturada
-    	if (medidor.getAnormalidade() > 0) {
+    	if (medidor.getAnormalidade() != Constantes.NULO_INT) {
     	    consumo.setAnormalidadeLeituraFaturada(medidor.getAnormalidade());
     	}
 
@@ -676,7 +676,7 @@ public class ControladorConta {
     		consumo.setAnormalidadeConsumo(Constantes.NULO_INT);
 
     		// [SB0002] 2.
-    		if (leitura > 1 && medidor.getAnormalidade() == 0) {
+    		if (leitura > 1 && medidor.getAnormalidade() == Constantes.NULO_INT) {
 
     		    if (getImovelSelecionado().getIndicadorAbastecimentoAgua() == Constantes.SIM
     			    && getImovelSelecionado().getIndicadorImovelSazonal() == Constantes.NAO) {
