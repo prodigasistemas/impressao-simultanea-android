@@ -54,6 +54,7 @@ public class ImpressaoContaCosanpa {
     private String valorDebitos = "";
     private String valorCreditos = "";
     private String valorImpostos = "";
+    private String descricaoAnoMesConta = "";
   
     // Linhas e molduras
     private String linesAndBoxes = "";
@@ -116,7 +117,7 @@ public class ImpressaoContaCosanpa {
 
     			"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ Util.getDataHora() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
         		"T 7 1 464 90 "+ imovel.getMatricula() + "\n" +
-        		"T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n" +
+        		descricaoAnoMesConta +
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
         		"T 0 0 285 64 "+ ControladorRota.getInstancia().getDadosGerais().getInscricaoEstadualEmpresa().trim() + "\n" +
         		"T 0 0 222 81 "+ imovel.getGrupoFaturamento() + "\n" +
@@ -226,17 +227,17 @@ public class ImpressaoContaCosanpa {
 	        		"FORM\n"+
 	        		"PRINT\n";
         		
-    	}else if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
+    	}else if (tipoImpressao == Constantes.IMPRESSAO_EXTRATO_CONDOMINIAL){
     		comando +=
     				"T 7 0 200 700 EXTRATO DE CONSUMO DO MACROMEDIDOR \n"+
         			"T 7 0 53 725 CONSUMO DO IMOVEL CONDOMINIO \n"+
         			"T 7 0 571 725 "+ imovel.getConsumoAgua().getConsumoCobradoMes() + "\n" +
         			"T 7 0 53 750 SOMA DOS CONSUMOS DOS IMÓVEIS VINCULADOS \n"+
-        			"T 7 0 571 750 "+ imovel.getConsumoAgua().getConsumoCobradoMesImoveisMicro() + "\n" +
+        			"T 7 0 571 750 "+ imovel.getEfetuarRateioConsumoHelper().getConsumoLigacaoAguaTotal() + "\n" +
         			"T 7 0 53 775 QUANTIDADE IMÓVEIS VINCULADOS \n"+
         			"T 7 0 571 775 "+ imovel.getEfetuarRateioConsumoHelper().getQuantidadeEconomiasAguaTotal() + "\n" +
         			"T 7 0 53 800 VALOR RATEADO \n"+
-        			"T 7 0 571 800  R$ "+ imovel.getEfetuarRateioConsumoHelper().getContaParaRateioAgua() + "\n" +
+        			"T 7 0 571 800  R$ "+ Util.formatarDoubleParaMoedaReal(imovel.getEfetuarRateioConsumoHelper().getContaParaRateioAgua()) + "\n" +
         			"T 7 0 53 825 VALOR RATEADO POR UNIDADE \n"+
         			"T 7 0 571 825 R$ "+ Util.formatarDoubleParaMoedaReal(imovel.getEfetuarRateioConsumoHelper().getContaParaRateioAgua()
         																/ imovel.getEfetuarRateioConsumoHelper().getQuantidadeEconomiasAguaTotal()) + "\n" +
@@ -245,10 +246,10 @@ public class ImpressaoContaCosanpa {
         		    "T 7 0 53 900 CASO O VALOR DO RATEIO ESTEJA ELEVADO \n"+
         		    "T 7 0 63 925 1. Confirme a leitura do macro \n"+
         		    "T 7 0 63 950 2. Verifique os reservatórios \n"+
-        		    "T 7 0 63 975 3. Verifique se há apartamento ligado clandestino \n"+
-        		    "T 7 0 53 1025 QUALQUER IRREGULARIDADE COMUNIQUE A COSANPA ATRAVÉS DO \n"+
+        		    "T 7 0 63 975 3. Verifique se ha apartamento ligado clandestino \n"+
+        		    "T 7 0 53 1025 QUALQUER IRREGULARIDADE COMUNIQUE A COSANPA ATRAVES DO \n"+
         		    "T 7 0 53 1050 SERTOR DE ATENDIMENTO \n"+
-        		    "T 7 0 53 1075 RATEIO: Obtido atraves da diferença do consumo entre \n"+
+        		    "T 7 0 53 1075 RATEIO: Obtido atraves da diferenca do consumo entre \n"+
         		    "T 7 0 53 1100 o macromedidor e os consumos dos apartamentos \n"+
 
         			"T 0 2 344 1456 "+ matricula + "\n" +
@@ -303,6 +304,13 @@ public class ImpressaoContaCosanpa {
 							"LINE 290 415 290 477 1\n";
 		}
 
+		if (imovel.getAnoMesConta().compareTo(Constantes.NULO_STRING) != 0){
+			descricaoAnoMesConta = "T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n";
+			
+		}else{
+			descricaoAnoMesConta = "T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento()) + "\n";
+		}
+		
     	List dc = imovel.getDadosCategoria();
     	List quantidadeEconomias = categoriasEconomias(dc);
     	
@@ -501,232 +509,237 @@ public class ImpressaoContaCosanpa {
 	    } else {
 	    	hcMensagem = "7 0 50 499 HISTORICO DE CONSUMO\nT 0 50 520 INEXISTENTE\n";
 	    }
+	 
 	    
-	    // Exigido Portaria 518/2004
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorExigidas() != Constantes.NULO_INT){
-	    	quantidadeCorExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeCorExigidas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezExigidas() != Constantes.NULO_INT){
-		    quantidadeTurbidezExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezExigidas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroExigidas() != Constantes.NULO_INT){
-	    	quantidadeCloroExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeCloroExigidas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorExigidas() != Constantes.NULO_INT){
-		    quantidadeFluorExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeFluorExigidas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisExigidas() != Constantes.NULO_INT){
-		    quantidadeColiformesTotaisExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisExigidas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesExigidas() != Constantes.NULO_INT){
-		    quantidadeColiformesTermoTolerantesExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesExigidas();
-	    }
-	    
-	    // Analisado
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorAnalisadas() != Constantes.NULO_INT){
-		    quantidadeCorAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeCorAnalisadas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezAnalisadas() != Constantes.NULO_INT){
-		    quantidadeTurbidezAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezAnalisadas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroAnalisadas() != Constantes.NULO_INT){
-		    quantidadeCloroAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeCloroAnalisadas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorAnalisadas() != Constantes.NULO_INT){
-		    quantidadeFluorAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeFluorAnalisadas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisAnalisadas() != Constantes.NULO_INT){
-		    quantidadeColiformesTotaisAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisAnalisadas();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesAnalisadas() != Constantes.NULO_INT){
-		    quantidadeColiformesTermoTolerantesAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesAnalisadas();	    	
-	    }
-	    
-	    //  Conforme
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorConforme() != Constantes.NULO_INT){
-		    quantidadeCorConforme = DadosQualidadeAgua.getInstancia().getQuantidadeCorConforme();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezConforme() != Constantes.NULO_INT){
-		    quantidadeTurbidezConforme = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezConforme();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroConforme() != Constantes.NULO_INT){
-		    quantidadeCloroConforme = DadosQualidadeAgua.getInstancia().getQuantidadeCloroConforme();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorConforme() != Constantes.NULO_INT){
-		    quantidadeFluorConforme = DadosQualidadeAgua.getInstancia().getQuantidadeFluorConforme();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisConforme() != Constantes.NULO_INT){
-		    quantidadeColiformesTotaisConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisConforme();
-	    }
-	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme() != Constantes.NULO_INT){
-		    quantidadeColiformesTermoTolerantesConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme();
-	    }
-	    
-	    if (imovel.isImovelCondominio()) {
-	    	txtConsumo += formarLinha(7, 0, 418, 412, "CONSUMO (m3)", 0, 0);// + formarLinha(7, 0, 511, 436, consumo, 0, 0);
-	    
-	    } else {
-	    	txtConsumo +=	formarLinha(7, 0, 412, 412, ControladorConta.getInstancia().getTipoConsumoToPrint(tipoConsumo), 0, 0);
-//	    	txtConsumo +=	formarLinha(7, 0, 511, 436, consumo, 0, 0);
-	    }
-	    
-	    int ultimaLinhaAgua = 0;
-	    int ultimaLinhaPoco = 0;
-	    int quantidadeLinhasAtual = 0;
-	    int quantidadeMaximaLinhas = 18;
-	    List linhaAgua = gerarLinhasTarifaAgua(consumoAgua);
-//	    Log.i("Linhas", ">>>" + ((String) linhaAgua.get(0) == null));
-	    tarifacaoAgua = (String) linhaAgua.get(0);
-	    ultimaLinhaAgua = (((Integer) linhaAgua.get(1)).intValue());
-	    if (ultimaLinhaAgua != 0) {
-	    	quantidadeLinhasAtual = quantidadeLinhasAtual + ultimaLinhaAgua + 1;
-	    }
-	    ultimaLinhaAgua *= 34;
-	    List tarifasPoco = gerarLinhasTarifaPoco();
-	    ultimaLinhaPoco = ultimaLinhaAgua;
-	    for (int i = 0; i < tarifasPoco.size(); i++) {
-			String[] tarifaPoco = (String[]) tarifasPoco.get(i);
-			ultimaLinhaPoco = ultimaLinhaAgua + ((i + 1) * 34);
+	    if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
+	
+		    // Exigido Portaria 518/2004
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorExigidas() != Constantes.NULO_INT){
+		    	quantidadeCorExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeCorExigidas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezExigidas() != Constantes.NULO_INT){
+			    quantidadeTurbidezExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezExigidas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroExigidas() != Constantes.NULO_INT){
+		    	quantidadeCloroExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeCloroExigidas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorExigidas() != Constantes.NULO_INT){
+			    quantidadeFluorExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeFluorExigidas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisExigidas() != Constantes.NULO_INT){
+			    quantidadeColiformesTotaisExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisExigidas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesExigidas() != Constantes.NULO_INT){
+			    quantidadeColiformesTermoTolerantesExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesExigidas();
+		    }
+		    
+		    // Analisado
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorAnalisadas() != Constantes.NULO_INT){
+			    quantidadeCorAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeCorAnalisadas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezAnalisadas() != Constantes.NULO_INT){
+			    quantidadeTurbidezAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezAnalisadas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroAnalisadas() != Constantes.NULO_INT){
+			    quantidadeCloroAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeCloroAnalisadas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorAnalisadas() != Constantes.NULO_INT){
+			    quantidadeFluorAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeFluorAnalisadas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisAnalisadas() != Constantes.NULO_INT){
+			    quantidadeColiformesTotaisAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisAnalisadas();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesAnalisadas() != Constantes.NULO_INT){
+			    quantidadeColiformesTermoTolerantesAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesAnalisadas();	    	
+		    }
+		    
+		    //  Conforme
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorConforme() != Constantes.NULO_INT){
+			    quantidadeCorConforme = DadosQualidadeAgua.getInstancia().getQuantidadeCorConforme();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezConforme() != Constantes.NULO_INT){
+			    quantidadeTurbidezConforme = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezConforme();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroConforme() != Constantes.NULO_INT){
+			    quantidadeCloroConforme = DadosQualidadeAgua.getInstancia().getQuantidadeCloroConforme();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorConforme() != Constantes.NULO_INT){
+			    quantidadeFluorConforme = DadosQualidadeAgua.getInstancia().getQuantidadeFluorConforme();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisConforme() != Constantes.NULO_INT){
+			    quantidadeColiformesTotaisConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisConforme();
+		    }
+		    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme() != Constantes.NULO_INT){
+			    quantidadeColiformesTermoTolerantesConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme();
+		    }
+		    
+		    if (imovel.isImovelCondominio()) {
+		    	txtConsumo += formarLinha(7, 0, 418, 412, "CONSUMO (m3)", 0, 0);// + formarLinha(7, 0, 511, 436, consumo, 0, 0);
+		    
+		    } else {
+		    	txtConsumo +=	formarLinha(7, 0, 412, 412, ControladorConta.getInstancia().getTipoConsumoToPrint(tipoConsumo), 0, 0);
+	//	    	txtConsumo +=	formarLinha(7, 0, 511, 436, consumo, 0, 0);
+		    }
+		    
+		    int ultimaLinhaAgua = 0;
+		    int ultimaLinhaPoco = 0;
+		    int quantidadeLinhasAtual = 0;
+		    int quantidadeMaximaLinhas = 18;
+		    List linhaAgua = gerarLinhasTarifaAgua(consumoAgua);
+	//	    Log.i("Linhas", ">>>" + ((String) linhaAgua.get(0) == null));
+		    tarifacaoAgua = (String) linhaAgua.get(0);
+		    ultimaLinhaAgua = (((Integer) linhaAgua.get(1)).intValue());
+		    if (ultimaLinhaAgua != 0) {
+		    	quantidadeLinhasAtual = quantidadeLinhasAtual + ultimaLinhaAgua + 1;
+		    }
+		    ultimaLinhaAgua *= 34;
+		    List tarifasPoco = gerarLinhasTarifaPoco();
+		    ultimaLinhaPoco = ultimaLinhaAgua;
+		    for (int i = 0; i < tarifasPoco.size(); i++) {
+				String[] tarifaPoco = (String[]) tarifasPoco.get(i);
+				ultimaLinhaPoco = ultimaLinhaAgua + ((i + 1) * 34);
+				quantidadeLinhasAtual++;
+				int deslocaDireitaColuna;
+				if (i == 0 || i == 1 || i == 2) {
+				    deslocaDireitaColuna = i;
+				} else {
+				    deslocaDireitaColuna = 2;
+				}
+				if (tarifaPoco[0] != null) {
+				    tarifacaoEsgoto += formarLinha(7, 0, 53, 733, tarifaPoco[0], deslocaDireitaColuna * 10, (i + 1) * 34 + ultimaLinhaAgua);
+				}
+				if (tarifaPoco[1] != null) {
+				    tarifacaoEsgoto += formarLinha(7, 0, 571, 733, tarifaPoco[1], 0, (i + 1) * 34 + ultimaLinhaAgua);
+				}
+				if (tarifaPoco[2] != null) {
+				    tarifacaoEsgoto += formarLinha(7, 0, 697, 733, tarifaPoco[2], 0, (i + 1) * 34 + ultimaLinhaAgua);
+				}
+		    }
+		    
+		    
+		 // Dados dos Valores de Rateio de Água e Esgoto
+		    List rateios = gerarLinhasRateioAguaEsgotoCobrados();
+		    int ultimaLinhaRateio = ultimaLinhaPoco;
+		    rateioAguaEsgoto = "";
+		    for (int i = 0; i < rateios.size(); i++) {
+				String[] debito = (String[]) rateios.get(i);
+				ultimaLinhaRateio = ultimaLinhaPoco + ((i + 1) * 34);
+				quantidadeLinhasAtual++;
+				if (debito[0] != null) {
+				    rateioAguaEsgoto += formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaPoco);
+				}
+				if (debito[1] != null) {
+				    rateioAguaEsgoto += formarLinha(7, 0, 697, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaPoco);
+				}
+		    }
+		    
+		    int indicadorDiscriminarDescricao = retornaIndicadorDiscriminar(quantidadeMaximaLinhas, quantidadeLinhasAtual, 'd');
+		    List debitos = this.gerarLinhasDebitosCobrados(indicadorDiscriminarDescricao);
+		    int ultimaLinhaDebito = ultimaLinhaRateio;
+		    for (int i = 0; i < debitos.size(); i++) {
+			String[] debito = (String[]) debitos.get(i);
+			ultimaLinhaDebito = ultimaLinhaRateio + ((i + 1) * 34);
 			quantidadeLinhasAtual++;
-			int deslocaDireitaColuna;
-			if (i == 0 || i == 1 || i == 2) {
-			    deslocaDireitaColuna = i;
-			} else {
-			    deslocaDireitaColuna = 2;
-			}
-			if (tarifaPoco[0] != null) {
-			    tarifacaoEsgoto += formarLinha(7, 0, 53, 733, tarifaPoco[0], deslocaDireitaColuna * 10, (i + 1) * 34 + ultimaLinhaAgua);
-			}
-			if (tarifaPoco[1] != null) {
-			    tarifacaoEsgoto += formarLinha(7, 0, 571, 733, tarifaPoco[1], 0, (i + 1) * 34 + ultimaLinhaAgua);
-			}
-			if (tarifaPoco[2] != null) {
-			    tarifacaoEsgoto += formarLinha(7, 0, 697, 733, tarifaPoco[2], 0, (i + 1) * 34 + ultimaLinhaAgua);
-			}
-	    }
-	    
-	    
-	 // Daniel Dados dos Valores de Rateio de Água e Esgoto
-	    List rateios = gerarLinhasRateioAguaEsgotoCobrados();
-	    int ultimaLinhaRateio = ultimaLinhaPoco;
-	    for (int i = 0; i < rateios.size(); i++) {
-			String[] debito = (String[]) rateios.get(i);
-			ultimaLinhaRateio = ultimaLinhaPoco + ((i + 1) * 34);
-			quantidadeLinhasAtual++;
+			// int deslocaDireitaColuna;
+			// if( i == 0 || i == 1 || i==2 ){
+			// deslocaDireitaColuna = i;
+			// } else {
+			// deslocaDireitaColuna = 2;
+			// }
 			if (debito[0] != null) {
-			    rateioAguaEsgoto = formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaPoco);
+			    valorDebitos += formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaRateio);
 			}
 			if (debito[1] != null) {
-			    rateioAguaEsgoto = formarLinha(7, 0, 697, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaPoco);
+			    valorDebitos += formarLinha(7, 0, 571, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaRateio);
 			}
-	    }
-	    
-	    int indicadorDiscriminarDescricao = retornaIndicadorDiscriminar(quantidadeMaximaLinhas, quantidadeLinhasAtual, 'd');
-	    List debitos = this.gerarLinhasDebitosCobrados(indicadorDiscriminarDescricao);
-	    int ultimaLinhaDebito = ultimaLinhaRateio;
-	    for (int i = 0; i < debitos.size(); i++) {
-		String[] debito = (String[]) debitos.get(i);
-		ultimaLinhaDebito = ultimaLinhaRateio + ((i + 1) * 34);
-		quantidadeLinhasAtual++;
-		// int deslocaDireitaColuna;
-		// if( i == 0 || i == 1 || i==2 ){
-		// deslocaDireitaColuna = i;
-		// } else {
-		// deslocaDireitaColuna = 2;
-		// }
-		if (debito[0] != null) {
-		    valorDebitos += formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaRateio);
-		}
-		if (debito[1] != null) {
-		    valorDebitos += formarLinha(7, 0, 571, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaRateio);
-		}
-		if (debito[2] != null) {
-		    valorDebitos += formarLinha(7, 0, 697, 733, debito[2], 0, (i + 1) * 34 + ultimaLinhaRateio);
-		}
-	    }
-	    indicadorDiscriminarDescricao = retornaIndicadorDiscriminar(quantidadeMaximaLinhas, quantidadeLinhasAtual, 'c');
-	    List creditos = this.gerarLinhasCreditosRealizados(indicadorDiscriminarDescricao);
-	    int ultimaLinhaCredito = ultimaLinhaDebito;
-	    for (int i = 0; i < creditos.size(); i++) {
-		String[] credito = (String[]) creditos.get(i);
-		ultimaLinhaCredito = ultimaLinhaDebito + ((i + 1) * 34);
-		// int deslocaDireitaColuna;
-		// if( i == 0 || i == 1 || i==2 ){
-		// deslocaDireitaColuna = i;
-		// } else {
-		// deslocaDireitaColuna = 2;
-		// }
-		if (credito[0] != null) {
-		    valorCreditos += formarLinha(7, 0, 53, 733, credito[0], 0, (i + 1) * 34 + ultimaLinhaDebito);
-		}
-		if (credito[1] != null) {
-		    valorCreditos += formarLinha(7, 0, 571, 733, credito[1], 0, (i + 1) * 34 + ultimaLinhaDebito);
-		}
-		if (credito[2] != null) {
-		    valorCreditos += formarLinha(7, 0, 697, 733, credito[2], 0, (i + 1) * 34 + ultimaLinhaDebito);
-		}
-	    }
-	    List impostos = this.gerarLinhasImpostosRetidos();
-	    for (int i = 0; i < impostos.size(); i++) {
-		String[] imposto = (String[]) impostos.get(i);
-		int deslocaDireitaColuna;
-		if (i == 0 || i == 1) {
-		    deslocaDireitaColuna = i;
-		} else {
-		    deslocaDireitaColuna = 1;
-		}
-		if (imposto[0] != null) {
-		    valorImpostos += formarLinha(7, 0, 53, 733, imposto[0], deslocaDireitaColuna * 10, (i + 1) * 34 + ultimaLinhaCredito);
-		}
-		if (imposto[1] != null) {
-		    valorImpostos += formarLinha(7, 0, 571, 733, imposto[1], 0, (i + 1) * 34 + ultimaLinhaCredito);
-		}
-		if (imposto[2] != null) {
-		    valorImpostos += formarLinha(7, 0, 697, 733, imposto[2], 0, (i + 1) * 34 + ultimaLinhaCredito);
-		}
-	    }
-	    
-	    dataVencimentoConta = Util.dateToString(imovel.getDataVencimento());
-	    
-	    valorConta = Util.formatarDoubleParaMoedaReal(imovel.getValorConta());
-	    
-	    opcaoDebitoAutomatico = imovel.getOpcaoDebitoAutomatico() == Constantes.NULO_INT ? "" : imovel.getOpcaoDebitoAutomatico()+"";
-	    Log.i("opcao debito automatico", opcaoDebitoAutomatico);
-
-		if (imovel.getMensagemEstouroConsumo1() != null && !imovel.getMensagemEstouroConsumo1().equals("")) {
-		mensagens = formarLinha(0, 3, 35, 1300, imovel.getMensagemEstouroConsumo1() != null && imovel.getMensagemEstouroConsumo1().length() > 45 ? imovel.getMensagemEstouroConsumo1().substring(0, 45) : imovel.getMensagemEstouroConsumo1(), 0, 0)
-			+ formarLinha(0, 3, 35, 1330, imovel.getMensagemEstouroConsumo2() != null && imovel.getMensagemEstouroConsumo2().length() > 45 ? imovel.getMensagemEstouroConsumo2().substring(0, 45) : imovel.getMensagemEstouroConsumo2(), 0, 0)
-			+ formarLinha(0, 3, 35, 1360, imovel.getMensagemEstouroConsumo3() != null && imovel.getMensagemEstouroConsumo3().length() > 45 ? imovel.getMensagemEstouroConsumo3().substring(0, 45) : imovel.getMensagemEstouroConsumo3(), 0, 0);
-	    } else {
-		mensagens = formarLinha(0, 3, 35, 1300, imovel.getMensagemConta1() != null && imovel.getMensagemConta1().length() > 45 ? imovel.getMensagemConta1().substring(0, 45) : imovel.getMensagemConta1(), 0, 0)
-			+ formarLinha(0, 3, 35, 1330, imovel.getMensagemConta2() != null && imovel.getMensagemConta2().length() > 45 ? imovel.getMensagemConta2().substring(0, 45) : imovel.getMensagemConta2(), 0, 0)
-			+ formarLinha(0, 3, 35, 1360, imovel.getMensagemConta3() != null && imovel.getMensagemConta3().length() > 45 ? imovel.getMensagemConta3().substring(0, 45) : imovel.getMensagemConta3(), 0, 0);
-	    }
-		
-	    matricula = ""+imovel.getMatricula();
-	    referencia = Util.formatarAnoMesParaMesAno(imovel.getAnoMesConta());
-	    dataVencimento = Util.dateToString(imovel.getDataVencimento());
-	    totalAPagar = Util.formatarDoubleParaMoedaReal(imovel.getValorConta());
-	    
-	    // Situação criada para imprimir codigo de barras apenas quando o valor da conta for maior que o mínimo.
-	    if (imovel.getCodigoAgencia() == null || imovel.getCodigoAgencia().equals("")) {
-			System.out.println("##COD AGENCIA DO IF: " + imovel.getCodigoAgencia());
+			if (debito[2] != null) {
+			    valorDebitos += formarLinha(7, 0, 697, 733, debito[2], 0, (i + 1) * 34 + ultimaLinhaRateio);
+			}
+		    }
+		    indicadorDiscriminarDescricao = retornaIndicadorDiscriminar(quantidadeMaximaLinhas, quantidadeLinhasAtual, 'c');
+		    List creditos = this.gerarLinhasCreditosRealizados(indicadorDiscriminarDescricao);
+		    int ultimaLinhaCredito = ultimaLinhaDebito;
+		    for (int i = 0; i < creditos.size(); i++) {
+			String[] credito = (String[]) creditos.get(i);
+			ultimaLinhaCredito = ultimaLinhaDebito + ((i + 1) * 34);
+			// int deslocaDireitaColuna;
+			// if( i == 0 || i == 1 || i==2 ){
+			// deslocaDireitaColuna = i;
+			// } else {
+			// deslocaDireitaColuna = 2;
+			// }
+			if (credito[0] != null) {
+			    valorCreditos += formarLinha(7, 0, 53, 733, credito[0], 0, (i + 1) * 34 + ultimaLinhaDebito);
+			}
+			if (credito[1] != null) {
+			    valorCreditos += formarLinha(7, 0, 571, 733, credito[1], 0, (i + 1) * 34 + ultimaLinhaDebito);
+			}
+			if (credito[2] != null) {
+			    valorCreditos += formarLinha(7, 0, 697, 733, credito[2], 0, (i + 1) * 34 + ultimaLinhaDebito);
+			}
+		    }
+		    List impostos = this.gerarLinhasImpostosRetidos();
+		    for (int i = 0; i < impostos.size(); i++) {
+			String[] imposto = (String[]) impostos.get(i);
+			int deslocaDireitaColuna;
+			if (i == 0 || i == 1) {
+			    deslocaDireitaColuna = i;
+			} else {
+			    deslocaDireitaColuna = 1;
+			}
+			if (imposto[0] != null) {
+			    valorImpostos += formarLinha(7, 0, 53, 733, imposto[0], deslocaDireitaColuna * 10, (i + 1) * 34 + ultimaLinhaCredito);
+			}
+			if (imposto[1] != null) {
+			    valorImpostos += formarLinha(7, 0, 571, 733, imposto[1], 0, (i + 1) * 34 + ultimaLinhaCredito);
+			}
+			if (imposto[2] != null) {
+			    valorImpostos += formarLinha(7, 0, 697, 733, imposto[2], 0, (i + 1) * 34 + ultimaLinhaCredito);
+			}
+		    }
+		    
+		    dataVencimentoConta = Util.dateToString(imovel.getDataVencimento());
+		    
+		    valorConta = Util.formatarDoubleParaMoedaReal(imovel.getValorConta());
+		    
+		    opcaoDebitoAutomatico = imovel.getOpcaoDebitoAutomatico() == Constantes.NULO_INT ? "" : imovel.getOpcaoDebitoAutomatico()+"";
+		    Log.i("opcao debito automatico", opcaoDebitoAutomatico);
+	
+			if (imovel.getMensagemEstouroConsumo1() != null && !imovel.getMensagemEstouroConsumo1().equals("")) {
+			mensagens = formarLinha(0, 3, 35, 1300, imovel.getMensagemEstouroConsumo1() != null && imovel.getMensagemEstouroConsumo1().length() > 45 ? imovel.getMensagemEstouroConsumo1().substring(0, 45) : imovel.getMensagemEstouroConsumo1(), 0, 0)
+				+ formarLinha(0, 3, 35, 1330, imovel.getMensagemEstouroConsumo2() != null && imovel.getMensagemEstouroConsumo2().length() > 45 ? imovel.getMensagemEstouroConsumo2().substring(0, 45) : imovel.getMensagemEstouroConsumo2(), 0, 0)
+				+ formarLinha(0, 3, 35, 1360, imovel.getMensagemEstouroConsumo3() != null && imovel.getMensagemEstouroConsumo3().length() > 45 ? imovel.getMensagemEstouroConsumo3().substring(0, 45) : imovel.getMensagemEstouroConsumo3(), 0, 0);
+		    } else {
+			mensagens = formarLinha(0, 3, 35, 1300, imovel.getMensagemConta1() != null && imovel.getMensagemConta1().length() > 45 ? imovel.getMensagemConta1().substring(0, 45) : imovel.getMensagemConta1(), 0, 0)
+				+ formarLinha(0, 3, 35, 1330, imovel.getMensagemConta2() != null && imovel.getMensagemConta2().length() > 45 ? imovel.getMensagemConta2().substring(0, 45) : imovel.getMensagemConta2(), 0, 0)
+				+ formarLinha(0, 3, 35, 1360, imovel.getMensagemConta3() != null && imovel.getMensagemConta3().length() > 45 ? imovel.getMensagemConta3().substring(0, 45) : imovel.getMensagemConta3(), 0, 0);
+		    }
 			
-			String representacaoNumericaCodBarra = Util.obterRepresentacaoNumericaCodigoBarra(new Integer(3), imovel.getValorConta(), new Integer(Integer.parseInt(imovel.getInscricao().substring(0, 3))), new Integer(imovel.getMatricula()),
-					Util.formatarAnoMesParaMesAnoSemBarra(imovel.getAnoMesConta()), new Integer(imovel.getDigitoVerificadorConta()), null, null, null, null, null, null);
-				String representacaoNumericaCodBarraFormatada = representacaoNumericaCodBarra.substring(0, 11).trim() + "-" + representacaoNumericaCodBarra.substring(11, 12).trim() + " " + representacaoNumericaCodBarra.substring(12, 23).trim() + "-"
-					+ representacaoNumericaCodBarra.substring(23, 24).trim() + " " + representacaoNumericaCodBarra.substring(24, 35).trim() + "-" + representacaoNumericaCodBarra.substring(35, 36).trim() + " " + representacaoNumericaCodBarra.substring(36, 47).trim() + "-"
-					+ representacaoNumericaCodBarra.substring(47, 48);
-				repNumericaCodBarra += formarLinha(5, 0, 66, 1515, representacaoNumericaCodBarraFormatada, 0, 0);
-				String representacaoCodigoBarrasSemDigitoVerificador = representacaoNumericaCodBarra.substring(0, 11) + representacaoNumericaCodBarra.substring(12, 23) + representacaoNumericaCodBarra.substring(24, 35) + representacaoNumericaCodBarra.substring(36, 47);
-				repCodigoBarrasSemDigitoVerificador += "B I2OF5 1 2 90 35 1538 " + representacaoCodigoBarrasSemDigitoVerificador + "\n";
-
-	    } else {
-			repCodigoBarrasSemDigitoVerificador = formarLinha(4, 0, 182, 1538, "DEBITO AUTOMATICO", 0, 0);
-	    }
-	    
-	    grupoFaturamento = ""+imovel.getGrupoFaturamento();
-	    
+		    matricula = ""+imovel.getMatricula();
+		    referencia = Util.formatarAnoMesParaMesAno(imovel.getAnoMesConta());
+		    dataVencimento = Util.dateToString(imovel.getDataVencimento());
+		    totalAPagar = Util.formatarDoubleParaMoedaReal(imovel.getValorConta());
+		    
+		    // Situação criada para imprimir codigo de barras apenas quando o valor da conta for maior que o mínimo.
+		    if (imovel.getCodigoAgencia() == null || imovel.getCodigoAgencia().equals("")) {
+				System.out.println("##COD AGENCIA DO IF: " + imovel.getCodigoAgencia());
+				
+				String representacaoNumericaCodBarra = Util.obterRepresentacaoNumericaCodigoBarra(new Integer(3), imovel.getValorConta(), new Integer(Integer.parseInt(imovel.getInscricao().substring(0, 3))), new Integer(imovel.getMatricula()),
+						Util.formatarAnoMesParaMesAnoSemBarra(imovel.getAnoMesConta()), new Integer(imovel.getDigitoVerificadorConta()), null, null, null, null, null, null);
+					String representacaoNumericaCodBarraFormatada = representacaoNumericaCodBarra.substring(0, 11).trim() + "-" + representacaoNumericaCodBarra.substring(11, 12).trim() + " " + representacaoNumericaCodBarra.substring(12, 23).trim() + "-"
+						+ representacaoNumericaCodBarra.substring(23, 24).trim() + " " + representacaoNumericaCodBarra.substring(24, 35).trim() + "-" + representacaoNumericaCodBarra.substring(35, 36).trim() + " " + representacaoNumericaCodBarra.substring(36, 47).trim() + "-"
+						+ representacaoNumericaCodBarra.substring(47, 48);
+					repNumericaCodBarra += formarLinha(5, 0, 66, 1515, representacaoNumericaCodBarraFormatada, 0, 0);
+					String representacaoCodigoBarrasSemDigitoVerificador = representacaoNumericaCodBarra.substring(0, 11) + representacaoNumericaCodBarra.substring(12, 23) + representacaoNumericaCodBarra.substring(24, 35) + representacaoNumericaCodBarra.substring(36, 47);
+					repCodigoBarrasSemDigitoVerificador += "B I2OF5 1 2 90 35 1538 " + representacaoCodigoBarrasSemDigitoVerificador + "\n";
+	
+		    } else {
+				repCodigoBarrasSemDigitoVerificador = formarLinha(4, 0, 182, 1538, "DEBITO AUTOMATICO", 0, 0);
+		    }
+		    
+		    grupoFaturamento = ""+imovel.getGrupoFaturamento();
+		    
+		}
     }
     
     private static String dividirLinha(int fonte, int tamanhoFonte, int x, int y, String texto, int tamanhoLinha, int deslocarPorLinha) {
