@@ -2,6 +2,8 @@ package com.IS;
 
 import java.util.ArrayList;
 
+import com.IS.R.color;
+
 import util.Constantes;
 import background.CarregarRotaThread;
 import background.GerarArquivoCompletoThread;
@@ -304,6 +306,7 @@ public class MenuPrincipal extends Activity {
 				LayoutInflater inflator = getLayoutInflater();
 				view = inflator.inflate(R.layout.icon, null);
 				TextView textView = (TextView)view.findViewById(R.id.icon_text);
+				textView.setTextColor(color.labelColor);
 				textView.setText(TextIDs[position]);
 				ImageView imageView = (ImageView)view.findViewById(R.id.icon_image);
 				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);

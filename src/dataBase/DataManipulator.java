@@ -35,6 +35,7 @@ public class DataManipulator {
 	private DbHelper openHelper;
 	static SQLiteDatabase db;
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static int matricula;
 
 	public DataManipulator(Context context) {
 		DataManipulator.context = context;
@@ -79,24 +80,15 @@ public class DataManipulator {
 		ArrayList<String> list = new ArrayList<String>();
 		Cursor cursor;
 
-		cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "id",
-				"matricula", "logradouro_imovel", "numero_imovel",
-				"complemento_imovel", "bairro_imovel", "cep_imovel",
-				"municipio_imovel" }, condition, null, null, null,
+		cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "matricula",	"endereco" }, condition, null, null, null,
 				"inscricao asc");
 
 		int x = 0;
 		if (cursor.moveToFirst()) {
 			do {
-				String b1 = "(" + (x + 1) + ") "
-						+ String.valueOf(cursor.getInt(1))
-						+ " - " + cursor.getString(2).trim() + ", n°"
-						+ cursor.getString(3).trim() + " "
-						+ cursor.getString(4).trim() + " "
-						+ cursor.getString(5).trim() + " "
-						+ cursor.getString(6).trim() + " "
-						+ cursor.getString(7).trim();
-				list.add(b1);
+				
+				String endereco = String.format("[%d] %s", cursor.getInt(0), cursor.getString(1));
+				list.add(endereco);
 				x = x + 1;
 			} while (cursor.moveToNext());
 		}
@@ -255,43 +247,53 @@ public class DataManipulator {
 		cursor.close();
 	}
 
-	public void selectMedidor(long id) {
+	public void selectMedidor(int matricula) {
 
-		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"tipo_medicao", 
-																		 "numero_hidrometro",
-																		 "data_instalacao_hidrometro",
-																		 "num_digitos_leitura_hidrometro",
-																		 "leitura_anterior_faturamento",
-																		 "data_leitura_anterior_faturamento",
-																		 "codigo_situacao_leitura_anterior",
-																		 "leitura_esperada_inicial",
-																		 "leitura_esperada_final", 
-																		 "consumo_medio", 
-																		 "local_instalacao",
-																		 "leitura_anterior_informada",
-																		 "data_leitura_anterior_informada",
-																		 "data_ligacao_fornecimento",
-																		 "tipo_rateio", "leitura_instalacao_hidrometro" }, "id = " + id, null, null, null, "id asc");
-
+		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {
+				"tipo_medicao", "numero_hidrometro",
+				"data_instalacao_hidrometro", "num_digitos_leitura_hidrometro",
+				"leitura_anterior_faturamento",
+				"data_leitura_anterior_faturamento",
+				"codigo_situacao_leitura_anterior", "leitura_esperada_inicial",
+				"leitura_esperada_final", "consumo_medio", "local_instalacao",
+				"leitura_anterior_informada",
+				"data_leitura_anterior_informada", "data_ligacao_fornecimento",
+				"tipo_rateio", "leitura_instalacao_hidrometro", "matricula" }, "matricula = " + matricula,
+				null, null, null, "id asc");
 		
 		if (cursor.moveToFirst()) {
 			
-			getMedidorSelecionado().setTipoMedicao(cursor.getString(1));
-			getMedidorSelecionado().setNumeroHidrometro(cursor.getString(2));
-			getMedidorSelecionado().setDataInstalacaoHidrometro(cursor.getString(3));
-			getMedidorSelecionado().setNumDigitosLeituraHidrometro(cursor.getString(4));
-			getMedidorSelecionado().setLeituraAnteriorFaturamento(cursor.getString(5));
-			getMedidorSelecionado().setDataLeituraAnteriorFaturado(cursor.getString(6));
-			getMedidorSelecionado().setCodigoSituacaoLeituraAnterior(cursor.getString(7));
-			getMedidorSelecionado().setLeituraEsperadaInicial(cursor.getString(8));
-			getMedidorSelecionado().setLeituraEsperadaFinal(cursor.getString(9));
-			getMedidorSelecionado().setConsumoMedio(cursor.getString(10));
-			getMedidorSelecionado().setLocalInstalacao(cursor.getString(11));
-			getMedidorSelecionado().setLeituraAnteriorInformada(cursor.getString(12));
-			getMedidorSelecionado().setDataLeituraAnteriorInformada(cursor.getString(13));
-			getMedidorSelecionado().setDataLigacaoFornecimento(cursor.getString(14));
-			getMedidorSelecionado().setTipoRateio(cursor.getString(15));
-			getMedidorSelecionado().setLeituraInstalacaoHidrometro(cursor.getString(16));
+			getMedidorSelecionado().setTipoMedicao(cursor.getString(0));
+			getMedidorSelecionado().setNumeroHidrometro(cursor.getString(1));
+			getMedidorSelecionado().setDataInstalacaoHidrometro(
+					cursor.getString(2));
+			getMedidorSelecionado().setNumDigitosLeituraHidrometro(
+					cursor.getString(3));
+			getMedidorSelecionado().setLeituraAnteriorFaturamento(
+					cursor.getString(4));
+			getMedidorSelecionado().setDataLeituraAnteriorFaturado(
+					cursor.getString(5));
+			getMedidorSelecionado().setCodigoSituacaoLeituraAnterior(
+					cursor.getString(6));
+			getMedidorSelecionado().setLeituraEsperadaInicial(
+					cursor.getString(7));
+			getMedidorSelecionado()
+					.setLeituraEsperadaFinal(cursor.getString(8));
+			getMedidorSelecionado().setConsumoMedio(cursor.getString(9));
+			getMedidorSelecionado().setLocalInstalacao(cursor.getString(10));
+			getMedidorSelecionado().setLeituraAnteriorInformada(
+					cursor.getString(11));
+			getMedidorSelecionado().setDataLeituraAnteriorInformada(
+					cursor.getString(12));
+			getMedidorSelecionado().setDataLigacaoFornecimento(
+					cursor.getString(13));
+			getMedidorSelecionado().setTipoRateio(cursor.getString(14));
+			getMedidorSelecionado().setLeituraInstalacaoHidrometro(
+					cursor.getString(15));
+			getMedidorSelecionado().setMatricula(Integer.parseInt(cursor.getString(16)));
+		} else {
+			getMedidorSelecionado().setNumeroHidrometro("");
+			Log.i("Nenhum resgistro!", "Sem registro");
 		}
 
 		if (cursor != null && !cursor.isClosed()) {
@@ -361,6 +363,33 @@ public class DataManipulator {
 		}
 		cursor.close();
 	}
+	
+	public void selectImovel(long id){
+		
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {	"id",
+																			"matricula",
+																			"nome_usuario",
+																			"inscricao",
+																			"endereco",
+																			"situacao_lig_agua",
+																			"situacao_lig_esgoto"}, "id = " + id, null, null, null,  "inscricao asc");
+		
+		if (cursor.moveToFirst()) {
+        	ControladorImovel.getInstancia().getImovelSelecionado().setId(0);
+        	ControladorImovel.getInstancia().getImovelSelecionado().setMatricula(Integer.parseInt(cursor.getString(1)));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setNomeUsuario(cursor.getString(2));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setInscricao(cursor.getString(3));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setEndereco(cursor.getString(4));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigAgua(cursor.getString(5));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigEsgoto(cursor.getString(6));
+		}
+		
+		 if (cursor != null && !cursor.isClosed()) {
+	           cursor.close();
+	     }
+	     cursor.close();
+	}
+		
 
 	public int selectConfiguracaoElement(String element) {
 
@@ -650,6 +679,7 @@ public class DataManipulator {
 		SituacaoTipo situacaoTipo = SituacaoTipo.getInstancia();
 		
 		int matricula = Integer.parseInt(parser.obterDadoParser(9));
+		DataManipulator.matricula = matricula;
 		
 		initialValues.put("matricula", matricula);
 		initialValues.put("nome_gerencia_regional", parser.obterDadoParser(25));
@@ -893,10 +923,10 @@ public class DataManipulator {
 	public long insertMedidor(String linhaArquivo) {
 
 		ParserUtil parser = new ParserUtil(linhaArquivo);
-		parser.obterDadoParser(11);
+		parser.obterDadoParser(2);
 		ContentValues initialValues = new ContentValues();
 
-		initialValues.put("matricula", SituacaoTipo.getInstancia().getMatricula());
+		initialValues.put("matricula", parser.obterDadoParser(9));
 		initialValues.put("tipo_medicao", parser.obterDadoParser(1));
 		initialValues.put("numero_hidrometro", parser.obterDadoParser(11));
 		initialValues.put("data_instalacao_hidrometro",	parser.obterDadoParser(8));

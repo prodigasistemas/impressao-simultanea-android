@@ -105,9 +105,9 @@ public class ControladorImovel {
 //    	Controlador.clienteSelecionado = clienteSelecionado;
 //    }
 //    
-//    public void setImovelSelecionado(Imovel imovelSelecionado){
-//    	Controlador.imovelSelecionado = imovelSelecionado;
-//    }
+    public void setImovelSelecionado(Imovel imovelSelecionado){
+    	ControladorImovel.imovelSelecionado = imovelSelecionado;
+    }
 //    
     public void setContaSelecionado(Conta contaSelecionado){
     	ControladorImovel.contaSelecionado = contaSelecionado;
@@ -142,9 +142,9 @@ public class ControladorImovel {
     	setImovelListPosition(listPosition);
     	idImovelSelecionado = getIdImovelSelecionado(listPosition, null);
 //    	dmImovel.selectCliente(idImovelSelecionado);
-//    	dmImovel.selectImovel(idImovelSelecionado);
+    	dataManipulator.selectImovel(idImovelSelecionado);
 //    	dmImovel.selectServico(idImovelSelecionado);
-//    	dmImovel.selectMedidor(idImovelSelecionado);
+    	dataManipulator.selectMedidor(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
 //    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
     }
     
@@ -164,7 +164,7 @@ public class ControladorImovel {
     	initImovelTabs();
     	idImovelSelecionado = id;
 //    	dmImovel.selectCliente(idImovelSelecionado);
-//    	dmImovel.selectImovel(idImovelSelecionado);
+    	dataManipulator.selectImovel(idImovelSelecionado);
 //    	dmImovel.selectServico(idImovelSelecionado);
 //    	dmImovel.selectMedidor(idImovelSelecionado);
 //    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);

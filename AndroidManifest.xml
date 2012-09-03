@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="MainTab" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
+        <activity android:name="views.MainTab" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
 
         <activity android:name=".ListaRotas" android:screenOrientation="portrait" configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar">
@@ -45,6 +45,7 @@
 		    
 		<activity android:name="Consulta" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
+		<activity android:name="views.ImovelTab"></activity>
         
     </application>
 

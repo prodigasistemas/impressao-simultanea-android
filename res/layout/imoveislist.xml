@@ -10,7 +10,7 @@
     android:layout_width="fill_parent" 
     android:layout_height="65dp" 
     android:text="Lista de Imóveis"
- 	android:textColor="@color/white"
+ 	android:textColor="@color/labelColor"
 	android:gravity="center"
  	android:textSize="30dp"/>
  	

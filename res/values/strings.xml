@@ -9,6 +9,8 @@
 	<color name="colorBege1">#FFBB59</color>
     <color name="colorbege2">#E09639</color>
     <color name="white">#FFFFFF</color>
+    <color name="labelColor">#024659</color>
+    <color name="textValueColor">#be7a0e</color>
     
     <string name="app_name">ImpressaoSimultanea</string>
     <string name="user">Usuário</string>
@@ -42,7 +44,7 @@
 	</string-array>
 
 	<string name="options_imprimir">Imprimir</string>
-	<string name="options_localizar_pendente">Localizar Pendente</string>
+	<string name="options_localizar_pendente">Loc. Pendente</string>
     <string name="options_menu_principal">Menu Principal</string>
     <string name="options_lista_cadastro">Lista de Imóveis</string>
 	<string name="options_proximo">Próximo</string>

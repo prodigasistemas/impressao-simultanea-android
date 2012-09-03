@@ -7,7 +7,9 @@ import java.util.Vector;
 
 import business.ControladorConta;
 import business.ControladorImovel;
+import android.util.Log;
 
+import ui.FileManager;
 import util.Constantes;
 import util.Util;
 
@@ -206,6 +208,8 @@ public class Imovel {
 		return this.imovelEnviado;
 	}
 
+
+
 	public double getValorRateioAgua() {
 		return valorRateioAgua;
 	}
@@ -391,22 +395,6 @@ public class Imovel {
 
     public void setIndcGeracao(int indcGeracao) {
 	this.indcGeracao = indcGeracao;
-    }
-
-    public int getContagemValidacaoAgua() {
-	return contagemValidacaoAgua;
-    }
-
-    public void setContagemValidacaoAgua(int contagemValidacaoAgua) {
-	this.contagemValidacaoAgua = contagemValidacaoAgua;
-    }
-
-    public int getContagemValidacaoPoco() {
-	return contagemValidacaoPoco;
-    }
-
-    public void setContagemValidacaoPoco(int contagemValidacaoPoco) {
-	this.contagemValidacaoPoco = contagemValidacaoPoco;
     }
 
     public void setIndcImovelImpresso(int imovelImpressao) {
@@ -1184,30 +1172,6 @@ public class Imovel {
 		.verificarNuloInt(indicadorParalizarFaturamentoEsgoto);
     }
 
-
-    public int getMatricula() {
-	return matricula;
-    }
-
-    public String getNomeGerenciaRegional() {
-	return nomeGerenciaRegional;
-    }
-
-    public String getNomeEscritorio() {
-	return nomeEscritorio;
-    }
-
-    public String getNomeUsuario() {
-	return nomeUsuario;
-    }
-
-    public Date getDataVencimento() {
-	return dataVencimento;
-    }
-
-    public Date getDataValidadeConta() {
-	return dataValidadeConta;
-    }
 
     public String getInscricao() {
 	    if (inscricao.length() == 16){
@@ -2409,6 +2373,311 @@ public class Imovel {
 
     public Date getDataImpressaoNaoMedido() {
     	return dataImpressaoNaoMedido;
+    }
+    
+    public int getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(int matricula) {
+		this.matricula = matricula;
+	}
+
+	public String getNomeGerenciaRegional() {
+		return nomeGerenciaRegional;
+	}
+
+	public String getNomeEscritorio() {
+		return nomeEscritorio;
+	}
+
+	public String getNomeUsuario() {
+		return nomeUsuario;
+	}
+
+	public Date getDataVencimento() {
+		return dataVencimento;
+	}
+
+	public void setDataVencimento(Date dataVencimento) {
+		this.dataVencimento = dataVencimento;
+	}
+
+	public Date getDataValidadeConta() {
+		return dataValidadeConta;
+	}
+
+	public void setDataValidadeConta(Date dataValidadeConta) {
+		this.dataValidadeConta = dataValidadeConta;
+	}
+
+
+	public void setDigitoVerificadorConta(int digitoVerificadorConta) {
+		this.digitoVerificadorConta = digitoVerificadorConta;
+	}
+	
+	public String getSituacaoLigAguaString() {
+		return situacaoLigAgua.equals(Constantes.LIGADO) ? "Ligado" : "Desligado";
+	}
+
+	public String getSituacaoLigEsgotoString() {
+		return situacaoLigEsgoto.equals(Constantes.LIGADO) ? "Ligado" : "Desligado";
+	}
+
+	public void setMatriculaCondominio(int matriculaCondominio) {
+		this.matriculaCondominio = matriculaCondominio;
+	}
+
+	public void setIndcCondominio(int indcCondominio) {
+		this.indcCondominio = indcCondominio;
+	}
+
+	public void setConsumoMedio(int consumoMedio) {
+		this.consumoMedio = consumoMedio;
+	}
+
+	public void setIndcFaturamentoAgua(int indcFaturamentoAgua) {
+		this.indcFaturamentoAgua = indcFaturamentoAgua;
+	}
+
+	public void setIndcFaturamentoEsgoto(int indcFaturamentoEsgoto) {
+		this.indcFaturamentoEsgoto = indcFaturamentoEsgoto;
+	}
+
+	public void setIndcEmissaoConta(int indcEmissaoConta) {
+		this.indcEmissaoConta = indcEmissaoConta;
+	}
+
+	public void setConsumoMinAgua(int consumoMinAgua) {
+		this.consumoMinAgua = consumoMinAgua;
+	}
+
+	public void setConsumoMinEsgoto(int consumoMinEsgoto) {
+		this.consumoMinEsgoto = consumoMinEsgoto;
+	}
+
+	public void setPercentColetaEsgoto(double percentColetaEsgoto) {
+		this.percentColetaEsgoto = percentColetaEsgoto;
+	}
+
+	public void setPercentCobrancaEsgoto(double percentCobrancaEsgoto) {
+		this.percentCobrancaEsgoto = percentCobrancaEsgoto;
+	}
+
+	public void setTipoPoco(int tipoPoco) {
+		this.tipoPoco = tipoPoco;
+	}
+
+	public void setCodigoTarifa(int codigoTarifa) {
+		this.codigoTarifa = codigoTarifa;
+	}
+
+	public void setConsumoEstouro(int consumoEstouro) {
+		this.consumoEstouro = consumoEstouro;
+	}
+
+	public void setAltoConsumo(int altoConsumo) {
+		this.altoConsumo = altoConsumo;
+	}
+
+	public void setBaixoConsumo(int baixoConsumo) {
+		this.baixoConsumo = baixoConsumo;
+	}
+
+	public void setFatorMultEstouro(double fatorMultEstouro) {
+		this.fatorMultEstouro = fatorMultEstouro;
+	}
+
+	public void setFatorMultMediaAltoConsumo(double fatorMultMediaAltoConsumo) {
+		this.fatorMultMediaAltoConsumo = fatorMultMediaAltoConsumo;
+	}
+
+	public void setPercentBaixoConsumo(double percentBaixoConsumo) {
+		this.percentBaixoConsumo = percentBaixoConsumo;
+	}
+
+	public void setConsumoMaximo(int consumoMaximo) {
+		this.consumoMaximo = consumoMaximo;
+	}
+
+	public void setGrupoFaturamento(int grupoFaturamento) {
+		this.grupoFaturamento = grupoFaturamento;
+	}
+
+	public void setCodigoRota(int codigoRota) {
+		this.codigoRota = codigoRota;
+	}
+
+	public void setNumeroConta(int numeroConta) {
+		this.numeroConta = numeroConta;
+	}
+
+	public void setTipoCalculoTarifa(int tipoCalculoTarifa) {
+		this.tipoCalculoTarifa = tipoCalculoTarifa;
+	}
+
+	public void setSequencialRota(int sequencialRota) {
+		this.sequencialRota = sequencialRota;
+	}
+
+	public void setQuantidadeTurbidezExigidas(int quantidadeTurbidezExigidas) {
+		this.quantidadeTurbidezExigidas = quantidadeTurbidezExigidas;
+	}
+
+	public void setQuantidadeCorExigidas(int quantidadeCorExigidas) {
+		this.quantidadeCorExigidas = quantidadeCorExigidas;
+	}
+
+	public void setQuantidadeCloroExigidas(int quantidadeCloroExigidas) {
+		this.quantidadeCloroExigidas = quantidadeCloroExigidas;
+	}
+
+	public void setQuantidadeFluorExigidas(int quantidadeFluorExigidas) {
+		this.quantidadeFluorExigidas = quantidadeFluorExigidas;
+	}
+
+	public void setQuantidadeColiformesTotaisExigidas(
+			int quantidadeColiformesTotaisExigidas) {
+		this.quantidadeColiformesTotaisExigidas = quantidadeColiformesTotaisExigidas;
+	}
+
+	public void setQuantidadeColiformesFecaisExigidas(
+			int quantidadeColiformesFecaisExigidas) {
+		this.quantidadeColiformesFecaisExigidas = quantidadeColiformesFecaisExigidas;
+	}
+
+	public void setQuantidadeColiformesTermoTolerantesExigidas(
+			int quantidadeColiformesTermoTolerantesExigidas) {
+		this.quantidadeColiformesTermoTolerantesExigidas = quantidadeColiformesTermoTolerantesExigidas;
+	}
+
+	public void setQuantidadeTurbidezAnalisadas(int quantidadeTurbidezAnalisadas) {
+		this.quantidadeTurbidezAnalisadas = quantidadeTurbidezAnalisadas;
+	}
+
+	public void setQuantidadeCorAnalisadas(int quantidadeCorAnalisadas) {
+		this.quantidadeCorAnalisadas = quantidadeCorAnalisadas;
+	}
+
+	public void setQuantidadeCloroAnalisadas(int quantidadeCloroAnalisadas) {
+		this.quantidadeCloroAnalisadas = quantidadeCloroAnalisadas;
+	}
+
+	public void setQuantidadeFluorAnalisadas(int quantidadeFluorAnalisadas) {
+		this.quantidadeFluorAnalisadas = quantidadeFluorAnalisadas;
+	}
+
+	public void setQuantidadeColiformesTotaisAnalisadas(
+			int quantidadeColiformesTotaisAnalisadas) {
+		this.quantidadeColiformesTotaisAnalisadas = quantidadeColiformesTotaisAnalisadas;
+	}
+
+	public void setQuantidadeColiformesFecaisAnalisadas(
+			int quantidadeColiformesFecaisAnalisadas) {
+		this.quantidadeColiformesFecaisAnalisadas = quantidadeColiformesFecaisAnalisadas;
+	}
+
+	public void setQuantidadeColiformesTermoTolerantesAnalisadas(
+			int quantidadeColiformesTermoTolerantesAnalisadas) {
+		this.quantidadeColiformesTermoTolerantesAnalisadas = quantidadeColiformesTermoTolerantesAnalisadas;
+	}
+
+	public void setQuantidadeTurbidezConforme(int quantidadeTurbidezConforme) {
+		this.quantidadeTurbidezConforme = quantidadeTurbidezConforme;
+	}
+
+	public void setQuantidadeCorConforme(int quantidadeCorConforme) {
+		this.quantidadeCorConforme = quantidadeCorConforme;
+	}
+
+	public void setQuantidadeCloroConforme(int quantidadeCloroConforme) {
+		this.quantidadeCloroConforme = quantidadeCloroConforme;
+	}
+
+	public void setQuantidadeFluorConforme(int quantidadeFluorConforme) {
+		this.quantidadeFluorConforme = quantidadeFluorConforme;
+	}
+
+	public void setQuantidadeColiformesTotaisConforme(
+			int quantidadeColiformesTotaisConforme) {
+		this.quantidadeColiformesTotaisConforme = quantidadeColiformesTotaisConforme;
+	}
+
+	public void setQuantidadeColiformesFecaisConforme(
+			int quantidadeColiformesFecaisConforme) {
+		this.quantidadeColiformesFecaisConforme = quantidadeColiformesFecaisConforme;
+	}
+
+	public void setQuantidadeColiformesTermoTolerantesConforme(
+			int quantidadeColiformesTermoTolerantesConforme) {
+		this.quantidadeColiformesTermoTolerantesConforme = quantidadeColiformesTermoTolerantesConforme;
+	}
+
+	public void setConsumoMinimoImovel(int consumoMinimoImovel) {
+		this.consumoMinimoImovel = consumoMinimoImovel;
+	}
+
+	public int getConsumoMinimoImovelNaoMedido() {
+		return consumoMinimoImovelNaoMedido;
+	}
+
+	public void setConsumoMinimoImovelNaoMedido(int consumoMinimoImovelNaoMedido) {
+		this.consumoMinimoImovelNaoMedido = consumoMinimoImovelNaoMedido;
+	}
+
+	public void setDataLeituraAnteriorNaoMedido(Date dataLeituraAnteriorNaoMedido) {
+		this.dataLeituraAnteriorNaoMedido = dataLeituraAnteriorNaoMedido;
+	}
+
+	public void setIndicadorAbastecimentoAgua(short indicadorAbastecimentoAgua) {
+		this.indicadorAbastecimentoAgua = indicadorAbastecimentoAgua;
+	}
+
+	public void setIndicadorImovelSazonal(short indicadorImovelSazonal) {
+		this.indicadorImovelSazonal = indicadorImovelSazonal;
+	}
+
+	public void setIndicadorParalizarFaturamentoAgua(
+			int indicadorParalizarFaturamentoAgua) {
+		this.indicadorParalizarFaturamentoAgua = indicadorParalizarFaturamentoAgua;
+	}
+
+	public void setIndicadorParalizarFaturamentoEsgoto(
+			int indicadorParalizarFaturamentoEsgoto) {
+		this.indicadorParalizarFaturamentoEsgoto = indicadorParalizarFaturamentoEsgoto;
+	}
+
+	public void setOpcaoDebitoAutomatico(int opcaoDebitoAutomatico) {
+		this.opcaoDebitoAutomatico = opcaoDebitoAutomatico;
+	}
+
+	public void setPercentualAlternativoEsgoto(double percentualAlternativoEsgoto) {
+		this.percentualAlternativoEsgoto = percentualAlternativoEsgoto;
+	}
+
+	public void setConsumoPercentualAlternativoEsgoto(
+			int consumoPercentualAlternativoEsgoto) {
+		this.consumoPercentualAlternativoEsgoto = consumoPercentualAlternativoEsgoto;
+	}
+
+	public void setDataEmissaoDocumento(Date dataEmissaoDocumento) {
+		this.dataEmissaoDocumento = dataEmissaoDocumento;
+	}
+
+	public int getContagemValidacaoAgua() {
+		return contagemValidacaoAgua;
+	}
+
+	public void setContagemValidacaoAgua(int contagemValidacaoAgua) {
+		this.contagemValidacaoAgua = contagemValidacaoAgua;
+	}
+
+	public int getContagemValidacaoPoco() {
+		return contagemValidacaoPoco;
+	}
+
+	public void setContagemValidacaoPoco(int contagemValidacaoPoco) {
+		this.contagemValidacaoPoco = contagemValidacaoPoco;
 	}
 
 	public void setDataImpressaoNaoMedido(Date dataImpressaoNaoMedido) {

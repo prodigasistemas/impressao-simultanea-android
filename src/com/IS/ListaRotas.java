@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.IS.R.color;
+
 import background.CarregarRotaThread;
 import business.ControladorImovel;
 
@@ -225,6 +227,7 @@ public class ListaRotas extends ListActivity {
 			TextView textView = (TextView) rowView.findViewById(R.id.nomerota);
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 			textView.setText(names.get(position));
+			textView.setTextColor(color.labelColor);
 			
 			if ( names.get(position).endsWith(".txt") ){
 				imageView.setImageResource(R.drawable.text);

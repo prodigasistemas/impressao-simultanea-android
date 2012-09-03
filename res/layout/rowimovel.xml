@@ -17,7 +17,7 @@
 	android:id="@+id/nomerota"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:textColor="@color/white"
+	android:textColor="@color/labelColor"
 	android:layout_margin="2dp"
 	android:textSize="17sp" />
 </LinearLayout>

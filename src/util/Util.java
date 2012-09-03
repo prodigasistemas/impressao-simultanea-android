@@ -19,12 +19,12 @@ import business.ControladorImovel;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 
 public class Util {
 
 	static TextWatcher consultaTextWatcher = null;
+	static boolean isUpdatingCep;
 			
     /**
      * Verifica se o valor da String.trim() veio como null ou como
@@ -315,7 +315,6 @@ public class Util {
     	String diretorioRetornoRota = null;
     	
     	ControladorImovel.getInstancia().getDataManipulator().selectGeral();
-
 //    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
@@ -333,7 +332,6 @@ public class Util {
     	String rotaFileName = null;
     	
     	ControladorImovel.getInstancia().getDataManipulator().selectGeral();
-    	
 //    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
@@ -1137,6 +1135,4 @@ public class Util {
 	
 		 return sb.toString();
 	}
-    
-
 }
