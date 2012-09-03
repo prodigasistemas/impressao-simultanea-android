@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import model.Imovel;
 import util.Constantes;
 import views.MainTab;
+import util.Util;
+
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -85,7 +87,7 @@ public class Consulta extends ListActivity {
     	enderecoList = null;
     	setListAdapter(enderecoList);
 
-    		if (ControladorImovel.getInstancia().getCadastroDataManipulator() != null){
+    		if (ControladorImovel.getInstancia().getDataManipulator() != null){
     			
     			filterCondition = null;
     			String filterPreCondition = null;
@@ -133,7 +135,7 @@ public class Consulta extends ListActivity {
 	    		
     			// Aplica condicoes de filtro
 //    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(filterCondition);
-    	    	listImoveis = (ArrayList<Imovel>) ControladorImovel.getInstancia().getCadastroDataManipulator()
+    	    	listImoveis = (ArrayList<Imovel>) ControladorImovel.getInstancia().getDataManipulator()
     	    			.selectImovelCondition(filterCondition);
     	    	
     	    	ArrayList<String> enderecos = new ArrayList<String>();

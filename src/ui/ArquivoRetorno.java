@@ -76,7 +76,7 @@ public class ArquivoRetorno {
 
 		    arquivo = new StringBuffer();
 		    
-		    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(null);
+		    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorImovel.getInstancia().getDataManipulator().selectIdImoveis(null);
 		    
 		    for (int i = 0; i < listIdImoveis.size(); i++){
 
@@ -118,7 +118,7 @@ public class ArquivoRetorno {
 	    
 	    String filterCondition = "(imovel_enviado = " + Constantes.NAO + ")";	    				
 	    
-	    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(filterCondition);
+	    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorImovel.getInstancia().getDataManipulator().selectIdImoveis(filterCondition);
 	    
 	    for (int i = 0; i < listIdImoveis.size(); i++){
 

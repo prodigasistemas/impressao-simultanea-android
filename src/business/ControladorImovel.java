@@ -17,13 +17,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Vector;
 
+import model.Anormalidade;
+import model.Consumo;
 import model.Conta;
 import model.DadosGerais;
 import model.Imovel;
 import model.Medidor;
 import model.SituacaoTipo;
 import util.Constantes;
+import util.Util;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,20 +39,26 @@ import dataBase.DataManipulator;
 public class ControladorImovel {
 
     public static ControladorImovel instancia;
+
     private boolean permissionGranted = false;
     private int qtdRegistros = 0;
     private static int linhasLidas = 0;
+    private static int isRotaCarregadaOk = Constantes.NAO;
+
     private static Imovel imovelSelecionado = new Imovel();
-    
     private static Conta contaSelecionado = new Conta();
     private static Medidor medidorSelecionado = new Medidor();
     private static DadosGerais dadosGerais = new DadosGerais();
-    private static long idCadastroSelecionado = 0;
-    private static int cadastroListPosition = -1;
-
-    private static int isRotaCarregadaOk = Constantes.NAO;
+    private static Vector anormalidades = new Vector();
     
-	DataManipulator dmCadastro;
+    private static long idImovelSelecionado = 0;
+    private static int imovelListPosition = -1;
+    
+    private static Vector anormalidadesIndicadorUso1;
+    private static Vector anormalidadesSemIndicadorUso1;
+    private static int LEITURA_CONFIRMADA = 99;
+
+	DataManipulator dataManipulator;
     
     public static ControladorImovel getInstancia() {
 
@@ -77,11 +88,11 @@ public class ControladorImovel {
     public DadosGerais getDadosGerais(){
     	return ControladorImovel.dadosGerais;
     }
-//    
-//    public Registro getAnormalidades(){
-//    	return Controlador.anormalidades;
-//    }
-//    
+    
+    public Vector getAnormalidades(){
+    	return ControladorImovel.anormalidades;
+    }
+    
 //    public AnormalidadeImovel getAnormalidadeImovelSelecionado(){
 //    	return Controlador.anormalidadeImovelSelecionado;
 //    }
@@ -117,50 +128,49 @@ public class ControladorImovel {
     public void setDadosGerais(DadosGerais dadosGerais){
     	ControladorImovel.dadosGerais = dadosGerais;
     }
-//    
-//    public void setAnormalidades(Registro anormalidades){
-//    	Controlador.anormalidades = anormalidades;
-//    }
+    
+    public void setAnormalidades(Vector anormalidades){
+    	ControladorImovel.anormalidades = anormalidades;
+    }
 //    
 //    public void setRamosAtividade(Registro ramosAtividade){
 //    	Controlador.ramosAtividade = ramosAtividade;
 //    }
      
-    public void setCadastroSelecionadoByListPosition(int listPosition){
-    	initCadastroTabs();
-    	setCadastroListPosition(listPosition);
-    	idCadastroSelecionado = getIdCadastroSelecionado(listPosition, null);
-//    	dmCadastro.selectCliente(idCadastroSelecionado);
-    	dmCadastro.selectImovel(idCadastroSelecionado);
-//    	dmCadastro.selectServico(idCadastroSelecionado);
-//    	dmCadastro.selectMedidor(idCadastroSelecionado);
-    	dmCadastro.selectMedidor(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
-//    	dmCadastro.selectAnormalidadeImovel(idCadastroSelecionado);
+    public void setImovelSelecionadoByListPosition(int listPosition){
+    	initImovelTabs();
+    	setImovelListPosition(listPosition);
+    	idImovelSelecionado = getIdImovelSelecionado(listPosition, null);
+//    	dmImovel.selectCliente(idImovelSelecionado);
+    	dataManipulator.selectImovel(idImovelSelecionado);
+//    	dmImovel.selectServico(idImovelSelecionado);
+    	dataManipulator.selectMedidor(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
+//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
     }
     
-    public void setCadastroSelecionadoByListPositionInConsulta(int listPositionInConsulta, String condition){
-    	initCadastroTabs();
-    	idCadastroSelecionado = getIdCadastroSelecionado(listPositionInConsulta, condition);
-    	setCadastroListPosition(getCadastroListPositionById(idCadastroSelecionado));
+    public void setImovelSelecionadoByListPositionInConsulta(int listPositionInConsulta, String condition){
+    	initImovelTabs();
+    	idImovelSelecionado = getIdImovelSelecionado(listPositionInConsulta, condition);
+    	setImovelListPosition(getImovelListPositionById(idImovelSelecionado));
 
-//    	dmCadastro.selectCliente(idCadastroSelecionado);
-//    	dmCadastro.selectImovel(idCadastroSelecionado);
-//    	dmCadastro.selectServico(idCadastroSelecionado);
-//    	dmCadastro.selectMedidor(idCadastroSelecionado);
-//    	dmCadastro.selectAnormalidadeImovel(idCadastroSelecionado);
+//    	dmImovel.selectCliente(idImovelSelecionado);
+//    	dmImovel.selectImovel(idImovelSelecionado);
+//    	dmImovel.selectServico(idImovelSelecionado);
+//    	dmImovel.selectMedidor(idImovelSelecionado);
+//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
     }
     
-    public void setCadastroSelecionado(long id){
-    	initCadastroTabs();
-    	idCadastroSelecionado = id;
-//    	dmCadastro.selectCliente(idCadastroSelecionado);
-    	dmCadastro.selectImovel(idCadastroSelecionado);
-//    	dmCadastro.selectServico(idCadastroSelecionado);
-//    	dmCadastro.selectMedidor(idCadastroSelecionado);
-//    	dmCadastro.selectAnormalidadeImovel(idCadastroSelecionado);
+    public void setImovelSelecionado(long id){
+    	initImovelTabs();
+    	idImovelSelecionado = id;
+//    	dmImovel.selectCliente(idImovelSelecionado);
+    	dataManipulator.selectImovel(idImovelSelecionado);
+//    	dmImovel.selectServico(idImovelSelecionado);
+//    	dmImovel.selectMedidor(idImovelSelecionado);
+//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
     }
     
-    public void initCadastroTabs(){
+    public void initImovelTabs(){
 //        clienteSelecionado = new Cliente();
 //        imovelSelecionado = new Imovel();
 //        medidorSelecionado = new Medidor();
@@ -168,19 +178,19 @@ public class ControladorImovel {
 //        anormalidadeImovelSelecionado = new AnormalidadeImovel();
     }
     
-    public int getIdCadastroSelecionado(int listPosition, String condition){
+    public int getIdImovelSelecionado(int listPosition, String condition){
     	// se for cadastro novo
     	if (listPosition == -1){
     		return 0;
  
     	}else{
-        	return Integer.parseInt(ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(condition).get(listPosition));
+        	return Integer.parseInt(ControladorImovel.getInstancia().getDataManipulator().selectIdImoveis(condition).get(listPosition));
      	}
     }
     
-    public int getCadastroListPositionById(long id){
+    public int getImovelListPositionById(long id){
     	int position = 0;
-    	ArrayList<String> listIds = (ArrayList<String>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(null);
+    	ArrayList<String> listIds = (ArrayList<String>) ControladorImovel.getInstancia().getDataManipulator().selectIdImoveis(null);
     	
     	for(int i = 0; i < listIds.size(); i++){
     		if (id == Long.parseLong(listIds.get(i))){
@@ -191,7 +201,7 @@ public class ControladorImovel {
     	return position;
     }
     
-    public boolean isCadastroAlterado(){
+    public boolean isImovelAlterado(){
     	boolean result = false;
     	
     	// guarda instancia de cliente, imovel, medidor e servico 
@@ -202,11 +212,11 @@ public class ControladorImovel {
 //    	AnormalidadeImovel anormalidadeImovelEditado = anormalidadeImovelSelecionado;
 //    	
 //    	// atualiza as instancias clienteSelecionado, imovelSelecionado, servicoSelecionado e medidorSelecionado com os valores do banco de dados.
-//    	dmCadastro.selectCliente(idCadastroSelecionado);
-//    	dmCadastro.selectImovel(idCadastroSelecionado);
-//    	dmCadastro.selectServico(idCadastroSelecionado);
-//    	dmCadastro.selectMedidor(idCadastroSelecionado);
-//    	dmCadastro.selectAnormalidadeImovel(idCadastroSelecionado);
+//    	dmImovel.selectCliente(idImovelSelecionado);
+//    	dmImovel.selectImovel(idImovelSelecionado);
+//    	dmImovel.selectServico(idImovelSelecionado);
+//    	dmImovel.selectMedidor(idImovelSelecionado);
+//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
     	
 //    	if (clienteEditado != clienteSelecionado){
 //    		result = true;
@@ -271,52 +281,52 @@ public class ControladorImovel {
 				    switch (tipoRegistro) {
 				    
 						case REGISTRO_TIPO_IMOVEL:
-							dmCadastro.insertImovel(line);
-					    	dmCadastro.insertSituacaoTipo(SituacaoTipo.getInstancia());
+							dataManipulator.insertImovel(line);
+					    	dataManipulator.insertSituacaoTipo(SituacaoTipo.getInstancia());
 							break;
 							
 						case REGISTRO_TIPO_DADOS_CATEGORIA:
-							
+							dataManipulator.insertDadosCategoria(line);
 							break;
 							
 						case REGISTRO_TIPO_HISTORICO_CONSUMO:
-							dmCadastro.insertHistoricoConsumo(line);
+							dataManipulator.insertHistoricoConsumo(line);
 							break;
 							
 						case REGISTRO_TIPO_DEBITO:
-							dmCadastro.insertDebito(line);
+							dataManipulator.insertDebito(line);
 							break;
 							
 						case REGISTRO_TIPO_CREDITO:
-							dmCadastro.insertCredito(line);
+							dataManipulator.insertCredito(line);
 							break;
 							
 						case REGISTRO_TIPO_IMPOSTO:
-							
+							dataManipulator.insertImposto(line);
 							break;
 							
 						case REGISTRO_TIPO_CONTA:
-							dmCadastro.insertConta(line);
+							dataManipulator.insertConta(line);
 							break;
 							
 						case REGISTRO_TIPO_MEDIDOR:
-							dmCadastro.insertMedidor(line);
+							dataManipulator.insertMedidor(line);
 							break;
 							
 						case REGISTRO_TIPO_TARIFACAO_MINIMA:
-							dmCadastro.insertTarifacaoMinima(line);
+							dataManipulator.insertTarifacaoMinima(line);
 							break;
 							
 						case REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR:
-							dmCadastro.insertTarifacaoComplementar(line);
+							dataManipulator.insertTarifacaoComplementar(line);
 							break;
 							
 						case REGISTRO_TIPO_GERAL:
-							dmCadastro.insertDadosGerais(line);
+							dataManipulator.insertDadosGerais(line);
 							break;
 							
 						case REGISTRO_TIPO_ANORMALIDADE:
-							dmCadastro.insertAnormalidade(line);
+							dataManipulator.insertAnormalidade(line);
 							break;
 	
 						default:
@@ -366,36 +376,36 @@ public class ControladorImovel {
 
     public void initiateDataManipulator(Context context){
 
-    	if (dmCadastro == null){
-	    	dmCadastro = new DataManipulator(context);
-			dmCadastro.open();
+    	if (dataManipulator == null){
+	    	dataManipulator = new DataManipulator(context);
+			dataManipulator.open();
     	}
     }    
     public void finalizeDataManipulator(){
-    	if (dmCadastro != null){
-	    	dmCadastro.close();
-	    	dmCadastro = null;
+    	if (dataManipulator != null){
+	    	dataManipulator.close();
+	    	dataManipulator = null;
     	}
     }
     
-    public DataManipulator getCadastroDataManipulator(){
-    	return dmCadastro;
+    public DataManipulator getDataManipulator(){
+    	return dataManipulator;
     }
     
-    // Retorna o Id do cadastro selecionado
-    public long getIdCadastroSelecionado(){
-    	return idCadastroSelecionado;
+    // Retorna o Id do imovel selecionado
+    public long getIdImovelSelecionado(){
+    	return idImovelSelecionado;
     }
     
-    // Retorna a posição do cadastro selecionado na lista de cadastros ordenada por inscrição
-    public int getCadastroListPosition(){
-    	return cadastroListPosition;
+    // Retorna a posição do imovel selecionado na lista de imoveis ordenada por inscrição
+    public int getImovelListPosition(){
+    	return imovelListPosition;
     }
     
-    // Guarda a posição do cadastro selecionado na lista de cadastros ordenada por inscrição
-    public void setCadastroListPosition(int position){
-    	this.cadastroListPosition = position;
-    	dmCadastro.updateConfiguracao("posicao_cadastro_selecionado", position);
+    // Guarda a posição do imovel selecionado na lista de imoveis ordenada por inscrição
+    public void setImovelListPosition(int position){
+    	this.imovelListPosition = position;
+//    	dataManipulator.updateConfiguracao("posicao_cadastro_selecionado", position);
     }
     
     public boolean databaseExists(Context context){
@@ -403,12 +413,12 @@ public class ControladorImovel {
 
     	initiateDataManipulator(context);
     	
-     	return (dbFile.exists() && dmCadastro.selectAnormalidades().size() > 0);
+     	return (dbFile.exists() && dataManipulator.selectAnormalidades().size() > 0);
 	}
     
     public int isDatabaseRotaCarregadaOk(){
 
-    	if (dmCadastro.selectConfiguracaoElement("rota_carregada") == Constantes.SIM){
+    	if (dataManipulator.selectConfiguracaoElement("sucesso_carregamento") == Constantes.SIM){
     		this.isRotaCarregadaOk = Constantes.SIM;
     	}
 
@@ -416,7 +426,7 @@ public class ControladorImovel {
 	}
     
     public void setRotaCarregamentoOk(int isRotaCarregadaOk){
-    	dmCadastro.updateConfiguracao("rota_carregada", Constantes.SIM);
+    	dataManipulator.updateConfiguracao("sucesso_carregamento", Constantes.SIM);
     }
     
     public void deleteDatabase(){
@@ -424,4 +434,109 @@ public class ControladorImovel {
         File file = new   File(strDBFilePath);
         file.delete();
 	}    
+
+    /**
+     * [UC0743] Calcular Valores de Água/Esgoto
+     */
+    public void calcularValores(Imovel imovel, Consumo consumo,int tipoMedicao) {
+    }
+
+    /**
+     * Carrega as anormalidades no controlador Imoveis
+     */
+    public static Vector carregarAnormalidades(boolean apenasComIndicadorUso1) throws IOException {
+	
+		if ( apenasComIndicadorUso1 && anormalidadesIndicadorUso1 != null ){
+		    return anormalidadesIndicadorUso1;
+		
+		} else if ( !apenasComIndicadorUso1 && anormalidadesSemIndicadorUso1 != null ){
+		    return anormalidadesSemIndicadorUso1;
+		
+		} else {	
+		    
+			// carrega os id's de cada anormalidade
+			Vector anors = carregarVetorAnormalidades(ControladorImovel.anormalidades, apenasComIndicadorUso1);
+			
+		    if (apenasComIndicadorUso1) {
+		    	anormalidadesIndicadorUso1 = anors;
+		    } else {
+		    	anormalidadesSemIndicadorUso1 = anors;
+		    }
+
+		    return anors;
+		    
+		}
+    }
+
+    /**
+     * Carrega o array que mapeia o indice da anormalidade no identificador.
+     * 
+     * @param anormalidades
+     *            Vetor de anormalidades.
+     */
+    public static Vector carregarVetorAnormalidades(Vector anormalidades, boolean apenasComIndicadorUso1) {
+		
+    	if (anormalidades != null){
+	    	
+    		int len = anormalidades.size();
+			
+			// Daniel- corrigindo vetor de anormalidades	
+			Vector retorno = new Vector();
+			Anormalidade anor = new Anormalidade();
+	
+			int contador = 1;
+		
+			// Daniel- corrigindo vetor de anormalidades	
+			for (int i = 1; i < len+1 ; i++) {
+			    Anormalidade reg14 = (Anormalidade) anormalidades.elementAt(i-1);
+			    
+			    // Daniel - Descarta Anormalidade LEITURA_CONFIRMADA - Usuario não pode usar tal opção.
+			    if (reg14.getCodigo() == LEITURA_CONFIRMADA){
+			    	len = len -1;
+			    	continue;
+			    }
+				
+			    anor = reg14;
+			    retorno.add(anor);
+			}
+
+			if (apenasComIndicadorUso1) {
+			    Vector retornoIndicadorUsoSim = new Vector();
+			    
+			    // Daniel- corrigindo vetor de anormalidades	
+			    for (int i = 0; i < len+1; i++) {
+					if ( ((Anormalidade)retorno.elementAt(i)).getIndcUso() == Constantes.SIM ) {
+					    retornoIndicadorUsoSim.add(retorno.elementAt(i));
+					}
+			    }
+
+			    return retornoIndicadorUsoSim;
+			
+			} else {
+			    return retorno;
+			}
+    	}
+    	return null;
+    }
+
+    /**
+     * Carrega as anormalidades direto da Tabela Anormalidade.
+     * 
+     * @return vetor com as anormalidades
+     */
+    public static Vector getAnormalidades(boolean apenasComIndicadorUso1){	
+    	Vector anormalidades = null;
+	
+		try {
+		    if (DadosGerais.getInstancia().getCodigoEmpresaFebraban().equals(Constantes.CODIGO_FEBRABAN_COSANPA)) {
+		    	anormalidades = carregarAnormalidades(apenasComIndicadorUso1);
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+	//	    Util.mostrarErro("Erro ao carregar arquivo de anormalidade");
+		}
+	
+		return anormalidades;
+    }
+
 }

@@ -69,9 +69,9 @@ public class ListaRotas extends ListActivity {
     	
     	if (Environment.MEDIA_MOUNTED.equals(state)) {
     	    
-//    		Controlador.getInstancia().deleteDatabase();
-//    		Controlador.getInstancia().setPermissionGranted(false);
-//    		Controlador.getInstancia().initiateDataManipulator(getBaseContext());
+//    		ControladorImovel.getInstancia().deleteDatabase();
+//    		ControladorImovel.getInstancia().setPermissionGranted(false);
+//    		ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
    		
     		// We can read and write the media
             File path = Environment.getExternalStorageDirectory();

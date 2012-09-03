@@ -1,7 +1,7 @@
 package com.IS;
 
-import business.ControladorImovel;
 import business.ControladorAcessoOnline;
+import business.ControladorImovel;
 
 import util.Constantes;
 import util.Criptografia;
@@ -126,8 +126,7 @@ public class Fachada extends Activity {
 	
 	public void onPasswordDialogButtonClick(View v) {
 	    if(!ControladorImovel.getInstancia().isPermissionGranted()){
-	    	ControladorImovel.getInstancia().getCadastroDataManipulator().selectGeral();
-
+	    	ControladorImovel.getInstancia().getDataManipulator().selectGeral();
 	    	showDialog(Constantes.DIALOG_ID_PASSWORD);
 	    	
 	    }else{

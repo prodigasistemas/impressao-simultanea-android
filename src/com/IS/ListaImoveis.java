@@ -2,6 +2,9 @@ package com.IS;
 
 import java.util.ArrayList;
 
+import util.Constantes;
+
+import business.ControladorImovel;
 import views.MainTab;
 
 import android.app.Activity;
@@ -47,18 +50,18 @@ public class ListaImoveis extends ListActivity {
     private void loadEnderecoImoveis(){
     	
     	if (ControladorImovel.getInstancia() != null){
-    		if (ControladorImovel.getInstancia().getCadastroDataManipulator() != null){
+    		if (ControladorImovel.getInstancia().getDataManipulator() != null){
     			
-//    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectStatusImoveis(null);
-    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(null);
+//    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectStatusImoveis(null);
+    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
     	    	
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
     	        	setListAdapter(enderecoList);
     	        	
-    	        	if (ControladorImovel.getInstancia().getCadastroListPosition() > -1){
-        	        	this.setSelection(ControladorImovel.getInstancia().getCadastroListPosition());
-        	        	enderecoList.setSelectedPosition(ControladorImovel.getInstancia().getCadastroListPosition());
+    	        	if (ControladorImovel.getInstancia().getImovelListPosition() > -1){
+        	        	this.setSelection(ControladorImovel.getInstancia().getImovelListPosition());
+        	        	enderecoList.setSelectedPosition(ControladorImovel.getInstancia().getImovelListPosition());
     	        	}
     	    	}
     		}
@@ -70,7 +73,7 @@ public class ListaImoveis extends ListActivity {
 		// user clicked a list item, make it "selected"
 		enderecoList.setSelectedPosition(position);
 		
-		ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(position);
+		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(position);
 		
 		Log.i("Imovel selecionado", ControladorImovel.getInstancia().getImovelSelecionado().getMatricula()+"");
 		

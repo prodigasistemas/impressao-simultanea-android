@@ -134,7 +134,7 @@ public class MenuPrincipal extends Activity {
                     boolean statusOk = true;
         	    	
                     // 	Verifica se todos os imoveis já foram visitados.
-        	    	ArrayList<String> listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectStatusImoveis(null);
+        	    	ArrayList<String> listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectStatusImoveis(null);
         	    	
         	    	for (int i=0; i < listStatusImoveis.size(); i++){
         	    		if ( Integer.parseInt(listStatusImoveis.get(i)) == Constantes.IMOVEL_PENDENTE ){
@@ -174,7 +174,7 @@ public class MenuPrincipal extends Activity {
         	int totalArquivoCompleto = msg.getData().getInt("arquivoCompleto" + String.valueOf(increment));
             progDialog.setProgress(totalArquivoCompleto);
             
-            if (totalArquivoCompleto >= ControladorImovel.getInstancia().getCadastroDataManipulator().getNumeroCadastros() || 
+            if (totalArquivoCompleto >= ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis() || 
             	progThread.getCustomizedState() == CarregarRotaThread.DONE){
                 
             	dismissDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
@@ -210,7 +210,7 @@ public class MenuPrincipal extends Activity {
 	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        	public void onClick(DialogInterface dialog, int which) {
 	        		removeDialog(id);
-	        		ControladorImovel.getInstancia().getCadastroDataManipulator().close();
+	        		ControladorImovel.getInstancia().getDataManipulator().close();
 	        		ControladorImovel.getInstancia().deleteDatabase();
 	        		ControladorImovel.getInstancia().setPermissionGranted(false);
 	        		ControladorImovel.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
@@ -232,7 +232,7 @@ public class MenuPrincipal extends Activity {
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	            progDialog.setCancelable(false);
 	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
-	            progDialog.setMax(ControladorImovel.getInstancia().getCadastroDataManipulator().getNumeroCadastros());
+	            progDialog.setMax(ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis());
 	            progThread = new GerarArquivoCompletoThread(handler, this, increment);
 	            progThread.start();
 	            return progDialog;

@@ -110,13 +110,13 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    switch (item.getItemId()) {
 	    case R.id.proximoImovel:
 
-	    	ControladorImovel.getInstancia().isCadastroAlterado();
+	    	ControladorImovel.getInstancia().isImovelAlterado();
 	    	
-	    	if(ControladorImovel.getInstancia().getCadastroListPosition() == (ControladorImovel.getInstancia().getCadastroDataManipulator().getNumeroCadastros())-1){
-				ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(0);
+	    	if(ControladorImovel.getInstancia().getImovelListPosition() == (ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis())-1){
+				ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(0);
 
 			}else{
-		    	ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(ControladorImovel.getInstancia().getCadastroListPosition()+1);
+		    	ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(ControladorImovel.getInstancia().getImovelListPosition()+1);
 			}
 	    	finish();
 			Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
@@ -125,12 +125,12 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 	    case R.id.imovelAnterior:
 
-	    	ControladorImovel.getInstancia().isCadastroAlterado();
+	    	ControladorImovel.getInstancia().isImovelAlterado();
 	    	
-	    	if(ControladorImovel.getInstancia().getCadastroListPosition() <= 0){
-				ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition((int)ControladorImovel.getInstancia().getCadastroDataManipulator().getNumeroCadastros()-1);
+	    	if(ControladorImovel.getInstancia().getImovelListPosition() <= 0){
+				ControladorImovel.getInstancia().setImovelSelecionadoByListPosition((int)ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis()-1);
 			}else{
-		    	ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(ControladorImovel.getInstancia().getCadastroListPosition()-1);
+		    	ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(ControladorImovel.getInstancia().getImovelListPosition()-1);
 			}
 	    	finish();
 	    	
