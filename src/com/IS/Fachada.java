@@ -1,7 +1,7 @@
 package com.IS;
 
 import business.ControladorAcessoOnline;
-import business.ControladorImoveis;
+import business.ControladorImovel;
 
 import util.Constantes;
 import util.Criptografia;
@@ -51,11 +51,11 @@ public class Fachada extends Activity {
             public void onClick(View v) {
             	v.clearAnimation();
 
-                if (ControladorImoveis.getInstancia().databaseExists(getBaseContext()) && 
-                	ControladorImoveis.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
+                if (ControladorImovel.getInstancia().databaseExists(getBaseContext()) && 
+                	ControladorImovel.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
                 	
-                	if (!ControladorImoveis.getInstancia().isPermissionGranted()){
-                    	ControladorImoveis.getInstancia().initiateDataManipulator(getBaseContext());
+                	if (!ControladorImovel.getInstancia().isPermissionGranted()){
+                    	ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
                 	}
                 	onPasswordDialogButtonClick(findViewById(R.id.buttonStart));			
 
@@ -92,11 +92,11 @@ public class Fachada extends Activity {
             	//Treinamento
             	ControladorAcessoOnline.getInstancia().setURL("http:/200.178.173.136:8080/gsan");
             	
-                if (ControladorImoveis.getInstancia().databaseExists(getBaseContext()) &&
-                	ControladorImoveis.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
+                if (ControladorImovel.getInstancia().databaseExists(getBaseContext()) &&
+                	ControladorImovel.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
                 	
-                	if (!ControladorImoveis.getInstancia().isPermissionGranted()){
-                    	ControladorImoveis.getInstancia().initiateDataManipulator(getBaseContext());
+                	if (!ControladorImovel.getInstancia().isPermissionGranted()){
+                    	ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
                 	}
                 	onPasswordDialogButtonClick(findViewById(R.id.buttonStart));			
 
@@ -109,11 +109,11 @@ public class Fachada extends Activity {
 	}
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (ControladorImoveis.getInstancia().databaseExists(getBaseContext()) &&
-        	ControladorImoveis.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
+        if (ControladorImovel.getInstancia().databaseExists(getBaseContext()) &&
+        	ControladorImovel.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
         	
-        	if (!ControladorImoveis.getInstancia().isPermissionGranted()){
-            	ControladorImoveis.getInstancia().initiateDataManipulator(getBaseContext());
+        	if (!ControladorImovel.getInstancia().isPermissionGranted()){
+            	ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
         	}
         	onPasswordDialogButtonClick(findViewById(R.id.buttonStart));			
 
@@ -125,8 +125,8 @@ public class Fachada extends Activity {
 	}
 	
 	public void onPasswordDialogButtonClick(View v) {
-	    if(!ControladorImoveis.getInstancia().isPermissionGranted()){
-	    	ControladorImoveis.getInstancia().getDataManipulator().selectGeral();
+	    if(!ControladorImovel.getInstancia().isPermissionGranted()){
+	    	ControladorImovel.getInstancia().getDataManipulator().selectGeral();
 
 	    	showDialog(Constantes.DIALOG_ID_PASSWORD);
 	    	
@@ -157,7 +157,7 @@ public class Fachada extends Activity {
 	        	
 	        	public void onClick(DialogInterface dialog, int whichButton) {
 	        		removeDialog(Constantes.DIALOG_ID_PASSWORD);
-	        		ControladorImoveis.getInstancia().setPermissionGranted(false);
+	        		ControladorImovel.getInstancia().setPermissionGranted(false);
 	        	}
 	        });
 	        	 
@@ -166,10 +166,10 @@ public class Fachada extends Activity {
 	        	      String strUsr = user.getText().toString();
 	        	      String strPass = password.getText().toString();
 	        		    
-	        	      if ( strUsr.equals(ControladorImoveis.getInstancia().getDadosGerais().getLogin()) && 
-	        	    	(Criptografia.encode(strPass).equals(ControladorImoveis.getInstancia().getDadosGerais().getSenha())) ){
+	        	      if ( strUsr.equals(ControladorImovel.getInstancia().getDadosGerais().getLogin()) && 
+	        	    	(Criptografia.encode(strPass).equals(ControladorImovel.getInstancia().getDadosGerais().getSenha())) ){
 	        	    	  
-	        	    	  ControladorImoveis.getInstancia().setPermissionGranted(true);
+	        	    	  ControladorImovel.getInstancia().setPermissionGranted(true);
 	        	    	  removeDialog(Constantes.DIALOG_ID_PASSWORD);
 	        	    	  
 	        	    	  Intent myIntent = new Intent(layout.getContext(), MenuPrincipal.class);
@@ -191,7 +191,7 @@ public class Fachada extends Activity {
     @Override
     public void onDestroy(){
     	
-        ControladorImoveis.getInstancia().finalizeDataManipulator();
+        ControladorImovel.getInstancia().finalizeDataManipulator();
     	super.onDestroy();
     	
     }

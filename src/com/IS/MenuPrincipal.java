@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import util.Constantes;
 import background.CarregarRotaThread;
 import background.GerarArquivoCompletoThread;
-import business.Controlador;
+import business.ControladorImovel;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -132,7 +132,7 @@ public class MenuPrincipal extends Activity {
                     boolean statusOk = true;
         	    	
                     // 	Verifica se todos os imoveis já foram visitados.
-        	    	ArrayList<String> listStatusImoveis = (ArrayList)Controlador.getInstancia().getDataManipulator().selectStatusImoveis(null);
+        	    	ArrayList<String> listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectStatusImoveis(null);
         	    	
         	    	for (int i=0; i < listStatusImoveis.size(); i++){
         	    		if ( Integer.parseInt(listStatusImoveis.get(i)) == Constantes.IMOVEL_PENDENTE ){
@@ -172,7 +172,7 @@ public class MenuPrincipal extends Activity {
         	int totalArquivoCompleto = msg.getData().getInt("arquivoCompleto" + String.valueOf(increment));
             progDialog.setProgress(totalArquivoCompleto);
             
-            if (totalArquivoCompleto >= Controlador.getInstancia().getDataManipulator().getNumeroCadastros() || 
+            if (totalArquivoCompleto >= ControladorImovel.getInstancia().getDataManipulator().getNumeroCadastros() || 
             	progThread.getCustomizedState() == CarregarRotaThread.DONE){
                 
             	dismissDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
@@ -208,14 +208,14 @@ public class MenuPrincipal extends Activity {
 	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        	public void onClick(DialogInterface dialog, int which) {
 	        		removeDialog(id);
-	        		Controlador.getInstancia().getDataManipulator().close();
-	        		Controlador.getInstancia().deleteDatabase();
-	        		Controlador.getInstancia().setPermissionGranted(false);
-	        		Controlador.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
+	        		ControladorImovel.getInstancia().getDataManipulator().close();
+	        		ControladorImovel.getInstancia().deleteDatabase();
+	        		ControladorImovel.getInstancia().setPermissionGranted(false);
+	        		ControladorImovel.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
 	        		
 	        	    Toast.makeText(getBaseContext(),"Todas as informações foram apagadas com sucesso!",Toast.LENGTH_LONG).show();
 
-	        	    Controlador.getInstancia().finalizeDataManipulator();
+	        	    ControladorImovel.getInstancia().finalizeDataManipulator();
         		    Intent myIntent = new Intent(layoutConfirmationDialog.getContext(), Fachada.class);
         	        startActivity(myIntent);
 
@@ -230,7 +230,7 @@ public class MenuPrincipal extends Activity {
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	            progDialog.setCancelable(false);
 	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
-	            progDialog.setMax(Controlador.getInstancia().getDataManipulator().getNumeroCadastros());
+	            progDialog.setMax(ControladorImovel.getInstancia().getDataManipulator().getNumeroCadastros());
 	            progThread = new GerarArquivoCompletoThread(handler, this, increment);
 	            progThread.start();
 	            return progDialog;

@@ -7,7 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import business.ControladorImoveis;
+import business.ControladorImovel;
 
 import helper.EfetuarRateioConsumoHelper;
 
@@ -55,15 +55,15 @@ public class DataManipulator {
 	}
 
 	public DadosGerais getDadosGerais() {
-		return ControladorImoveis.getInstancia().getDadosGerais();
+		return ControladorImovel.getInstancia().getDadosGerais();
 	}
 
 	public Medidor getMedidorSelecionado() {
-		return ControladorImoveis.getInstancia().getMedidorSelecionado();
+		return ControladorImovel.getInstancia().getMedidorSelecionado();
 	}
 
 	public Conta getContaSelecionado() {
-		return ControladorImoveis.getInstancia().getContaSelecionado();
+		return ControladorImovel.getInstancia().getContaSelecionado();
 	}
 
 	public void deleteTable(String tableName) {
@@ -434,7 +434,7 @@ public class DataManipulator {
 				anormalidade.setNumeroFatorSemLeitura(cursor.getString(9));
 				anormalidade.setNumeroFatorComLeitura(cursor.getString(10));
 				
-				ControladorImoveis.getInstancia().getAnormalidades().add(anormalidade);
+				ControladorImovel.getInstancia().getAnormalidades().add(anormalidade);
 
 			} while (cursor.moveToNext());
 		}
@@ -442,7 +442,7 @@ public class DataManipulator {
 			cursor.close();
 		}
 		cursor.close();
-		return ControladorImoveis.getInstancia().getAnormalidades();
+		return ControladorImovel.getInstancia().getAnormalidades();
 	}
 	
 	public Consumo selectConsumoImovelByTipoMedicao(int matricula, int tipoMedicao) {

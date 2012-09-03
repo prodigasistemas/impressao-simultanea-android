@@ -258,7 +258,7 @@ public class ControladorConta {
     	if ( ((imovelMacro.getIndcFaturamentoAgua() == SIM) ||  (imovelMacro.getIndcFaturamentoAgua() == NAO && imovelMacro.isImovelMicroCondominio()))&& 
     			imovelMacro.getIndicadorParalizarFaturamentoAgua() == NAO && !imovelComDebitoTipoCortado ) {
     		
-    		ControladorImoveis.getInstancia().calcularValores(imovelMacro, 
+    		ControladorImovel.getInstancia().calcularValores(imovelMacro, 
     			    										  consumoAgua,
     			    										  ControladorConta.LIGACAO_AGUA);
     	}
@@ -274,7 +274,7 @@ public class ControladorConta {
 
     	if ( (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM) && getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == NAO) {
     		
-    		ControladorImoveis.getInstancia().calcularValores(imovelMacro, 
+    		ControladorImovel.getInstancia().calcularValores(imovelMacro, 
     														  consumoEsgoto,
     														  ControladorConta.LIGACAO_POCO);
     	}
@@ -310,7 +310,7 @@ public class ControladorConta {
 	    int anormConsumo = Consumo.CONSUMO_ANORM_ESTOURO;
 
 	    int idImovelPerfil = Util
-		    .verificarNuloInt(ControladorImoveis.getInstancia().getImovelSelecionado().getCodigoPerfil());
+		    .verificarNuloInt(ControladorImovel.getInstancia().getImovelSelecionado().getCodigoPerfil());
 
 	    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
 
@@ -1605,7 +1605,7 @@ public class ControladorConta {
     }
     
     protected Imovel getImovelSelecionado(){
-    	return ControladorImoveis.getInstancia().getImovelSelecionado();
+    	return ControladorImovel.getInstancia().getImovelSelecionado();
     }
     
     public boolean recalcularContasCondominio(int idPrimeiroImovelMicro, int idUltimoImovelMicro, int consumoTipo){

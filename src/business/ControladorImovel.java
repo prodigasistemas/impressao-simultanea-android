@@ -36,9 +36,9 @@ import android.os.Message;
 import android.util.Log;
 import dataBase.DataManipulator;
 
-public class ControladorImoveis {
+public class ControladorImovel {
 
-    public static ControladorImoveis instancia;
+    public static ControladorImovel instancia;
 
     private boolean permissionGranted = false;
     private int qtdRegistros = 0;
@@ -60,25 +60,25 @@ public class ControladorImoveis {
 
 	DataManipulator dataManipulator;
     
-    public static ControladorImoveis getInstancia() {
+    public static ControladorImovel getInstancia() {
 
-    	if (ControladorImoveis.instancia == null) {
-			ControladorImoveis.instancia = new ControladorImoveis();
+    	if (ControladorImovel.instancia == null) {
+			ControladorImovel.instancia = new ControladorImovel();
 
 		}
-		return ControladorImoveis.instancia;
+		return ControladorImovel.instancia;
     }
 
     public Imovel getImovelSelecionado(){
-    	return ControladorImoveis.imovelSelecionado;
+    	return ControladorImovel.imovelSelecionado;
     }
     
     public Conta getContaSelecionado(){
-    	return ControladorImoveis.contaSelecionado;
+    	return ControladorImovel.contaSelecionado;
     }
 
     public Medidor getMedidorSelecionado(){
-    	return ControladorImoveis.medidorSelecionado;
+    	return ControladorImovel.medidorSelecionado;
     }
 //    
 //    public Servicos getServicosSelecionado(){
@@ -86,11 +86,11 @@ public class ControladorImoveis {
 //    }
 //    
     public DadosGerais getDadosGerais(){
-    	return ControladorImoveis.dadosGerais;
+    	return ControladorImovel.dadosGerais;
     }
     
     public Vector getAnormalidades(){
-    	return ControladorImoveis.anormalidades;
+    	return ControladorImovel.anormalidades;
     }
     
 //    public AnormalidadeImovel getAnormalidadeImovelSelecionado(){
@@ -110,11 +110,11 @@ public class ControladorImoveis {
 //    }
 //    
     public void setContaSelecionado(Conta contaSelecionado){
-    	ControladorImoveis.contaSelecionado = contaSelecionado;
+    	ControladorImovel.contaSelecionado = contaSelecionado;
     }
 
     public void setMedidorSelecionado(Medidor medidorSelecionado){
-    	ControladorImoveis.medidorSelecionado = medidorSelecionado;
+    	ControladorImovel.medidorSelecionado = medidorSelecionado;
     }
 //    
 //    public void setServicosSelecionado(Servicos servicosSelecionado){
@@ -126,11 +126,11 @@ public class ControladorImoveis {
 //    }
 //    
     public void setDadosGerais(DadosGerais dadosGerais){
-    	ControladorImoveis.dadosGerais = dadosGerais;
+    	ControladorImovel.dadosGerais = dadosGerais;
     }
     
     public void setAnormalidades(Vector anormalidades){
-    	ControladorImoveis.anormalidades = anormalidades;
+    	ControladorImovel.anormalidades = anormalidades;
     }
 //    
 //    public void setRamosAtividade(Registro ramosAtividade){
@@ -184,13 +184,13 @@ public class ControladorImoveis {
     		return 0;
  
     	}else{
-        	return Integer.parseInt(ControladorImoveis.getInstancia().getDataManipulator().selectIdImoveis(condition).get(listPosition));
+        	return Integer.parseInt(ControladorImovel.getInstancia().getDataManipulator().selectIdImoveis(condition).get(listPosition));
      	}
     }
     
     public int getImovelListPositionById(long id){
     	int position = 0;
-    	ArrayList<String> listIds = (ArrayList<String>) ControladorImoveis.getInstancia().getDataManipulator().selectIdImoveis(null);
+    	ArrayList<String> listIds = (ArrayList<String>) ControladorImovel.getInstancia().getDataManipulator().selectIdImoveis(null);
     	
     	for(int i = 0; i < listIds.size(); i++){
     		if (id == Long.parseLong(listIds.get(i))){
@@ -455,7 +455,7 @@ public class ControladorImoveis {
 		} else {	
 		    
 			// carrega os id's de cada anormalidade
-			Vector anors = carregarVetorAnormalidades(ControladorImoveis.anormalidades, apenasComIndicadorUso1);
+			Vector anors = carregarVetorAnormalidades(ControladorImovel.anormalidades, apenasComIndicadorUso1);
 			
 		    if (apenasComIndicadorUso1) {
 		    	anormalidadesIndicadorUso1 = anors;

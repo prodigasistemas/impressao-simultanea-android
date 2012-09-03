@@ -78,7 +78,7 @@ package model;
 
 import java.util.Vector;
 
-import business.ControladorImoveis;
+import business.ControladorImovel;
 
 import util.Constantes;
 import util.Util;
@@ -139,10 +139,10 @@ public class Configuracao {
 
     public void incrementarContadorVisitados() {
 
-		if (ControladorImoveis.getInstancia().getImovelSelecionado()
+		if (ControladorImovel.getInstancia().getImovelSelecionado()
 			.getRegistro8(Constantes.LIGACAO_AGUA) != null) {
 	
-		    int anormalidade = ControladorImoveis.getInstancia()
+		    int anormalidade = ControladorImovel.getInstancia()
 			    .getImovelSelecionado().getRegistro8(
 				    Constantes.LIGACAO_AGUA).getAnormalidade();
 	
@@ -153,9 +153,9 @@ public class Configuracao {
 		    	this.setContadorVisitadosAnormalidade(Configuracao.getInstancia().getContadorVisitadosAnormalidade() + 1);
 		    }
 		
-		} else if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
+		} else if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
 	
-		    int anormalidade = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getAnormalidade();
+		    int anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getAnormalidade();
 	
 		    if (anormalidade == 0) {
 		    	this.setContadorVisitadosSemAnormalidade(Configuracao.getInstancia().getContadorVisitadosSemAnormalidade() + 1);
@@ -166,7 +166,7 @@ public class Configuracao {
 		}
 	
 		this.setContadorVisitados(Configuracao.getInstancia().getContadorVisitados() + 1);
-		ControladorImoveis.getInstancia().getDataManipulator().salvarConfiguracao(Configuracao.getInstancia());
+		ControladorImovel.getInstancia().getDataManipulator().salvarConfiguracao(Configuracao.getInstancia());
 //		Repositorio.salvarObjeto(Configuracao.getInstancia());
 		System.out.println("Visitados: " + this.getContadorVisitados());
     }
@@ -226,7 +226,7 @@ public class Configuracao {
     public static Configuracao getInstancia() {
 
 	    if (Configuracao.instancia == null) {
-		    ControladorImoveis.getInstancia().getDataManipulator().selectConfiguracao();
+		    ControladorImovel.getInstancia().getDataManipulator().selectConfiguracao();
 	
 		    if (instancia == null) {
 		    	instancia = new Configuracao();

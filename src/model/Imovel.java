@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import business.ControladorConta;
-import business.ControladorImoveis;
+import business.ControladorImovel;
 
 import util.Constantes;
 import util.Util;
@@ -433,7 +433,7 @@ public class Imovel {
 //	int leitura = Constantes.NULO_INT;
 
 	Integer id = new Integer(this.id);
-	int quadra = ControladorImoveis.getInstancia().getImovelSelecionado().getQuadra();
+	int quadra = ControladorImovel.getInstancia().getImovelSelecionado().getQuadra();
 	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
 		.valueOf(quadra));
 	boolean temConsumo = true;
@@ -450,10 +450,10 @@ public class Imovel {
 		if (!dadosRelatorio.idsNaoLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsNaoLidosRelatorio.addElement(id);
 
-		    if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
-			leituraRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 				Constantes.LIGACAO_AGUA).getLeituraRelatorio();
-			anormalidadeRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 				Constantes.LIGACAO_AGUA)
 				.getAnormalidadeRelatorio();
 
@@ -480,9 +480,9 @@ public class Imovel {
 			}
 		    }
 
-		    ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
 			    .setLeituraRelatorio(Constantes.NULO_INT);
-		    ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
 			    .setAnormalidadeRelatorio(Constantes.NULO_INT);
 
 		}
@@ -494,25 +494,25 @@ public class Imovel {
 
 	if (dadosRelatorio.idsNaoLidosRelatorio != null) {
 
-	    if (temConsumo && ControladorImoveis.getInstancia().getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM) {
+	    if (temConsumo && ControladorImovel.getInstancia().getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM) {
 
 		dadosRelatorio.idsNaoLidosRelatorio.removeElement(id);
 
-		if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
-		    anormalidade = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
+		if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
 			    .getAnormalidade();
-		    anormalidadeRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 			    Constantes.LIGACAO_AGUA).getAnormalidadeRelatorio();
-		    leituraRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 			    Constantes.LIGACAO_AGUA).getLeituraRelatorio();
 		}
 
 		if (!dadosRelatorio.idsLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsLidosRelatorio.addElement(id);
 
-		    if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
 
-			anormalidade = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 				Constantes.LIGACAO_AGUA).getAnormalidade();
 
 			/**
@@ -535,7 +535,7 @@ public class Imovel {
 			 * Caso o imóvel seja não medido, o mesmo será inserido
 			 * como lido com leitura nas informações do relatório
 			 */
-			if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) == null) {
+			if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) == null) {
 			    Util.inserirValoresStringRelatorio("("
 				    + stringQuadra + ")", false, true);
 			}
@@ -547,7 +547,7 @@ public class Imovel {
 		    // lido novamente colocando uma anormalidade
 		    // o mesmo deve ser retirado do relatorio como lido com
 		    // leitura e inserido como lido com anormalidade
-		    if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
 
 			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
 
@@ -596,7 +596,7 @@ public class Imovel {
 //	int leitura = Constantes.NULO_INT;
 
 	Integer id = new Integer(this.id);
-	int quadra = ControladorImoveis.getInstancia().getImovelSelecionado().getQuadra();
+	int quadra = ControladorImovel.getInstancia().getImovelSelecionado().getQuadra();
 	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
 		.valueOf(quadra));
 	boolean temConsumo = true;
@@ -613,11 +613,11 @@ public class Imovel {
 		if (!dadosRelatorio.idsNaoLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsNaoLidosRelatorio.addElement(id);
 
-		    if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
-			    && ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
-			leituraRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
+			    && ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
+			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 				Constantes.LIGACAO_POCO).getLeituraRelatorio();
-			anormalidadeRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 				Constantes.LIGACAO_POCO)
 				.getAnormalidadeRelatorio();
 
@@ -644,9 +644,9 @@ public class Imovel {
 			}
 		    }
 
-		    ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
 			    .setLeituraRelatorio(Constantes.NULO_INT);
-		    ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
 			    .setAnormalidadeRelatorio(Constantes.NULO_INT);
 
 		}
@@ -658,26 +658,26 @@ public class Imovel {
 
 	if (dadosRelatorio.idsNaoLidosRelatorio != null) {
 
-	    if (temConsumo && ControladorImoveis.getInstancia().getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM) {
+	    if (temConsumo && ControladorImovel.getInstancia().getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM) {
 
 		dadosRelatorio.idsNaoLidosRelatorio.removeElement(id);
 
-		if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
-		    anormalidade = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
+		if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
+		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
 			    .getAnormalidade();
-		    anormalidadeRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 			    Constantes.LIGACAO_POCO).getAnormalidadeRelatorio();
-		    leituraRelatorio = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 			    Constantes.LIGACAO_POCO).getLeituraRelatorio();
 		}
 
 		if (!dadosRelatorio.idsLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsLidosRelatorio.addElement(id);
 
-		    if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
-			    && ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
+			    && ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
 
-			anormalidade = ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
 				Constantes.LIGACAO_POCO).getAnormalidade();
 
 			/**
@@ -696,8 +696,8 @@ public class Imovel {
 			}
 
 		    } else {
-			if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null
-				&& ControladorImoveis.getInstancia().getImovelSelecionado().getConsumoAgua() == null) {
+			if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null
+				&& ControladorImovel.getInstancia().getImovelSelecionado().getConsumoAgua() == null) {
 
 			    /**
 			     * Caso o imóvel seja não medido, o mesmo será
@@ -715,8 +715,8 @@ public class Imovel {
 		    // lido novamente colocando uma anormalidade
 		    // o mesmo deve ser retirado do relatorio como lido com
 		    // leitura e inserido como lido com anormalidade
-		    if (ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
-			    && ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
+			    && ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
 			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
 
 			    Util.inserirValoresStringRelatorioConsumoNulo("("
@@ -2480,7 +2480,7 @@ public class Imovel {
 		|| ligacaoPoco.getAnormalidade() == 0 ? Constantes.NULO_INT
 		: ligacaoPoco.getAnormalidade());
 
-	Vector anormalidades = ControladorImoveis.getInstancia().getAnormalidades(false);
+	Vector anormalidades = ControladorImovel.getInstancia().getAnormalidades(false);
 	AbaHidrometroAgua aha = AbaHidrometroAgua.getInstancia();
 	AbaHidrometroPoco ahp = AbaHidrometroPoco.getInstancia();
 
@@ -2529,7 +2529,7 @@ public class Imovel {
 
 	    // Repositorio.carregarObjeto(ControladorImoveis.getInstancia().getImovelSelecionado(), this.id);
 
-	    int codigoAnormalidadeAguaGravado = ControladorImoveis.getInstancia().getImovelSelecionado().getAnormalidadeGravadaAnterior();
+	    int codigoAnormalidadeAguaGravado = ControladorImovel.getInstancia().getImovelSelecionado().getAnormalidadeGravadaAnterior();
 //	    Daniel
 	    if(codigoAnormalidadeAguaGravado != 0){
 	    	
@@ -2537,9 +2537,9 @@ public class Imovel {
 	    System.out.println("codigoAnormalidadeAguaGravado: " + codigoAnormalidadeAguaGravado);
 	    // int leituraGravadaAgua =
 	    // ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getLeitura();
-	    int leituraGravadaAgua = ControladorImoveis.getInstancia().getImovelSelecionado().getLeituraGravadaAnterior();
+	    int leituraGravadaAgua = ControladorImovel.getInstancia().getImovelSelecionado().getLeituraGravadaAnterior();
 
-	    Anormalidade anormalidadeAbaAgua = (Anormalidade) ControladorImoveis.getInstancia().getAnormalidades(false).elementAt(AbaHidrometroAgua.getInstancia().getAnormalidadeIndex());
+	    Anormalidade anormalidadeAbaAgua = (Anormalidade) ControladorImovel.getInstancia().getAnormalidades(false).elementAt(AbaHidrometroAgua.getInstancia().getAnormalidadeIndex());
 
 	    int leituraAbaAgua = Util.verificarNuloInt(AbaHidrometroAgua .getInstancia().getLeitura());
 	    int codigoAnormalidadeAbaAgua = anormalidadeAbaAgua.getCodigo();
@@ -2551,13 +2551,13 @@ public class Imovel {
 
 	if (ligacaoPoco != null) {
 
-	    int codigoAnormalidadePocoGravado = ControladorImoveis.getInstancia().getImovelSelecionado()
+	    int codigoAnormalidadePocoGravado = ControladorImovel.getInstancia().getImovelSelecionado()
 		    .getAnormalidadeGravadaAnterior();
 
-	    int leituraGravadaPoco = ControladorImoveis.getInstancia().getImovelSelecionado()
+	    int leituraGravadaPoco = ControladorImovel.getInstancia().getImovelSelecionado()
 		    .getLeituraGravadaAnterior();
 
-	    Anormalidade anormalidadeAbaPoco = (Anormalidade) ControladorImoveis.getInstancia()
+	    Anormalidade anormalidadeAbaPoco = (Anormalidade) ControladorImovel.getInstancia()
 		    .getAnormalidades(false).elementAt(
 			    AbaHidrometroPoco.getInstancia()
 				    .getAnormalidadeIndex());
@@ -2573,7 +2573,7 @@ public class Imovel {
 	}
 
 	if (ligacaoAgua == null && ligacaoPoco == null) {
-	    if (ControladorImoveis.getInstancia().getImovelSelecionado()
+	    if (ControladorImovel.getInstancia().getImovelSelecionado()
 		    .getIndcImovelImpresso() == Constantes.NAO) {
 		isImovelAlterado = true;
 	    }
@@ -2595,7 +2595,7 @@ public class Imovel {
 	Medidor ligacaoAgua = this.getRegistro8(Constantes.LIGACAO_AGUA);
 	Medidor ligacaoPoco = this.getRegistro8(Constantes.LIGACAO_POCO);
 
-	Vector anormalidades = ControladorImoveis.getInstancia().getAnormalidades(false);
+	Vector anormalidades = ControladorImovel.getInstancia().getAnormalidades(false);
 	AbaHidrometroAgua aha = AbaHidrometroAgua.getInstancia();
 	AbaHidrometroPoco ahp = AbaHidrometroPoco.getInstancia();
 
@@ -2731,14 +2731,14 @@ public class Imovel {
 
 	    if (consumoAgua != null) {
 
-			boolean valorContaMaiorPermitido = ControladorImoveis.getInstancia().getImovelSelecionado().isValorContaMaiorPermitido();
+			boolean valorContaMaiorPermitido = ControladorImovel.getInstancia().getImovelSelecionado().isValorContaMaiorPermitido();
 	
-			if (ControladorImoveis.getInstancia().getImovelSelecionado().consumoAgua != null) {
+			if (ControladorImovel.getInstancia().getImovelSelecionado().consumoAgua != null) {
 			    // Removemos do total o consumo calculado anteriormente,
 			    // para logo mais abaixo, adicionamos o novo consumo
 			    helper.setConsumoLigacaoAguaTotal(helper
 				    .getConsumoLigacaoAguaTotal()
-				    - ControladorImoveis.getInstancia().getImovelSelecionado().consumoAgua.getConsumoCobradoMesOriginal());
+				    - ControladorImovel.getInstancia().getImovelSelecionado().consumoAgua.getConsumoCobradoMesOriginal());
 			}
 	
 			// Adicionamos o consumo de agua total
@@ -2769,13 +2769,13 @@ public class Imovel {
 
 	    if (consumoEsgoto != null) {
 
-		if (ControladorImoveis.getInstancia().getImovelSelecionado().consumoEsgoto != null) {
+		if (ControladorImovel.getInstancia().getImovelSelecionado().consumoEsgoto != null) {
 		    // Removemos do total o consumo calculado anteriormente,
 		    // para logo mais abaixo, adicionarmos o novo consumo
 		    helper
 			    .setConsumoLigacaoEsgotoTotal(helper
 				    .getConsumoLigacaoEsgotoTotal()
-				    - ControladorImoveis.getInstancia().getImovelSelecionado().consumoEsgoto
+				    - ControladorImovel.getInstancia().getImovelSelecionado().consumoEsgoto
 					    .getConsumoCobradoMesOriginal());
 		}
 
