@@ -47,10 +47,10 @@ public class ListaImoveis extends ListActivity {
     private void loadEnderecoImoveis(){
     	
     	if (Controlador.getInstancia() != null){
-    		if (Controlador.getInstancia().getCadastroDataManipulator() != null){
+    		if (Controlador.getInstancia().getDataManipulator() != null){
     			
-    	    	listStatusImoveis = (ArrayList)Controlador.getInstancia().getCadastroDataManipulator().selectStatusImoveis(null);
-    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)Controlador.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(null);
+    	    	listStatusImoveis = (ArrayList)Controlador.getInstancia().getDataManipulator().selectStatusImoveis(null);
+    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)Controlador.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
     	    	
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);

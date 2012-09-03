@@ -1,9 +1,12 @@
 package model;
 
-import helper.EfetuarRateioConsumoDispositivoMovelHelper;
+import helper.EfetuarRateioConsumoHelper;
 
 import java.util.Date;
 import java.util.Vector;
+
+import business.ControladorConta;
+import business.ControladorImoveis;
 
 import util.Constantes;
 import util.Util;
@@ -23,6 +26,7 @@ public class Imovel {
     public static final int PERFIL_CONDOMINIAL = 9;
     public static final int PERFIL_COLABORADOR = 10;
 
+    private long id;
 	private int matricula;
     private String nomeGerenciaRegional;
     private String nomeEscritorio;
@@ -129,10 +133,6 @@ public class Imovel {
     private Date dataEmissaoDocumento;
     
     
-
-    
-    
-    
     
     // ================= Estao no banco, mas nao estao na rota (.txt) ===================
     private int quantidadeContasImpressas = 0;
@@ -150,32 +150,61 @@ public class Imovel {
     private double valorRateioEsgoto;
     private int consumoRateioAgua;
     private int consumoRateioEsgoto;
-    // ====================================================================================
+    private String mensagemEstouroConsumo1;
+    private String mensagemEstouroConsumo2;
+    private String mensagemEstouroConsumo3;
+    private int imovelStatus;
+    private int imovelEnviado;
+    private int indcImovelEnviado = Constantes.NAO;
+    private int indcImovelImpresso = Constantes.NAO;
+    private int indcGeracao = Constantes.SIM;
 
+    // ====================================================================================
 
     
   //===== Nao estao no banco de dados!! =========
     private Consumo consumoEsgoto;
     private Consumo consumoAgua;
     private SituacaoTipo situacaoTipo;
-    private EfetuarRateioConsumoDispositivoMovelHelper efetuarRateioConsumoDispositivoMovelHelper;
-    private int indcImovelImpresso = Constantes.NAO;
+    private EfetuarRateioConsumoHelper efetuarRateioConsumoDispositivoMovelHelper;
     private int indcImovelCalculado = Constantes.NAO;
-    private int indcGeracao = Constantes.SIM;
     private int anormalidadeSemHidrometro = Constantes.NULO_INT;
     private int indcImoveldo = Constantes.NAO;
-    private int indcImovelEnviado = Constantes.NAO;
     private int idImovelCondominio = Constantes.NULO_INT;
     private int sequencialRotaMarcacao = Constantes.NULO_INT;
-    private String mensagemEstouroConsumo1;
-    private String mensagemEstouroConsumo2;
-    private String mensagemEstouroConsumo3;
+    private int indcImoveisVisitados = 0;
+
     //=============================================
     
+    private Vector registros2;
+    private Vector registros3;
+    private Vector registros4;
+    private Vector registros5;
+    private Vector registros6;
+    private Vector registros7;
+    private Vector registros8;
+    private Vector registros9;
+    private Vector registros10;
     
+	public void setImovelStatus(String imovelStatus) {
+		this.imovelStatus = Util.verificarNuloInt(imovelStatus);
+	}
+	
+	public void setImovelEnviado(String imovelEnviado) {
+		this.imovelEnviado = Util.verificarNuloInt(imovelEnviado);
+	}
+	
     public boolean isIndcAdicionouDadosIniciaisHelperRateio() {
-	return indcAdicionouDadosIniciaisHelperRateio;
+    	return indcAdicionouDadosIniciaisHelperRateio;
     }
+
+	public int getImovelStatus() {
+		return this.imovelStatus;
+	}
+
+	public int isImovelEnviado() {
+		return this.imovelEnviado;
+	}
 
 	public double getValorRateioAgua() {
 		return valorRateioAgua;
@@ -215,29 +244,29 @@ public class Imovel {
     }
 
     public void setEfetuarRateioConsumoDispositivoMovelHelper(
-	    EfetuarRateioConsumoDispositivoMovelHelper efetuarRateioConsumoDispositivoMovelHelper) {
+	    EfetuarRateioConsumoHelper efetuarRateioConsumoDispositivoMovelHelper) {
 	this.efetuarRateioConsumoDispositivoMovelHelper = efetuarRateioConsumoDispositivoMovelHelper;
     }
 
-    public EfetuarRateioConsumoDispositivoMovelHelper getEfetuarRateioConsumoDispositivoMovelHelper() {
+    public EfetuarRateioConsumoHelper getEfetuarRateioConsumoDispositivoMovelHelper() {
 
-	if (this.indcCondominio == Constantes.SIM
-		|| this.idImovelCondominio != Constantes.NULO_INT) {
+	if (this.indcCondominio == Constantes.SIM || this.idImovelCondominio != Constantes.NULO_INT) {
 
-	    int idImovelMacro = Constantes.NULO_INT;
+	    long idImovelMacro = Constantes.NULO_INT;
 
 	    if (this.indcCondominio == Constantes.SIM) {
-		idImovelMacro = this.getId();
+	    	idImovelMacro = this.getId();
+	    
 	    } else {
-		idImovelMacro = this.getIdImovelCondominio();
+	    	idImovelMacro = this.getIdImovelCondominio();
 	    }
 
 	    if (this.efetuarRateioConsumoDispositivoMovelHelper == null) {
-		this.efetuarRateioConsumoDispositivoMovelHelper = new EfetuarRateioConsumoDispositivoMovelHelper(
-			idImovelMacro, id + quantidadeImoveisCondominio - 1);
-
-		// Salvamos as informações obtidas
-		Repositorio.salvarObjeto(this);
+			this.efetuarRateioConsumoDispositivoMovelHelper = new EfetuarRateioConsumoHelper(
+				idImovelMacro, id + quantidadeImoveisCondominio - 1);
+	
+			// Salvamos as informações obtidas
+			Repositorio.salvarObjeto(this);
 	    }
 	}
 
@@ -720,16 +749,6 @@ public class Imovel {
 
 	Repositorio.salvarObjeto(dadosRelatorio);
     }
-
-    private Vector registros2;
-    private Vector registros3;
-    private Vector registros4;
-    private Vector registros5;
-    private Vector registros6;
-    private Vector registros7;
-    private Vector registros8;
-    private Vector registros9;
-    private Vector registros10;
 
     public void setMatricula(String matricula) {
 	this.matricula = Util.verificarNuloInt(matricula);
@@ -1598,7 +1617,7 @@ public class Imovel {
 		this.registros5.addElement(reg);
     }
 
-    public void adicionaRegistro6(ImovelReg6 reg) {
+    public void adicionaRegistro6(Imposto reg) {
 	if (this.registros6 == null) {
 	    this.registros6 = new Vector();
 	}
@@ -1995,28 +2014,28 @@ public class Imovel {
 	return Util.arredondar(soma, 2);
     }
 
-    public double getValorContaSemImposto() {
+    public double getValorContaSem() {
 
-	double valorContaSemImposto = (this.getValorAgua()
+	double valorContaSem = (this.getValorAgua()
 		+ this.getValorEsgoto() + this.getValorDebitos() 
 		+ this.getValorRateioAgua() + this.getValorRateioEsgoto())
 		- this.getValorCreditos();
 
-	if (valorContaSemImposto < 0d) {
-	    valorContaSemImposto = 0d;
+	if (valorContaSem < 0d) {
+	    valorContaSem = 0d;
 	}
-	return Util.arredondar(valorContaSemImposto, 2);
+	return Util.arredondar(valorContaSem, 2);
     }
 
-    public double getValorImpostos() {
+    public double getValors() {
 	double soma = 0d;
 	if (registros6 != null) {
 	    for (int i = 0; i < this.registros6.size(); i++) {
-		double percentualAlicota = ((ImovelReg6) (this.registros6
+		double percentualAlicota = ((Imposto) (this.registros6
 			.elementAt(i))).getPercentualAlicota();
-		double valorImposto = this.getValorContaSemImposto()
+		double valor = this.getValorContaSem()
 			* Util.arredondar((percentualAlicota / 100), 7);
-		soma += valorImposto;
+		soma += valor;
 	    }
 	}
 
@@ -2025,8 +2044,8 @@ public class Imovel {
 
     public double getValorConta() {
 
-	double valorConta = this.getValorContaSemImposto()
-		- this.getValorImpostos();
+	double valorConta = this.getValorContaSem()
+		- this.getValors();
 	if (valorConta < 0d) {
 	    valorConta = 0d;
 	}
@@ -2038,7 +2057,7 @@ public class Imovel {
 	double valorContaSemCreditos = (this.getValorAgua()
 		+ this.getValorEsgoto() + this.getValorDebitos() 
 		+ this.getValorRateioAgua() + this.getValorRateioEsgoto()
-		- this.getValorImpostos());
+		- this.getValors());
 
 	return Util.arredondar(valorContaSemCreditos, 2);
     }
@@ -2079,11 +2098,11 @@ public class Imovel {
 	return inscricao;
     }
 
-    public void setId(int arg0) {
-	this.id = arg0;
+    public void setId(long imovelId) {
+	this.id = imovelId;
     }
 
-    public int getId() {
+    public long getId() {
 	return id;
     }
 
@@ -2461,7 +2480,7 @@ public class Imovel {
 		|| ligacaoPoco.getAnormalidade() == 0 ? Constantes.NULO_INT
 		: ligacaoPoco.getAnormalidade());
 
-	Vector anormalidades = FileManager.getAnormalidades(false);
+	Vector anormalidades = ControladorImoveis.getInstancia().getAnormalidades(false);
 	AbaHidrometroAgua aha = AbaHidrometroAgua.getInstancia();
 	AbaHidrometroPoco ahp = AbaHidrometroPoco.getInstancia();
 
@@ -2520,7 +2539,7 @@ public class Imovel {
 	    // ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getLeitura();
 	    int leituraGravadaAgua = ControladorImoveis.getInstancia().getImovelSelecionado().getLeituraGravadaAnterior();
 
-	    Anormalidade anormalidadeAbaAgua = (Anormalidade) FileManager.getAnormalidades(false).elementAt(AbaHidrometroAgua.getInstancia().getAnormalidadeIndex());
+	    Anormalidade anormalidadeAbaAgua = (Anormalidade) ControladorImoveis.getInstancia().getAnormalidades(false).elementAt(AbaHidrometroAgua.getInstancia().getAnormalidadeIndex());
 
 	    int leituraAbaAgua = Util.verificarNuloInt(AbaHidrometroAgua .getInstancia().getLeitura());
 	    int codigoAnormalidadeAbaAgua = anormalidadeAbaAgua.getCodigo();
@@ -2538,7 +2557,7 @@ public class Imovel {
 	    int leituraGravadaPoco = ControladorImoveis.getInstancia().getImovelSelecionado()
 		    .getLeituraGravadaAnterior();
 
-	    Anormalidade anormalidadeAbaPoco = (Anormalidade) FileManager
+	    Anormalidade anormalidadeAbaPoco = (Anormalidade) ControladorImoveis.getInstancia()
 		    .getAnormalidades(false).elementAt(
 			    AbaHidrometroPoco.getInstancia()
 				    .getAnormalidadeIndex());
@@ -2576,7 +2595,7 @@ public class Imovel {
 	Medidor ligacaoAgua = this.getRegistro8(Constantes.LIGACAO_AGUA);
 	Medidor ligacaoPoco = this.getRegistro8(Constantes.LIGACAO_POCO);
 
-	Vector anormalidades = FileManager.getAnormalidades(false);
+	Vector anormalidades = ControladorImoveis.getInstancia().getAnormalidades(false);
 	AbaHidrometroAgua aha = AbaHidrometroAgua.getInstancia();
 	AbaHidrometroPoco ahp = AbaHidrometroPoco.getInstancia();
 
@@ -2645,7 +2664,7 @@ public class Imovel {
 	    Imovel hidrometroMacro = new Imovel();
 	    Repositorio.carregarObjeto(hidrometroMacro, this.idImovelCondominio);
 
-	    EfetuarRateioConsumoDispositivoMovelHelper helper = hidrometroMacro
+	    EfetuarRateioConsumoHelper helper = hidrometroMacro
 		    .getEfetuarRateioConsumoDispositivoMovelHelper();
 
 	    // Apenas adicionamos a quantidade de economias,
@@ -2667,17 +2686,6 @@ public class Imovel {
 
 			helper.setQuantidadeEconomiasAguaTotal(helper.getQuantidadeEconomiasAguaTotal() + quantidadeEconomiasImovel);
 
-		    // Verificamos se o imovel é medido ou não medido...
-//		    if (ligacaoAguaImovelMicro != null) {
-//			helper.setQuantidadeEconomiasAguaMedidas(helper
-//				.getQuantidadeEconomiasAguaMedidas()
-//				+ quantidadeEconomiasImovel);
-			// Caso contrário
-//		    } else {
-//			helper.setQuantidadeEconomiasAguaNaoMedidas(helper
-//				.getQuantidadeEconomiasAguaNaoMedidas()
-//				+ quantidadeEconomiasImovel);
-//		    }
 		}
 
 		// Verifica se o imóvel é faturado de esgoto
@@ -2709,33 +2717,10 @@ public class Imovel {
 
 			helper.setQuantidadeEconomiasEsgotoTotal(helper.getQuantidadeEconomiasEsgotoTotal() + quantidadeEconomiasImovel);
 
-//			if (ligacaoAguaImovelMicro != null) {
-//			    helper.setQuantidadeEconomiasEsgotoMedidas(helper
-//				    .getQuantidadeEconomiasEsgotoMedidas()
-//				    + quantidadeEconomiasImovel);
-			    // Caso contrário
-//			} else {
-//			    helper
-//				    .setQuantidadeEconomiasEsgotoNaoMedidas(helper
-//					    .getQuantidadeEconomiasEsgotoNaoMedidas()
-//					    + quantidadeEconomiasImovel);
-//			}
 		    } else {
 			Medidor ligacaoEsgotoImovelMicro = this
 				.getRegistro8(Constantes.LIGACAO_POCO);
 
-			// Verificamos se o imovel é medido ou não medido...
-//			if (ligacaoEsgotoImovelMicro != null) {
-//			    helper.setQuantidadeEconomiasEsgotoMedidas(helper
-//				    .getQuantidadeEconomiasEsgotoMedidas()
-//				    + quantidadeEconomiasImovel);
-			    // Caso contrário
-//			} else {
-//			    helper
-//				    .setQuantidadeEconomiasEsgotoNaoMedidas(helper
-//					    .getQuantidadeEconomiasEsgotoNaoMedidas()
-//					    + quantidadeEconomiasImovel);
-//			}
 		    }
 		}
 		
@@ -2767,14 +2752,14 @@ public class Imovel {
 				consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
 				consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO ){
 				
-					helper.setReterImpressaoConta(true);
+					helper.setReterImpressaoConta(Constantes.SIM);
 			}
 	
 			//Daniel - Veifica se houve anormalidade de leitura para reter conta.
 			if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
 				consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
 				
-					helper.setReterImpressaoConta(true);
+					helper.setReterImpressaoConta(Constantes.SIM);
 			}
 			// Daniel - desconsiderando caso de nao imprimir contas abaixo do permitido para condomínio.
 //			if (valorContaMaiorPermitido){
@@ -2813,14 +2798,14 @@ public class Imovel {
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO ){
 
-				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(true);
+				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(Constantes.SIM);
 			}
 	
 			//Daniel - Veifica se houve anormalidade de leitura para reter conta.
 			if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
 				consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
 				
-				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(true);
+				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(Constantes.SIM);
 			}
 	    }
 	    Repositorio.salvarObjeto(this);
@@ -2850,7 +2835,7 @@ public class Imovel {
      */
     private void removerAdicionarIdImovelCondominioLidoHelperResumo(
 	    Consumo consumo) {
-	EfetuarRateioConsumoDispositivoMovelHelper helper = null;
+	EfetuarRateioConsumoHelper helper = null;
 	Imovel macro = null;
 
 	if (this.getIdImovelCondominio() != Constantes.NULO_INT) {

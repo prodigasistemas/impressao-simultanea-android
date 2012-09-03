@@ -46,6 +46,7 @@ public class Constantes {
     public static final int REGISTRO_TIPO_TARIFACAO_MINIMA = 9;
     public static final int REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR = 10;
     public static final int REGISTRO_TIPO_GERAL = 11;
+    public static final int REGISTRO_TIPO_CONSUMO_ANORMALIDADE_ACAO = 12;
     public static final int REGISTRO_TIPO_ANORMALIDADE = 14;
     
     public static final int SIM = 1;
@@ -78,20 +79,22 @@ public class Constantes {
     public static final String TABLE_IMOVEL = "imovel";
     public static final String TABLE_DADOS_CATEGORIA = "dados_categoria";
     public static final String TABLE_HISTORICO_CONSUMO = "historico_consumo";
+    public static final String TABLE_CREDITO = "credito";
+    public static final String TABLE_DEBITO = "debito";
     public static final String TABLE_IMPOSTO = "imposto";
     public static final String TABLE_CONTA = "conta";
     public static final String TABLE_MEDIDOR = "medidor";
     public static final String TABLE_TARIFACAO_MINIMA = "tarifacao_minima";
     public static final String TABLE_TARIFACAO_COMPLEMENTAR = "tarifacao_complementar";
     public static final String TABLE_GERAL = "geral";
+    public static final String TABLE_CONSUMO_ANORMALIDADE_ACAO = "consumo_anormalidade_acao";
     public static final String TABLE_ANORMALIDADE = "anormalidade";
     public static final String TABLE_CONSUMO_IMOVEL = "consumo_imovel";
     public static final String TABLE_FATURAMENTO_IMOVEL = "faturamento_imovel";
     public static final String TABLE_CONFIGURACAO = "configuracao";
     public static final String TABLE_ANORMALIDADE_IMOVEL = "anormalidade_imovel";
     public static final String TABLE_SITUACAO_TIPO = "situacao_tipo";
-    public static final String TABLE_CREDITO = "credito";
-    public static final String TABLE_DEBITO = "debito";
+    public static final String TABLE_RATEIO_CONSUMO_HELPER = "rateio_consumo_helper";
     
     public static final String DATABASE_NAME = "ImpressaoSimultanea.db";
 	public static final String DATABASE_PATH = "/data/data/com.IS/databases/";
@@ -122,6 +125,8 @@ public class Constantes {
      */
     public static final String CODIGO_FEBRABAN_CAERN = "0006";
 
+    public static final short PAPEL_REGISPEL = 0;
+    public static final short PAPEL_CENTAURO = 1;
     
     /**
      * Valor constante padrão para a leitura inválida.

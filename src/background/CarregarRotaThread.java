@@ -1,7 +1,7 @@
 package background;
 
+import business.ControladorImoveis;
 import ui.FileManager;
-import business.Controlador;
 import android.content.Context;
 import android.os.Handler;
     
@@ -44,10 +44,10 @@ public class CarregarRotaThread extends Thread {
     	FileManager.getInstancia();
 		
     	if ( fileName.endsWith(".txt") ){
-			Controlador.getInstancia().carregarDadosParaRecordStore(FileManager.readFile(fileName), mHandler, context);
+			ControladorImoveis.getInstancia().carregarDadosParaRecordStore(FileManager.readFile(fileName), mHandler, context);
 
 		} else {
-			Controlador.getInstancia().carregarDadosParaRecordStore(FileManager.readCompressedFile(fileName), mHandler, context);
+			ControladorImoveis.getInstancia().carregarDadosParaRecordStore(FileManager.readCompressedFile(fileName), mHandler, context);
 			
 		}
     	mState = DONE;

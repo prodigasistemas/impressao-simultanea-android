@@ -1,27 +1,19 @@
 package model;
 
+import util.Util;
+
 public class Anormalidade {
 
 	private int codigo;
-
 	private String descricao;
-
 	private int indicadorLeitura;
-
 	private int idConsumoACobrarSemLeitura;
-
 	private int idConsumoACobrarComLeitura;
-
 	private int idLeituraFaturarSemLeitura;
-
 	private int idLeituraFaturarComLeitura;
-
 	private int indcUso;
-
-	private int id;
-
+	private long id;
 	private double numeroFatorSemLeitura;
-
 	private double numeroFatorComLeitura;
 
 	public Anormalidade(byte codigo, String descricao, int indicador) {
@@ -51,8 +43,53 @@ public class Anormalidade {
 		return indicadorLeitura;
 	}
 
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
+	public int getIdConsumoACobrarComLeitura() {
+		return idConsumoACobrarComLeitura;
+	}
+	
+	public int getIdConsumoACobrarSemLeitura() {
+		return idConsumoACobrarSemLeitura;
+	}
+	
+	public int getIdLeituraFaturarComLeitura() {
+		return idLeituraFaturarComLeitura;
+	}
+
+	public int getIdLeituraFaturarSemLeitura() {
+		return idLeituraFaturarSemLeitura;
+	}
+	
+	public int getIndcUso() {
+		return indcUso;
+	}
+
+	public void setId(long arg0) {
+		this.id = arg0;
+	}
+
+	public long getId() {
+		return this.id;
+	}
+
+	public double getNumeroFatorSemLeitura() {
+		return numeroFatorSemLeitura;
+	}
+
+	public double getNumeroFatorComLeitura() {
+		return numeroFatorComLeitura;
+	}
+	
+
+	public void setNumeroFatorSemLeitura(String numeroFatorSemLeitura) {
+		this.numeroFatorSemLeitura = Util.verificarNuloDouble(numeroFatorSemLeitura);
+	}
+	
+	public void setNumeroFatorComLeitura(String numeroFatorComLeitura) {
+		this.numeroFatorComLeitura = Util.verificarNuloDouble(numeroFatorComLeitura);
+	}
+	
+	public void setCodigo(String codigo) {
+		this.codigo = Util.verificarNuloInt(codigo);
 	}
 
 	public void setDescricao(String descricao) {
@@ -63,73 +100,28 @@ public class Anormalidade {
 		}
 	}
 
-	public void setIndicadorLeitura(int indicadorLeitura) {
-		this.indicadorLeitura = indicadorLeitura;
-
+	public void setIndicadorLeitura(String indicadorLeitura) {
+		this.indicadorLeitura = Util.verificarNuloInt(indicadorLeitura);
 	}
 
-	public int getIdConsumoACobrarComLeitura() {
-		return idConsumoACobrarComLeitura;
+	public void setIdConsumoACobrarComLeitura(String idConsumoACobrarComLeitura) {
+		this.idConsumoACobrarComLeitura = Util.verificarNuloInt(idConsumoACobrarComLeitura);
 	}
 
-	public int getIdConsumoACobrarSemLeitura() {
-		return idConsumoACobrarSemLeitura;
+	public void setIdConsumoACobrarSemLeitura(String idConsumoACobrarSemLeitura) {
+		this.idConsumoACobrarSemLeitura = Util.verificarNuloInt(idConsumoACobrarSemLeitura);
 	}
 
-	public void setIdConsumoACobrarComLeitura(int idConsumoACobrarComLeitura) {
-		this.idConsumoACobrarComLeitura = idConsumoACobrarComLeitura;
+	public void setIdLeituraFaturarSemLeitura(String idLeituraFaturarSemLeitura) {
+		this.idLeituraFaturarSemLeitura = Util.verificarNuloInt(idLeituraFaturarSemLeitura);
 	}
 
-	public void setIdConsumoACobrarSemLeitura(int idConsumoACobrarSemLeitura) {
-		this.idConsumoACobrarSemLeitura = idConsumoACobrarSemLeitura;
+	public void setIdLeituraFaturarComLeitura(String idLeituraFaturarComLeitura) {
+		this.idLeituraFaturarComLeitura = Util.verificarNuloInt(idLeituraFaturarComLeitura);
 	}
 
-	public int getIdLeituraFaturarSemLeitura() {
-		return idLeituraFaturarSemLeitura;
-	}
-
-	public void setIdLeituraFaturarSemLeitura(int idLeituraFaturarSemLeitura) {
-		this.idLeituraFaturarSemLeitura = idLeituraFaturarSemLeitura;
-	}
-
-	public void setIdLeituraFaturarComLeitura(int idLeituraFaturarComLeitura) {
-		this.idLeituraFaturarComLeitura = idLeituraFaturarComLeitura;
-	}
-
-	public int getIdLeituraFaturarComLeitura() {
-		return idLeituraFaturarComLeitura;
-	}
-
-	public void setIndcUso(int indcUso) {
-		this.indcUso = indcUso;
-	}
-
-	public int getIndcUso() {
-		return indcUso;
-	}
-
-	public void setId(int arg0) {
-		this.id = arg0;
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
-	public double getNumeroFatorSemLeitura() {
-		return numeroFatorSemLeitura;
-	}
-
-	public void setNumeroFatorSemLeitura(double numeroFatorSemLeitura) {
-		this.numeroFatorSemLeitura = numeroFatorSemLeitura;
-	}
-
-	public double getNumeroFatorComLeitura() {
-		return numeroFatorComLeitura;
-	}
-
-	public void setNumeroFatorComLeitura(double numeroFatorComLeitura) {
-		this.numeroFatorComLeitura = numeroFatorComLeitura;
+	public void setIndcUso(String indcUso) {
+		this.indcUso = Util.verificarNuloInt(indcUso);
 	}
 
 	public String toString() {

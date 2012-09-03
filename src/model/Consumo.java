@@ -1,5 +1,7 @@
 package model;
 
+import business.ControladorConta;
+import business.ControladorImoveis;
 import util.Constantes;
 
 public class Consumo {

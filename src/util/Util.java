@@ -8,11 +8,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import model.DadosRelatorio;
+
 import ui.ArquivoRetorno;
 import ui.MessageDispatcher;
 
-import business.Controlador;
 import business.ControladorAcessoOnline;
+import business.ControladorImoveis;
 
 import android.os.Environment;
 import android.text.Editable;
@@ -312,12 +314,12 @@ public class Util {
     public static String getRetornoRotaDirectory(){
     	String diretorioRetornoRota = null;
     	
-    	Controlador.getInstancia().getCadastroDataManipulator().selectGeral();
+    	ControladorImoveis.getInstancia().getDataManipulator().selectGeral();
 
 //    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getAnoMesFaturamento();
+    	diretorioRetornoRota += ControladorImoveis.getInstancia().getDadosGerais().getAnoMesFaturamento();
     	
         File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
         if(!fileRotaDiretorio.exists()) {
@@ -330,12 +332,12 @@ public class Util {
     public static String getRotaFileName(){
     	String rotaFileName = null;
     	
-    	Controlador.getInstancia().getCadastroDataManipulator().selectGeral();
+    	ControladorImoveis.getInstancia().getDataManipulator().selectGeral();
     	
 //    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	rotaFileName += Controlador.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
+    	rotaFileName += ControladorImoveis.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
     	
     	return rotaFileName;
     }
@@ -406,7 +408,37 @@ public class Util {
 		}
 	
 		// retorna o array de bytes
-	return resposta;
+		return resposta;
+    }
+
+    /**
+     * Author: Pedro Alexandre Data: 08/01/2006 Adiciona nº de dias para uma
+     * data
+     * 
+     * @param numeroDias
+     * @param data
+     * @return data menos o nº de dias informado
+     */
+    public static Date adicionarNumeroDiasDeUmaData(Date data, long numeroDias) {
+		Date dataAlterada = new Date(data.getTime());
+	
+		numeroDias = numeroDias * 86400000;
+		// seta a data
+		dataAlterada.setTime(dataAlterada.getTime() + (numeroDias));
+	
+		// retorna a nova data
+		return dataAlterada;
+    }
+
+    public static String formatarCodigoBarras(String codigoBarras) {
+		String retorno = "";
+		// return "82600000010-7 63620006190-2 01531394000-7 08200920003-9";
+		if (codigoBarras != null && codigoBarras.length() >= 48) {
+		    retorno = codigoBarras.substring(0, 11).trim() + "-" + codigoBarras.substring(11, 12).trim() + " " + codigoBarras.substring(12, 23).trim() + "-" + codigoBarras.substring(23, 24).trim() + " " + codigoBarras.substring(24, 35).trim() + "-" + codigoBarras.substring(35, 36).trim() + " "
+			    + codigoBarras.substring(36, 47).trim() + "-" + codigoBarras.substring(47, 48);
+		}
+	
+		return retorno;
     }
 
     /**
@@ -809,5 +841,302 @@ public class Util {
 	
 		return mesPorExtenso;
     }
+
+    /**
+     * 
+     * Divide uma String em várias partes, dependendo
+     * do tamanho máximo permitido
+     * 
+     * @author Bruno Barros
+     * @date 25/03/2010
+     * @param mensagem Mensagem a ser quebrada
+     * @param max máximo de caracteres por linha
+     * @return String quebradas por linhas
+     * 
+     */
+    public static String[] dividirString( String mensagem, int max ){
+	
+		// Encontramos em quantas strings precisaremos dividir
+		short qtdLinhas = (short) ( mensagem.length() / max );
+		
+		// Verificamos se sobrou alguma coisa para a ultima linha
+		if ( mensagem.length() % max != 0 ){
+		    qtdLinhas++;
+		}
+		
+		String[] retorno = new String[ qtdLinhas ];
+		int limiteString = mensagem.length();
+		
+		for ( int i = 0; i < qtdLinhas; i++ ){
+		    int inicio = max*i;
+		    int fim = ( max*(i+1) );
+		    
+		    retorno[i] = mensagem.substring( inicio , ( fim > limiteString ? limiteString : fim )  );
+		}
+		
+		return retorno;	
+    }
+    
+    public static int divideDepoisMultiplica(int numerador, int denominador,int numeroMultiplicado) {
+
+		double resultado = 0;
+		double numeradorDouble = numerador;
+		double denominadorDouble = denominador;
+		
+		numeradorDouble = numeradorDouble * 10000;
+	
+		denominadorDouble = denominadorDouble * 10000;
+	
+		 resultado = Util.arredondar(numeradorDouble / denominadorDouble, 4);
+		
+		resultado = resultado * numeroMultiplicado;
+	
+		return ( int )Util.arredondar(resultado,0);
+
+    }
+    
+    public static int quantidadeDiasMes(Calendar data){
+	
+		int mes = data.get(Calendar.MONTH);
+		int ano = data.get(Calendar.YEAR);
+		int qtdDiasMes = 0;
+		
+		if(mes == Calendar.JANUARY){
+		    qtdDiasMes = 31;
+		}
+		
+		else if(mes == Calendar.FEBRUARY){
+		    
+		    if(verificarAnoBissexto(ano)){
+			qtdDiasMes = 29;
+		    }else{
+			qtdDiasMes = 28;
+		    }
+		}
+		
+		else if(mes == Calendar.MARCH){
+		    qtdDiasMes = 31;
+		}
+		
+		else if(mes == Calendar.APRIL){
+		    qtdDiasMes = 30;
+		}
+		
+		else if(mes == Calendar.MAY){
+		    qtdDiasMes = 31;
+		}
+		
+		else if(mes == Calendar.JUNE){
+		    qtdDiasMes = 30;
+		}
+		
+		else if(mes == Calendar.JULY){
+		    qtdDiasMes = 31;
+		}
+		
+		else if(mes == Calendar.AUGUST){
+		    qtdDiasMes = 30;
+		}
+		
+		else if(mes == Calendar.SEPTEMBER){
+		    qtdDiasMes = 31;
+		}
+		
+		else if(mes == Calendar.OCTOBER){
+		    qtdDiasMes = 30;
+		}
+		
+		else if(mes == Calendar.NOVEMBER){
+		    qtdDiasMes = 31;
+		}
+		
+		else if(mes == Calendar.DECEMBER){
+		    qtdDiasMes = 30;
+		}
+		
+		return qtdDiasMes;
+    }
+    
+    public static boolean verificarAnoBissexto(int ano) {
+
+		boolean anoBissexto = false;
+		String anoString = String.valueOf(ano);
+		int ultimosDigitosAno = Integer.parseInt(anoString.substring(2,
+			anoString.length()));
+	
+		if (ultimosDigitosAno != 00 && ano % 4 == 0) {
+		    anoBissexto = true;
+		}
+	
+		if (ultimosDigitosAno == 00 && ano % 400 == 0) {
+		    anoBissexto = true;
+		}
+	
+		return anoBissexto;
+    }
+
+    public static void inserirValoresStringRelatorio(String quadra, boolean inseridoAnormalidade, boolean inseridoLeitura){
+    	
+    	String valoresRelatorio =  DadosRelatorio.getInstancia().valoresRelatorio;
+    	String quadraAlterada =  null;
+    	int quadraInt = 0;
+    	int total = 0;
+    	int visitados = 0;
+    	int naoVisitados = 0;
+    	
+    	int indice = 0;
+    	if (valoresRelatorio.indexOf(quadra) != -1){
+    		indice = valoresRelatorio.indexOf(quadra);
+    		
+    	}
+    	String quadraAlteracao =  valoresRelatorio.substring(indice, indice + 18);
+    	//String lidosLeitura = valoresRelatorio.substring(valoresRelatorio.indexOf("[" + String.valueOf(valoresRelatorio.charAt(1)) + "]"));
+    	String lidosLeitura = valoresRelatorio.substring(1,5);
+    	//String lidosAnormalidade = valoresRelatorio.substring(valoresRelatorio.indexOf("[" + String.valueOf(valoresRelatorio.charAt(5)) + "]"));
+    	String lidosAnormalidade = valoresRelatorio.substring(7,11);
+    	
+    	if(inseridoAnormalidade){
+    	    int lidos = Integer.parseInt(lidosAnormalidade) + 1;
+    	    valoresRelatorio = replace(valoresRelatorio, "[" + 
+    		    Util.adicionarZerosEsquerdaNumero(4, lidosAnormalidade) + "]", "[" + 
+    		    Util.adicionarZerosEsquerdaNumero(4, String.valueOf(lidos)) + "]");
+    	}
+    	
+    	if(inseridoLeitura){
+    	    int lidos = Integer.parseInt(lidosLeitura) + 1;
+    	    valoresRelatorio = replace(valoresRelatorio, "{" + 
+    		    Util.adicionarZerosEsquerdaNumero(4, lidosLeitura) + "}", "{" + 
+    		    Util.adicionarZerosEsquerdaNumero(4, String.valueOf(lidos)) + "}");
+    	}
+
+    	   quadraInt = Integer.parseInt(valoresRelatorio.substring(indice + 1 ,indice + 5));
+    	   total = Integer.parseInt(valoresRelatorio.substring(indice + 6,indice + 10));
+    	   visitados = Integer.parseInt(valoresRelatorio.substring(indice + 10, indice + 14)) + 1;
+    	   naoVisitados = Integer.parseInt(valoresRelatorio.substring(indice + 14, indice + 18)) - 1;
+    	   
+    	   if(naoVisitados < 0 ){
+    	       naoVisitados = 0;
+    	   }
+    	   
+    	   if(visitados < 0){
+    	       visitados = 0;
+    	   }
+    	   
+    	   quadraAlterada = "(" + Util.adicionarZerosEsquerdaNumero(4, String.valueOf(quadraInt)) + ")" + 
+    	   	Util.adicionarZerosEsquerdaNumero(4, String.valueOf(total)) + 
+    	   	Util.adicionarZerosEsquerdaNumero(4, String.valueOf(visitados)) + 
+    	   	Util.adicionarZerosEsquerdaNumero(4, String.valueOf(naoVisitados));
+    	   
+    	   valoresRelatorio = replace(valoresRelatorio, quadraAlteracao, quadraAlterada);
+    	   
+    	   DadosRelatorio.getInstancia().valoresRelatorio =  valoresRelatorio;
+	}
+        
+    public static void inserirValoresStringRelatorioCarregamento(String quadra, 
+    															 String quadraAlteracao, 
+    															 boolean inseridoAnormalidade, 
+    															 boolean inseridoLeitura){
+    	
+    	String valoresRelatorio =  DadosRelatorio.getInstancia().valoresRelatorio;
+    	String quadraAlterada =  null;
+    	int quadraInt = 0;
+    	int total = 0;
+    	int visitados = 0;
+    	int naoVisitados = 0;
+    	
+    	int indice = valoresRelatorio.indexOf(quadra);
+    	quadraInt = Integer.parseInt(valoresRelatorio.substring(indice + 1 ,indice + 5));
+    	total = Integer.parseInt(valoresRelatorio.substring(indice + 6,indice + 10)) + 1;	
+    	visitados = Integer.parseInt(valoresRelatorio.substring(indice + 10, indice + 14));
+    	naoVisitados = Integer.parseInt(valoresRelatorio.substring(indice + 14, indice + 18)) + 1;
+ 	   
+ 	   quadraAlterada = "(" + Util.adicionarZerosEsquerdaNumero(4, String.valueOf(quadraInt)) + ")" + 
+ 			   			Util.adicionarZerosEsquerdaNumero(4, String.valueOf(total)) + 
+ 			   			Util.adicionarZerosEsquerdaNumero(4, String.valueOf(visitados)) +
+ 			   			Util.adicionarZerosEsquerdaNumero(4, String.valueOf(naoVisitados));
+ 	   
+ 	   valoresRelatorio = replace(valoresRelatorio, quadraAlteracao, quadraAlterada);
+ 	   
+ 	   DadosRelatorio.getInstancia().valoresRelatorio = valoresRelatorio;
+    }
+
+    public static void inserirValoresStringRelatorioConsumoNulo(String quadra, 
+    															boolean inseridoAnormalidade, 
+    															boolean inseridoLeitura){
+    	
+    	String valoresRelatorio = DadosRelatorio.getInstancia().valoresRelatorio;
+    	String quadraAlterada = null;
+    	int quadraInt = 0;
+    	int total = 0;
+    	int visitados = 0;
+    	int naoVisitados = 0;
+
+    	int indice = valoresRelatorio.indexOf(quadra);
+    	String quadraAlteracao = valoresRelatorio.substring(indice, indice + 18);
+    	String lidosLeitura = valoresRelatorio.substring(1, 5);
+    	String lidosAnormalidade = valoresRelatorio.substring(7, 11);
+
+    	if (inseridoAnormalidade) {
+ 
+    		int lidos = Integer.parseInt(lidosAnormalidade) - 1;
+    	    valoresRelatorio = replace(valoresRelatorio, "["
+    		    + Util.adicionarZerosEsquerdaNumero(4, lidosAnormalidade) + "]", "[" + 
+    		    Util.adicionarZerosEsquerdaNumero(4, String.valueOf(lidos)) + "]");
+    	}
+
+    	if (inseridoLeitura) {
+    	    
+    		int lidos = Integer.parseInt(lidosLeitura) - 1;
+    	    valoresRelatorio = replace(valoresRelatorio, "{" + Util.adicionarZerosEsquerdaNumero(4, lidosLeitura)
+    		    + "}", "{" + Util.adicionarZerosEsquerdaNumero(4, String.valueOf(lidos)) + "}");
+    	}
+
+    	quadraInt = Integer.parseInt(valoresRelatorio.substring(indice + 1, indice + 5));
+    	total = Integer.parseInt(valoresRelatorio.substring(indice + 6, indice + 10));
+    	visitados = Integer.parseInt(valoresRelatorio.substring(indice + 10, indice + 14)) - 1;
+    	naoVisitados = Integer.parseInt(valoresRelatorio.substring(indice + 14, indice + 18)) + 1;
+
+    	if(naoVisitados < 0) {
+    	    naoVisitados = 0;
+    	}
+    	
+    	if(visitados < 0 ){
+    	    visitados = 0;
+    	}
+
+    	quadraAlterada = "(" + Util.adicionarZerosEsquerdaNumero(4, String.valueOf(quadraInt)) + ")"
+    		+ Util.adicionarZerosEsquerdaNumero(4, String.valueOf(total))
+    		+ Util.adicionarZerosEsquerdaNumero(4, String.valueOf(visitados))
+    		+ Util.adicionarZerosEsquerdaNumero(4, String.valueOf(naoVisitados));
+
+    	valoresRelatorio = replace(valoresRelatorio, quadraAlteracao, quadraAlterada);
+
+    	DadosRelatorio.getInstancia().valoresRelatorio = valoresRelatorio;
+    }
+
+    public static String replace(String text, String searchStr, String replacementStr){
+    	
+    	// String buffer to store str
+    	StringBuffer sb = new StringBuffer();
+		 
+    	// Search for search
+    	int searchStringPos = text.indexOf(searchStr);  
+    	int startPos = 0;  
+		int searchStringLength = searchStr.length();
+		 
+		// Iterate to add string
+		while (searchStringPos != -1) {
+		
+			sb.append(text.substring(startPos, searchStringPos)).append(replacementStr);
+			startPos = searchStringPos + searchStringLength;
+			searchStringPos = text.indexOf(searchStr, startPos);
+		}
+		 
+		 // Create string
+		 sb.append(text.substring(startPos,text.length()));
+	
+		 return sb.toString();
+	}
+    
 
 }

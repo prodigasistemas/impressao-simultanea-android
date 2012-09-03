@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import util.Constantes;
 import util.Util;
 
-import business.Controlador;
+import business.ControladorImoveis;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -63,7 +63,7 @@ public class Consulta extends ListActivity {
 		// user clicked a list item, make it "selected"
 		enderecoList.setSelectedPosition(position);
 
-		Controlador.getInstancia().setCadastroSelecionadoByListPositionInConsulta(position, filterCondition);
+		ControladorImoveis.getInstancia().setImovelSelecionadoByListPositionInConsulta(position, filterCondition);
 //		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
 //		startActivityForResult(myIntent, 0);
 	}
