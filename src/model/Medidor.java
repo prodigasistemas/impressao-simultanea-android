@@ -204,7 +204,7 @@ public class Medidor {
     	String literal = "Não inform.";
 
     	if (this.tipoMedicao == Constantes.LIGACAO_AGUA) {
-    		literal = "Lig Àgua";
+    		literal = "Lig Água";
     	}
 
 		if (this.tipoMedicao == Constantes.LIGACAO_POCO) {

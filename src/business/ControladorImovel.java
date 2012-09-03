@@ -37,7 +37,7 @@ public class ControladorImovel {
     private boolean permissionGranted = false;
     private int qtdRegistros = 0;
     private static int linhasLidas = 0;
-    private static Imovel imovelSelecionado;
+    private static Imovel imovelSelecionado = new Imovel();
     
     private static Conta contaSelecionado = new Conta();
     private static Medidor medidorSelecionado = new Medidor();
@@ -94,9 +94,9 @@ public class ControladorImovel {
 //    	Controlador.clienteSelecionado = clienteSelecionado;
 //    }
 //    
-//    public void setImovelSelecionado(Imovel imovelSelecionado){
-//    	Controlador.imovelSelecionado = imovelSelecionado;
-//    }
+    public void setImovelSelecionado(Imovel imovelSelecionado){
+    	ControladorImovel.imovelSelecionado = imovelSelecionado;
+    }
 //    
     public void setContaSelecionado(Conta contaSelecionado){
     	ControladorImovel.contaSelecionado = contaSelecionado;
@@ -131,9 +131,10 @@ public class ControladorImovel {
     	setCadastroListPosition(listPosition);
     	idCadastroSelecionado = getIdCadastroSelecionado(listPosition, null);
 //    	dmCadastro.selectCliente(idCadastroSelecionado);
-//    	dmCadastro.selectImovel(idCadastroSelecionado);
+    	dmCadastro.selectImovel(idCadastroSelecionado);
 //    	dmCadastro.selectServico(idCadastroSelecionado);
 //    	dmCadastro.selectMedidor(idCadastroSelecionado);
+    	dmCadastro.selectMedidor(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
 //    	dmCadastro.selectAnormalidadeImovel(idCadastroSelecionado);
     }
     
@@ -153,7 +154,7 @@ public class ControladorImovel {
     	initCadastroTabs();
     	idCadastroSelecionado = id;
 //    	dmCadastro.selectCliente(idCadastroSelecionado);
-//    	dmCadastro.selectImovel(idCadastroSelecionado);
+    	dmCadastro.selectImovel(idCadastroSelecionado);
 //    	dmCadastro.selectServico(idCadastroSelecionado);
 //    	dmCadastro.selectMedidor(idCadastroSelecionado);
 //    	dmCadastro.selectAnormalidadeImovel(idCadastroSelecionado);

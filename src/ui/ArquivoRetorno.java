@@ -13,7 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
-import business.Controlador;
+import business.ControladorImovel;
 import util.Constantes;
 import util.Util;
 
@@ -76,7 +76,7 @@ public class ArquivoRetorno {
 
 		    arquivo = new StringBuffer();
 		    
-		    ArrayList<String> listIdImoveis = (ArrayList<String>) Controlador.getInstancia().getCadastroDataManipulator().selectIdImoveis(null);
+		    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(null);
 		    
 		    for (int i = 0; i < listIdImoveis.size(); i++){
 
@@ -118,7 +118,7 @@ public class ArquivoRetorno {
 	    
 	    String filterCondition = "(imovel_enviado = " + Constantes.NAO + ")";	    				
 	    
-	    ArrayList<String> listIdImoveis = (ArrayList<String>) Controlador.getInstancia().getCadastroDataManipulator().selectIdImoveis(filterCondition);
+	    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectIdImoveis(filterCondition);
 	    
 	    for (int i = 0; i < listIdImoveis.size(); i++){
 

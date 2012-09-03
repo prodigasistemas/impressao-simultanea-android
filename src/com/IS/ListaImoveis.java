@@ -2,9 +2,7 @@ package com.IS;
 
 import java.util.ArrayList;
 
-import util.Constantes;
-
-import business.Controlador;
+import views.MainTab;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -13,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +19,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import business.ControladorImovel;
 
 public class ListaImoveis extends ListActivity {
 	
 	MySimpleArrayAdapter enderecoList;
-	ArrayList<String> listStatusImoveis;
+//	ArrayList<String> listStatusImoveis;
 
     /** Called when the activity is first created. */
     @Override
@@ -46,19 +46,19 @@ public class ListaImoveis extends ListActivity {
 
     private void loadEnderecoImoveis(){
     	
-    	if (Controlador.getInstancia() != null){
-    		if (Controlador.getInstancia().getCadastroDataManipulator() != null){
+    	if (ControladorImovel.getInstancia() != null){
+    		if (ControladorImovel.getInstancia().getCadastroDataManipulator() != null){
     			
-    	    	listStatusImoveis = (ArrayList)Controlador.getInstancia().getCadastroDataManipulator().selectStatusImoveis(null);
-    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)Controlador.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(null);
+//    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectStatusImoveis(null);
+    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(null);
     	    	
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
     	        	setListAdapter(enderecoList);
     	        	
-    	        	if (Controlador.getInstancia().getCadastroListPosition() > -1){
-        	        	this.setSelection(Controlador.getInstancia().getCadastroListPosition());
-        	        	enderecoList.setSelectedPosition(Controlador.getInstancia().getCadastroListPosition());
+    	        	if (ControladorImovel.getInstancia().getCadastroListPosition() > -1){
+        	        	this.setSelection(ControladorImovel.getInstancia().getCadastroListPosition());
+        	        	enderecoList.setSelectedPosition(ControladorImovel.getInstancia().getCadastroListPosition());
     	        	}
     	    	}
     		}
@@ -69,10 +69,13 @@ public class ListaImoveis extends ListActivity {
 	protected void onListItemClick(ListView l, View view, int position, long id) {
 		// user clicked a list item, make it "selected"
 		enderecoList.setSelectedPosition(position);
-
-		Controlador.getInstancia().setCadastroSelecionadoByListPosition(position);
-//		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
-//		startActivityForResult(myIntent, 0);
+		
+		ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(position);
+		
+		Log.i("Imovel selecionado", ControladorImovel.getInstancia().getImovelSelecionado().getMatricula()+"");
+		
+		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
+		startActivityForResult(myIntent, 0);
 	}
 	
 	
@@ -106,7 +109,7 @@ public class ListaImoveis extends ListActivity {
 
 	        // change the row color based on selected state
 	        if(selectedPos == position){
-	        	rowView.setBackgroundColor(Color.GRAY);
+	        	rowView.setBackgroundColor(Color.argb(50, 80, 90, 150));
 	        }else{
 	        	rowView.setBackgroundColor(Color.TRANSPARENT);
 	        }
@@ -115,15 +118,15 @@ public class ListaImoveis extends ListActivity {
 
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 			
-			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_PENDENTE ){
+//			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_PENDENTE ){
 				imageView.setImageResource(R.drawable.todo);
 			
-			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO){
-				imageView.setImageResource(R.drawable.done);
-			
-			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO_COM_ANORMALIDADE ){
-				imageView.setImageResource(R.drawable.done_anormal);
-			}
+//			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO){
+//				imageView.setImageResource(R.drawable.done);
+//			
+//			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO_COM_ANORMALIDADE ){
+//				imageView.setImageResource(R.drawable.done_anormal);
+//			}
 
 			return rowView;
 		}

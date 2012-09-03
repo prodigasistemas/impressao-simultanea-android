@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.IS.R.color;
+
 import background.CarregarRotaThread;
-import business.Controlador;
+import business.ControladorImovel;
 
 import ui.FileManager;
 import util.Constantes;
@@ -90,7 +92,7 @@ public class ListaRotas extends ListActivity {
             int total = msg.getData().getInt("total");
             progDialog.setProgress(total);
 
-            if (total >= Controlador.getInstancia().getQtdRegistros() || progThread.getCustomizedState() == CarregarRotaThread.DONE){
+            if (total >= ControladorImovel.getInstancia().getQtdRegistros() || progThread.getCustomizedState() == CarregarRotaThread.DONE){
                 dismissDialog(Constantes.DIALOG_ID_CARREGAR_ROTA);
     			setResult(RESULT_FIRST_USER, new Intent(getBaseContext(), Fachada.class));
         		finish();
@@ -139,7 +141,7 @@ public class ListaRotas extends ListActivity {
 	}
 	
 	public void carregaRotaDialogButtonClick() {
-    	Controlador.getInstancia().initiateDataManipulator(getBaseContext());
+    	ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
 		showDialog(Constantes.DIALOG_ID_CARREGAR_ROTA);
 	}
 	
@@ -225,6 +227,7 @@ public class ListaRotas extends ListActivity {
 			TextView textView = (TextView) rowView.findViewById(R.id.nomerota);
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 			textView.setText(names.get(position));
+			textView.setTextColor(color.labelColor);
 			
 			if ( names.get(position).endsWith(".txt") ){
 				imageView.setImageResource(R.drawable.text);

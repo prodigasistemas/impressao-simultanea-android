@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import util.Constantes;
 
-import business.Controlador;
+import business.ControladorImovel;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -19,8 +19,8 @@ public class TelaRelatorio extends Activity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.roteirorelatorio);
     	
-    	int numeroCadastros = Controlador.getInstancia().getCadastroDataManipulator().getNumeroCadastros();
-    	ArrayList<Integer> listStatus = (ArrayList<Integer>) Controlador.getInstancia().getCadastroDataManipulator().selectNumeroTodosStatusImoveis();
+    	int numeroCadastros = ControladorImovel.getInstancia().getCadastroDataManipulator().getNumeroCadastros();
+    	ArrayList<Integer> listStatus = (ArrayList<Integer>) ControladorImovel.getInstancia().getCadastroDataManipulator().selectNumeroTodosStatusImoveis();
     	
     	((ProgressBar)findViewById(R.id.progressVisitados)).setMax(numeroCadastros);
     	((ProgressBar)findViewById(R.id.progressVisitados)).setProgress(listStatus.get(Constantes.IMOVEL_CONCLUIDO));

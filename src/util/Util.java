@@ -8,21 +8,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
-import ui.ArquivoRetorno;
-import ui.MessageDispatcher;
-
-import business.Controlador;
-import business.ControladorAcessoOnline;
-
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
+import business.ControladorImovel;
 
 public class Util {
 
 	static TextWatcher consultaTextWatcher = null;
+	static boolean isUpdatingCep;
 			
     /**
      * Verifica se o valor da String.trim() veio como null ou como
@@ -312,12 +307,12 @@ public class Util {
     public static String getRetornoRotaDirectory(){
     	String diretorioRetornoRota = null;
     	
-    	Controlador.getInstancia().getCadastroDataManipulator().selectGeral();
+    	ControladorImovel.getInstancia().getCadastroDataManipulator().selectGeral();
 
 //    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getAnoMesFaturamento();
+    	diretorioRetornoRota += ControladorImovel.getInstancia().getDadosGerais().getAnoMesFaturamento();
     	
         File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
         if(!fileRotaDiretorio.exists()) {
@@ -330,12 +325,12 @@ public class Util {
     public static String getRotaFileName(){
     	String rotaFileName = null;
     	
-    	Controlador.getInstancia().getCadastroDataManipulator().selectGeral();
+    	ControladorImovel.getInstancia().getCadastroDataManipulator().selectGeral();
     	
 //    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	rotaFileName += Controlador.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
+    	rotaFileName += ControladorImovel.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
     	
     	return rotaFileName;
     }
@@ -784,6 +779,65 @@ public class Util {
 		// começa no zero
 	
 		return mesPorExtenso;
+    }
+
+    public static void addTextChangedListenerCepMask(final EditText edt){
+    	edt.addTextChangedListener(new TextWatcher() {  
+    	    
+    		
+    		public void beforeTextChanged(CharSequence s, int start, int count, int after) {  
+    	    }  
+    		
+    		public void afterTextChanged(Editable e){}
+    	      
+    		
+    	    public void onTextChanged(CharSequence s, int start, int before, int after) {  
+    	      
+    			// Quando o texto é alterado o onTextChange é chamado. Essa flag evita a chamada infinita desse método  
+    			if (isUpdatingCep){
+    				isUpdatingCep = false;  
+    				return;  
+    			}  
+    	      
+    			boolean hasMask = s.toString().indexOf('-') > -1;  
+    	      
+    			// Remove o '-' da String  
+    			String str = s.toString().replaceAll("[-]", "");  
+    	      
+    			if (after > before) {  
+
+    				// Se tem mais de 5 caracteres (sem máscara) coloca o '-'  
+    				if (str.length() > 5) {  
+    					str = str.substring(0,5) + '-' + str.substring(5);  
+    				}  
+    				
+    				// Seta a flag pra evitar chamada infinita  
+    				isUpdatingCep = true;  
+    				
+    				// seta o novo texto  
+    				edt.setText(str);  
+    				
+    				// seta a posição do cursor  
+    				if(start == 5){
+        				edt.setSelection(start + 2);  
+    				}else{
+        				edt.setSelection(start + 1);  
+    				}
+    	      
+    			} else {  
+    				isUpdatingCep = true;  
+    				
+    				if (str.length() > 5){
+    					str = str.substring(0,5) + '-' + str.substring(5);
+    				}else{
+        				edt.setText(str);  
+    				}
+    				
+    				// Se estiver apagando posiciona o cursor no local correto. Isso trata a deleção dos caracteres da máscara.  
+    				edt.setSelection(Math.max(0, Math.min(hasMask ? start + 1 - before : start, str.length() ) ) );  
+    			}  
+    		}  
+    	});
     }
 
 }
