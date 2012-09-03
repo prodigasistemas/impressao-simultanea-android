@@ -90,7 +90,7 @@ public class DbHelper extends SQLiteOpenHelper {
         " consumo_minimo_total TEXT, consumo_para_rateio_agua TEXT, conta_para_rateio_agua TEXT, consumo_para_rateio_esgoto TEXT, conta_para_rateio_esgoto TEXT, reter_impressao_contas INTEGER, passos INTEGER)";
 
     private static final String DATABASE_CONSUMO_ANORMALIDADE_ACAO_QUERY =
-    	"CREATE TABLE dados_faturamento (id INTEGER PRIMARY KEY autoincrement, id_consumo_anormalidade INTEGER, id_categoria INTEGER, id_perfil INTEGER, id_leitura_anormalidade_consumo_primeiro_mes INTEGER, id_leitura_anormalidade_consumo_segundo_mes INTEGER, " +
+    	"CREATE TABLE consumo_anormalidade_acao (id INTEGER PRIMARY KEY autoincrement, id_consumo_anormalidade INTEGER, id_categoria INTEGER, id_perfil INTEGER, id_leitura_anormalidade_consumo_primeiro_mes INTEGER, id_leitura_anormalidade_consumo_segundo_mes INTEGER, " +
     	"id_leitura_anormalidade_consumo_terceiro_mes INTEGER, fator_consumo_primeiro_mes INTEGER, fator_consumo_segundo_mes INTEGER, fator_consumo_terceiro_mes INTEGER, indc_geracao_conta_primeiro_mes INTEGER, indc_geracao_conta_segundo_mes INTEGER, " +
     	"indc_geracao_conta_terceiro_mes, mensagem_conta_primeiro_mes TEXT, mensagem_conta_segundo_mes TEXT, mensagem_conta_terceiro_mes TEXT)";
         

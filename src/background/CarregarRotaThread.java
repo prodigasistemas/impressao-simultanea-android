@@ -2,10 +2,6 @@ package background;
 
 import business.ControladorImovel;
 import ui.FileManager;
-<<<<<<< HEAD
-=======
-import business.ControladorImovel;
->>>>>>> e5603d3a2858dae17daa693710b93c0fa1125f78
 import android.content.Context;
 import android.os.Handler;
     

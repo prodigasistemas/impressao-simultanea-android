@@ -51,7 +51,7 @@ public class DataManipulator {
 		openHelper.close();
 	}
 
-	public int getNumeroCadastros() {
+	public int getNumeroImoveis() {
 		return (int) DatabaseUtils.queryNumEntries(db, Constantes.TABLE_IMOVEL);
 	}
 
@@ -451,7 +451,7 @@ public class DataManipulator {
 			do {
 				Anormalidade anormalidade = new Anormalidade();
 				
-				anormalidade.setId(Integer.getInteger(cursor.getString(0)));
+				anormalidade.setId(Long.parseLong(cursor.getString(0)));
 				anormalidade.setCodigo(cursor.getString(1));
 				anormalidade.setDescricao(cursor.getString(2));
 				anormalidade.setIndicadorLeitura(cursor.getString(3));
@@ -878,7 +878,7 @@ public class DataManipulator {
 		parser.obterDadoParser(2);
 		ContentValues initialValues = new ContentValues();
 
-		initialValues.put("matricula", SituacaoTipo.getInstancia().getMatricula());
+		initialValues.put("matricula", parser.obterDadoParser(9));
 		initialValues.put("codigo_categoria", parser.obterDadoParser(1));
 		initialValues.put("descricao_categoria", parser.obterDadoParser(15));
 		initialValues.put("codigo_subcategoria", parser.obterDadoParser(3));
@@ -1056,7 +1056,20 @@ public class DataManipulator {
 		return db.insert(Constantes.TABLE_CONSUMO_ANORMALIDADE_ACAO, null, initialValues);
 	}
 
-	public void salvarConfiguracao(Configuracao configuracao) {
+	public void updateConfiguracao(String parametroName, int value){
+		   
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(parametroName, value);
+
+		if (DatabaseUtils.queryNumEntries(db,Constantes.TABLE_CONFIGURACAO) > 0){
+			db.update(Constantes.TABLE_CONFIGURACAO, initialValues, "id=?", new String []{String.valueOf(1)});
+			
+		}else{
+			db.insert(Constantes.TABLE_CONFIGURACAO, null, initialValues);
+		}
+	}
+   
+	public void updateConfiguracao(Configuracao configuracao) {
 
 		ContentValues initialValues = new ContentValues();
 

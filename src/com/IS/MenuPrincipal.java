@@ -174,7 +174,7 @@ public class MenuPrincipal extends Activity {
         	int totalArquivoCompleto = msg.getData().getInt("arquivoCompleto" + String.valueOf(increment));
             progDialog.setProgress(totalArquivoCompleto);
             
-            if (totalArquivoCompleto >= ControladorImovel.getInstancia().getDataManipulator().getNumeroCadastros() || 
+            if (totalArquivoCompleto >= ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis() || 
             	progThread.getCustomizedState() == CarregarRotaThread.DONE){
                 
             	dismissDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
@@ -232,7 +232,7 @@ public class MenuPrincipal extends Activity {
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	            progDialog.setCancelable(false);
 	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
-	            progDialog.setMax(ControladorImovel.getInstancia().getDataManipulator().getNumeroCadastros());
+	            progDialog.setMax(ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis());
 	            progThread = new GerarArquivoCompletoThread(handler, this, increment);
 	            progThread.start();
 	            return progDialog;

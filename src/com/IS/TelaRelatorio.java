@@ -19,7 +19,7 @@ public class TelaRelatorio extends Activity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.roteirorelatorio);
     	
-    	int numeroCadastros = ControladorImovel.getInstancia().getDataManipulator().getNumeroCadastros();
+    	int numeroCadastros = ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis();
     	ArrayList<Integer> listStatus = (ArrayList<Integer>) ControladorImovel.getInstancia().getDataManipulator().selectNumeroTodosStatusImoveis();
     	
     	((ProgressBar)findViewById(R.id.progressVisitados)).setMax(numeroCadastros);

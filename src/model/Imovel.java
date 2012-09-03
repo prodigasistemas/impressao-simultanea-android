@@ -27,6 +27,24 @@ public class Imovel {
     public static final int PERFIL_GOVERNO_INTERIOR = 8;
     public static final int PERFIL_CONDOMINIAL = 9;
     public static final int PERFIL_COLABORADOR = 10;
+    
+    // Situação da ligação de Água
+    public final static int POTENCIAL = 1;
+    public final static int FACTIVEL = 2;
+    public final static int LIGADO = 3;
+    public final static int EM_FISCALIZACAO = 4;
+    public final static int CORTADO = 5;
+    public final static int SUPRIMIDO = 6;
+    public final static int SUPR_PARC = 7;
+    public final static int SUPR_PARC_PEDIDO = 8;
+    public final static int EM_CANCELAMENTO = 9;
+
+    // Situação da ligação de Esgoto
+    public final static int LIG_FORA_USO = 5;
+    public final static int TAMPONADO = 6;
+    public final static int CONVERSAO = 9;
+
+
 
     private long id;
 	private int matricula;
@@ -265,13 +283,13 @@ public class Imovel {
 	    	idImovelMacro = this.getIdImovelCondominio();
 	    }
 
-	    if (this.efetuarRateioConsumoDispositivoMovelHelper == null) {
-			this.efetuarRateioConsumoDispositivoMovelHelper = new EfetuarRateioConsumoHelper(
-				idImovelMacro, id + quantidadeImoveisCondominio - 1);
-	
-			// Salvamos as informações obtidas
-			Repositorio.salvarObjeto(this);
-	    }
+//	    if (this.efetuarRateioConsumoDispositivoMovelHelper == null) {
+//			this.efetuarRateioConsumoDispositivoMovelHelper = new EfetuarRateioConsumoHelper(
+//				idImovelMacro, id + quantidadeImoveisCondominio - 1);
+//	
+//			// Salvamos as informações obtidas
+//			Repositorio.salvarObjeto(this);
+//	    }
 	}
 
 	return efetuarRateioConsumoDispositivoMovelHelper;
@@ -314,22 +332,6 @@ public class Imovel {
     public String getNumeroCodigoBarraNotificacaoDebito() {
 	return numeroCodigoBarraNotificacaoDebito;
     }
-
-    // Situação da ligação de Água
-    public final static int POTENCIAL = 1;
-    public final static int FACTIVEL = 2;
-    public final static int LIGADO = 3;
-    public final static int EM_FISCALIZACAO = 4;
-    public final static int CORTADO = 5;
-    public final static int SUPRIMIDO = 6;
-    public final static int SUPR_PARC = 7;
-    public final static int SUPR_PARC_PEDIDO = 8;
-    public final static int EM_CANCELAMENTO = 9;
-
-    // Situação da ligação de Esgoto
-    public final static int LIG_FORA_USO = 5;
-    public final static int TAMPONADO = 6;
-    public final static int CONVERSAO = 9;
 
     public Imovel() {
 
@@ -375,18 +377,18 @@ public class Imovel {
 		} else {	
 		    
 		    if ( !this.isImovelCondominio() ){	    
-				if ( !Configuracao.getInstancia().getIdsImoveisPendentes().contains( new Integer( id ) ) ){
-					Configuracao.getInstancia().getIdsImoveisPendentes().addElement( new Integer( id ) );
-				}
-				Configuracao.getInstancia().getIdsImoveisConcluidos().removeElement( new Integer( id ) );
-			    
-				// Ordena os vetores
-				Util.bubbleSort( Configuracao.getInstancia().getIdsImoveisConcluidos() );
-				Util.bubbleSort( Configuracao.getInstancia().getIdsImoveisPendentes() );
+//				if ( !Configuracao.getInstancia().getIdsImoveisPendentes().contains( new Integer( id ) ) ){
+//					Configuracao.getInstancia().getIdsImoveisPendentes().addElement( new Integer( id ) );
+//				}
+//				Configuracao.getInstancia().getIdsImoveisConcluidos().removeElement( new Integer( id ) );
+//			    
+//				// Ordena os vetores
+//				Util.bubbleSort( Configuracao.getInstancia().getIdsImoveisConcluidos() );
+//				Util.bubbleSort( Configuracao.getInstancia().getIdsImoveisPendentes() );
 		    }
 		}	
 		
-		Repositorio.salvarObjeto( Configuracao.getInstancia() );	
+//		Repositorio.salvarObjeto( Configuracao.getInstancia() );	
     }
 
     public int getIndcGeracao() {
@@ -420,7 +422,7 @@ public class Imovel {
 	int anormalidade = Constantes.NULO_INT;
 //	int leitura = Constantes.NULO_INT;
 
-	Integer id = new Integer(this.id);
+//	Integer id = new Integer(this.id);
 	int quadra = ControladorImovel.getInstancia().getImovelSelecionado().getQuadra();
 	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
 		.valueOf(quadra));
@@ -567,7 +569,7 @@ public class Imovel {
 
 	this.consumoAgua = consumoAgua;
 
-	Repositorio.salvarObjeto(dadosRelatorio);
+//	Repositorio.salvarObjeto(dadosRelatorio);
     }
 
     public Consumo getConsumoEsgoto() {
@@ -583,7 +585,7 @@ public class Imovel {
 	int leituraRelatorio = Constantes.NULO_INT;
 //	int leitura = Constantes.NULO_INT;
 
-	Integer id = new Integer(this.id);
+//	Integer id = new Integer(this.id);
 	int quadra = ControladorImovel.getInstancia().getImovelSelecionado().getQuadra();
 	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
 		.valueOf(quadra));
@@ -735,7 +737,7 @@ public class Imovel {
 
 	this.consumoEsgoto = consumoEsgoto;
 
-	Repositorio.salvarObjeto(dadosRelatorio);
+//	Repositorio.salvarObjeto(dadosRelatorio);
     }
 
     public void setMatricula(String matricula) {
@@ -2739,119 +2741,11 @@ public class Imovel {
      * @return Se mudou, retornar true, senão retorna false;
      */
     public boolean verificarAlteracaoDadosImovel() {
-	Medidor ligacaoAgua = this.getRegistro8(Constantes.LIGACAO_AGUA);
-	Medidor ligacaoPoco = this.getRegistro8(Constantes.LIGACAO_POCO);
-
-	int codigoAnormalidadeAgua = (ligacaoAgua == null
-		|| ligacaoAgua.getAnormalidade() == 0 ? Constantes.NULO_INT
-		: ligacaoAgua.getAnormalidade());
-	int codigoAnormalidadePoco = (ligacaoPoco == null
-		|| ligacaoPoco.getAnormalidade() == 0 ? Constantes.NULO_INT
-		: ligacaoPoco.getAnormalidade());
-
-	Vector anormalidades = ControladorImovel.getInstancia().getAnormalidades(false);
-	AbaHidrometroAgua aha = AbaHidrometroAgua.getInstancia();
-	AbaHidrometroPoco ahp = AbaHidrometroPoco.getInstancia();
-
-	Anormalidade anormalidadeAbaAgua = (Anormalidade) anormalidades
-		.elementAt(aha.getAnormalidadeIndex());
-	Anormalidade anormalidadeAbaPoco = (Anormalidade) anormalidades
-		.elementAt(ahp.getAnormalidadeIndex());
-
-	anormalidades = null;
-
-	int codigoAnormalidadeAbaAgua = (anormalidadeAbaAgua.getCodigo() == 0 ? Constantes.NULO_INT
-		: anormalidadeAbaAgua.getCodigo());
-	int codigoAnormalidadeAbaPoco = (anormalidadeAbaPoco.getCodigo() == 0 ? Constantes.NULO_INT
-		: anormalidadeAbaPoco.getCodigo());
-
-	anormalidadeAbaAgua = null;
-	anormalidadeAbaPoco = null;
-
-	// Verificamose se algo foi alterado na ligação de agua ou de poco
-	boolean retorno = ((ligacaoAgua != null && ((ligacaoAgua.getLeitura() != Util
-		.verificarNuloInt(aha.getLeitura()) || codigoAnormalidadeAgua != codigoAnormalidadeAbaAgua) || this
-		.getConsumoAgua() == null)) || (ligacaoPoco != null && ((ligacaoPoco
-		.getLeitura() != Util.verificarNuloInt(ahp.getLeitura()) || codigoAnormalidadePoco != codigoAnormalidadeAbaPoco) || this
-		.getConsumoEsgoto() == null)));
-
-	ligacaoAgua = null;
-	ligacaoPoco = null;
-	aha = null;
-	ahp = null;
-
-	return retorno;
+	return true;
     }
 
-    public boolean isImovelAlterado() {
-
-	boolean isImovelAlterado = false;
-
-	Medidor ligacaoAgua = this.getRegistro8(Constantes.LIGACAO_AGUA);
-	Medidor ligacaoPoco = this.getRegistro8(Constantes.LIGACAO_POCO);
-
-//	Imovel imovelSelecionado = ControladorImoveis.getInstancia().getImovelSelecionado();
-
-	// Repositorio.carregarObjeto(ControladorImoveis.getInstancia().getImovelSelecionado(), this.id);
-
-	if (ligacaoAgua != null) {
-
-	    // Repositorio.carregarObjeto(ControladorImoveis.getInstancia().getImovelSelecionado(), this.id);
-
-	    int codigoAnormalidadeAguaGravado = ControladorImovel.getInstancia().getImovelSelecionado().getAnormalidadeGravadaAnterior();
-//	    Daniel
-	    if(codigoAnormalidadeAguaGravado != 0){
-	    	
-	    }
-	    System.out.println("codigoAnormalidadeAguaGravado: " + codigoAnormalidadeAguaGravado);
-	    // int leituraGravadaAgua =
-	    // ControladorImoveis.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getLeitura();
-	    int leituraGravadaAgua = ControladorImovel.getInstancia().getImovelSelecionado().getLeituraGravadaAnterior();
-
-	    Anormalidade anormalidadeAbaAgua = (Anormalidade) ControladorImovel.getInstancia().getAnormalidades(false).elementAt(AbaHidrometroAgua.getInstancia().getAnormalidadeIndex());
-
-	    int leituraAbaAgua = Util.verificarNuloInt(AbaHidrometroAgua .getInstancia().getLeitura());
-	    int codigoAnormalidadeAbaAgua = anormalidadeAbaAgua.getCodigo();
-
-	    if (leituraAbaAgua != leituraGravadaAgua || codigoAnormalidadeAguaGravado != codigoAnormalidadeAbaAgua) {
-	    	isImovelAlterado = true;
-	    }
-	}
-
-	if (ligacaoPoco != null) {
-
-	    int codigoAnormalidadePocoGravado = ControladorImovel.getInstancia().getImovelSelecionado()
-		    .getAnormalidadeGravadaAnterior();
-
-	    int leituraGravadaPoco = ControladorImovel.getInstancia().getImovelSelecionado()
-		    .getLeituraGravadaAnterior();
-
-	    Anormalidade anormalidadeAbaPoco = (Anormalidade) ControladorImovel.getInstancia()
-		    .getAnormalidades(false).elementAt(
-			    AbaHidrometroPoco.getInstancia()
-				    .getAnormalidadeIndex());
-
-	    int leituraAbaPoco = Util.verificarNuloInt(AbaHidrometroPoco
-		    .getInstancia().getLeitura());
-	    int codigoAnormalidadeAbaPoco = anormalidadeAbaPoco.getCodigo();
-
-	    if (leituraAbaPoco != leituraGravadaPoco
-		    || codigoAnormalidadePocoGravado != codigoAnormalidadeAbaPoco) {
-		isImovelAlterado = true;
-	    }
-	}
-
-	if (ligacaoAgua == null && ligacaoPoco == null) {
-	    if (ControladorImovel.getInstancia().getImovelSelecionado()
-		    .getIndcImovelImpresso() == Constantes.NAO) {
-		isImovelAlterado = true;
-	    }
-	}
-
-	return isImovelAlterado;
-
-    }
-
+    public boolean isImovelAlterado() {return true;}
+    
     /**
      * Julga se é necessário zerar os consumos, pois o usuário apagou os dados
      * de de leitura e/ou anormalidade do imovel selecionado
@@ -2860,40 +2754,7 @@ public class Imovel {
      * @date 11/01/2009
      * @return Se mudou, retornar true, senão retorna false;
      */
-    public boolean verificarLeituraAnormalidadeZeradas() {
-	Medidor ligacaoAgua = this.getRegistro8(Constantes.LIGACAO_AGUA);
-	Medidor ligacaoPoco = this.getRegistro8(Constantes.LIGACAO_POCO);
-
-	Vector anormalidades = ControladorImovel.getInstancia().getAnormalidades(false);
-	AbaHidrometroAgua aha = AbaHidrometroAgua.getInstancia();
-	AbaHidrometroPoco ahp = AbaHidrometroPoco.getInstancia();
-
-	Anormalidade anormalidadeAbaAgua = (Anormalidade) anormalidades
-		.elementAt(aha.getAnormalidadeIndex());
-	Anormalidade anormalidadeAbaPoco = (Anormalidade) anormalidades
-		.elementAt(ahp.getAnormalidadeIndex());
-
-	int codigoAnormalidadeAbaAgua = (anormalidadeAbaAgua.getCodigo() == 0 ? Constantes.NULO_INT
-		: anormalidadeAbaAgua.getCodigo());
-	int codigoAnormalidadeAbaPoco = (anormalidadeAbaPoco.getCodigo() == 0 ? Constantes.NULO_INT
-		: anormalidadeAbaPoco.getCodigo());
-
-	anormalidadeAbaAgua = null;
-	anormalidadeAbaPoco = null;
-
-	// Verificamose se algo foi alterado na ligação de agua ou de poco
-	boolean retorno = (ligacaoAgua != null
-		&& Util.verificarNuloInt(aha.getLeitura()) == Constantes.NULO_INT && codigoAnormalidadeAbaAgua == Constantes.NULO_INT)
-		|| (ligacaoPoco != null
-			&& Util.verificarNuloInt(ahp.getLeitura()) == Constantes.NULO_INT && codigoAnormalidadeAbaPoco == Constantes.NULO_INT);
-
-	ligacaoAgua = null;
-	ligacaoPoco = null;
-	aha = null;
-	ahp = null;
-
-	return retorno;
-    }
+    public boolean verificarLeituraAnormalidadeZeradas() {return true;}
 
     public int getAnormalidadeGravadaAnterior() {
 	return anormalidadeGravadaAnterior;
@@ -2931,7 +2792,7 @@ public class Imovel {
 	if (this.idImovelCondominio != Constantes.NULO_INT) {
 
 	    Imovel hidrometroMacro = new Imovel();
-	    Repositorio.carregarObjeto(hidrometroMacro, this.idImovelCondominio);
+//	    Repositorio.carregarObjeto(hidrometroMacro, this.idImovelCondominio);
 
 	    EfetuarRateioConsumoHelper helper = hidrometroMacro
 		    .getEfetuarRateioConsumoDispositivoMovelHelper();
@@ -3054,7 +2915,7 @@ public class Imovel {
 			+ consumoEsgoto.getConsumoCobradoMesOriginal());
 	    }
 		
-	    Repositorio.salvarObjeto(hidrometroMacro);
+//	    Repositorio.salvarObjeto(hidrometroMacro);
 
 //	    Daniel - Caso seja Hidrometro Macro
 	}else if (this.indcCondominio == Constantes.SIM && this.matriculaCondominio == Constantes.NULO_INT){
@@ -3077,7 +2938,7 @@ public class Imovel {
 				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(Constantes.SIM);
 			}
 	    }
-	    Repositorio.salvarObjeto(this);
+//	    Repositorio.salvarObjeto(this);
 	}
 	
     }
@@ -3109,7 +2970,7 @@ public class Imovel {
 
 	if (this.getIdImovelCondominio() != Constantes.NULO_INT) {
 	    macro = new Imovel();
-	    Repositorio.carregarObjeto(macro, this.getIdImovelCondominio());
+//	    Repositorio.carregarObjeto(macro, this.getIdImovelCondominio());
 	    helper = macro.getEfetuarRateioConsumoDispositivoMovelHelper();
 	} else if (this.indcCondominio == Constantes.SIM) {
 	    helper = this.getEfetuarRateioConsumoDispositivoMovelHelper();
@@ -3118,33 +2979,33 @@ public class Imovel {
 	boolean removido = false;
 	boolean adicionado = false;
 
-	if (consumo != null || this.getSituacaoLigAgua().equals(Constantes.CORTADO)) {
-	    removido = helper.getIdsAindaFaltamSerCalculador().removeElement( new Integer(this.getId()));
-	} else {
-		
-		// Daniel - remover imoveis do condominio que não possuem conta.	    
-		if (isImovelInformativo()) {
-			if (helper != null && helper.getIdsAindaFaltamSerCalculador().contains(new Integer(this.getId()))){
-			    removido = helper.getIdsAindaFaltamSerCalculador().removeElement(new Integer(this.getId()));				
-			}
-			
-		}else{
-			int indice = helper.getIdsAindaFaltamSerCalculador().indexOf(new Integer(this.getId()));
-	
-		    if (indice == -1) {
-				adicionado = true;
-				helper.getIdsAindaFaltamSerCalculador().addElement(new Integer(this.getId()));
-		    }
-		}
-	}
+//	if (consumo != null || this.getSituacaoLigAgua().equals(Constantes.CORTADO)) {
+//	    removido = helper.getIdsAindaFaltamSerCalculador().removeElement( new Integer(this.getId()));
+//	} else {
+//		
+//		// Daniel - remover imoveis do condominio que não possuem conta.	    
+//		if (isImovelInformativo()) {
+//			if (helper != null && helper.getIdsAindaFaltamSerCalculador().contains(new Integer(this.getId()))){
+//			    removido = helper.getIdsAindaFaltamSerCalculador().removeElement(new Integer(this.getId()));				
+//			}
+//			
+//		}else{
+//			int indice = helper.getIdsAindaFaltamSerCalculador().indexOf(new Integer(this.getId()));
+//	
+//		    if (indice == -1) {
+//				adicionado = true;
+//				helper.getIdsAindaFaltamSerCalculador().addElement(new Integer(this.getId()));
+//		    }
+//		}
+//	}
 
 	if (removido || adicionado) {
 	    if (macro != null) {
 		macro.setEfetuarRateioConsumoDispositivoMovelHelper(helper);
-		Repositorio.salvarObjeto(macro);
+//		Repositorio.salvarObjeto(macro);
 	    } else {
 		this.setEfetuarRateioConsumoDispositivoMovelHelper(helper);
-		Repositorio.salvarObjeto(this);
+//		Repositorio.salvarObjeto(this);
 	    }
 	}
     }
@@ -3170,8 +3031,7 @@ public class Imovel {
 		    }
 		} else {
 		    Imovel imovelMacro = new Imovel();
-		    Repositorio.carregarObjeto(imovelMacro, this
-			    .getIdImovelCondominio());
+//		    Repositorio.carregarObjeto(imovelMacro, this.getIdImovelCondominio());
 
 		    if (imovelMacro.getIndcImovelImpresso() == Constantes.SIM) {
 			habilitar = false;

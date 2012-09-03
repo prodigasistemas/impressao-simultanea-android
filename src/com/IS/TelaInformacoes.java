@@ -24,7 +24,7 @@ public class TelaInformacoes extends Activity {
     	((TextView)findViewById(R.id.valorSetor)).setText(infoList.get(2));
     	((TextView)findViewById(R.id.valorRota)).setText(infoList.get(3));
     	((TextView)findViewById(R.id.valorAnoMesReferencia)).setText(anoMesReferencia);
-    	((TextView)findViewById(R.id.valorTotalImoveis)).setText(String.valueOf(ControladorImovel.getInstancia().getDataManipulator().getNumeroCadastros()));
+    	((TextView)findViewById(R.id.valorTotalImoveis)).setText(String.valueOf(ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis()));
     	((TextView)findViewById(R.id.valorUsuario)).setText(infoList.get(5));
     }
     

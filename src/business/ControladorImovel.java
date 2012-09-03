@@ -52,7 +52,7 @@ public class ControladorImovel {
     private static Vector anormalidades = new Vector();
     
     private static long idImovelSelecionado = 0;
-    private static int cadastroListPosition = -1;
+    private static int imovelListPosition = -1;
     
     private static Vector anormalidadesIndicadorUso1;
     private static Vector anormalidadesSemIndicadorUso1;
@@ -286,7 +286,7 @@ public class ControladorImovel {
 							break;
 							
 						case REGISTRO_TIPO_DADOS_CATEGORIA:
-							
+							dataManipulator.insertDadosCategoria(line);
 							break;
 							
 						case REGISTRO_TIPO_HISTORICO_CONSUMO:
@@ -302,7 +302,7 @@ public class ControladorImovel {
 							break;
 							
 						case REGISTRO_TIPO_IMPOSTO:
-							
+							dataManipulator.insertImposto(line);
 							break;
 							
 						case REGISTRO_TIPO_CONTA:
@@ -392,19 +392,19 @@ public class ControladorImovel {
     	return dataManipulator;
     }
     
-    // Retorna o Id do cadastro selecionado
+    // Retorna o Id do imovel selecionado
     public long getIdImovelSelecionado(){
     	return idImovelSelecionado;
     }
     
-    // Retorna a posição do cadastro selecionado na lista de cadastros ordenada por inscrição
+    // Retorna a posição do imovel selecionado na lista de imoveis ordenada por inscrição
     public int getImovelListPosition(){
-    	return cadastroListPosition;
+    	return imovelListPosition;
     }
     
-    // Guarda a posição do cadastro selecionado na lista de cadastros ordenada por inscrição
+    // Guarda a posição do imovel selecionado na lista de imoveis ordenada por inscrição
     public void setImovelListPosition(int position){
-    	this.cadastroListPosition = position;
+    	this.imovelListPosition = position;
 //    	dataManipulator.updateConfiguracao("posicao_cadastro_selecionado", position);
     }
     
@@ -418,7 +418,7 @@ public class ControladorImovel {
     
     public int isDatabaseRotaCarregadaOk(){
 
-    	if (dataManipulator.selectConfiguracaoElement("rota_carregada") == Constantes.SIM){
+    	if (dataManipulator.selectConfiguracaoElement("sucesso_carregamento") == Constantes.SIM){
     		this.isRotaCarregadaOk = Constantes.SIM;
     	}
 
@@ -426,7 +426,7 @@ public class ControladorImovel {
 	}
     
     public void setRotaCarregamentoOk(int isRotaCarregadaOk){
-//    	dataManipulator.updateConfiguracao("rota_carregada", Constantes.SIM);
+    	dataManipulator.updateConfiguracao("sucesso_carregamento", Constantes.SIM);
     }
     
     public void deleteDatabase(){

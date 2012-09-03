@@ -166,7 +166,7 @@ public class Configuracao {
 		}
 	
 		this.setContadorVisitados(Configuracao.getInstancia().getContadorVisitados() + 1);
-		ControladorImovel.getInstancia().getDataManipulator().salvarConfiguracao(Configuracao.getInstancia());
+		ControladorImovel.getInstancia().getDataManipulator().updateConfiguracao(Configuracao.getInstancia());
 //		Repositorio.salvarObjeto(Configuracao.getInstancia());
 		System.out.println("Visitados: " + this.getContadorVisitados());
     }

@@ -379,7 +379,7 @@ public class ControladorConta {
 			 * getImovelSelecionado().setMensagemConta3(mensagemContaPrimeiroMes
 			 * .substring(80, mensagemContaPrimeiroMes .length()));
 			 */
-			Repositorio.salvarObjeto(getImovelSelecionado());
+//			Repositorio.salvarObjeto(getImovelSelecionado());
 		    }
 
 		} else {
@@ -412,7 +412,7 @@ public class ControladorConta {
 				break;
 			    }
 
-			    Repositorio.salvarObjeto(getImovelSelecionado());
+//			    Repositorio.salvarObjeto(getImovelSelecionado());
 			}
 
 		    } else {
@@ -437,7 +437,7 @@ public class ControladorConta {
 				break;
 			    }
 
-			    Repositorio.salvarObjeto(getImovelSelecionado());
+//			    Repositorio.salvarObjeto(getImovelSelecionado());
 			}
 
 		    }
@@ -633,7 +633,7 @@ public class ControladorConta {
 			    break;
 			}
 
-			Repositorio.salvarObjeto(getImovelSelecionado());
+//			Repositorio.salvarObjeto(getImovelSelecionado());
 		    }
 
 		} else {
@@ -666,7 +666,7 @@ public class ControladorConta {
 				break;
 			    }
 
-			    Repositorio.salvarObjeto(getImovelSelecionado());
+//			    Repositorio.salvarObjeto(getImovelSelecionado());
 			}
 
 		    } else {
@@ -691,7 +691,7 @@ public class ControladorConta {
 				break;
 			    }
 
-			    Repositorio.salvarObjeto(getImovelSelecionado());
+//			    Repositorio.salvarObjeto(getImovelSelecionado());
 			}
 
 		    }
@@ -856,7 +856,7 @@ public class ControladorConta {
 			 * .substring(80, mensagemContaPrimeiroMes .length()));
 			 */
 
-			Repositorio.salvarObjeto(getImovelSelecionado());
+//			Repositorio.salvarObjeto(getImovelSelecionado());
 
 		    }
 
@@ -889,7 +889,7 @@ public class ControladorConta {
 				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
 				break;
 			    }
-			    Repositorio.salvarObjeto(getImovelSelecionado());
+//			    Repositorio.salvarObjeto(getImovelSelecionado());
 			}
 
 		    } else {
@@ -913,7 +913,7 @@ public class ControladorConta {
 				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
 				break;
 			    }
-			    Repositorio.salvarObjeto(getImovelSelecionado());
+//			    Repositorio.salvarObjeto(getImovelSelecionado());
 			}
 		    }
 		}
