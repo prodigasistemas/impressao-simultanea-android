@@ -21,6 +21,7 @@ public class ImovelTab extends Fragment {
 	private TextView matricula;
 	private TextView inscricao;
 	private TextView endereco;
+	private TextView seqRota;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -53,6 +54,7 @@ public class ImovelTab extends Fragment {
 		endereco = (TextView) view.findViewById(R.id.endereco);
 		sitLigAgua = (TextView) view.findViewById(R.id.sitLigAgua);
 		sitLigEsgoto = (TextView) view.findViewById(R.id.sitLigEsgoto);
+		seqRota = (TextView) view.findViewById(R.id.seqRota);
 		
 		nomeUsuario.setText(ControladorImovel.getInstancia().getImovelSelecionado().getNomeUsuario());
 		matricula.setText(""+ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
@@ -60,6 +62,7 @@ public class ImovelTab extends Fragment {
 		endereco.setText(ControladorImovel.getInstancia().getImovelSelecionado().getEndereco());
 		sitLigAgua.setText(ControladorImovel.getInstancia().getImovelSelecionado().getSituacaoLigAguaString());
 		sitLigEsgoto.setText(ControladorImovel.getInstancia().getImovelSelecionado().getSituacaoLigEsgotoString());
+		seqRota.setText(""+ControladorImovel.getInstancia().getImovelSelecionado().getSequencialRota());
 		
 //		instanciate();
 		

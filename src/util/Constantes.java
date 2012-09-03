@@ -64,8 +64,8 @@ public class Constantes {
     
     public static final int METODO_BUSCA_TODOS = 0;
     public static final int METODO_BUSCA_MATRICULA = 1;
-    public static final int SEQUENCIAL_ROTA = 2;
-    public static final int METODO_BUSCA_CNPJ = 3;
+    public static final int METODO_SEQUENCIAL_ROTA = 2;
+    public static final int METODO_QUADRA = 3;
     
     public static final int FILTRO_BUSCA_TODOS = 0;
     public static final int FILTRO_BUSCA_VISITADOS_SUCESSO = 1;

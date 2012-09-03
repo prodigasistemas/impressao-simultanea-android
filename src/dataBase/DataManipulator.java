@@ -1,5 +1,16 @@
 package dataBase;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Conta;
+import model.DadosGerais;
+import model.Imovel;
+import model.Medidor;
+import model.SituacaoTipo;
+import util.Constantes;
+import util.ParserUtil;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,20 +19,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import business.ControladorImovel;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import model.Conta;
-import model.DadosGerais;
-import model.Medidor;
-import model.SituacaoTipo;
-
-import util.Constantes;
-import util.ParserUtil;
-import util.Util;
 
 public class DataManipulator {
 	private static Context context;
@@ -368,7 +365,8 @@ public class DataManipulator {
 																			"inscricao",
 																			"endereco",
 																			"situacao_lig_agua",
-																			"situacao_lig_esgoto"}, "id = " + id, null, null, null,  "inscricao asc");
+																			"situacao_lig_esgoto",
+																			"sequencial_rota"}, "id = " + id, null, null, null,  "inscricao asc");
 		
 		if (cursor.moveToFirst()) {
         	ControladorImovel.getInstancia().getImovelSelecionado().setId(0);
@@ -378,6 +376,7 @@ public class DataManipulator {
         	ControladorImovel.getInstancia().getImovelSelecionado().setEndereco(cursor.getString(4));
         	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigAgua(cursor.getString(5));
         	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigEsgoto(cursor.getString(6));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setSequencialRota(cursor.getString(7));
 		}
 		
 		 if (cursor != null && !cursor.isClosed()) {
@@ -385,8 +384,46 @@ public class DataManipulator {
 	     }
 	     cursor.close();
 	}
+	
+	public List<Imovel> selectImovelCondition(String condition){
 		
+		List<Imovel> imoveis = new ArrayList<Imovel>();
+		
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
+																		"matricula",
+																		"nome_usuario",
+																		"endereco",
+																		"situacao_lig_agua",
+																		"situacao_lig_esgoto",
+																		"sequencial_rota",
+																		"inscricao"}, condition, null, null, null,  "inscricao asc");
+		
+		Log.i("LINHAS", ""+cursor.getCount());
+		
+		if (cursor.moveToFirst()) {
+        	do {
+        		Imovel imovel = new Imovel();
+        		
+        		imovel.setMatricula(cursor.getInt(1));
+        		imovel.setNomeUsuario(cursor.getString(2));
+        		imovel.setEndereco(cursor.getString(3));
+        		imovel.setSituacaoLigAgua(cursor.getString(4));
+        		imovel.setSituacaoLigEsgoto(cursor.getString(5));
+        		imovel.setSequencialRota(cursor.getString(6));
+        		imovel.setInscricao(cursor.getString(7));
 
+            	imoveis.add(imovel);
+        	} while (cursor.moveToNext());
+		}
+		
+		 if (cursor != null && !cursor.isClosed()) {
+	           cursor.close();
+	     }
+	     cursor.close();
+	     
+	     return imoveis;
+	}
+	
 	public int selectConfiguracaoElement(String element) {
 
 		int elementValue = 0;
@@ -409,19 +446,24 @@ public class DataManipulator {
 	public List<String> selectInformacoesRota() {
 
 		ArrayList<String> list = new ArrayList<String>();
-		Cursor cursor = db.query(Constantes.TABLE_GERAL, new String[] {
-				"grupo_faturamento", "localidade", "setor", "rota",
-				"ano_mes_faturamento", "login" }, null, null, null, null,
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {
+				"grupo_faturamento", "localidade", "setor", "quadra" }, null, null, null, null,
 				"grupo_faturamento asc");
-
+		
 		if (cursor.moveToFirst()) {
 			list.add(cursor.getString(0));
 			list.add(cursor.getString(1));
 			list.add(cursor.getString(2));
-			list.add(cursor.getString(3));
-			list.add(cursor.getString(4));
-			list.add(cursor.getString(5));
+			list.add(cursor.getString(3).substring(0, 2));
 		}
+		
+		cursor = db.query(Constantes.TABLE_GERAL, new String[] {"ano_mes_faturamento", "login"}, null, null, null, null, null);
+		
+		if (cursor.moveToFirst()) {
+			list.add(cursor.getString(0));
+			list.add(cursor.getString(1));
+		}
+		
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
@@ -570,9 +612,16 @@ public class DataManipulator {
 		initialValues.put("nome_escritorio", parser.obterDadoParser(25));
 		initialValues.put("nome_usuario", parser.obterDadoParser(30));
 		initialValues.put("data_vencimento", parser.obterDadoParser(8));
-
 		initialValues.put("data_validade_conta", parser.obterDadoParser(8));
-		initialValues.put("inscricao", parser.obterDadoParser(17));
+		
+		String inscricao = parser.obterDadoParser(17);
+		initialValues.put("inscricao", inscricao);
+		initialValues.put("localidade", inscricao.substring(0, 3));
+		initialValues.put("setor", inscricao.substring(3, 6));
+		initialValues.put("quadra", inscricao.substring(6, 10));
+		initialValues.put("lote", inscricao.substring(10, 14));
+		initialValues.put("sublote", inscricao.substring(14, 17));
+		
 		initialValues.put("endereco", parser.obterDadoParser(70));
 		initialValues.put("ano_mes_conta", parser.obterDadoParser(6));
 		initialValues.put("digito_verificador_conta", parser.obterDadoParser(1));

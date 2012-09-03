@@ -20,6 +20,11 @@ public class Imovel {
 	private Date dataVencimento;
 	private Date dataValidadeConta;
 	private String inscricao;
+	private String localidade;
+	private String setor;
+	private String quadra;
+	private String lote;
+	private String sublote;
 	private String endereco;
 	private String anoMesConta;
 	private int digitoVerificadorConta;
@@ -56,7 +61,7 @@ public class Imovel {
 	private int tipoCalculoTarifa;
 	private String enderecoAtendimento;
 	private String telefoneLocalidadeDDD;
-	private int sequencialRota;
+	private String sequencialRota;
 	private String mensagemConta1;
 	private String mensagemConta2;
 	private String mensagemConta3;
@@ -158,8 +163,17 @@ public class Imovel {
 	
 	
 
+	
 	public double getValorRateioAgua() {
 		return valorRateioAgua;
+	}
+
+	public String getInscricao() {
+		return inscricao;
+	}
+
+	public void setInscricao(String inscricao) {
+		this.inscricao = inscricao;
 	}
 
 	public long getId() {
@@ -218,12 +232,44 @@ public class Imovel {
 		this.dataValidadeConta = dataValidadeConta;
 	}
 
-	public String getInscricao() {
-		return inscricao;
+	public String getLocalidade() {
+		return localidade;
 	}
 
-	public void setInscricao(String inscricao) {
-		this.inscricao = inscricao;
+	public void setLocalidade(String localidade) {
+		this.localidade = localidade;
+	}
+
+	public String getSetor() {
+		return setor;
+	}
+
+	public void setSetor(String setor) {
+		this.setor = setor;
+	}
+
+	public String getQuadra() {
+		return quadra;
+	}
+
+	public void setQuadra(String quadra) {
+		this.quadra = quadra;
+	}
+
+	public String getLote() {
+		return lote;
+	}
+
+	public void setLote(String lote) {
+		this.lote = lote;
+	}
+
+	public String getSublote() {
+		return sublote;
+	}
+
+	public void setSublote(String sublote) {
+		this.sublote = sublote;
 	}
 
 	public String getEndereco() {
@@ -522,11 +568,11 @@ public class Imovel {
 		this.telefoneLocalidadeDDD = telefoneLocalidadeDDD;
 	}
 
-	public int getSequencialRota() {
+	public String getSequencialRota() {
 		return sequencialRota;
 	}
 
-	public void setSequencialRota(int sequencialRota) {
+	public void setSequencialRota(String sequencialRota) {
 		this.sequencialRota = sequencialRota;
 	}
 
