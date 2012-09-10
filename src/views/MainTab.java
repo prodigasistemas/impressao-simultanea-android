@@ -1,12 +1,27 @@
 package views;
 
-import util.Constantes;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import model.Imovel;
 import model.Medidor;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -19,18 +34,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
-import android.widget.TextView;
 import business.ControladorImovel;
 
-import com.IS.ListaImoveis;
-import com.IS.MenuPrincipal;
 import com.IS.R;
+import com.zebra.android.comm.BluetoothPrinterConnection;
+import com.zebra.android.comm.ZebraPrinterConnection;
+import com.zebra.android.comm.ZebraPrinterConnectionException;
 
+@SuppressLint("NewApi")
 public class MainTab extends FragmentActivity implements TabHost.OnTabChangeListener {
 
 	private static TabHost tabHost;
+	private BluetoothAdapter bluetoothAdapter;
+	private ListView listaDispositivos;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -39,6 +58,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    tabHost = (TabHost) findViewById(android.R.id.tabhost);
 	    tabHost.setup();
 	    tabHost.setOnTabChangedListener(this);
+	    
+	    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	    
+	    // Define a imagem de fundo de acordo com a orientacao do dispositivo
+	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
+	    	tabHost.setBackgroundResource(R.drawable.fundocadastro);
+	    else
+	    	tabHost.setBackgroundResource(R.drawable.landscapte_background);
 	    
 	    FragmentManager fm = getSupportFragmentManager();
 	    Fragment fragment = fm.findFragmentById(android.R.id.tabcontent);
@@ -62,6 +89,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 	}
 	
+	// Instancia novas tabs
 	public void addTab(String tag, String titulo, int imagem, final int view, Class classe) {
 		TabHost.TabSpec tabSpec;
 	    Resources res = getResources();
@@ -98,15 +126,15 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
     	MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.layout.menuoptions, menu);
-    	
+	    
     	return true;
     }
     
+	@TargetApi(5)
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		Log.i("Menu item", item.getItemId()+"");
 		
-	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.proximoImovel:
 
@@ -138,45 +166,63 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			startActivity(myIntent);
 	        return true;
 	    
-//	    case R.id.adicionarNovo:
-//			
-//			myIntent = new Intent(getApplicationContext(), ListaAddImovel.class);
-//			startActivity(myIntent);
+	        
+	    case R.id.imprimirConta:
+	    	
+	    	ZebraPrinterConnection conexao = null;
+	    	Set<BluetoothDevice> dispositivosPareados = bluetoothAdapter.getBondedDevices();
+	    	Iterator<BluetoothDevice> iterator = dispositivosPareados.iterator();
+	    	List<BluetoothDevice> impressorasPareadas = new ArrayList<BluetoothDevice>(); 
+	    	
+	    	while (iterator.hasNext()) {
+	    		BluetoothDevice device = iterator.next();
+	    		// Seleciona apenas as impressoras pareadas
+	    		if (device.getBluetoothClass().getMajorDeviceClass() == 1536) {
+	    			impressorasPareadas.add(device);
+	    		}
+	    	}
+	    	
 
-//	    	ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(-1);
-//	    	ControladorImovel.getInstancia().initCadastroTabs();
-//	    	finish();
-//	    	myIntent = new Intent(getApplicationContext(), MainTab.class);
-//			startActivity(myIntent);
-//	        return true;
+	    	
+	    	if (impressorasPareadas.size() > 0) {
+	    		Log.i("PAREADOS: ", ""+ impressorasPareadas);
+	    		
+	    		try {
+	    			if (impressorasPareadas.size() == 1) {
+		    			BluetoothDevice device = impressorasPareadas.get(0);
+		    			conexao = new BluetoothPrinterConnection(device.getAddress());
+		    			conexao.open();
+		    		}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						conexao.close();
+					} catch (ZebraPrinterConnectionException e) {
+						e.printStackTrace();
+					}
+				}
+	    		
+	    		
+	    	} else {
+	    		Intent intentBluetooth = new Intent();
+		        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+		        startActivity(intentBluetooth);
+	    	}
 	        
-//	    case R.id.menuPrincipal:
-//			
-//	    	myIntent = new Intent(getApplicationContext(), MenuPrincipal.class);
-//			startActivity(myIntent);
-//	        return true;
-	        
-	    case R.id.listCadastros:
-			
-	    	myIntent = new Intent(getApplicationContext(), ListaImoveis.class);
-			startActivity(myIntent);
-	        return true;
-	        
-//	    case R.id.sair:
-//			
-//	        return true;
+	    	return true;
 	        
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-
+	
 	@Override
-	protected void onResume() {
-//		initializeTabs();
-		super.onResume();
+	protected Dialog onCreateDialog(int id) {
+		return super.onCreateDialog(id);
 	}
-
+	
+	
 	public Imovel getImovelSelecionado() {
 		return ControladorImovel.getInstancia().getImovelSelecionado();
 	}
@@ -193,7 +239,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			ft.add(android.R.id.tabcontent, new ContaTab());
 		
     	ft.commit();
-		
 	}
-
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscapte_background));
+		else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.fundocadastro));
+	}
 }

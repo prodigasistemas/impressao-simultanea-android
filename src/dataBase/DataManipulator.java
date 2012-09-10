@@ -4,8 +4,8 @@ import helper.EfetuarRateioConsumoHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
 import java.util.Vector;
 
 import model.Anormalidade;
@@ -26,8 +26,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import business.ControladorImovel;
-
-import helper.EfetuarRateioConsumoHelper;
 
 public class DataManipulator {
 	private static Context context;
@@ -56,6 +54,10 @@ public class DataManipulator {
 
 	public DadosGerais getDadosGerais() {
 		return ControladorImovel.getInstancia().getDadosGerais();
+	}
+	
+	public List<String> getDadosCategoria() {
+		return ControladorImovel.getInstancia().getDadosCategoria();
 	}
 
 	public Medidor getMedidorSelecionado() {
@@ -247,6 +249,8 @@ public class DataManipulator {
 	}
 
 	public void selectMedidor(int matricula) {
+		
+		Log.i("Matricula medidor", ""+matricula);
 
 		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {
 				"tipo_medicao", "numero_hidrometro",
@@ -383,6 +387,23 @@ public class DataManipulator {
         	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigAgua(cursor.getString(5));
         	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigEsgoto(cursor.getString(6));
         	ControladorImovel.getInstancia().getImovelSelecionado().setSequencialRota(cursor.getString(7));
+		}
+		
+		cursor.close();
+		
+		cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
+																		"descricao_categoria"}, "matricula = " + ControladorImovel.getInstancia()
+																												.getImovelSelecionado()
+																												.getMatricula(), null, null, null, null);
+		
+		Log.i("DADOS CATEGORIA", ""+cursor.getCount());
+		ControladorImovel.getInstancia().getDadosCategoria().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(0));
+				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(1));
+			} while (cursor.moveToNext());
 		}
 		
 		 if (cursor != null && !cursor.isClosed()) {

@@ -17,7 +17,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import model.Anormalidade;
@@ -28,7 +29,6 @@ import model.Imovel;
 import model.Medidor;
 import model.SituacaoTipo;
 import util.Constantes;
-import util.Util;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +50,7 @@ public class ControladorImovel {
     private static Medidor medidorSelecionado = new Medidor();
     private static DadosGerais dadosGerais = new DadosGerais();
     private static Vector anormalidades = new Vector();
+    private static List<String> dadosCategoria = new ArrayList<String>();
     
     private static long idImovelSelecionado = 0;
     private static int imovelListPosition = -1;
@@ -79,6 +80,10 @@ public class ControladorImovel {
 
     public Medidor getMedidorSelecionado(){
     	return ControladorImovel.medidorSelecionado;
+    }
+    
+    public List<String> getDadosCategoria() {
+    	return ControladorImovel.dadosCategoria;
     }
 //    
 //    public Servicos getServicosSelecionado(){

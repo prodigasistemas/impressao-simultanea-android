@@ -16,6 +16,8 @@ public class Constantes {
     public static final int DIALOG_ID_ERRO = 6;
     public static final int DIALOG_ID_ERRO_GPS_DESLIGADO = 7;
     public static final int DIALOG_ID_CONFIRM_BACK = 8;
+    public static final int DIALOG_ID_SELECIONAR_IMPRESSORA = 9;
+    public static final int DIALOG_ID_START_THREAD = 10;
        
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";

@@ -2,14 +2,13 @@ package com.IS;
 
 import java.util.ArrayList;
 
-import util.Constantes;
+import com.IS.R.layout;
 
-import business.ControladorImovel;
 import views.MainTab;
-
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
@@ -34,6 +33,7 @@ public class ListaImoveis extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.imoveislist);
+    	
     	this.getListView().setCacheColorHint(Color.TRANSPARENT);
     	
     	int[] colors = {0x12121212, 0xFFFFFFFF, 0x12121212}; // red for the example

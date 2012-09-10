@@ -2,12 +2,7 @@ package com.IS;
 
 import java.util.ArrayList;
 
-import com.IS.R.color;
-
 import util.Constantes;
-import background.CarregarRotaThread;
-import background.GerarArquivoCompletoThread;
-import business.ControladorImovel;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,6 +10,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,12 +22,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+import background.CarregarRotaThread;
+import background.GerarArquivoCompletoThread;
+import business.ControladorImovel;
+
+import com.IS.R.color;
  
 public class MenuPrincipal extends Activity {
 	
@@ -289,33 +291,36 @@ public class MenuPrincipal extends Activity {
         }
  
         //returns the ID of an item
-        public Object getItem(int position) {
-            return position;
+        public Integer getItem(int position) {
+            return TextIDs[position];
         }
  
         public long getItemId(int position) {
             return position;
         }
- 
+        
 		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
-
+			
 			if(convertView==null){
 				
 				LayoutInflater inflator = getLayoutInflater();
 				view = inflator.inflate(R.layout.icon, null);
-				TextView textView = (TextView)view.findViewById(R.id.icon_text);
-				textView.setTextColor(color.labelColor);
-				textView.setText(TextIDs[position]);
-				ImageView imageView = (ImageView)view.findViewById(R.id.icon_image);
-				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-				imageView.setPadding(5, 5, 5, 5);
-				imageView.setImageResource(imageIDs[position]);
+				
 			
 			}else{
 				view = convertView;
 			}
+			
+			TextView textView = (TextView)view.findViewById(R.id.icon_text);
+			textView.setTextColor(color.labelColor);
+			textView.setText(TextIDs[position]);
+			ImageView imageView = (ImageView)view.findViewById(R.id.icon_image);
+			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			imageView.setPadding(5, 5, 5, 5);
+			imageView.setImageResource(imageIDs[position]);
+			
 			return view;
 		}
     }    
