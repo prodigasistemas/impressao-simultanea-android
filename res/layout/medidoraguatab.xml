@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="@drawable/fundocadastro" 
+android:orientation="vertical">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -103,7 +110,7 @@
         android:orientation="horizontal" >
 
         <EditText
-            android:id="@+id/anormalidadeId"
+            android:id="@+id/codigoAnormalidade"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_rounded_corners"
@@ -120,3 +127,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</ScrollView>

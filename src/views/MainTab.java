@@ -67,7 +67,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    else
 	    	tabHost.setBackgroundResource(R.drawable.landscapte_background);
 	    
-	    FragmentManager fm = getSupportFragmentManager();
+	    fm = getSupportFragmentManager();
 	    Fragment fragment = fm.findFragmentById(android.R.id.tabcontent);
 	    
 	    if (fragment == null) {
@@ -76,13 +76,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	ft.commit();
 	    }
 	    
-	    
 	    addTab("imovel", "Imóvel", R.drawable.tab_imovel, R.layout.imoveltab, ImovelTab.class);
 
-	    final Medidor medidor = ControladorImovel.getInstancia().getMedidorSelecionado();
-	    
-	    if (medidor.getNumeroHidrometro() != "") {
+	    if (ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro() != "") {
 	    	addTab("medidor", "Medidor", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
+
 	    } else {
 	    	addTab("conta", "Conta", R.drawable.text, R.layout.contatab, ContaTab.class);
 	    }
@@ -100,7 +98,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
             public View createTabContent(String tag) {
             	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            	View layout = inflater.inflate(view, (ViewGroup) findViewById(R.layout.maintab));
+            	layout = inflater.inflate(view, (ViewGroup) findViewById(R.layout.maintab));
                 return layout;
             }
         });

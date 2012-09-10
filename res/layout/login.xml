@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:id="@+id/EditText_User"
-        android:inputType="text" />
+        android:inputType="text" 
+        android:text="gcom"/>
     <TextView
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -26,7 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:id="@+id/EditText_Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword" 
+        android:text="senha"/>
     <TextView
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
