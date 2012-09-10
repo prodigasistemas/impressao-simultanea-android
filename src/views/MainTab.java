@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
@@ -31,6 +33,8 @@ import com.IS.R;
 public class MainTab extends FragmentActivity implements TabHost.OnTabChangeListener {
 
 	private static TabHost tabHost;
+	FragmentManager fm;
+	View layout;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -40,7 +44,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    tabHost.setup();
 	    tabHost.setOnTabChangedListener(this);
 	    
-	    FragmentManager fm = getSupportFragmentManager();
+	    fm = getSupportFragmentManager();
 	    Fragment fragment = fm.findFragmentById(android.R.id.tabcontent);
 	    
 	    if (fragment == null) {
@@ -49,13 +53,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	ft.commit();
 	    }
 	    
-	    
 	    addTab("imovel", "Imóvel", R.drawable.tab_imovel, R.layout.imoveltab, ImovelTab.class);
 
-	    final Medidor medidor = ControladorImovel.getInstancia().getMedidorSelecionado();
-	    
-	    if (medidor.getNumeroHidrometro() != "") {
+	    if (ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro() != "") {
 	    	addTab("medidor", "Medidor", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
+
 	    } else {
 	    	addTab("conta", "Conta", R.drawable.text, R.layout.contatab, ContaTab.class);
 	    }
@@ -72,7 +74,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
             public View createTabContent(String tag) {
             	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            	View layout = inflater.inflate(view, (ViewGroup) findViewById(R.layout.maintab));
+            	layout = inflater.inflate(view, (ViewGroup) findViewById(R.layout.maintab));
                 return layout;
             }
         });
@@ -138,33 +140,29 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			startActivity(myIntent);
 	        return true;
 	    
-//	    case R.id.adicionarNovo:
-//			
-//			myIntent = new Intent(getApplicationContext(), ListaAddImovel.class);
-//			startActivity(myIntent);
-
-//	    	ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(-1);
-//	    	ControladorImovel.getInstancia().initCadastroTabs();
-//	    	finish();
-//	    	myIntent = new Intent(getApplicationContext(), MainTab.class);
-//			startActivity(myIntent);
-//	        return true;
-	        
-//	    case R.id.menuPrincipal:
-//			
-//	    	myIntent = new Intent(getApplicationContext(), MenuPrincipal.class);
-//			startActivity(myIntent);
-//	        return true;
-	        
 	    case R.id.listCadastros:
 			
 	    	myIntent = new Intent(getApplicationContext(), ListaImoveis.class);
 			startActivity(myIntent);
 	        return true;
-	        
-//	    case R.id.sair:
-//			
-//	        return true;
+
+	    case R.id.imprimirConta:
+
+			Intent intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+			startActivity(intent);
+
+	    	
+	    	Fragment f = fm.findFragmentByTag("medidor");
+	    	MedidorTab instanceFragment= (MedidorTab)getSupportFragmentManager().findFragmentById(R.layout.medidoraguatab);
+			Log.i("LOG 2 >> ", MedidorTab.getLeitura());
+
+	    	//			chamar método de calculo de consumo (ControladorImovel)	        
+	    	return true;
+	    
+	    case R.id.localizarPendente:
+//	        Buscar no DB a matricula de todos os imoveis com status Pendente - Ordenado por Inscricao.
+//	    	Carregar o primeiro imovel da lista
+	    	return true;
 	        
 	    default:
 	        return super.onOptionsItemSelected(item);

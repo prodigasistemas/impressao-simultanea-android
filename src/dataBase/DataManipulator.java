@@ -375,7 +375,7 @@ public class DataManipulator {
 																			"sequencial_rota"}, "id = " + id, null, null, null,  "inscricao asc");
 		
 		if (cursor.moveToFirst()) {
-        	ControladorImovel.getInstancia().getImovelSelecionado().setId(0);
+        	ControladorImovel.getInstancia().getImovelSelecionado().setId(id);
         	ControladorImovel.getInstancia().getImovelSelecionado().setMatricula(Integer.parseInt(cursor.getString(1)));
         	ControladorImovel.getInstancia().getImovelSelecionado().setNomeUsuario(cursor.getString(2));
         	ControladorImovel.getInstancia().getImovelSelecionado().setInscricao(cursor.getString(3));
@@ -626,16 +626,14 @@ public class DataManipulator {
 	public List<String> selectDescricoesFromTable(String table) {
 
 		ArrayList<String> list = new ArrayList<String>();
-		Cursor cursor = db.query(table, new String[] { "codigo", "descricao" },
-				null, null, null, null, "descricao asc");
-		int x = 0;
+		Cursor cursor = db.query(table, new String[] { "codigo", "descricao" }, null, null, null, null, "codigo asc");
+
 		if (cursor.moveToFirst()) {
 			do {
-				String b1 = cursor.getString(1);
-				list.add(b1);
-				x = x + 1;
+				list.add(cursor.getString(1));
 			} while (cursor.moveToNext());
 		}
+		
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
