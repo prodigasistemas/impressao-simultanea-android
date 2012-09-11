@@ -156,8 +156,8 @@ public class Consulta extends ListActivity {
 		// user clicked a list item, make it "selected"
 		enderecoList.setSelectedPosition(position);
 
-//		ControladorImovel.getInstancia().setCadastroSelecionadoByListPosition(position);
 		ControladorImovel.getInstancia().setImovelSelecionado(listImoveis.get(Integer.parseInt(""+id)));
+		ControladorImovel.getInstancia().getDataManipulator().selectImovel(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
 		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
 		startActivityForResult(myIntent, 0);
 	}

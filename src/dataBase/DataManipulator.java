@@ -4,8 +4,8 @@ import helper.EfetuarRateioConsumoHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
 import java.util.Vector;
 
 import model.Anormalidade;
@@ -26,8 +26,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import business.ControladorImovel;
-
-import helper.EfetuarRateioConsumoHelper;
 
 public class DataManipulator {
 	private static Context context;
@@ -56,6 +54,10 @@ public class DataManipulator {
 
 	public DadosGerais getDadosGerais() {
 		return ControladorImovel.getInstancia().getDadosGerais();
+	}
+	
+	public List<String> getDadosCategoria() {
+		return ControladorImovel.getInstancia().getDadosCategoria();
 	}
 
 	public Medidor getMedidorSelecionado() {
@@ -247,6 +249,8 @@ public class DataManipulator {
 	}
 
 	public void selectMedidor(int matricula) {
+		
+		Log.i("Matricula medidor", ""+matricula);
 
 		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {
 				"tipo_medicao", "numero_hidrometro",
@@ -385,6 +389,23 @@ public class DataManipulator {
         	ControladorImovel.getInstancia().getImovelSelecionado().setSequencialRota(cursor.getString(7));
 		}
 		
+		cursor.close();
+		
+		cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
+																		"descricao_categoria"}, "matricula = " + ControladorImovel.getInstancia()
+																												.getImovelSelecionado()
+																												.getMatricula(), null, null, null, null);
+		
+		Log.i("DADOS CATEGORIA", ""+cursor.getCount());
+		ControladorImovel.getInstancia().getDadosCategoria().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(0));
+				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(1));
+			} while (cursor.moveToNext());
+		}
+		
 		 if (cursor != null && !cursor.isClosed()) {
 	           cursor.close();
 	     }
@@ -430,20 +451,20 @@ public class DataManipulator {
 	     return imoveis;
 	}
 	
-	public int selectConfiguracaoElement(String element) {
+	public String selectConfiguracaoElement(String element) {
 
-		int elementValue = 0;
+		String elementValue = "";
 
 		Cursor cursor = db.query(Constantes.TABLE_CONFIGURACAO,
 				new String[] { element }, null, null, null, null, "id asc");
 
 		if (cursor.moveToFirst()) {
-			elementValue = Integer.parseInt(cursor.getString(0));
+			elementValue = cursor.getString(0);
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+//		if (cursor != null && !cursor.isClosed()) {
+//			cursor.close();
+//		}
 		cursor.close();
 
 		return elementValue;
@@ -626,9 +647,9 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+//		if (cursor != null && !cursor.isClosed()) {
+//			cursor.close();
+//		}
 		
 		cursor.close();
 
@@ -1118,7 +1139,20 @@ public class DataManipulator {
 		return db.insert(Constantes.TABLE_CONSUMO_ANORMALIDADE_ACAO, null, initialValues);
 	}
 
-	public void updateConfiguracao(String parametroName, int value){
+	public void updateConfiguracao(String parametroName, int value) {
+		   
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(parametroName, value);
+
+		if (DatabaseUtils.queryNumEntries(db,Constantes.TABLE_CONFIGURACAO) > 0){
+			db.update(Constantes.TABLE_CONFIGURACAO, initialValues, "id=?", new String []{String.valueOf(1)});
+			
+		}else{
+			db.insert(Constantes.TABLE_CONFIGURACAO, null, initialValues);
+		}
+	}
+	
+	public void updateConfiguracao(String parametroName, String value) {
 		   
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(parametroName, value);

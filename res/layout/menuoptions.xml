@@ -2,16 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/imovelAnterior"
-        android:icon="@drawable/anterior"
-        android:title="Imóvel Anterior"/>
-
-    <item
-        android:id="@+id/proximoImovel"
-        android:icon="@drawable/proximo"
-        android:title="Próximo Imóvel"/>
-
-    <item
         android:id="@+id/imprimirConta"
         android:title="@string/options_imprimir"/>
 
@@ -19,8 +9,18 @@
         android:id="@+id/localizarPendente"
         android:title="@string/options_localizar_pendente"/>
 
-    <item
+    <!-- <item
         android:id="@+id/listCadastros"
-        android:title="@string/options_lista_cadastro"/>
+        android:title="@string/options_lista_cadastro"/> -->
+
+    <item
+        android:id="@+id/imovelAnterior"
+        android:icon="@drawable/anterior"
+        android:title="Imóvel Anterior" />
+
+    <item
+        android:id="@+id/proximoImovel"
+        android:icon="@drawable/proximo"
+        android:title="Próximo Imóvel" />
 
 </menu>

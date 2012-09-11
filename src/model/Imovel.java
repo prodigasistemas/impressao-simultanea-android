@@ -2182,11 +2182,10 @@ public class Imovel {
 	return retorno;
     }
 
-    public String getDescricaoSitLigacaoAgua(String situacaoLigAgua) {
+    public String getDescricaoSitLigacaoAgua(int situacaoLigAgua) {
 	String descricaoSitLigacaoAgua = "";
-	if (situacaoLigAgua != null && !situacaoLigAgua.equals("")) {
-	    int idSituacaoLigacaoAgua = Integer.parseInt(situacaoLigAgua);
-	    switch (idSituacaoLigacaoAgua) {
+	if (situacaoLigAgua != 0) {
+	    switch (situacaoLigAgua) {
 	    case POTENCIAL:
 		descricaoSitLigacaoAgua = "POTENCIAL";
 		break;
@@ -2219,11 +2218,10 @@ public class Imovel {
 	return descricaoSitLigacaoAgua;
     }
 
-    public String getDescricaoSitLigacaoEsgoto(String situacaoLigEsgoto) {
+    public String getDescricaoSitLigacaoEsgoto(int situacaoLigEsgoto) {
 	String descricaoSitLigacaoEsgoto = "";
-	if (situacaoLigEsgoto != null && !situacaoLigEsgoto.equals("")) {
-	    int idSituacaoLigacaoEsgoto = Integer.parseInt(situacaoLigEsgoto);
-	    switch (idSituacaoLigacaoEsgoto) {
+	if (situacaoLigEsgoto != 0) {
+	    switch (situacaoLigEsgoto) {
 	    case POTENCIAL:
 		descricaoSitLigacaoEsgoto = "POTENCIAL";
 		break;
