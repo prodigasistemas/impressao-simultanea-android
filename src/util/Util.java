@@ -14,7 +14,7 @@ import ui.ArquivoRetorno;
 import ui.MessageDispatcher;
 
 import business.ControladorAcessoOnline;
-import business.ControladorImovel;
+import business.ControladorRota;
 
 import android.os.Environment;
 import android.text.Editable;
@@ -314,11 +314,11 @@ public class Util {
     public static String getRetornoRotaDirectory(){
     	String diretorioRetornoRota = null;
     	
-    	ControladorImovel.getInstancia().getDataManipulator().selectGeral();
+    	ControladorRota.getInstancia().getDataManipulator().selectGeral();
 //    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	diretorioRetornoRota += ControladorImovel.getInstancia().getDadosGerais().getAnoMesFaturamento();
+    	diretorioRetornoRota += ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento();
     	
         File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
         if(!fileRotaDiretorio.exists()) {
@@ -331,11 +331,11 @@ public class Util {
     public static String getRotaFileName(){
     	String rotaFileName = null;
     	
-    	ControladorImovel.getInstancia().getDataManipulator().selectGeral();
+    	ControladorRota.getInstancia().getDataManipulator().selectGeral();
 //    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
 //    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	rotaFileName += ControladorImovel.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
+    	rotaFileName += ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
     	
     	return rotaFileName;
     }

@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.os.Looper;
 import android.os.ParcelUuid;
 import android.support.v4.app.Fragment;
@@ -46,6 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TabHost.TabContentFactory;
 import business.ControladorImovel;
+import business.ControladorRota;
 
 import com.IS.R;
 import com.zebra.android.comm.BluetoothPrinterConnection;
@@ -149,7 +151,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 	    	ControladorImovel.getInstancia().isImovelAlterado();
 	    	
-	    	if(ControladorImovel.getInstancia().getImovelListPosition() == (ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis())-1){
+	    	if(ControladorImovel.getInstancia().getImovelListPosition() == (ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis())-1){
 				ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(0);
 
 			}else{
@@ -165,7 +167,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	ControladorImovel.getInstancia().isImovelAlterado();
 	    	
 	    	if(ControladorImovel.getInstancia().getImovelListPosition() <= 0){
-				ControladorImovel.getInstancia().setImovelSelecionadoByListPosition((int)ControladorImovel.getInstancia().getDataManipulator().getNumeroImoveis()-1);
+				ControladorImovel.getInstancia().setImovelSelecionadoByListPosition((int)ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis()-1);
 			}else{
 		    	ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(ControladorImovel.getInstancia().getImovelListPosition()-1);
 			}
@@ -178,11 +180,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	        
 	    case R.id.imprimirConta:
 	    	
+//			chamar método de calculo de consumo (ControladorImovel)	        
 	    	
 	    	imprimirConta();
-	    	
-	    	
-	        
+	    	return true;
+	    
+	    case R.id.localizarPendente:
+//	        Buscar no DB a matricula de todos os imoveis com status Pendente - Ordenado por Inscricao.
+//	    	Carregar o primeiro imovel da lista
 	    	return true;
 	        
 	    default:
@@ -192,15 +197,15 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 	public void imprimirConta() {
 		
-		/* Caso não haja nenhum endereco bluetooth préviamente salvo é mostrada a tela de pareamento de dispositivos.
+		/* Caso não haja nenhum endereco bluetooth previamente salvo é mostrada a tela de pareamento de dispositivos.
 		 * Caso contrário é realizada a conexão com a impressora e impressa a conta
 		 */
-		if (ControladorImovel.getInstancia().getBluetoothAddress() == null) {
+		if (ControladorRota.getInstancia().getBluetoothAddress() == null) {
     		Intent intentBluetooth = new Intent();
-	        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+	        intentBluetooth.setAction(Settings.ACTION_BLUETOOTH_SETTINGS);
 	        startActivityForResult(intentBluetooth, 0);
     	} else {
-    		String bluetoothAddress = ControladorImovel.getInstancia().getBluetoothAddress();
+    		String bluetoothAddress = ControladorRota.getInstancia().getBluetoothAddress();
     		progress = new ProgressDialog(this);
     		progress.setTitle("Imprimindo conta");
     		progress.setMessage("Aguarde");
@@ -236,8 +241,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	dialog.show();
 		}
 	}
-	
-	
 	
 	public Imovel getImovelSelecionado() {
 		return ControladorImovel.getInstancia().getImovelSelecionado();
@@ -464,7 +467,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					conexao.write(comandoCPCL.getBytes());
 					conexao.close();
 					
-					ControladorImovel.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
+					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
 					Thread.sleep(1500);
 					progress.dismiss();
 				}
@@ -486,7 +489,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					 * o campo de endereco bluetooth é apagado e em seguida é chamado o método de impressão 
 					 */
 					
-					ControladorImovel.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", null);
+					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", null);
 					
 					imprimirConta();
 				}});

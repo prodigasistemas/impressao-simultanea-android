@@ -26,6 +26,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import business.ControladorImovel;
+import business.ControladorRota;
 
 public class DataManipulator {
 	private static Context context;
@@ -53,7 +54,7 @@ public class DataManipulator {
 	}
 
 	public DadosGerais getDadosGerais() {
-		return ControladorImovel.getInstancia().getDadosGerais();
+		return ControladorRota.getInstancia().getDadosGerais();
 	}
 	
 	public List<String> getDadosCategoria() {
@@ -498,24 +499,14 @@ public class DataManipulator {
 		return list;
 	}
 
-	public Vector selectAnormalidades() {
-
-		Cursor cursor = db.query(Constantes.TABLE_ANORMALIDADE, new String[] {"id",
-																			  "codigo", 
-																			  "descricao",
-																			  "indicador_leitura",
-																			  "id_consumo_a_cobrar_sem_leitura",
-																			  "id_consumo_a_cobrar_com_leitura",
-																			  "id_leitura_faturar_sem_leitura",
-																			  "id_leitura_faturar_com_leitura",
-																			  "indc_uso",
-																			  "numero_fator_sem_leitura",
-																			  "numero_fator_com_leitura"}, null, null, null, null, "codigo asc");
+	public Anormalidade selectAnormalidadeByCodigo(int codigo) {
+		
+		Cursor cursor = db.query(Constantes.TABLE_ANORMALIDADE, null, "codigo = ?", new String []{String.valueOf(codigo)}, null, null, "codigo asc");
+		Anormalidade anormalidade = new Anormalidade();
 		
 		if (cursor.moveToFirst()) {
+
 			do {
-				Anormalidade anormalidade = new Anormalidade();
-				
 				anormalidade.setId(Long.parseLong(cursor.getString(0)));
 				anormalidade.setCodigo(cursor.getString(1));
 				anormalidade.setDescricao(cursor.getString(2));
@@ -527,8 +518,6 @@ public class DataManipulator {
 				anormalidade.setIndcUso(cursor.getString(8));
 				anormalidade.setNumeroFatorSemLeitura(cursor.getString(9));
 				anormalidade.setNumeroFatorComLeitura(cursor.getString(10));
-				
-				ControladorImovel.getInstancia().getAnormalidades().add(anormalidade);
 
 			} while (cursor.moveToNext());
 		}
@@ -536,7 +525,32 @@ public class DataManipulator {
 			cursor.close();
 		}
 		cursor.close();
-		return ControladorImovel.getInstancia().getAnormalidades();
+		return anormalidade;
+	}
+	
+	public ArrayList<String> selectListaAnormalidades(boolean apenasComIndicadorUso) {
+
+		Cursor cursor = null;
+		ArrayList<String> list = new ArrayList<String>();
+		
+		if (apenasComIndicadorUso){
+			cursor = db.query(Constantes.TABLE_ANORMALIDADE, null, "indc_uso = ?", new String []{String.valueOf(Constantes.SIM)}, null, null, "codigo asc");
+
+		}else{
+			cursor = db.query(Constantes.TABLE_ANORMALIDADE, null, null, null, null, null, "codigo asc");
+		}
+
+		if (cursor.moveToFirst()) {
+			do {
+				list.add(cursor.getString(2));
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+		cursor.close();
+		return list;
 	}
 	
 	public Consumo selectConsumoImovelByTipoMedicao(int matricula, int tipoMedicao) {

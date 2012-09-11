@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import business.ControladorImovel;
+import business.ControladorRota;
 
 public class Consulta extends ListActivity {
 	
@@ -87,7 +88,7 @@ public class Consulta extends ListActivity {
     	enderecoList = null;
     	setListAdapter(enderecoList);
 
-    		if (ControladorImovel.getInstancia().getDataManipulator() != null){
+    		if (ControladorRota.getInstancia().getDataManipulator() != null){
     			
     			filterCondition = null;
     			String filterPreCondition = null;
@@ -135,7 +136,7 @@ public class Consulta extends ListActivity {
 	    		
     			// Aplica condicoes de filtro
 //    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(filterCondition);
-    	    	listImoveis = (ArrayList<Imovel>) ControladorImovel.getInstancia().getDataManipulator()
+    	    	listImoveis = (ArrayList<Imovel>) ControladorRota.getInstancia().getDataManipulator()
     	    			.selectImovelCondition(filterCondition);
     	    	
     	    	ArrayList<String> enderecos = new ArrayList<String>();
@@ -157,7 +158,7 @@ public class Consulta extends ListActivity {
 		enderecoList.setSelectedPosition(position);
 
 		ControladorImovel.getInstancia().setImovelSelecionado(listImoveis.get(Integer.parseInt(""+id)));
-		ControladorImovel.getInstancia().getDataManipulator().selectImovel(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
+		ControladorRota.getInstancia().getDataManipulator().selectImovel(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
 		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
 		startActivityForResult(myIntent, 0);
 	}

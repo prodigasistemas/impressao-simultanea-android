@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import business.ControladorImovel;
+import business.ControladorRota;
 
 public class ListaImoveis extends ListActivity {
 	
@@ -50,10 +51,10 @@ public class ListaImoveis extends ListActivity {
     private void loadEnderecoImoveis(){
     	
     	if (ControladorImovel.getInstancia() != null){
-    		if (ControladorImovel.getInstancia().getDataManipulator() != null){
+    		if (ControladorRota.getInstancia().getDataManipulator() != null){
     			
 //    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectStatusImoveis(null);
-    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
+    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
     	    	
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
