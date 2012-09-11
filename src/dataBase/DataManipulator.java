@@ -451,20 +451,20 @@ public class DataManipulator {
 	     return imoveis;
 	}
 	
-	public int selectConfiguracaoElement(String element) {
+	public String selectConfiguracaoElement(String element) {
 
-		int elementValue = 0;
+		String elementValue = "";
 
 		Cursor cursor = db.query(Constantes.TABLE_CONFIGURACAO,
 				new String[] { element }, null, null, null, null, "id asc");
 
 		if (cursor.moveToFirst()) {
-			elementValue = Integer.parseInt(cursor.getString(0));
+			elementValue = cursor.getString(0);
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+//		if (cursor != null && !cursor.isClosed()) {
+//			cursor.close();
+//		}
 		cursor.close();
 
 		return elementValue;
@@ -634,9 +634,9 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+//		if (cursor != null && !cursor.isClosed()) {
+//			cursor.close();
+//		}
 		
 		cursor.close();
 
@@ -1126,7 +1126,20 @@ public class DataManipulator {
 		return db.insert(Constantes.TABLE_CONSUMO_ANORMALIDADE_ACAO, null, initialValues);
 	}
 
-	public void updateConfiguracao(String parametroName, int value){
+	public void updateConfiguracao(String parametroName, int value) {
+		   
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(parametroName, value);
+
+		if (DatabaseUtils.queryNumEntries(db,Constantes.TABLE_CONFIGURACAO) > 0){
+			db.update(Constantes.TABLE_CONFIGURACAO, initialValues, "id=?", new String []{String.valueOf(1)});
+			
+		}else{
+			db.insert(Constantes.TABLE_CONFIGURACAO, null, initialValues);
+		}
+	}
+	
+	public void updateConfiguracao(String parametroName, String value) {
 		   
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(parametroName, value);

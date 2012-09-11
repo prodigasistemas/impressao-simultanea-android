@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import model.Anormalidade;
+import model.Configuracao;
 import model.Consumo;
 import model.Conta;
 import model.DadosGerais;
@@ -142,6 +143,10 @@ public class ControladorImovel {
 //    	Controlador.ramosAtividade = ramosAtividade;
 //    }
      
+    public String getBluetoothAddress() {
+    	return dataManipulator.selectConfiguracaoElement("bluetooth_address");
+    }
+    
     public void setImovelSelecionadoByListPosition(int listPosition){
     	initImovelTabs();
     	setImovelListPosition(listPosition);
@@ -423,7 +428,7 @@ public class ControladorImovel {
     
     public int isDatabaseRotaCarregadaOk(){
 
-    	if (dataManipulator.selectConfiguracaoElement("sucesso_carregamento") == Constantes.SIM){
+    	if (new Integer(dataManipulator.selectConfiguracaoElement("sucesso_carregamento")) == Constantes.SIM){
     		this.isRotaCarregadaOk = Constantes.SIM;
     	}
 
