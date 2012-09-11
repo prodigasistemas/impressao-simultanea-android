@@ -26,6 +26,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import business.ControladorImovel;
+import business.ControladorRota;
 
 public class DataManipulator {
 	private static Context context;
@@ -53,7 +54,7 @@ public class DataManipulator {
 	}
 
 	public DadosGerais getDadosGerais() {
-		return ControladorImovel.getInstancia().getDadosGerais();
+		return ControladorRota.getInstancia().getDadosGerais();
 	}
 	
 	public List<String> getDadosCategoria() {

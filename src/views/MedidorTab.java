@@ -6,6 +6,7 @@ import java.util.List;
 import util.Constantes;
 
 import business.ControladorImovel;
+import business.ControladorRota;
 
 import com.IS.R;
 
@@ -54,7 +55,8 @@ public class MedidorTab extends Fragment {
 		}
 		
 		view = inflater.inflate(R.layout.medidoraguatab, container, false);
-
+		layout = view;
+		
 		// Define a imagem de fundo de acordo com a orientacao do dispositivo
 	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
 	    	view.setBackgroundResource(R.drawable.fundocadastro);
@@ -89,9 +91,9 @@ public class MedidorTab extends Fragment {
     				return;  
     			}  
     	      
- 				String descricaoAnormalidade = ControladorImovel.getInstancia().getDataManipulator().selectDescricaoByCodigoFromTable(Constantes.TABLE_ANORMALIDADE, s.toString());
+ 				String descricaoAnormalidade = ControladorRota.getInstancia().getDataManipulator().selectDescricaoByCodigoFromTable(Constantes.TABLE_ANORMALIDADE, s.toString());
  				if (descricaoAnormalidade != null){
- 					List<String> lista = ControladorImovel.getInstancia().getDataManipulator().selectDescricoesFromTable(Constantes.TABLE_ANORMALIDADE);
+ 					List<String> lista = ControladorRota.getInstancia().getDataManipulator().selectDescricoesFromTable(Constantes.TABLE_ANORMALIDADE);
  					for (int i = 0; i < lista.size(); i++){
  			        	if (lista.get(i).equalsIgnoreCase(descricaoAnormalidade)){
  			                ((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).setSelection(i+1);
@@ -105,10 +107,10 @@ public class MedidorTab extends Fragment {
 		});
 
 		// Spinner Tipo de Anormalidade
-        Spinner spinnerTipoAnormalidade = (Spinner) layout.findViewById(R.id.spinnerAnormalidade);
+        Spinner spinnerTipoAnormalidade = (Spinner) view.findViewById(R.id.spinnerAnormalidade);
         
         listAnormalidades = new ArrayList<String>();
-        listAnormalidades = ControladorImovel.getInstancia().getAnormalidades(true);
+        listAnormalidades = ControladorRota.getInstancia().getAnormalidades(true);
         listAnormalidades.add(0, "");
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this.getActivity(), android.R.layout.simple_spinner_item, listAnormalidades);
@@ -118,7 +120,7 @@ public class MedidorTab extends Fragment {
 
         	
 			public void onItemSelected(AdapterView parent, View v, int position, long id){
- 				String codigo = ControladorImovel.getInstancia().getDataManipulator().selectCodigoByDescricaoFromTable(Constantes.TABLE_ANORMALIDADE, ((Spinner)view.findViewById(R.id.spinnerAnormalidade)).getSelectedItem().toString());
+ 				String codigo = ControladorRota.getInstancia().getDataManipulator().selectCodigoByDescricaoFromTable(Constantes.TABLE_ANORMALIDADE, ((Spinner)view.findViewById(R.id.spinnerAnormalidade)).getSelectedItem().toString());
  				
  				if (codigo.compareTo(((EditText)view.findViewById(R.id.codigoAnormalidade)).getText().toString()) != 0){
  					consideraEventoItemSelectedListenerCodigoAnormalidade = true;  

@@ -8,6 +8,7 @@ import com.IS.R.color;
 
 import background.CarregarRotaThread;
 import business.ControladorImovel;
+import business.ControladorRota;
 
 import ui.FileManager;
 import util.Constantes;
@@ -92,7 +93,7 @@ public class ListaRotas extends ListActivity {
             int total = msg.getData().getInt("total");
             progDialog.setProgress(total);
 
-            if (total >= ControladorImovel.getInstancia().getQtdRegistros() || progThread.getCustomizedState() == CarregarRotaThread.DONE){
+            if (total >= ControladorRota.getInstancia().getQtdRegistros() || progThread.getCustomizedState() == CarregarRotaThread.DONE){
                 dismissDialog(Constantes.DIALOG_ID_CARREGAR_ROTA);
     			setResult(RESULT_FIRST_USER, new Intent(getBaseContext(), Fachada.class));
         		finish();
@@ -141,7 +142,7 @@ public class ListaRotas extends ListActivity {
 	}
 	
 	public void carregaRotaDialogButtonClick() {
-    	ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
+		ControladorRota.getInstancia().initiateDataManipulator(getBaseContext());
 		showDialog(Constantes.DIALOG_ID_CARREGAR_ROTA);
 	}
 	

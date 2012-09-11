@@ -79,6 +79,7 @@ package model;
 import java.util.Vector;
 
 import business.ControladorImovel;
+import business.ControladorRota;
 
 import util.Constantes;
 import util.Util;
@@ -166,7 +167,7 @@ public class Configuracao {
 		}
 	
 		this.setContadorVisitados(Configuracao.getInstancia().getContadorVisitados() + 1);
-		ControladorImovel.getInstancia().getDataManipulator().updateConfiguracao(Configuracao.getInstancia());
+		ControladorRota.getInstancia().getDataManipulator().updateConfiguracao(Configuracao.getInstancia());
 //		Repositorio.salvarObjeto(Configuracao.getInstancia());
 		System.out.println("Visitados: " + this.getContadorVisitados());
     }
@@ -226,7 +227,7 @@ public class Configuracao {
     public static Configuracao getInstancia() {
 
 	    if (Configuracao.instancia == null) {
-		    ControladorImovel.getInstancia().getDataManipulator().selectConfiguracao();
+	    	ControladorRota.getInstancia().getDataManipulator().selectConfiguracao();
 	
 		    if (instancia == null) {
 		    	instancia = new Configuracao();
