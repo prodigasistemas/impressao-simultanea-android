@@ -68,27 +68,6 @@ public class MedidorTab extends Fragment {
 		
 		leitura = (EditText)view.findViewById(R.id.leitura);
 		
-		// Spinner Tipo de Anormalidade
-        Spinner spinnerTipoAnormalidade = (Spinner) view.findViewById(R.id.spinnerAnormalidade);
-        
-        listAnormalidades = new ArrayList<String>();
-        listAnormalidades = ControladorImovel.getInstancia().getDataManipulator().selectDescricoesFromTable(Constantes.TABLE_ANORMALIDADE);
-
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this.getActivity(), android.R.layout.simple_spinner_item, listAnormalidades);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTipoAnormalidade.setAdapter(adapter);
-        spinnerTipoAnormalidade.setOnItemSelectedListener(new OnItemSelectedListener () {
-
-        	
-			public void onItemSelected(AdapterView parent, View v, int position, long id){
- 				String codigo = ControladorImovel.getInstancia().getDataManipulator().selectCodigoByDescricaoFromTable(Constantes.TABLE_ANORMALIDADE, ((Spinner)view.findViewById(R.id.spinnerAnormalidade)).getSelectedItem().toString());
- 				consideraEventoItemSelectedListenerCodigoAnormalidade = true;  
- 				codigoAnormalidade.setText(codigo);
-			}
-			
-			public void onNothingSelected(AdapterView<?> arg0) {}
-		});
-
 		// Codigo de Anormalidade
         codigoAnormalidade = (EditText)view.findViewById(R.id.codigoAnormalidade);
         codigoAnormalidade.addTextChangedListener(new TextWatcher() {
@@ -105,10 +84,10 @@ public class MedidorTab extends Fragment {
     	      
  				String descricaoAnormalidade = ControladorImovel.getInstancia().getDataManipulator().selectDescricaoByCodigoFromTable(Constantes.TABLE_ANORMALIDADE, s.toString());
  				if (descricaoAnormalidade != null){
-
- 					for (int i = 0; i < listAnormalidades.size(); i++){
- 			        	if (listAnormalidades.get(i).equalsIgnoreCase(descricaoAnormalidade)){
- 			                ((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).setSelection(i);
+ 					List<String> lista = ControladorImovel.getInstancia().getDataManipulator().selectDescricoesFromTable(Constantes.TABLE_ANORMALIDADE);
+ 					for (int i = 0; i < lista.size(); i++){
+ 			        	if (lista.get(i).equalsIgnoreCase(descricaoAnormalidade)){
+ 			                ((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).setSelection(i+1);
  			        		break;
  			        	}
  			        }
@@ -118,6 +97,30 @@ public class MedidorTab extends Fragment {
     	    public void afterTextChanged(Editable s) {}  
 		});
 
+		// Spinner Tipo de Anormalidade
+        Spinner spinnerTipoAnormalidade = (Spinner) layout.findViewById(R.id.spinnerAnormalidade);
+        
+        listAnormalidades = new ArrayList<String>();
+        listAnormalidades = ControladorImovel.getInstancia().getAnormalidades(true);
+        listAnormalidades.add(0, "");
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this.getActivity(), android.R.layout.simple_spinner_item, listAnormalidades);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTipoAnormalidade.setAdapter(adapter);
+        spinnerTipoAnormalidade.setOnItemSelectedListener(new OnItemSelectedListener () {
+
+        	
+			public void onItemSelected(AdapterView parent, View v, int position, long id){
+ 				String codigo = ControladorImovel.getInstancia().getDataManipulator().selectCodigoByDescricaoFromTable(Constantes.TABLE_ANORMALIDADE, ((Spinner)view.findViewById(R.id.spinnerAnormalidade)).getSelectedItem().toString());
+ 				
+ 				if (codigo.compareTo(((EditText)view.findViewById(R.id.codigoAnormalidade)).getText().toString()) != 0){
+ 					consideraEventoItemSelectedListenerCodigoAnormalidade = true;  
+ 					((EditText)view.findViewById(R.id.codigoAnormalidade)).setText(codigo);
+	        	}
+			}
+			
+			public void onNothingSelected(AdapterView<?> arg0) {}
+		});
 		
 		return view;
 	}

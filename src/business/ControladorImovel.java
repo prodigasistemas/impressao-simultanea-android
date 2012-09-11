@@ -35,6 +35,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import dataBase.DataManipulator;
+import dataBase.DbHelper;
 
 public class ControladorImovel {
 
@@ -413,7 +414,7 @@ public class ControladorImovel {
 
     	initiateDataManipulator(context);
     	
-     	return (dbFile.exists() && dataManipulator.selectAnormalidades().size() > 0);
+     	return (dbFile.exists() && dataManipulator.selectListaAnormalidades(false).size() > 0);
 	}
     
     public int isDatabaseRotaCarregadaOk(){
@@ -441,102 +442,97 @@ public class ControladorImovel {
     public void calcularValores(Imovel imovel, Consumo consumo,int tipoMedicao) {
     }
 
-    /**
-     * Carrega as anormalidades no controlador Imoveis
-     */
-    public static Vector carregarAnormalidades(boolean apenasComIndicadorUso1) throws IOException {
-	
-		if ( apenasComIndicadorUso1 && anormalidadesIndicadorUso1 != null ){
-		    return anormalidadesIndicadorUso1;
-		
-		} else if ( !apenasComIndicadorUso1 && anormalidadesSemIndicadorUso1 != null ){
-		    return anormalidadesSemIndicadorUso1;
-		
-		} else {	
-		    
-			// carrega os id's de cada anormalidade
-			Vector anors = carregarVetorAnormalidades(ControladorImovel.anormalidades, apenasComIndicadorUso1);
-			
-		    if (apenasComIndicadorUso1) {
-		    	anormalidadesIndicadorUso1 = anors;
-		    } else {
-		    	anormalidadesSemIndicadorUso1 = anors;
-		    }
-
-		    return anors;
-		    
-		}
-    }
-
-    /**
-     * Carrega o array que mapeia o indice da anormalidade no identificador.
-     * 
-     * @param anormalidades
-     *            Vetor de anormalidades.
-     */
-    public static Vector carregarVetorAnormalidades(Vector anormalidades, boolean apenasComIndicadorUso1) {
-		
-    	if (anormalidades != null){
-	    	
-    		int len = anormalidades.size();
-			
-			// Daniel- corrigindo vetor de anormalidades	
-			Vector retorno = new Vector();
-			Anormalidade anor = new Anormalidade();
-	
-			int contador = 1;
-		
-			// Daniel- corrigindo vetor de anormalidades	
-			for (int i = 1; i < len+1 ; i++) {
-			    Anormalidade reg14 = (Anormalidade) anormalidades.elementAt(i-1);
-			    
-			    // Daniel - Descarta Anormalidade LEITURA_CONFIRMADA - Usuario não pode usar tal opção.
-			    if (reg14.getCodigo() == LEITURA_CONFIRMADA){
-			    	len = len -1;
-			    	continue;
-			    }
-				
-			    anor = reg14;
-			    retorno.add(anor);
-			}
-
-			if (apenasComIndicadorUso1) {
-			    Vector retornoIndicadorUsoSim = new Vector();
-			    
-			    // Daniel- corrigindo vetor de anormalidades	
-			    for (int i = 0; i < len+1; i++) {
-					if ( ((Anormalidade)retorno.elementAt(i)).getIndcUso() == Constantes.SIM ) {
-					    retornoIndicadorUsoSim.add(retorno.elementAt(i));
-					}
-			    }
-
-			    return retornoIndicadorUsoSim;
-			
-			} else {
-			    return retorno;
-			}
-    	}
-    	return null;
-    }
-
+//    /**
+//     * Carrega as anormalidades no controlador Imoveis
+//     */
+//    public static Vector carregarAnormalidades(boolean apenasComIndicadorUso1) throws IOException {
+//	
+//		if ( apenasComIndicadorUso1 && anormalidadesIndicadorUso1 != null ){
+//		    return anormalidadesIndicadorUso1;
+//		
+//		} else if ( !apenasComIndicadorUso1 && anormalidadesSemIndicadorUso1 != null ){
+//		    return anormalidadesSemIndicadorUso1;
+//		
+//		} else {	
+//		    
+//			// carrega os id's de cada anormalidade
+//			Vector anors = carregarVetorAnormalidades(ControladorImovel.anormalidades, apenasComIndicadorUso1);
+//			
+//		    if (apenasComIndicadorUso1) {
+//		    	anormalidadesIndicadorUso1 = anors;
+//		    } else {
+//		    	anormalidadesSemIndicadorUso1 = anors;
+//		    }
+//
+//		    return anors;
+//		    
+//		}
+//    }
+//
+//    /**
+//     * Carrega o array que mapeia o indice da anormalidade no identificador.
+//     * 
+//     * @param anormalidades
+//     *            Vetor de anormalidades.
+//     */
+//    public static Vector carregarVetorAnormalidades(Vector anormalidades, boolean apenasComIndicadorUso1) {
+//		
+//    	if (anormalidades != null){
+//	    	
+//    		int len = anormalidades.size();
+//			
+//			// Daniel- corrigindo vetor de anormalidades	
+//			Vector retorno = new Vector();
+//			Anormalidade anor = new Anormalidade();
+//	
+//			int contador = 1;
+//		
+//			// Daniel- corrigindo vetor de anormalidades	
+//			for (int i = 1; i < len+1 ; i++) {
+//			    Anormalidade reg14 = (Anormalidade) anormalidades.elementAt(i-1);
+//			    
+//			    // Daniel - Descarta Anormalidade LEITURA_CONFIRMADA - Usuario não pode usar tal opção.
+//			    if (reg14.getCodigo() == LEITURA_CONFIRMADA){
+//			    	len = len -1;
+//			    	continue;
+//			    }
+//				
+//			    anor = reg14;
+//			    retorno.add(anor);
+//			}
+//
+//			if (apenasComIndicadorUso1) {
+//			    Vector retornoIndicadorUsoSim = new Vector();
+//			    
+//			    // Daniel- corrigindo vetor de anormalidades	
+//			    for (int i = 0; i < len+1; i++) {
+//					if ( ((Anormalidade)retorno.elementAt(i)).getIndcUso() == Constantes.SIM ) {
+//					    retornoIndicadorUsoSim.add(retorno.elementAt(i));
+//					}
+//			    }
+//
+//			    return retornoIndicadorUsoSim;
+//			
+//			} else {
+//			    return retorno;
+//			}
+//    	}
+//    	return null;
+//    }
+//
     /**
      * Carrega as anormalidades direto da Tabela Anormalidade.
      * 
      * @return vetor com as anormalidades
      */
-    public static Vector getAnormalidades(boolean apenasComIndicadorUso1){	
-    	Vector anormalidades = null;
+    public ArrayList<String> getAnormalidades(boolean apenasComIndicadorUso1){	
+		ArrayList<String> listaAnormalidades = new ArrayList<String>();
 	
-		try {
-		    if (DadosGerais.getInstancia().getCodigoEmpresaFebraban().equals(Constantes.CODIGO_FEBRABAN_COSANPA)) {
-		    	anormalidades = carregarAnormalidades(apenasComIndicadorUso1);
-			}
-		} catch (IOException e) {
-		    e.printStackTrace();
-	//	    Util.mostrarErro("Erro ao carregar arquivo de anormalidade");
+	    if (getDadosGerais().getCodigoEmpresaFebraban().equals(Constantes.CODIGO_FEBRABAN_COSANPA)) {
+	    	listaAnormalidades = dataManipulator.selectListaAnormalidades(apenasComIndicadorUso1);
 		}
 	
-		return anormalidades;
+		return listaAnormalidades;
     }
 
 }

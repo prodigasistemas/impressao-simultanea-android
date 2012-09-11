@@ -90,8 +90,6 @@ android:orientation="vertical">
             android:background="@drawable/edittext_rounded_corners"
             android:ems="5"
             android:inputType="number" >
-
-            <requestFocus />
         </EditText>
     </LinearLayout>
 
@@ -115,7 +113,8 @@ android:orientation="vertical">
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_rounded_corners"
             android:ems="5"
-            android:inputType="number" >
+            android:inputType="number"
+            android:maxLength="2"  >
         </EditText>
 
         <Spinner
