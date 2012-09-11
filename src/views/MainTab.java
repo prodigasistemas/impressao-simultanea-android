@@ -274,6 +274,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		progress = new ProgressDialog(this);
 		progress.setTitle("Imprimindo conta");
 		progress.setMessage("Aguarde");
+		
+		/* Seleciona a segunda linha do texto
+		 * Exemplo:
+		 * 			MinhaImpressora
+		 * 			00:06:22:64:44:BG
+		 * A variável 'bluetoothAddress' teria o valor: 00:06:22:64:44:BG 
+		 * 
+		 */
 		String bluetoothAddress = String.valueOf(((TextView) view).getText()).split("\n")[1];
 		
 		dialog.dismiss();
