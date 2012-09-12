@@ -62,9 +62,12 @@ public class ImovelTab extends Fragment {
 		int situacaoLigAgua = Integer.parseInt(ControladorImovel.getInstancia().getImovelSelecionado().getSituacaoLigAgua());
 		int situacaoLigEsgoto = Integer.parseInt(ControladorImovel.getInstancia().getImovelSelecionado().getSituacaoLigEsgoto());
 		
+		
 		int i = 0;
 		String economias = "";
 		String categorias = "";
+		
+		Log.i("IMOVELTAB>> ", ControladorImovel.getInstancia().getDadosCategoria().get(0));
 		
 		for (String s : ControladorImovel.getInstancia().getDadosCategoria()) {
 			if (i > 1) {
@@ -104,8 +107,6 @@ public class ImovelTab extends Fragment {
 		seqRota.setText(""+ControladorImovel.getInstancia().getImovelSelecionado().getSequencialRota());
 		economia.setText(economias);
 		categoria.setText(categorias);
-		
-		
 		
 		return view;
 	}

@@ -444,6 +444,22 @@ public class DataManipulator {
         	} while (cursor.moveToNext());
 		}
 		
+		cursor.close();
+		
+		cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
+																		"descricao_categoria"}, "matricula = " + 
+																									imoveis.get(0).getMatricula(), null, null, null, null);
+		
+		Log.i("DADOS CATEGORIA", ""+cursor.getCount());
+		ControladorImovel.getInstancia().getDadosCategoria().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(0));
+				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(1));
+			} while (cursor.moveToNext());
+		}
+		
 		 if (cursor != null && !cursor.isClosed()) {
 	           cursor.close();
 	     }
@@ -451,6 +467,7 @@ public class DataManipulator {
 	     
 	     return imoveis;
 	}
+	
 	
 	public String selectConfiguracaoElement(String element) {
 

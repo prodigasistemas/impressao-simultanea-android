@@ -1,17 +1,21 @@
 package com.IS;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import util.Constantes;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,18 +27,20 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import background.CarregarRotaThread;
 import background.GerarArquivoCompletoThread;
-import business.ControladorImovel;
 import business.ControladorRota;
 
 import com.IS.R.color;
  
+@SuppressLint("NewApi")
 public class MenuPrincipal extends Activity {
 	
 	static final int MENU_LISTA_CADASTROS = 0;
@@ -52,6 +58,9 @@ public class MenuPrincipal extends Activity {
 	private String dialogMessage = null;
 	public LocationManager mLocManager;
 	private static int increment= 0;
+	private BluetoothAdapter bluetoothAdapter;
+	private ListView listaDispositivos;
+	private AlertDialog dialog;
 	
     //---the images to display---
     Integer[] imageIDs = {
@@ -84,6 +93,8 @@ public class MenuPrincipal extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mainmenu);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
  
         instanciate();
 	}
@@ -164,9 +175,51 @@ public class MenuPrincipal extends Activity {
             		
             	}else if (position == MENU_NOVO_ROTEIRO){
         	    	showDialog(Constantes.DIALOG_ID_CLEAN_DB);
+				} else if (position == MENU_SELECIONAR_IMPRESSORA) {
+					
+					Intent intentBluetooth = new Intent();
+			        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+			        startActivityForResult(intentBluetooth, 0);
 				}
             }
         });        
+	}
+	
+	@TargetApi(5)
+	@Override
+	protected void onActivityResult(int arg0, int resultCode, Intent arg2) {
+		if (resultCode == 0) {
+			Set<BluetoothDevice> dispositivosPareados = bluetoothAdapter.getBondedDevices();
+	    	Iterator<BluetoothDevice> iterator = dispositivosPareados.iterator();
+	    	
+	    	listaDispositivos = new ListView(this);
+	    	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+	    	listaDispositivos.setAdapter(arrayAdapter);
+	    	listaDispositivos.setOnItemClickListener(new OnItemClickListener() {
+
+				public void onItemClick(AdapterView<?> parent, View view,	int position, long id) {
+					String bluetoothAddress = String.valueOf(((TextView) view).getText()).split("\n")[1];
+					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
+					
+					Toast.makeText(MenuPrincipal.this, "Impressora registrada", 5).show();
+					
+					dialog.dismiss();
+				}
+			});
+	    	
+	    	while (iterator.hasNext()) {
+	    		BluetoothDevice device = iterator.next();
+	    		// Seleciona apenas as impressoras pareadas
+	    		if (device.getBluetoothClass().getMajorDeviceClass() == 1536) {
+	    			arrayAdapter.add(device.getName() + "\n" + device.getAddress());
+	    		}
+	    	}
+	    	
+	    	dialog = new AlertDialog.Builder(this).create();
+	    	dialog.setTitle("Impressoras pareadas");
+	    	dialog.setView(listaDispositivos);
+	    	dialog.show();
+		}
 	}
 	
     // Handler on the main (UI) thread that will receive messages from the second thread and update the progress.
