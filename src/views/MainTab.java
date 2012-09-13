@@ -2,10 +2,15 @@ package views;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import util.Constantes;
+import util.Util;
+
+import model.Consumo;
 import model.Imovel;
 import model.Medidor;
 import android.annotation.SuppressLint;
@@ -46,6 +51,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TabHost.TabContentFactory;
+import business.BusinessConta;
+import business.ControladorConta;
 import business.ControladorImovel;
 import business.ControladorRota;
 
@@ -63,6 +70,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	AlertDialog dialog;
 	private ProgressDialog progress;
 	private ZebraPrinterConnection conexao;
+	
+	private boolean habilitaOpcaoImpressao = true;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -180,9 +189,185 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	        
 	    case R.id.imprimirConta:
 	    	
-//			chamar método de calculo de consumo (ControladorImovel)	        
-	    	
-	    	imprimirConta();
+	    	if (habilitaOpcaoImpressao){
+	    		//Daniel - Verificar se a data atual é anterior ao mes de referencia da rota em andamento.
+	    		if(Util.compararData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()) > 0){
+	    			showMessage(getCurrentFocus(), "Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
+
+	    		// Data do celular esta correta.
+	    		}else{
+
+	    			boolean leituraInvalida = true;
+	    			
+	    			// Se o imovel já foi concluido e possui consumo de agua ou esgoto já calculado.
+	   				if ( (getImovelSelecionado().getImovelStatus() != Constantes.IMOVEL_PENDENTE) &&
+	   					 (getImovelSelecionado().getConsumoAgua() != null || getImovelSelecionado().getConsumoEsgoto() != null) ) {
+	   				
+	   					// Nao será recalculado o consumo
+	   					showMessage(getCurrentFocus(), "Novos valores de leitura e anormalidade serão desconsiderados.");
+				    	leituraInvalida = BusinessConta.getInstancia().imprimirCalculo(true, true);
+	    			
+	    			}else{
+	    				// calcula consumo
+			    		leituraInvalida = BusinessConta.getInstancia().imprimirCalculo(true, false);
+	    			}
+		
+//    				getImovelSelecionado().setIndcGeracao(Constantes.SIM);
+//	    			
+//    				// Caso o valor da conta seja menor que o valor permitido para ser impresso, não imprimir a conta.
+//	    			boolean valorAcimaDoMinimo = true;
+//	    			boolean valorContaMaiorPermitido = false;
+//	    			boolean emiteConta = true; 
+//	    			boolean reterConta = false; 
+//		    		boolean permiteImpressao = true;
+//
+//	    			double valorConta = getImovelSelecionado().getValorConta();			
+//	    			valorAcimaDoMinimo = getImovelSelecionado().isValorContaAcimaDoMinimo();
+//	    			valorContaMaiorPermitido = getImovelSelecionado().isValorContaMaiorPermitido();
+//
+//		    		if (getImovelSelecionado().getIndcEmissaoConta() == 2 && leituraInvalida == false) {
+//	
+//						// A conta já não seria impressa. Mas nos casos abaixo, deve reter a conta, isto é, não deve ser faturado no Gsan.
+//						if ( Integer.parseInt(getImovelSelecionado().getCodigoPerfil()) == Imovel.PERFIL_GOVERNO_METROPOLITANO){
+//							
+//		    				reterConta = true;
+//
+//						}else{
+//							// Conta centralizada nao permite impressao. E não é retido.
+//		    				emiteConta = false;
+//						}
+//		    		// Daniel - Verificando Consumo de agua e Anormalidades de Consumo e Anormalidades de Leitura para imoveis CORPORATIVOS e CONDOMINIAIS
+//	    			}else if (getImovelSelecionado().getConsumoAgua() != null){
+//	    				
+//	    				if ( (getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
+//	    					getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
+//	    					getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
+//	    					getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO)
+//	    					
+//	    					||
+//	    					
+//	    					( (Integer.parseInt(getImovelSelecionado().getCodigoPerfil()) == Imovel.PERFIL_CORPORATIVO ||
+//	    					   Integer.parseInt(getImovelSelecionado().getCodigoPerfil()) == Imovel.PERFIL_CONDOMINIAL) 
+//	    					   &&
+//	    					  (getImovelSelecionado().getConsumoAgua().getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
+//	  	    				   getImovelSelecionado().getConsumoAgua().getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO) ) ){
+//				    
+//		    				reterConta = true;
+//	    				}
+//	    			}
+//		    		
+//    				if (!leituraInvalida && !emiteConta){
+//    					
+//    	    			showMessage(getCurrentFocus(), "Conta do imóvel nao pode ser emitida!");
+//	    				permiteImpressao = false;
+//    				
+//    				} else if (!leituraInvalida && (valorContaMaiorPermitido || reterConta)){
+//    				
+//	    				getImovelSelecionado().setIndcGeracao(Constantes.NAO);
+//	    				Repositorio.salvarObjeto(getImovelSelecionado());
+//    	    			showMessage(getCurrentFocus(), "Conta retida, entrega posterior!");	
+//	    				permiteImpressao = false;
+//
+//    				} else if (!leituraInvalida && !valorAcimaDoMinimo) {
+//    					showMessage(getCurrentFocus(), "Valor da conta menor que o permitido!");
+//	    				// Imovel com conta abaixo do minimo nao deve ser impresso, mas não deve fazer parte dos imoveis com conta a imprimir no Gsan. 
+//	    				getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
+//	    				Repositorio.salvarObjeto(getImovelSelecionado());
+//	    				permiteImpressao = false;
+//	
+//	    			} else if (!leituraInvalida && 
+//	    					    (getImovelSelecionado().getIndicadorParalizarFaturamentoAgua() == Constantes.SIM || 
+//	    					     getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == Constantes.SIM)){
+//						
+//	    				getImovelSelecionado().setIndcGeracao(Constantes.NAO);
+//	    				Repositorio.salvarObjeto(getImovelSelecionado());
+//	    				showMessage(getCurrentFocus(), "Não é permitido a impressão de conta deste imóvel.");	
+//	    				permiteImpressao = false;
+//
+//	    			} else if ( !leituraInvalida && valorConta == 0d && getImovelSelecionado().getValorResidualCredito() == 0d) {
+//	    				showMessage(getCurrentFocus(), "Conta com valor zerado e sem crédito. Não imprimir!");
+//	    				permiteImpressao = false;
+//
+//	    			// Daniel - Imovel com Endereço alternativo
+//					// caso nao haja erro de leitura e imovel contem endereço alternativo
+//					// E  existe imovel sem endereço de entrega normal ainda pendente. 
+//	    			} else if (!leituraInvalida && 
+//				    			Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().contains(new Integer(getImovelSelecionado().getId()))){
+//
+//	    				showMessage(getCurrentFocus(), "Conta do imóvel nao pode ser emitida! Entrega  posterior!");	
+//	    				permiteImpressao = false;
+//
+////	    			} else if (!leituraInvalida && 
+////			    		Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().contains(new Integer(getImovelSelecionado().getId())) &&
+////			    		(Configuracao.getInstancia().getQtdImoveis() - Configuracao.getInstancia().getIdsImoveisConcluidos().size()) > Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().size()){
+////				    	
+////	    				System.out.println("Imovel com endereço de entrega alternativo!");
+////	    				Util.mostrarErro("Imovel com endereço de entrega alternativo! A conta deste imóvel deve ser impressa somente no final da rota.");
+//		    	
+//	    			}else {
+//	    				// Validar situacao do retorno do calculo
+//	    				if (leituraInvalida == false) {
+//	    					boolean pesquisarDispositivos = true;
+//	    					boolean erroImpressao = false;
+//		
+//					    // Verificamos se algo ja foi salvo nas configurações
+////Daniel
+//	    					if (Fachada.getInstancia().getPrinter().equals("1")){
+//						    	if (!Constantes.NULO_STRING.equals(Configuracao.getInstancia().getBluetoothAddress())) {
+//			
+//						    		pesquisarDispositivos = false;
+//							
+////						    		if (Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().contains(new Integer(getImovelSelecionado().getId()))){
+////						    			Util.mensagemAviso("ATENÇÃO!", "Imóvel com endereço de entrega alternativo.");
+////						    		}
+//						    		erroImpressao = Util.imprimirConta(Constantes.IMPRESSAO_NORMAL);
+//						    	}
+//			
+//						    	try {
+//							
+//								if (pesquisarDispositivos) {
+//							    	LocalDevice.getLocalDevice().setDiscoverable(DiscoveryAgent.GIAC);
+//							    	InquiryList.getInstancia().criarTelaPesquisaDispositivos(true);
+//								}
+//							
+//						    	} catch (Exception e) {
+//									Util.mostrarErro("Bluetooth desativado!", e);
+//									e.printStackTrace();
+//						    	}
+//	    					 }else{
+////					    		if (Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().contains(new Integer(getImovelSelecionado().getId()))){
+////					    			Util.mensagemAviso("ATENÇÃO!", "Imóvel com endereço de entrega alternativo.");
+////					    		}
+//	    						 erroImpressao = Util.imprimirConta(Constantes.IMPRESSAO_NORMAL);
+//	    						 pesquisarDispositivos = false;
+//	    					 }
+//		
+//					    	if (!pesquisarDispositivos && !erroImpressao) {
+//					    		ControladorImoveis.getInstancia().proximo();
+//					    		getInstancia().criarAbas();
+//					    }
+//					}
+//			    }
+//	   			if (!permiteImpressao){
+//	   				// Daniel - lista de imoveis impressos
+//	   				Configuracao.getInstancia().getIdsImoveisPendentes().removeElement( new Integer(getImovelSelecionado().getId()) );
+//	   				if (!Configuracao.getInstancia().getIdsImoveisConcluidos().contains( new Integer(getImovelSelecionado().getId()) )) {
+//	   					Configuracao.getInstancia().getIdsImoveisConcluidos().addElement( new Integer(getImovelSelecionado().getId()) );
+//	   				}
+//
+////	   				if(	Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().contains(new Integer(getImovelSelecionado().getId())) ){
+////	   					Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().removeElement( new Integer(getImovelSelecionado().getId()) );
+////	   				}				
+//
+//					ControladorImoveis.getInstancia().proximo();
+//    				Abas.getInstancia().criarAbas();
+//
+//	   			}
+	    		
+	    	}
+	    }else{
+	    	showMessage(getCurrentFocus(), "Não é permitido imprimir.");
+	    }
 	    	return true;
 	    
 	    case R.id.localizarPendente:
@@ -234,12 +419,17 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    			arrayAdapter.add(device.getName() + "\n" + device.getAddress());
 	    		}
 	    	}
-	    	
-	    	dialog = new AlertDialog.Builder(this).create();
-	    	dialog.setTitle("Impressoras pareadas");
-	    	dialog.setView(listaDispositivos);
-	    	dialog.show();
+
+	    	showMessage(listaDispositivos, "Impressoras pareadas");
 		}
+	}
+
+	public void showMessage(View view, String message){
+
+		dialog = new AlertDialog.Builder(this).create();
+    	dialog.setTitle(message);
+    	dialog.setView(view);
+    	dialog.show();
 	}
 	
 	public Imovel getImovelSelecionado() {

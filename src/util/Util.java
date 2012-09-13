@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import model.Consumo;
 import model.DadosRelatorio;
 
 import ui.ArquivoRetorno;
@@ -608,6 +609,16 @@ public class Util {
 
     
     /**
+     * 
+     * @author Daniel Zaccarias
+     * @return Data atual
+     */
+    public static Date dataAtual() {
+   	 	return Calendar.getInstance().getTime();
+    }
+
+
+    /**
      * Diferença entre datas em dias
      * 
      * @param data1
@@ -972,6 +983,52 @@ public class Util {
 	
 		return anoBissexto;
     }
+
+    public static String validarAnormalidadeConsumo(Consumo consumo) {
+    	String mensagemAnormalidade = null;
+
+		if (consumo != null && consumo.getAnormalidadeConsumo() != Constantes.NULO_INT) {
+		    int anormalidadeConsumo = consumo.getAnormalidadeConsumo();
+		    switch (anormalidadeConsumo) {
+		    case Consumo.CONSUMO_ANORM_BAIXO_CONSUMO:
+			mensagemAnormalidade = "BAIXO CONSUMO";
+			break;
+		    case Consumo.CONSUMO_ANORM_ESTOURO:
+			mensagemAnormalidade = "ESTOURO DO CONSUMO";
+			break;
+		    case Consumo.CONSUMO_ANORM_ALTO_CONSUMO:
+			mensagemAnormalidade = "ALTO CONSUMO";
+			break;
+		    case Consumo.CONSUMO_ANORM_LEIT_MENOR_PROJ:
+			mensagemAnormalidade = "LEITURA MENOR PROJETADA";
+			break;
+		    case Consumo.CONSUMO_ANORM_LEIT_MENOR_ANTE:
+			mensagemAnormalidade = "LEITURA MENOR ANTERIOR";
+			break;
+		    case Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO:
+			mensagemAnormalidade = "HIDR. SUBSTITUIDO INFORM.";
+			break;
+		    case Consumo.CONSUMO_ANORM_LEITURA_N_INFO:
+			mensagemAnormalidade = "LEITURA NAO INFORMADA";
+			break;
+		    case Consumo.CONSUMO_ANORM_ESTOURO_MEDIA:
+			mensagemAnormalidade = "ESTOURO MEDIA";
+			break;
+		    case Consumo.CONSUMO_ANORM_FORA_DE_FAIXA:
+			mensagemAnormalidade = "FORA DE FAIXA";
+			break;
+		    case Consumo.CONSUMO_ANORM_HIDR_SUBST_N_INFO:
+			mensagemAnormalidade = "HIDR. SUBST. NAO INFORM.";
+			break;
+		    case Consumo.CONSUMO_ANORM_VIRADA_HIDROMETRO:
+			mensagemAnormalidade = "VIRADA DE HIDROMETRO";
+			break;
+		    }
+		}
+	
+		return mensagemAnormalidade;
+    }
+
 
     public static void inserirValoresStringRelatorio(String quadra, boolean inseridoAnormalidade, boolean inseridoLeitura){
     	

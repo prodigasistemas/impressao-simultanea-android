@@ -370,24 +370,172 @@ public class DataManipulator {
 	
 	public void selectImovel(long id){
 		
-		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {	"id",
-																			"matricula",
-																			"nome_usuario",
-																			"inscricao",
-																			"endereco",
-																			"situacao_lig_agua",
-																			"situacao_lig_esgoto",
-																			"sequencial_rota"}, "id = " + id, null, null, null,  "inscricao asc");
-		
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
+																		"matricula",
+																		"nome_gerencia_regional",
+																		"nome_escritorio",
+																		"nome_usuario",
+																		"data_vencimento",
+																		"data_validade_conta",
+																		"inscricao",
+																		"endereco",
+																		"ano_mes_conta",
+																		"digito_verificador_conta",
+																		"codigo_responsavel",
+																		"nome_responsavel",
+																		"endereco_entrega",
+																		"situacao_lig_agua",
+																		"situacao_lig_esgoto",
+																		"descricao_banco",
+																		"codigo_agencia",
+																		"matricula_condominio",
+																		"indc_condominio",
+																		"codigo_perfil",
+																		"consumo_medio",
+																		"indc_faturamento_agua",
+																		"indc_faturamento_esgoto",
+																		"indc_emissao_conta",
+																		"consumo_min_agua",
+																		"consumo_min_esgoto",
+																		"percent_coleta_esgoto",
+																		"percent_cobranca_esgoto",
+																		"tipo_poco",
+																		"codigo_tarifa",
+																		"consumo_estouro",
+																		"alto_consumo",
+																		"baixo_consumo",
+																		"fator_mult_estouro",
+																		"fator_mult_media_alto_consumo",
+																		"percent_baixo_consumo",
+																		"consumo_maximo",
+																		"grupo_faturamento",
+																		"codigo_rota",
+																		"numero_conta",
+																		"tipo_calculo_tarifa",
+																		"endereco_atendimento",
+																		"telefone_localidade_ddd",
+																		"sequencial_rota",
+																		"mensagem_conta1",
+																		"mensagem_conta2",
+																		"mensagem_conta3",
+																		"consumo_minimo_imovel",
+																		"consumo_minimo_imovel_nao_medido",
+																		"numero_documento_notificacao_debito",
+																		"numero_codigo_barra_notificacao_debito",
+																		"cpf_cnpj_cliente",
+																		"data_leitura_anterior_nao_medido",
+																		"indicador_abastecimento_agua",
+																		"indicador_imovel_sazonal",
+																		"indicador_paralizar_faturamento_agua",
+																		"indicador_paralizar_faturamento_esgoto",
+																		"opcao_debito_automatico",
+																		"percentual_alternativo_esgoto",
+																		"consumo_percentual_alternativo_esgoto",
+																		"data_emissao_documento",
+																		"quantidade_contas_impressas",
+																		"contagem_validacao_agua",
+																		"contagem_validacao_poco",
+																		"leitura_gravada_anterior",
+																		"anormalidade_gravada_anterior",
+																		"data_impressao_nao_medido",
+																		"valor_residual_credito",
+																		"quantidade_imoveis_condominio",
+																		"indc_adicionou_dados_iniciais_helper_rateio",
+																		"valor_rateio_agua",
+																		"valor_rateio_esgoto",
+																		"consumo_rateio_agua",
+																		"consumo_rateio_esgoto",
+																		"mensagem_estouro_consumo_1",
+																		"mensagem_estouro_consumo_2",
+																		"mensagem_estouro_consumo_3",
+																		"imovel_status",
+																		"imovel_enviado",
+																		"indc_imovel_impresso",
+																		"indc_geracao"}, "id = " + id, null, null, null,  "inscricao asc");
+
 		if (cursor.moveToFirst()) {
         	ControladorImovel.getInstancia().getImovelSelecionado().setId(id);
-        	ControladorImovel.getInstancia().getImovelSelecionado().setMatricula(Integer.parseInt(cursor.getString(1)));
-        	ControladorImovel.getInstancia().getImovelSelecionado().setNomeUsuario(cursor.getString(2));
-        	ControladorImovel.getInstancia().getImovelSelecionado().setInscricao(cursor.getString(3));
-        	ControladorImovel.getInstancia().getImovelSelecionado().setEndereco(cursor.getString(4));
-        	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigAgua(cursor.getString(5));
-        	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigEsgoto(cursor.getString(6));
-        	ControladorImovel.getInstancia().getImovelSelecionado().setSequencialRota(cursor.getString(7));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setMatricula(Integer.parseInt(cursor.getString(1)));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setNomeGerenciaRegional(cursor.getString(2));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setNomeEscritorio(cursor.getString(3));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setNomeUsuario(cursor.getString(4));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setDataVencimento(cursor.getString(5));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setDataValidadeConta(cursor.getString(6));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setInscricao(cursor.getString(7));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setEndereco(cursor.getString(8));
+           	ControladorImovel.getInstancia().getImovelSelecionado().setAnoMesConta(cursor.getString(9));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setDigitoVerificadorConta(cursor.getString(10));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setCodigoResponsavel(cursor.getString(11));
+        	ControladorImovel.getInstancia().getImovelSelecionado().setNomeResponsavel(cursor.getString(12));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setEnderecoEntrega(cursor.getString(13));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigAgua(cursor.getString(14));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setSituacaoLigEsgoto(cursor.getString(15));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setDescricaoBanco(cursor.getString(16));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setCodigoAgencia(cursor.getString(17));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMatriculaCondominio(cursor.getString(18));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcCondominio(cursor.getString(19));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setCodigoPerfil(cursor.getString(20));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoMedio(cursor.getString(21));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcFaturamentoAgua(cursor.getString(22));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcFaturamentoEsgoto(cursor.getString(23));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcEmissaoConta(cursor.getString(24));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoMinAgua(cursor.getString(25));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoMinEsgoto(cursor.getString(26));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setPercentColetaEsgoto(cursor.getString(27));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setPercentCobrancaEsgoto(cursor.getString(28));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setTipoPoco(cursor.getString(29));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setCodigoTarifa(cursor.getString(30));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoEstouro(cursor.getString(31));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setAltoConsumo(cursor.getString(32));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setBaixoConsumo(cursor.getString(33));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setFatorMultEstouro(cursor.getString(34));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setFatorMultMediaAltoConsumo(cursor.getString(35));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setPercentBaixoConsumo(cursor.getString(36));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoMaximo(cursor.getString(37));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setGrupoFaturamento(cursor.getString(38));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setCodigoRota(cursor.getString(39));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setNumeroConta(cursor.getString(40));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setTipoCalculoTarifa(cursor.getString(41));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setEnderecoAtendimento(cursor.getString(42));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setTelefoneLocalidadeDDD(cursor.getString(43));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setSequencialRota(cursor.getString(44));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMensagemConta1(cursor.getString(45));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMensagemConta2(cursor.getString(46));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMensagemConta3(cursor.getString(47));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoMinimoImovel(cursor.getString(48));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoMinimoImovelNaoMedido(cursor.getString(49));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setNumeroDocumentoNotificacaoDebito(cursor.getString(50));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setNumeroCodigoBarraNotificacaoDebito(cursor.getString(51));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setCpfCnpjCliente(cursor.getString(52));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setDataLeituraAnteriorNaoMedido(cursor.getString(53));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndicadorAbastecimentoAgua(cursor.getString(54));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndicadorImovelSazonal(cursor.getString(55));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndicadorParalizarFaturamentoAgua(cursor.getString(56));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndicadorParalizarFaturamentoEsgoto(cursor.getString(57));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setOpcaoDebitoAutomatico(cursor.getString(58));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setPercentualAlternativoEsgoto(cursor.getString(59));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoPercentualAlternativoEsgoto(cursor.getString(60));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setDataEmissaoDocumento(cursor.getString(61));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setQuantidadeContasImpressas(Integer.parseInt(cursor.getString(62)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setContagemValidacaoAgua(Integer.parseInt(cursor.getString(63)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setContagemValidacaoPoco(Integer.parseInt(cursor.getString(64)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setLeituraGravadaAnterior(Integer.parseInt(cursor.getString(65)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setAnormalidadeGravadaAnterior(Integer.parseInt(cursor.getString(66)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setDataImpressaoNaoMedido(cursor.getString(67));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setValorResidualCredito(Double.parseDouble(cursor.getString(68)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setQuantidadeImoveisCondominio(Integer.parseInt(cursor.getString(69)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcAdicionouDadosIniciaisHelperRateio(Integer.parseInt(cursor.getString(70)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setValorRateioAgua(Double.parseDouble(cursor.getString(71)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setValorRateioEsgoto(Double.parseDouble(cursor.getString(72)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoRateioAgua(Integer.parseInt(cursor.getString(73)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setConsumoRateioEsgoto(Integer.parseInt(cursor.getString(74)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMensagemEstouroConsumo1(cursor.getString(75));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMensagemEstouroConsumo2(cursor.getString(76));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setMensagemEstouroConsumo3(cursor.getString(77));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setImovelStatus(cursor.getString(78));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setImovelEnviado(cursor.getString(79));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcImovelImpresso(Integer.parseInt(cursor.getString(80)));
+          	ControladorImovel.getInstancia().getImovelSelecionado().setIndcGeracao(Integer.parseInt(cursor.getString(81)));
 		}
 		
 		cursor.close();
@@ -903,6 +1051,19 @@ public class DataManipulator {
 		initialValues.put("percentual_alternativo_esgoto", parser.obterDadoParser(6));
 		initialValues.put("consumo_percentual_alternativo_esgoto", parser.obterDadoParser(6));
 		initialValues.put("data_emissao_documento", parser.obterDadoParser(8));
+		
+		initialValues.put("quantidade_contas_impressas", "0");
+		initialValues.put("contagem_validacao_agua", "0");
+		initialValues.put("contagem_validacao_poco", "0");
+		initialValues.put("leitura_gravada_anterior", "0");
+		initialValues.put("anormalidade_gravada_anterior", "0");
+		initialValues.put("valor_residual_credito", "0");
+		initialValues.put("quantidade_imoveis_condominio", "0");
+		initialValues.put("indc_adicionou_dados_iniciais_helper_rateio", String.valueOf(Constantes.NAO));
+		initialValues.put("valor_rateio_agua", "0");
+		initialValues.put("valor_rateio_esgoto", "0");
+		initialValues.put("consumo_rateio_agua", "0");
+		initialValues.put("consumo_rateio_esgoto", "0");
 
 		initialValues.put("mensagem_estouro_consumo_1", Constantes.NULO_STRING);
 		initialValues.put("mensagem_estouro_consumo_2", Constantes.NULO_STRING);
@@ -1193,13 +1354,19 @@ public class DataManipulator {
 
 		ContentValues initialValues = new ContentValues();
 
+		initialValues.put("quantidade_contas_impressas", String.valueOf(imovel.getQuantidadeContasImpressas()));
+		initialValues.put("contagem_validacao_agua", String.valueOf(imovel.getContagemValidacaoAgua()));
+		initialValues.put("contagem_validacao_poco", String.valueOf(imovel.getContagemValidacaoPoco()));
+		initialValues.put("leitura_gravada_anterior", String.valueOf(imovel.getLeituraGravadaAnterior()));
+		initialValues.put("anormalidade_gravada_anterior", String.valueOf(imovel.getAnormalidadeGravadaAnterior()));
+		initialValues.put("valor_residual_credito", String.valueOf(imovel.getValorResidualCredito()));
 		initialValues.put("mensagem_estouro_consumo_1", imovel.getMensagemEstouroConsumo1());
 		initialValues.put("mensagem_estouro_consumo_2", imovel.getMensagemEstouroConsumo2());
 		initialValues.put("mensagem_estouro_consumo_3", imovel.getMensagemEstouroConsumo3());
-		initialValues.put("imovel_status", imovel.getImovelStatus() );
-		initialValues.put("imovel_enviado", imovel.getIndcImovelEnviado());
-		initialValues.put("indc_imovel_impresso", imovel.getIndcImovelImpresso());
-		initialValues.put("indc_geracao", imovel.getIndcGeracao());
+		initialValues.put("imovel_status", String.valueOf(imovel.getImovelStatus()));
+		initialValues.put("imovel_enviado", String.valueOf(imovel.getIndcImovelEnviado()));
+		initialValues.put("indc_imovel_impresso", String.valueOf(imovel.getIndcImovelImpresso()));
+		initialValues.put("indc_geracao", String.valueOf(imovel.getIndcGeracao()));
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
 	}

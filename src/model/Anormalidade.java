@@ -3,6 +3,10 @@ package model;
 import util.Util;
 
 public class Anormalidade {
+	
+    public static final int TER_LEITURA = 1;
+    public static final int NAO_TER_LEITURA = 2;
+    public static final int DUAS_OPCOES = 0;
 
 	private int codigo;
 	private String descricao;

@@ -265,9 +265,14 @@ public class Imovel {
 		this.consumoRateioEsgoto = consumoRateioEsgoto;
 	}
 
-    public void setIndcAdicionouDadosIniciaisHelperRateio(
-	    boolean indcAdicionouDadosIniciaisHelperRateio) {
-	this.indcAdicionouDadosIniciaisHelperRateio = indcAdicionouDadosIniciaisHelperRateio;
+    public void setIndcAdicionouDadosIniciaisHelperRateio(int indcAdicionouDadosIniciaisHelperRateio) {
+
+    	if(indcAdicionouDadosIniciaisHelperRateio == Constantes.SIM){
+    		this.indcAdicionouDadosIniciaisHelperRateio = true;
+    		
+    	}else{
+    		this.indcAdicionouDadosIniciaisHelperRateio = false;
+    	}
     }
 
     public void setEfetuarRateioConsumoDispositivoMovelHelper(
@@ -428,9 +433,7 @@ public class Imovel {
 //	int leitura = Constantes.NULO_INT;
 
 //	Integer id = new Integer(this.id);
-	int quadra = ControladorImovel.getInstancia().getImovelSelecionado().getQuadra();
-	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
-		.valueOf(quadra));
+	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, quadra);
 	boolean temConsumo = true;
 
 	if ( this.isImovelCondominio() ){
@@ -591,9 +594,7 @@ public class Imovel {
 //	int leitura = Constantes.NULO_INT;
 
 //	Integer id = new Integer(this.id);
-	int quadra = ControladorImovel.getInstancia().getImovelSelecionado().getQuadra();
-	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
-		.valueOf(quadra));
+	String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, quadra);
 	boolean temConsumo = true;
 
 	if (this.isImovelCondominio()) {
@@ -773,7 +774,16 @@ public class Imovel {
     }
 
     public void setInscricao(String inscricao) {
-	this.inscricao = Util.verificarNuloString(inscricao);
+		this.inscricao = Util.verificarNuloString(inscricao);
+	    
+		if (this.inscricao != Constantes.NULO_STRING){
+	    	
+	    	localidade = inscricao.substring(0, 3);
+	    	setor = inscricao.substring(3, 6);
+	    	quadra = inscricao.substring(6, 10);
+	    	lote = inscricao.substring(10, 14);
+	    	sublote = inscricao.substring(14, 17);
+	    }
     }
 
     public void setEndereco(String endereco) {
@@ -1756,12 +1766,7 @@ public class Imovel {
     }
 
     public int getQuadra() {
-// Daniel - considerar quadra com 3 ou 4 caracteres.
-    	if (this.inscricao.trim().length() == 16){
-    		return Integer.parseInt(this.inscricao.substring(6, 9));
-    	}else{
-    		return Integer.parseInt(this.inscricao.substring(6, 10));    		
-    	}
+    	return Integer.parseInt(quadra);    		
     }
 
     public Vector getRegistros8() {
@@ -2034,39 +2039,24 @@ public class Imovel {
     }
 
     public String getLocalidade() {
-	return inscricao.substring(0, 3);
+    	return localidade;
     }
 
     public String getSetorComercial() {
-	return inscricao.substring(3, 6);
+    	return setor;
     }
 
     public String getInscricaoFormatada() {
-	String inscricao = this.inscricao.trim();
-
-	String localidade, setor, quadra, lote, sublote;
-
-	if (inscricao.length() == 16) {
-	    localidade = inscricao.substring(0, 3);
-	    setor = inscricao.substring(3, 6);
-	    quadra = inscricao.substring(6, 9);
-	    lote = inscricao.substring(9, 13);
-	    sublote = inscricao.substring(13, 16);
-
-	    inscricao = localidade + "." + setor + "." + quadra + "." + lote
-		    + "." + sublote;
-	} else {
-	    localidade = inscricao.substring(0, 3);
-	    setor = inscricao.substring(3, 6);
-	    quadra = inscricao.substring(6, 10);
-	    lote = inscricao.substring(10, 14);
-	    sublote = inscricao.substring(14, 17);
-
-	    inscricao = localidade + "." + setor + "." + quadra + "." + lote
-		    + "." + sublote;
-	}
-
-	return inscricao;
+		String inscricaoFormatada = this.inscricao.trim();
+		    localidade = inscricaoFormatada.substring(0, 3);
+		    setor = inscricaoFormatada.substring(3, 6);
+		    quadra = inscricaoFormatada.substring(6, 10);
+		    lote = inscricaoFormatada.substring(10, 14);
+		    sublote = inscricaoFormatada.substring(14, 17);
+	
+		    inscricaoFormatada = localidade + "." + setor + "." + quadra + "." + lote + "." + sublote;
+	
+		return inscricaoFormatada;
     }
 
     public void setId(long imovelId) {
@@ -2288,7 +2278,7 @@ public class Imovel {
     }
 
     public void setValorResidualCredito(double valorResidualCredito) {
-	this.valorResidualCredito = valorResidualCredito;
+    	this.valorResidualCredito = valorResidualCredito;
     }
 
     /**
@@ -2685,8 +2675,8 @@ public class Imovel {
 		this.contagemValidacaoPoco = contagemValidacaoPoco;
 	}
 
-	public void setDataImpressaoNaoMedido(Date dataImpressaoNaoMedido) {
-		this.dataImpressaoNaoMedido = dataImpressaoNaoMedido;
+	public void setDataImpressaoNaoMedido(String dataImpressaoNaoMedido) {
+		this.dataImpressaoNaoMedido = Util.getData(Util.verificarNuloString(dataImpressaoNaoMedido));
 	}
 
     public short getIndicadorAbastecimentoAgua() {

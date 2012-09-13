@@ -37,15 +37,15 @@ public class MedidorTab extends Fragment {
 	private TextView locInstalacao;
 	private View view;
 	List<String> listAnormalidades;
-    EditText codigoAnormalidade;
+	private static EditText codigoAnormalidade;
     private static EditText leitura;
+    private static int leituraDigitada;
     private static View layout;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
 	
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -146,4 +146,25 @@ public class MedidorTab extends Fragment {
 	public static String getLeitura(){
 		return ((EditText)layout.findViewById(R.id.leitura)).getText().toString();
 	}
+
+	public static String getCodigoAnormalidade(){
+		return ((EditText)layout.findViewById(R.id.codigoAnormalidade)).getText().toString();
+	}
+
+	public static void setLeituraDigitada(int leituraDigitada) {
+		MedidorTab.leituraDigitada = leituraDigitada;
+    }
+
+    public static int getLeituraDigitada() {
+    	return MedidorTab.leituraDigitada;
+    }
+
+    public static String getLeituraCampo() {
+    	return getLeitura();
+    }
+
+    public static void setLeituraCampo(String leitura) {
+    	((EditText)layout.findViewById(R.id.leitura)).setText(leitura);
+    }
+
 }
