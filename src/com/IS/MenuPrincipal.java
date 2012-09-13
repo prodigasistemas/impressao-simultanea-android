@@ -195,6 +195,7 @@ public class MenuPrincipal extends Activity {
 	    	listaDispositivos = new ListView(this);
 	    	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 	    	listaDispositivos.setAdapter(arrayAdapter);
+	    	listaDispositivos.setCacheColorHint(0);
 	    	listaDispositivos.setOnItemClickListener(new OnItemClickListener() {
 
 				public void onItemClick(AdapterView<?> parent, View view,	int position, long id) {

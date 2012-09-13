@@ -27,6 +27,7 @@ import business.ControladorRota;
 public class ListaImoveis extends ListActivity {
 	
 	MySimpleArrayAdapter enderecoList;
+	public static int tamanhoListaImoveis;
 //	ArrayList<String> listStatusImoveis;
 
     /** Called when the activity is first created. */
@@ -50,23 +51,21 @@ public class ListaImoveis extends ListActivity {
 
     private void loadEnderecoImoveis(){
     	
-    	if (ControladorImovel.getInstancia() != null){
-    		if (ControladorRota.getInstancia().getDataManipulator() != null){
-    			
-//    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getDataManipulator().selectStatusImoveis(null);
-    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
-    	    	
-    	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
-    	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
-    	        	setListAdapter(enderecoList);
-    	        	
-    	        	if (ControladorImovel.getInstancia().getImovelListPosition() > -1){
-        	        	this.setSelection(ControladorImovel.getInstancia().getImovelListPosition());
-        	        	enderecoList.setSelectedPosition(ControladorImovel.getInstancia().getImovelListPosition());
-    	        	}
-    	    	}
-    		}
-    	}
+		if (ControladorRota.getInstancia().getDataManipulator() != null){
+			
+	    	ArrayList<String> listEnderecoImoveis = (ArrayList<String>) ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
+	    	tamanhoListaImoveis = listEnderecoImoveis.size();
+	    	
+	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
+	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
+	        	setListAdapter(enderecoList);
+	        	
+	        	if (ControladorImovel.getInstancia().getImovelListPosition() > -1){
+    	        	this.setSelection(ControladorImovel.getInstancia().getImovelListPosition());
+    	        	enderecoList.setSelectedPosition(ControladorImovel.getInstancia().getImovelListPosition());
+	        	}
+	    	}
+		}
     }
     
 	@Override

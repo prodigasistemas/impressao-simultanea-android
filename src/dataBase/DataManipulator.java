@@ -12,6 +12,7 @@ import model.Anormalidade;
 import model.Configuracao;
 import model.Consumo;
 import model.Conta;
+import model.DadosCategoria;
 import model.DadosGerais;
 import model.Imovel;
 import model.Medidor;
@@ -57,7 +58,7 @@ public class DataManipulator {
 		return ControladorRota.getInstancia().getDadosGerais();
 	}
 	
-	public List<String> getDadosCategoria() {
+	public List<DadosCategoria> getDadosCategoria() {
 		return ControladorImovel.getInstancia().getDadosCategoria();
 	}
 
@@ -390,27 +391,12 @@ public class DataManipulator {
         	ControladorImovel.getInstancia().getImovelSelecionado().setSequencialRota(cursor.getString(7));
 		}
 		
-		cursor.close();
-		
-		cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
-																		"descricao_categoria"}, "matricula = " + ControladorImovel.getInstancia()
-																												.getImovelSelecionado()
-																												.getMatricula(), null, null, null, null);
-		
-		Log.i("DADOS CATEGORIA", ""+cursor.getCount());
-		ControladorImovel.getInstancia().getDadosCategoria().clear();
-		
-		if (cursor.moveToFirst()) {
-			do {
-				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(0));
-				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(1));
-			} while (cursor.moveToNext());
-		}
 		
 		 if (cursor != null && !cursor.isClosed()) {
 	           cursor.close();
 	     }
-	     cursor.close();
+		 
+		 selectListDadosCategoria(ControladorImovel.getInstancia().getImovelSelecionado());
 	}
 	
 	public List<Imovel> selectImovelCondition(String condition){
@@ -432,6 +418,7 @@ public class DataManipulator {
         	do {
         		Imovel imovel = new Imovel();
         		
+        		imovel.setId(cursor.getLong(0));
         		imovel.setMatricula(cursor.getInt(1));
         		imovel.setNomeUsuario(cursor.getString(2));
         		imovel.setEndereco(cursor.getString(3));
@@ -444,31 +431,42 @@ public class DataManipulator {
         	} while (cursor.moveToNext());
 		}
 		
-		cursor.close();
-		
-		cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
-																		"descricao_categoria"}, "matricula = " + 
-																									imoveis.get(0).getMatricula(), null, null, null, null);
-		
-		Log.i("DADOS CATEGORIA", ""+cursor.getCount());
-		ControladorImovel.getInstancia().getDadosCategoria().clear();
-		
-		if (cursor.moveToFirst()) {
-			do {
-				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(0));
-				ControladorImovel.getInstancia().getDadosCategoria().add(cursor.getString(1));
-			} while (cursor.moveToNext());
-		}
-		
 		 if (cursor != null && !cursor.isClosed()) {
 	           cursor.close();
 	     }
-	     cursor.close();
+		 
+		 if (imoveis.size() > 0) {
+				selectListDadosCategoria(imoveis.get(0));
+		 }
 	     
 	     return imoveis;
 	}
 	
+	public void selectListDadosCategoria(Imovel imovel) {
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
+																				"descricao_categoria"}, 
+																				"matricula = " + imovel.getMatricula(), null, null, null, null);
+
+			ControladorImovel.getInstancia().getDadosCategoria().clear();
+			
+			if (cursor.moveToFirst()) {
+				do {
+					
+					DadosCategoria dc = new DadosCategoria();
+					dc.setQtdEconomiasSubcategoria(cursor.getString(0));
+					dc.setDescricaoCategoria(cursor.getString(1));
+					
+					ControladorImovel.getInstancia().getDadosCategoria().add(dc);
+					
+				} while (cursor.moveToNext());
+			}
+			
+			if (cursor != null && !cursor.isClosed()) {
+		           cursor.close();
+		    }
+	}
 	
+
 	public String selectConfiguracaoElement(String element) {
 
 		String elementValue = "";

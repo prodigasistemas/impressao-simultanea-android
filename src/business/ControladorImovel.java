@@ -1,38 +1,13 @@
 package business;
 
-import static util.Constantes.REGISTRO_TIPO_ANORMALIDADE;
-import static util.Constantes.REGISTRO_TIPO_CONTA;
-import static util.Constantes.REGISTRO_TIPO_CREDITO;
-import static util.Constantes.REGISTRO_TIPO_DADOS_CATEGORIA;
-import static util.Constantes.REGISTRO_TIPO_DEBITO;
-import static util.Constantes.REGISTRO_TIPO_GERAL;
-import static util.Constantes.REGISTRO_TIPO_HISTORICO_CONSUMO;
-import static util.Constantes.REGISTRO_TIPO_IMOVEL;
-import static util.Constantes.REGISTRO_TIPO_IMPOSTO;
-import static util.Constantes.REGISTRO_TIPO_MEDIDOR;
-import static util.Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR;
-import static util.Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import model.Consumo;
 import model.Conta;
-import model.DadosGerais;
+import model.DadosCategoria;
 import model.Imovel;
 import model.Medidor;
-import model.SituacaoTipo;
-import util.Constantes;
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import dataBase.DataManipulator;
 
 public class ControladorImovel {
 
@@ -41,7 +16,7 @@ public class ControladorImovel {
     private static Imovel imovelSelecionado = new Imovel();
     private static Conta contaSelecionado = new Conta();
     private static Medidor medidorSelecionado = new Medidor();
-    private static List<String> dadosCategoria = new ArrayList<String>();
+    private static List<DadosCategoria> dadosCategoria = new ArrayList<DadosCategoria>();
     
     private static long idImovelSelecionado = 0;
     private static int imovelListPosition = -1;
@@ -67,7 +42,7 @@ public class ControladorImovel {
     	return ControladorImovel.medidorSelecionado;
     }
     
-    public List<String> getDadosCategoria() {
+    public List<DadosCategoria> getDadosCategoria() {
     	return ControladorImovel.dadosCategoria;
     }
 

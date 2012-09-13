@@ -1551,13 +1551,6 @@ public class Imovel {
 	this.mensagemEstouroConsumo3 = mensagemEstouroConsumo3;
     }
 
-    public void adicionaRegistro2(DadosCategoria reg2) {
-	if (this.registros2 == null) {
-	    this.registros2 = new Vector();
-	}
-
-	this.registros2.addElement(reg2);
-    }
 
     public void adicionaRegistro3(HistoricoConsumo reg3) {
 	if (this.registros3 == null) {

@@ -43,6 +43,7 @@ import android.widget.Toast;
 import business.ControladorImovel;
 import business.ControladorRota;
 
+import com.IS.ListaImoveis;
 import com.IS.R;
 import com.zebra.android.comm.BluetoothPrinterConnection;
 import com.zebra.android.comm.ZebraPrinterConnection;
@@ -99,9 +100,15 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		TabHost.TabSpec tabSpec;
 	    Resources res = getResources();
 	    Intent intent = null;
+	    
+	    String title = titulo;
+	    
+	    if (titulo.equals("Imóvel")) {
+	    	title = titulo + " - "+ControladorImovel.getInstancia().getImovelSelecionado().getId()+" de " + ListaImoveis.tamanhoListaImoveis;
+	    }
 		
 		intent = new Intent().setClass(this, classe);
-	    tabSpec = tabHost.newTabSpec(tag).setIndicator(titulo, res.getDrawable(imagem)).setContent(new TabContentFactory() {
+	    tabSpec = tabHost.newTabSpec(tag).setIndicator(title, res.getDrawable(imagem)).setContent(new TabContentFactory() {
 
             public View createTabContent(String tag) {
             	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -174,16 +181,16 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	        
 	    case R.id.imprimirConta:
 	    	
-	    	
 	    	imprimirConta();
-	    	
-	    	
 	        
 	    	return true;
 	    	
 	    case R.id.localizarPendente:
 	    	
 	    	localizarImovelPendente();
+	    	finish();
+	    	myIntent = new Intent(getApplicationContext(), MainTab.class);
+			startActivity(myIntent);
 	    	
 	    	return true;
 	        
@@ -202,13 +209,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 		
 		ControladorImovel.getInstancia().setImovelSelecionado(imoveis.get(0));
-		
-		FragmentManager fm = getSupportFragmentManager();
-		FragmentTransaction ft = fm.beginTransaction();
-		
-		tabHost.setCurrentTab(0);
-		ft.add(android.R.id.tabcontent, new ImovelTab());
-		ft.commit();
+		ControladorImovel.getInstancia().setImovelListPosition(0);
 		
 	}
 	
@@ -242,6 +243,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	listaDispositivos = new ListView(this);
 	    	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 	    	listaDispositivos.setAdapter(arrayAdapter);
+	    	listaDispositivos.setCacheColorHint(0);
 	    	listaDispositivos.setOnItemClickListener(this);
 	    	
 	    	while (iterator.hasNext()) {

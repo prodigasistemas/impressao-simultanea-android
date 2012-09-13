@@ -65,6 +65,8 @@ public class Consulta extends ListActivity {
         spinnerFiltro.setAdapter(adapter);
         filtroBuscaOnItemSelectedListener(spinnerFiltro);
 
+        // Deixa o fundo da lista transparente quando feito o scroll
+        this.getListView().setCacheColorHint(0);
         
         // Button Consulta 
         final Button buttonConsulta = (Button)findViewById(R.id.buttonConsulta);

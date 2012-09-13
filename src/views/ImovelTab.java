@@ -2,6 +2,8 @@ package views;
 
 import java.util.ArrayList;
 
+import model.DadosCategoria;
+
 import util.Constantes;
 
 import com.IS.R;
@@ -67,24 +69,16 @@ public class ImovelTab extends Fragment {
 		String economias = "";
 		String categorias = "";
 		
-		Log.i("IMOVELTAB>> ", ControladorImovel.getInstancia().getDadosCategoria().get(0));
-		
-		for (String s : ControladorImovel.getInstancia().getDadosCategoria()) {
+		for (DadosCategoria dc : ControladorImovel.getInstancia().getDadosCategoria()) {
 			if (i > 1) {
 				economias += "\n";
 				categorias += "\n";
 				i = 0;
 			}
 			
-			if (i == 0){
-				s = ""+Integer.parseInt(s);
-				economias += s;
-			}
-			
-			if (i == 1) {
-				categorias += s;
-			}
-			
+			economias += ""+Integer.parseInt(""+dc.getQtdEconomiasSubcategoria());
+			categorias += dc.getDescricaoCategoria();
+
 			i++;
 		}
 
