@@ -69,7 +69,7 @@ public class ImovelTab extends Fragment {
 		String economias = "";
 		String categorias = "";
 		
-		for (DadosCategoria dc : ControladorImovel.getInstancia().getDadosCategoria()) {
+		for (DadosCategoria dc : ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria()) {
 			if (i > 1) {
 				economias += "\n";
 				categorias += "\n";

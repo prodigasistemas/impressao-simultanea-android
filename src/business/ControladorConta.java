@@ -79,10 +79,9 @@ package business;
 
 import helper.EfetuarRateioConsumoHelper;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import util.Constantes;
 import util.Util;
@@ -1707,11 +1706,11 @@ public class ControladorConta {
     	}
     	
     	if(!resultado){
-	    	Vector regsTipo3 = getImovelSelecionado().getRegistros3();
+	    	List<HistoricoConsumo> regsTipo3 = getImovelSelecionado().getHistoricosConsumo();
 		    if (regsTipo3 != null) {
 		    	
 		    	// Obtem o registro do mes anterior.
-		    	HistoricoConsumo reg3 = (HistoricoConsumo)regsTipo3.elementAt(0);
+		    	HistoricoConsumo reg3 = (HistoricoConsumo)regsTipo3.get(0);
 		    	
 		    	if (reg3.getAnormalidadeLeitura() != Constantes.NULO_INT &&
 		    			reg3.getAnormalidadeLeitura() != 0){

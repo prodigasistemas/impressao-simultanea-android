@@ -2,7 +2,9 @@ package model;
 
 import helper.EfetuarRateioConsumoHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import business.ControladorConta;
@@ -201,15 +203,15 @@ public class Imovel {
 
     //=============================================
     
-    private Vector registros2;
-    private Vector registros3;
-    private Vector registros4;
-    private Vector registros5;
-    private Vector registros6;
-    private Vector registros7;
-    private Vector registros8;
-    private Vector registros9;
-    private Vector registros10;
+    private List<DadosCategoria> dadosCategoria = new ArrayList<DadosCategoria>();
+    private List<HistoricoConsumo> historicoConsumo = new ArrayList<HistoricoConsumo>();
+    private List<Debito> debitos = new ArrayList<Debito>();
+    private List<Credito> creditos = new ArrayList<Credito>();
+    private List<Imposto> impostos = new ArrayList<Imposto>();
+    private List<Conta> contas = new ArrayList<Conta>();
+    private List<Medidor> medidores = new ArrayList<Medidor>();
+    private List<TarifacaoMinima> tarifacoesMinimas = new ArrayList<TarifacaoMinima>();
+    private List<TarifacaoComplementar> tarifacoesComplementares = new ArrayList<TarifacaoComplementar>();
     
 	public void setImovelStatus(String imovelStatus) {
 		this.imovelStatus = Util.verificarNuloInt(imovelStatus);
@@ -345,7 +347,8 @@ public class Imovel {
 
     public Imovel() {
 
-	this.matricula = Constantes.NULO_INT;
+    	this.matricula = Constantes.NULO_INT;
+    	
 
     }
 
@@ -1561,26 +1564,9 @@ public class Imovel {
 	this.mensagemEstouroConsumo3 = mensagemEstouroConsumo3;
     }
 
-
-    public void adicionaRegistro3(HistoricoConsumo reg3) {
-	if (this.registros3 == null) {
-	    this.registros3 = new Vector();
-	}
-
-	this.registros3.addElement(reg3);
-    }
-
-    public void adicionaRegistro4(Debito reg) {
-	if (this.registros4 == null) {
-	    this.registros4 = new Vector();
-	}
-
-	this.registros4.addElement(reg);
-    }
-
     public void adicionaRegistro5(Credito reg) {
-		if (this.registros5 == null) {
-		    this.registros5 = new Vector();
+		if (this.creditos == null) {
+		    this.creditos = new Vector();
 		}
 	
 	//	Daniel - Controle do valor do Bonus Social
@@ -1588,58 +1574,18 @@ public class Imovel {
 				
 			reg.setValor(String.valueOf(4.2));
 		}
-		this.registros5.addElement(reg);
-    }
-
-    public void adicionaRegistro6(Imposto reg) {
-	if (this.registros6 == null) {
-	    this.registros6 = new Vector();
-	}
-
-	this.registros6.addElement(reg);
-    }
-
-    public void adicionaRegistro7(Conta reg7) {
-	if (this.registros7 == null) {
-	    this.registros7 = new Vector();
-	}
-
-	this.registros7.addElement(reg7);
-    }
-
-    public void adicionaRegistro8(Medidor reg8) {
-	if (this.registros8 == null) {
-	    this.registros8 = new Vector();
-	}
-
-	this.registros8.addElement(reg8);
-    }
-
-    public void adicionaRegistro9(TarifacaoMinima reg9) {
-	if (this.registros9 == null) {
-	    this.registros9 = new Vector();
-	}
-
-	this.registros9.addElement(reg9);
-    }
-
-    public void adicionaRegistro10(TarifacaoComplementar reg10) {
-	if (this.registros10 == null) {
-	    this.registros10 = new Vector();
-	}
-
-	this.registros10.addElement(reg10);
+		this.creditos.add(reg);
     }
 
     public String getNumeroHidrometro(int tipoMedicao) {
 
 	String retorno = null;
 
-	if (this.registros8 != null) {
-	    int tamanho = this.registros8.size();
+	if (this.medidores != null) {
+	    int tamanho = this.medidores.size();
 
 	    for (int i = 0; i < tamanho; i++) {
-		Medidor reg8 = (Medidor) this.registros8.elementAt(i);
+		Medidor reg8 = (Medidor) this.medidores.get(i);
 		if (reg8.getTipoMedicao() == tipoMedicao) {
 		    retorno = reg8.getNumeroHidrometro();
 		}
@@ -1650,11 +1596,11 @@ public class Imovel {
     }
 
     public int getQuantidadeEconomiasTotal() {
-	int tamanho = this.registros2.size();
+	int tamanho = this.dadosCategoria.size();
 	int retorno = 0;
 	for (int i = 0; i < tamanho; i++) {
 	    retorno = retorno
-		    + ((DadosCategoria) this.registros2.elementAt(i))
+		    + ((DadosCategoria) this.dadosCategoria.get(i))
 			    .getQtdEconomiasSubcategoria();
 	}
 
@@ -1663,10 +1609,10 @@ public class Imovel {
 
     public Medidor getRegistro8(int tipoMedicao) {
 	Medidor retorno = null;
-	if (this.registros8 != null) {
-	    int tamanho = this.registros8.size();
+	if (this.medidores != null) {
+	    int tamanho = this.medidores.size();
 	    for (int i = 0; i < tamanho; i++) {
-			Medidor reg8 = (Medidor) this.registros8.elementAt(i);
+			Medidor reg8 = (Medidor) this.medidores.get(i);
 			if (reg8.getTipoMedicao() == tipoMedicao) {
 			    retorno = reg8;
 			}
@@ -1678,7 +1624,7 @@ public class Imovel {
     
     public boolean isRegistro3Empty(){
     	boolean isEmpty = false;
-    	if (this.registros3 == null){
+    	if (this.historicoConsumo == null){
     		isEmpty = true;
     	}
     	return isEmpty;
@@ -1687,10 +1633,10 @@ public class Imovel {
     public HistoricoConsumo getRegistro3(int anoMes) {
     	HistoricoConsumo retorno = null;
 
-    	if (this.registros3 != null){
-	    	int tamanho = this.registros3.size();
+    	if (this.historicoConsumo != null){
+	    	int tamanho = this.historicoConsumo.size();
 			for (int i = 0; i < tamanho; i++) {
-			    HistoricoConsumo reg3 = (HistoricoConsumo) this.registros3.elementAt(i);
+			    HistoricoConsumo reg3 = (HistoricoConsumo) this.historicoConsumo.get(i);
 		
 			    int anoMesReferencia = reg3.getAnoMesReferencia();
 		
@@ -1704,12 +1650,12 @@ public class Imovel {
 
     public HistoricoConsumo getRegistro3(int anoMes, int idAnormalidadeConsumo) {
 	int tamanho = 0;
-	if (this.registros3 != null && !this.registros3.isEmpty()) {
-	    tamanho = this.registros3.size();
+	if (this.historicoConsumo != null && !this.historicoConsumo.isEmpty()) {
+	    tamanho = this.historicoConsumo.size();
 	}
 	HistoricoConsumo retorno = null;
 	for (int i = 0; i < tamanho; i++) {
-	    HistoricoConsumo reg3 = (HistoricoConsumo) this.registros3.elementAt(i);
+	    HistoricoConsumo reg3 = (HistoricoConsumo) this.historicoConsumo.get(i);
 
 	    int anoMesReferencia = reg3.getAnoMesReferencia();
 
@@ -1724,11 +1670,11 @@ public class Imovel {
 
     public int getQuantidadeEconomias(int codigoCategoria,
 	    String codigoSubcategoria) {
-	int tamanho = this.registros2.size();
+	int tamanho = this.dadosCategoria.size();
 	int retorno = 0;
 	DadosCategoria reg2 = null;
 	for (int i = 0; i < tamanho; i++) {
-	    reg2 = (DadosCategoria) this.registros2.elementAt(i);
+	    reg2 = (DadosCategoria) this.dadosCategoria.get(i);
 
 	    if (reg2.getCodigoCategoria() == codigoCategoria
 		    && reg2.getCodigoSubcategoria().equals(codigoSubcategoria)) {
@@ -1742,9 +1688,9 @@ public class Imovel {
 
     public boolean isLeituraRealizada() {
 	boolean ret = true;
-	int size = this.registros8.size();
+	int size = this.medidores.size();
 	for (int i = 0; i < size && ret; i++) {
-	    Medidor reg8 = (Medidor) this.registros8.elementAt(i);
+	    Medidor reg8 = (Medidor) this.medidores.get(i);
 	    if (reg8.getAnormalidade() == 0
 		    && reg8.getLeitura() == Constantes.LEITURA_INVALIDA) {
 		ret = false;
@@ -1754,88 +1700,77 @@ public class Imovel {
 	return ret;
     }
 
-    public Vector getCategorias() {
-	return this.registros2;
-    }
-
     public int getQuadra() {
     	return Integer.parseInt(quadra);    		
     }
 
-    public Vector getRegistros8() {
-	return registros8;
+    public List<Medidor> getMedidores() {
+    	return medidores;
     }
 
-    public Vector getRegistros2() {
-	return registros2;
+    public List<DadosCategoria> getDadosCategoria() {
+    	return dadosCategoria;
     }
 
     public SituacaoTipo getSituacaoTipo() {
-	return situacaoTipo;
+    	return situacaoTipo;
     }
 
-    /*
-     * public Vector getRegistros11() { return registros11; }
-     */
-
-    public Vector getRegistros3() {
-	return registros3;
+    public List<HistoricoConsumo> getHistoricosConsumo() {
+    	return historicoConsumo;
     }
 
-    public Vector getRegistros4() {
+    public List<Debito> getDebitos() {
 	
-	if ( registros4 != null ){	
-	    // Retornamos apenas os débitos com indicador de uso = SIM
+		if ( debitos != null ){	
+		    // Retornamos apenas os débitos com indicador de uso = SIM
+			ArrayList<Debito> tempDebito = new ArrayList<Debito>();
+		
+		    for ( int i = 0; i < debitos.size(); i++ ){
+		    
+				Debito debito = (Debito)debitos.get( i );
+			    
+				if ( debito.getIndcUso() == Constantes.SIM ){
+				    tempDebito.add( debito );
+				}
+		    }
+		    
+		    return tempDebito;	    
 	
-	    Vector tempReg4 = new Vector();
-	
-	    for ( int i = 0; i < registros4.size(); i++ ){
-	    
-		Debito registroBasico = (Debito)registros4.elementAt( i );
-	    
-		if ( registroBasico.getIndcUso() == Constantes.SIM ){
-		    tempReg4.addElement( registroBasico );
-		}
-	    }
-	    
-	    return tempReg4;	    
-	} else {
-	    return null;
-	}
-	
-	
+		} else {
+		    return null;
+		}	
     }
 
-    public Vector getRegistros5() {
+    public List<Credito> getCreditos() {
 	
-	if ( registros5 != null ){	
-	    Vector tempReg5 = new Vector();
+		if ( creditos != null ){	
 	
-	    // Retornamos apenas os creditos com indicador de uso = SIM
+			ArrayList<Credito> tempCreditos = new ArrayList<Credito>();
+		
+		    // Retornamos apenas os creditos com indicador de uso = SIM
+		    for ( int i = 0; i < creditos.size(); i++ ){
+		    
+				Credito credito = (Credito)creditos.get( i );
+			    
+				if ( credito.getIndcUso() == Constantes.SIM ){
+				    tempCreditos.add( credito );
+				}
+		    }
+		    
+		    return tempCreditos;
 	
-	    for ( int i = 0; i < registros5.size(); i++ ){
-	    
-		Credito registroBasico = (Credito)registros5.elementAt( i );
-	    
-		if ( registroBasico.getIndcUso() == Constantes.SIM ){
-		    tempReg5.addElement( registroBasico );
-		}
-	    }
-	    
-	    return tempReg5;
-	} else {
-	    return null;
-	}
-	
-	
+		} else {
+		    return null;
+		}		
     }
 
-    public Vector getRegistros6() {
-	return registros6;
+    public List<Imposto> getImpostos() {
+	return impostos;
     }
 
-    public Vector getRegistros7() {
-	return registros7;
+    public List<Conta> getContas() {
+	return contas;
     }
 
     /**
@@ -1852,9 +1787,9 @@ public class Imovel {
 
 	TarifacaoMinima retorno = null;
 
-	for (int i = 0; i < this.registros9.size(); i++) {
+	for (int i = 0; i < this.tarifacoesMinimas.size(); i++) {
 
-	    TarifacaoMinima registro = (TarifacaoMinima) this.registros9.elementAt(i);
+	    TarifacaoMinima registro = (TarifacaoMinima) this.tarifacoesMinimas.get(i);
 
 	    if (tipoTarifaPorCategoria) {
 		if (Integer.parseInt(codigo) == registro
@@ -1891,8 +1826,8 @@ public class Imovel {
 
 	Vector retorno = new Vector();
 
-	for (int i = 0; i < this.registros10.size(); i++) {
-	    TarifacaoComplementar registro = (TarifacaoComplementar) this.registros10.elementAt(i);
+	for (int i = 0; i < this.tarifacoesComplementares.size(); i++) {
+	    TarifacaoComplementar registro = (TarifacaoComplementar) this.tarifacoesComplementares.get(i);
 
 	    if (tipoTarifaPorCategoria) {
 		if (Integer.parseInt(codigo) == registro
@@ -1914,11 +1849,11 @@ public class Imovel {
 
 	double soma = 0d;
 
-	for (int i = 0; i < this.registros2.size(); i++) {
-	    if ((DadosFaturamento) ((DadosCategoria) this.registros2.elementAt(i))
+	for (int i = 0; i < this.dadosCategoria.size(); i++) {
+	    if ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i))
 		    .getFaturamentoAgua() != null) {
-		soma += ((DadosFaturamento) ((DadosCategoria) this.registros2
-			.elementAt(i)).getFaturamentoAgua()).getValorFaturado();
+		soma += ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria
+			.get(i)).getFaturamentoAgua()).getValorFaturado();
 	    }
 	}
 
@@ -1929,11 +1864,11 @@ public class Imovel {
 
 	double soma = 0d;
 
-	for (int i = 0; i < this.registros2.size(); i++) {
-	    if ((DadosFaturamento) ((DadosCategoria) this.registros2.elementAt(i))
+	for (int i = 0; i < this.dadosCategoria.size(); i++) {
+	    if ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i))
 		    .getFaturamentoEsgoto() != null) {
-		soma += ((DadosFaturamento) ((DadosCategoria) this.registros2
-			.elementAt(i)).getFaturamentoEsgoto())
+		soma += ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria
+			.get(i)).getFaturamentoEsgoto())
 			.getValorFaturado();
 	    }
 	}
@@ -1945,9 +1880,9 @@ public class Imovel {
 
 	double soma = 0d;
 
-	if (this.getRegistros4() != null) {
-	    for (int i = 0; i < this.getRegistros4().size(); i++) {
-		soma += ((Debito) (this.getRegistros4().elementAt(i)))
+	if (this.getDebitos() != null) {
+	    for (int i = 0; i < this.getDebitos().size(); i++) {
+		soma += ((Debito) (this.getDebitos().get(i)))
 			.getValor();
 	    }
 	}
@@ -1960,10 +1895,9 @@ public class Imovel {
 	double soma = 0d;
 
 //	Daniel - Tratamento de Bônus Social
-	
-	if (this.getRegistros5() != null) {
-	    for (int i = 0; i < this.getRegistros5().size(); i++) {
-	    	if( ((Credito) (this.getRegistros5().elementAt(i))).getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)  &&
+	if (this.getCreditos() != null) {
+	    for (int i = 0; i < this.getCreditos().size(); i++) {
+	    	if( ((Credito) (this.getCreditos().get(i))).getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)  &&
 	    		Integer.parseInt(this.getCodigoPerfil()) == PERFIL_BONUS_SOCIAL &&
 	    		this.getConsumoAgua() != null &&
 	    		this.getConsumoAgua().getConsumoCobradoMes() > 10 ){
@@ -1971,7 +1905,7 @@ public class Imovel {
 	    			System.out.println("CREDITO DE BONUS SOCIAL DESCARTADO!");
 
 	    	}else{
-	    		soma += ((Credito) (this.getRegistros5().elementAt(i))).getValor();
+	    		soma += ((Credito) (this.getCreditos().get(i))).getValor();
 	    	}
 	    }
 	}
@@ -1998,10 +1932,10 @@ public class Imovel {
 
     public double getValors() {
 	double soma = 0d;
-	if (registros6 != null) {
-	    for (int i = 0; i < this.registros6.size(); i++) {
-		double percentualAlicota = ((Imposto) (this.registros6
-			.elementAt(i))).getPercentualAlicota();
+	if (impostos != null) {
+	    for (int i = 0; i < this.impostos.size(); i++) {
+		double percentualAlicota = ((Imposto) (this.impostos
+			.get(i))).getPercentualAlicota();
 		double valor = this.getValorContaSem()
 			* Util.arredondar((percentualAlicota / 100), 7);
 		soma += valor;
@@ -2083,9 +2017,9 @@ public class Imovel {
 
 	TarifacaoMinima retorno = null;
 
-	for (int i = 0; i < registros9.size(); i++) {
+	for (int i = 0; i < tarifacoesMinimas.size(); i++) {
 
-	    TarifacaoMinima registro = (TarifacaoMinima) registros9.elementAt(i);
+	    TarifacaoMinima registro = (TarifacaoMinima) tarifacoesMinimas.get(i);
 
 	    if (tipoTarifaPorCategoria) {
 
@@ -2136,8 +2070,8 @@ public class Imovel {
 
 	Vector retorno = new Vector();
 
-	for (int i = 0; i < registros10.size(); i++) {
-	    TarifacaoComplementar registro = (TarifacaoComplementar) registros10.elementAt(i);
+	for (int i = 0; i < tarifacoesComplementares.size(); i++) {
+	    TarifacaoComplementar registro = (TarifacaoComplementar) tarifacoesComplementares.get(i);
 
 	    if (tipoTarifaPorCategoria) {
 		if (Util.compararData(dataInicioVigencia, registro
@@ -2244,9 +2178,9 @@ public class Imovel {
 
 	double soma = 0d;
 
-	if (this.registros7 != null) {
-	    for (int i = 0; i < this.registros7.size(); i++) {
-		soma += ((Conta) (this.registros7.elementAt(i)))
+	if (this.contas != null) {
+	    for (int i = 0; i < this.contas.size(); i++) {
+		soma += ((Conta) (this.contas.get(i)))
 			.getValor();
 	    }
 	}
@@ -2698,9 +2632,9 @@ public class Imovel {
 	int idCateoria = 0;
 	int maiorQuantidadeEconomias = 0;
 
-	for (int i = 0; i < this.registros2.size(); i++) {
+	for (int i = 0; i < this.dadosCategoria.size(); i++) {
 
-	    DadosCategoria registro = (DadosCategoria) this.registros2.elementAt(i);
+	    DadosCategoria registro = (DadosCategoria) this.dadosCategoria.get(i);
 
 	    if (registro.getCodigoCategoria() != idCateoria) {
 		int quantidadeEconomias = this
@@ -3133,11 +3067,11 @@ public class Imovel {
      * @return
      */
     public void setValorCreditosNitrato(double valorCreditoNitrato) {
-	if (this.registros5 != null) {
-	    for (int i = 0; i < this.registros5.size(); i++) {
+	if (this.creditos != null) {
+	    for (int i = 0; i < this.creditos.size(); i++) {
 
-		Credito registroDescricaoValor = ((Credito) (this.registros5
-			.elementAt(i)));
+		Credito registroDescricaoValor = ((Credito) (this.creditos
+			.get(i)));
 
 		String descricaoCredito = registroDescricaoValor.getDescricao();
 
@@ -3268,8 +3202,8 @@ public class Imovel {
     Debito regTemp = new Debito();
 	regTemp.setCodigo( codigo );
 	
-	if ( this.registros4 != null && this.registros4.contains( regTemp ) ){
-	    return ( Debito ) this.registros4.elementAt( this.registros4.indexOf( regTemp ) );
+	if ( this.debitos != null && this.debitos.contains( regTemp ) ){
+	    return ( Debito ) this.debitos.get( this.debitos.indexOf( regTemp ) );
 	} else {
 	    return null;
 	}
@@ -3291,8 +3225,8 @@ public class Imovel {
     	Credito regTemp = new Credito();
 	regTemp.setCodigo( codigo );
 	
-	if ( this.registros5 != null && this.registros5.contains( regTemp ) ){
-	    return ( Credito ) this.registros5.elementAt( this.registros5.indexOf( regTemp ) );
+	if ( this.creditos != null && this.creditos.contains( regTemp ) ){
+	    return ( Credito ) this.creditos.get( this.creditos.indexOf( regTemp ) );
 	} else {
 	    return null;
 	}
@@ -3306,8 +3240,8 @@ public class Imovel {
 
 	Vector retorno = new Vector();
 
-	for (int i = 0; i < registros10.size(); i++) {
-	    TarifacaoComplementar registro = (TarifacaoComplementar) registros10.elementAt(i);
+	for (int i = 0; i < tarifacoesComplementares.size(); i++) {
+	    TarifacaoComplementar registro = (TarifacaoComplementar) tarifacoesComplementares.get(i);
 
 	    if (tipoTarifaPorCategoria) {
 		if (Util.compararData(dataInicioVigencia, registro

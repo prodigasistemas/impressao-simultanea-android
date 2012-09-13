@@ -63,7 +63,7 @@ public class MedidorTab extends Fragment {
 	    else
 	    	view.setBackgroundResource(R.drawable.landscapte_background);
 	    
-		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getMedidorSelecionado().getMatricula());
+		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0).getMatricula());
 //		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro());
 //		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getMedidorSelecionado().getLocalInstalacao());
 		
@@ -72,8 +72,8 @@ public class MedidorTab extends Fragment {
 		locInstalacao = (TextView) view.findViewById(R.id.locInstalacao);
 		
 		endereco.setText(ControladorImovel.getInstancia().getImovelSelecionado().getEndereco());
-		hidrometro.setText(ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro());
-		locInstalacao.setText(ControladorImovel.getInstancia().getMedidorSelecionado().getLocalInstalacao());
+		hidrometro.setText(ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0).getNumeroHidrometro());
+		locInstalacao.setText(ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0).getLocalInstalacao());
 		
 		leitura = (EditText)view.findViewById(R.id.leitura);
 		

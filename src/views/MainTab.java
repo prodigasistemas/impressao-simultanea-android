@@ -95,7 +95,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    
 	    addTab("imovel", "Imóvel", R.drawable.tab_imovel, R.layout.imoveltab, ImovelTab.class);
 
-	    if (ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro() != "") {
+	    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0).getNumeroHidrometro() != "") {
 	    	addTab("medidor", "Medidor", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
 
 	    } else {
@@ -390,16 +390,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	}
 	
 	public void localizarImovelPendente() {
-		List<Imovel> imoveis = ControladorRota.getInstancia().getDataManipulator()
-				.selectImovelCondition("imovel_status = "+Constantes.IMOVEL_PENDENTE);
 		
-		if (imoveis.size() == 0) {
+		// Se nao encontrar imovel com status pendente
+		if (!ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_PENDENTE)) {
 			Toast.makeText(this, "Não existem imóveis pendentes", 10).show();
 			return;
 		}
 		
-		ControladorImovel.getInstancia().setImovelSelecionado(imoveis.get(0));
-		ControladorImovel.getInstancia().setImovelListPosition(0);
+//		ControladorImovel.getInstancia().setImovelListPosition(0);
 		
 	}
 	

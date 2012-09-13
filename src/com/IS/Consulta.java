@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import model.Imovel;
 import util.Constantes;
 import views.MainTab;
-import util.Util;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -137,18 +136,21 @@ public class Consulta extends ListActivity {
 	    		Log.i("FILTRO", filterCondition);
 	    		
     			// Aplica condicoes de filtro
-//    	    	listStatusImoveis = (ArrayList)ControladorImovel.getInstancia().getCadastroDataManipulator().selectEnderecoImoveis(filterCondition);
-    	    	listImoveis = (ArrayList<Imovel>) ControladorRota.getInstancia().getDataManipulator()
-    	    			.selectImovelCondition(filterCondition);
+//    	    	listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(filterCondition);
     	    	
-    	    	ArrayList<String> enderecos = new ArrayList<String>();
-    	    	for (Imovel imovel : listImoveis) {
-    	    		Log.i("IMOVEL", ""+imovel.getMatricula());
-					enderecos.add(imovel.getEndereco());
-				}
+    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(filterCondition);
+
+//	    		listImoveis = (ArrayList<Imovel>) ControladorRota.getInstancia().getDataManipulator()
+//    	    			.selectImovelCondition(filterCondition);
+//    	    	
+//    	    	ArrayList<String> enderecos = new ArrayList<String>();
+//    	    	for (Imovel imovel : listImoveis) {
+//    	    		Log.i("IMOVEL", ""+imovel.getMatricula());
+//					enderecos.add(imovel.getEndereco());
+//				}
 
     	    	if(listImoveis != null && listImoveis.size() > 0){
-    	        	enderecoList = new MySimpleArrayAdapter(this, enderecos);
+    	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
     	        	setListAdapter(enderecoList);
     	    	}
     		}
@@ -159,8 +161,7 @@ public class Consulta extends ListActivity {
 		// user clicked a list item, make it "selected"
 		enderecoList.setSelectedPosition(position);
 
-		ControladorImovel.getInstancia().setImovelSelecionado(listImoveis.get(Integer.parseInt(""+id)));
-		ControladorRota.getInstancia().getDataManipulator().selectImovel(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
+		ControladorImovel.getInstancia().setImovelSelecionadoByListPositionInConsulta(position, filterCondition);
 		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
 		startActivityForResult(myIntent, 0);
 	}

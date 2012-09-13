@@ -59,15 +59,15 @@ public class DataManipulator {
 	}
 	
 	public List<DadosCategoria> getDadosCategoria() {
-		return ControladorImovel.getInstancia().getDadosCategoria();
+		return ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria();
 	}
 
 	public Medidor getMedidorSelecionado() {
-		return ControladorImovel.getInstancia().getMedidorSelecionado();
+		return ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0);
 	}
 
 	public Conta getContaSelecionado() {
-		return ControladorImovel.getInstancia().getContaSelecionado();
+		return ControladorImovel.getInstancia().getImovelSelecionado().getContas().get(0);
 	}
 
 	public void deleteTable(String tableName) {
@@ -250,57 +250,59 @@ public class DataManipulator {
 		cursor.close();
 	}
 
-	public void selectMedidor(int matricula) {
+	public void selectMedidores(int matricula) {
 		
 		Log.i("Matricula medidor", ""+matricula);
 
-		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {
-				"tipo_medicao", "numero_hidrometro",
-				"data_instalacao_hidrometro", "num_digitos_leitura_hidrometro",
-				"leitura_anterior_faturamento",
-				"data_leitura_anterior_faturamento",
-				"codigo_situacao_leitura_anterior", "leitura_esperada_inicial",
-				"leitura_esperada_final", "consumo_medio", "local_instalacao",
-				"leitura_anterior_informada",
-				"data_leitura_anterior_informada", "data_ligacao_fornecimento",
-				"tipo_rateio", "leitura_instalacao_hidrometro", "matricula" }, "matricula = " + matricula,
-				null, null, null, "id asc");
+		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"tipo_medicao", 
+																		 "numero_hidrometro",
+																		 "data_instalacao_hidrometro", 
+																		 "num_digitos_leitura_hidrometro",
+																		 "leitura_anterior_faturamento",
+																		 "data_leitura_anterior_faturamento",
+																		 "codigo_situacao_leitura_anterior", 
+																		 "leitura_esperada_inicial",
+																		 "leitura_esperada_final", 
+																		 "consumo_medio", 
+																		 "local_instalacao",
+																		 "leitura_anterior_informada",
+																		 "data_leitura_anterior_informada", 
+																		 "data_ligacao_fornecimento",
+																		 "tipo_rateio", 
+																		 "leitura_instalacao_hidrometro", 
+																		 "matricula" }, "matricula = " + matricula, null, null, null, "id asc");
 		
+		Medidor medidor = new Medidor();
+
 		if (cursor.moveToFirst()) {
 			
-			getMedidorSelecionado().setTipoMedicao(cursor.getString(0));
-			getMedidorSelecionado().setNumeroHidrometro(cursor.getString(1));
-			getMedidorSelecionado().setDataInstalacaoHidrometro(
-					cursor.getString(2));
-			getMedidorSelecionado().setNumDigitosLeituraHidrometro(
-					cursor.getString(3));
-			getMedidorSelecionado().setLeituraAnteriorFaturamento(
-					cursor.getString(4));
-			getMedidorSelecionado().setDataLeituraAnteriorFaturado(
-					cursor.getString(5));
-			getMedidorSelecionado().setCodigoSituacaoLeituraAnterior(
-					cursor.getString(6));
-			getMedidorSelecionado().setLeituraEsperadaInicial(
-					cursor.getString(7));
-			getMedidorSelecionado()
-					.setLeituraEsperadaFinal(cursor.getString(8));
-			getMedidorSelecionado().setConsumoMedio(cursor.getString(9));
-			getMedidorSelecionado().setLocalInstalacao(cursor.getString(10));
-			getMedidorSelecionado().setLeituraAnteriorInformada(
-					cursor.getString(11));
-			getMedidorSelecionado().setDataLeituraAnteriorInformada(
-					cursor.getString(12));
-			getMedidorSelecionado().setDataLigacaoFornecimento(
-					cursor.getString(13));
-			getMedidorSelecionado().setTipoRateio(cursor.getString(14));
-			getMedidorSelecionado().setLeituraInstalacaoHidrometro(
-					cursor.getString(15));
-			getMedidorSelecionado().setMatricula(Integer.parseInt(cursor.getString(16)));
+//			ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().clear();
+			
+			medidor.setTipoMedicao(cursor.getString(0));
+			medidor.setNumeroHidrometro(cursor.getString(1));
+			medidor.setDataInstalacaoHidrometro(cursor.getString(2));
+			medidor.setNumDigitosLeituraHidrometro(cursor.getString(3));
+			medidor.setLeituraAnteriorFaturamento(cursor.getString(4));
+			medidor.setDataLeituraAnteriorFaturado(cursor.getString(5));
+			medidor.setCodigoSituacaoLeituraAnterior(cursor.getString(6));
+			medidor.setLeituraEsperadaInicial(cursor.getString(7));
+			medidor.setLeituraEsperadaFinal(cursor.getString(8));
+			medidor.setConsumoMedio(cursor.getString(9));
+			medidor.setLocalInstalacao(cursor.getString(10));
+			medidor.setLeituraAnteriorInformada(cursor.getString(11));
+			medidor.setDataLeituraAnteriorInformada(cursor.getString(12));
+			medidor.setDataLigacaoFornecimento(cursor.getString(13));
+			medidor.setTipoRateio(cursor.getString(14));
+			medidor.setLeituraInstalacaoHidrometro(cursor.getString(15));
+			medidor.setMatricula(Integer.parseInt(cursor.getString(16)));
+
 		} else {
-			getMedidorSelecionado().setNumeroHidrometro("");
+			medidor.setNumeroHidrometro("");
 			Log.i("Nenhum resgistro!", "Sem registro");
 		}
 
+		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().add(medidor	);
+		
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
@@ -369,7 +371,9 @@ public class DataManipulator {
 		cursor.close();
 	}
 	
-	public void selectImovel(long id){
+	public boolean selectImovel(String condition){
+		
+		boolean result = false;
 		
 		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
 																		"matricula",
@@ -452,10 +456,12 @@ public class DataManipulator {
 																		"imovel_status",
 																		"imovel_enviado",
 																		"indc_imovel_impresso",
-																		"indc_geracao"}, "id = " + id, null, null, null,  "inscricao asc");
+																		"indc_geracao"}, condition, null, null, null,  "inscricao asc");
 
 		if (cursor.moveToFirst()) {
-        	ControladorImovel.getInstancia().getImovelSelecionado().setId(id);
+			result = true;
+			
+        	ControladorImovel.getInstancia().getImovelSelecionado().setId(cursor.getLong(0));
            	ControladorImovel.getInstancia().getImovelSelecionado().setMatricula(Integer.parseInt(cursor.getString(1)));
            	ControladorImovel.getInstancia().getImovelSelecionado().setNomeGerenciaRegional(cursor.getString(2));
            	ControladorImovel.getInstancia().getImovelSelecionado().setNomeEscritorio(cursor.getString(3));
@@ -539,63 +545,102 @@ public class DataManipulator {
           	ControladorImovel.getInstancia().getImovelSelecionado().setIndcGeracao(Integer.parseInt(cursor.getString(81)));
 		}
 		
-		
 		 if (cursor != null && !cursor.isClosed()) {
 	           cursor.close();
 	     }
 		 
-		 selectListDadosCategoria(ControladorImovel.getInstancia().getImovelSelecionado());
+		 return result;
 	}
 	
-	public List<Imovel> selectImovelCondition(String condition){
+	public void selectDependenciasImovel(int matricula){
 		
-		List<Imovel> imoveis = new ArrayList<Imovel>();
-		
-		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
-																		"matricula",
-																		"nome_usuario",
-																		"endereco",
-																		"situacao_lig_agua",
-																		"situacao_lig_esgoto",
-																		"sequencial_rota",
-																		"inscricao"}, condition, null, null, null,  "inscricao asc");
-		
-		Log.i("LINHAS", ""+cursor.getCount());
-		
-		if (cursor.moveToFirst()) {
-        	do {
-        		Imovel imovel = new Imovel();
-        		
-        		imovel.setId(cursor.getLong(0));
-        		imovel.setMatricula(cursor.getInt(1));
-        		imovel.setNomeUsuario(cursor.getString(2));
-        		imovel.setEndereco(cursor.getString(3));
-        		imovel.setSituacaoLigAgua(cursor.getString(4));
-        		imovel.setSituacaoLigEsgoto(cursor.getString(5));
-        		imovel.setSequencialRota(cursor.getString(6));
-        		imovel.setInscricao(cursor.getString(7));
-
-            	imoveis.add(imovel);
-        	} while (cursor.moveToNext());
-		}
-		
-		 if (cursor != null && !cursor.isClosed()) {
-	           cursor.close();
-	     }
-		 
-		 if (imoveis.size() > 0) {
-				selectListDadosCategoria(imoveis.get(0));
-		 }
-	     
-	     return imoveis;
+		selectDadosCategoria(matricula);
+		selectHistoricosConsumo(matricula);
+		selectDebitos(matricula);
+		selectCreditos(matricula);
+		selectImpostos(matricula);
+		selectContas(matricula);
+		selectMedidores(matricula);
+		selectTarifacoesMinimas(matricula);
+		selectTarifacoesMinimas(matricula);
 	}
 	
-	public void selectListDadosCategoria(Imovel imovel) {
+	public void selectHistoricosConsumo(int matricula){
+		
+	}
+	
+	public void selectDebitos(int matricula){
+		
+	}
+	
+	public void selectCreditos(int matricula){
+		
+	}
+	
+	public void selectImpostos(int matricula){
+		
+	}
+	
+	public void selectContas(int matricula){
+		
+	}
+	
+	public void selectTarifacoesMinimas(int matricula){
+		
+	}
+	public void selectTarifacoesComplementares(int matricula){
+		
+	}
+	
+//	public List<Imovel> selectImovelCondition(String condition){
+//		
+//		List<Imovel> imoveis = new ArrayList<Imovel>();
+//		
+//		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
+//																		"matricula",
+//																		"nome_usuario",
+//																		"endereco",
+//																		"situacao_lig_agua",
+//																		"situacao_lig_esgoto",
+//																		"sequencial_rota",
+//																		"inscricao"}, condition, null, null, null,  "inscricao asc");
+//		
+//		Log.i("LINHAS", ""+cursor.getCount());
+//		
+//		if (cursor.moveToFirst()) {
+//        	do {
+//        		Imovel imovel = new Imovel();
+//        		
+//        		imovel.setId(cursor.getLong(0));
+//        		imovel.setMatricula(cursor.getInt(1));
+//        		imovel.setNomeUsuario(cursor.getString(2));
+//        		imovel.setEndereco(cursor.getString(3));
+//        		imovel.setSituacaoLigAgua(cursor.getString(4));
+//        		imovel.setSituacaoLigEsgoto(cursor.getString(5));
+//        		imovel.setSequencialRota(cursor.getString(6));
+//        		imovel.setInscricao(cursor.getString(7));
+//
+//            	imoveis.add(imovel);
+//        	} while (cursor.moveToNext());
+//		}
+//		
+//		 if (cursor != null && !cursor.isClosed()) {
+//	           cursor.close();
+//	     }
+//		 
+//		 if (imoveis.size() > 0) {
+//				selectDadosCategoria(imoveis.get(0));
+//		 }
+//	     
+//	     return imoveis;
+//	}
+//	
+	public void selectDadosCategoria(int matricula) {
 		Cursor cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
 																				"descricao_categoria"}, 
-																				"matricula = " + imovel.getMatricula(), null, null, null, null);
+																				"matricula = " + matricula, null, null, null, null);
 
-			ControladorImovel.getInstancia().getDadosCategoria().clear();
+//			ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
 			
 			if (cursor.moveToFirst()) {
 				do {
@@ -604,7 +649,7 @@ public class DataManipulator {
 					dc.setQtdEconomiasSubcategoria(cursor.getString(0));
 					dc.setDescricaoCategoria(cursor.getString(1));
 					
-					ControladorImovel.getInstancia().getDadosCategoria().add(dc);
+					ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().add(dc);
 					
 				} while (cursor.moveToNext());
 			}

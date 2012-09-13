@@ -4,20 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Consumo;
-import model.Conta;
-import model.DadosCategoria;
 import model.Imovel;
-import model.Medidor;
 
 public class ControladorImovel {
 
     public static ControladorImovel instancia;
 
     private static Imovel imovelSelecionado = new Imovel();
-    private static Conta contaSelecionado = new Conta();
-    private static Medidor medidorSelecionado = new Medidor();
-    private static List<DadosCategoria> dadosCategoria = new ArrayList<DadosCategoria>();
-    
     private static long idImovelSelecionado = 0;
     private static int imovelListPosition = -1;
     
@@ -34,31 +27,8 @@ public class ControladorImovel {
     	return ControladorImovel.imovelSelecionado;
     }
     
-    public Conta getContaSelecionado(){
-    	return ControladorImovel.contaSelecionado;
-    }
-
-    public Medidor getMedidorSelecionado(){
-    	return ControladorImovel.medidorSelecionado;
-    }
-    
-    public List<DadosCategoria> getDadosCategoria() {
-    	return ControladorImovel.dadosCategoria;
-    }
-
-//    	return Controlador.anormalidadeImovelSelecionado;
-//    }
-//    
     public void setImovelSelecionado(Imovel imovelSelecionado){
     	ControladorImovel.imovelSelecionado = imovelSelecionado;
-    }
-//    
-    public void setContaSelecionado(Conta contaSelecionado){
-    	ControladorImovel.contaSelecionado = contaSelecionado;
-    }
-
-    public void setMedidorSelecionado(Medidor medidorSelecionado){
-    	ControladorImovel.medidorSelecionado = medidorSelecionado;
     }
 //    
 //    public void setAnormalidadeImovelSelecionado(AnormalidadeImovel anormalidadeImovelSelecionado){
@@ -74,11 +44,8 @@ public class ControladorImovel {
     	initImovelTabs();
     	setImovelListPosition(listPosition);
     	idImovelSelecionado = getIdImovelSelecionado(listPosition, null);
-//    	dmImovel.selectCliente(idImovelSelecionado);
-    	ControladorRota.getInstancia().dataManipulator.selectImovel(idImovelSelecionado);
-//    	dmImovel.selectServico(idImovelSelecionado);
-    	ControladorRota.getInstancia().dataManipulator.selectMedidor(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
-//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
+    	ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado);
+    	ControladorRota.getInstancia().dataManipulator.selectDependenciasImovel(imovelSelecionado.getMatricula());
     }
     
     public void setImovelSelecionadoByListPositionInConsulta(int listPositionInConsulta, String condition){
@@ -86,29 +53,20 @@ public class ControladorImovel {
     	idImovelSelecionado = getIdImovelSelecionado(listPositionInConsulta, condition);
     	setImovelListPosition(getImovelListPositionById(idImovelSelecionado));
 
-//    	dmImovel.selectCliente(idImovelSelecionado);
-//    	dmImovel.selectImovel(idImovelSelecionado);
-//    	dmImovel.selectServico(idImovelSelecionado);
-//    	dmImovel.selectMedidor(idImovelSelecionado);
-//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
+    	ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + idImovelSelecionado);
+    	ControladorRota.getInstancia().dataManipulator.selectDependenciasImovel(imovelSelecionado.getMatricula());
     }
     
     public void setImovelSelecionado(long id){
     	initImovelTabs();
     	idImovelSelecionado = id;
-//    	dmImovel.selectCliente(idImovelSelecionado);
-    	ControladorRota.getInstancia().dataManipulator.selectImovel(idImovelSelecionado);
-//    	dmImovel.selectServico(idImovelSelecionado);
-//    	dmImovel.selectMedidor(idImovelSelecionado);
-//    	dmImovel.selectAnormalidadeImovel(idImovelSelecionado);
+
+    	ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado);
+    	ControladorRota.getInstancia().dataManipulator.selectDependenciasImovel(imovelSelecionado.getMatricula());
     }
     
     public void initImovelTabs(){
-//        clienteSelecionado = new Cliente();
-//        imovelSelecionado = new Imovel();
-//        medidorSelecionado = new Medidor();
-//        servicosSelecionado = new Servicos();
-//        anormalidadeImovelSelecionado = new AnormalidadeImovel();
+        imovelSelecionado = new Imovel();
     }
     
     public int getIdImovelSelecionado(int listPosition, String condition){

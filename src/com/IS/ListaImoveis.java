@@ -2,13 +2,10 @@ package com.IS;
 
 import java.util.ArrayList;
 
-import com.IS.R.layout;
-
 import views.MainTab;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
