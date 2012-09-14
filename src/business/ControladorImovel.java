@@ -1,7 +1,6 @@
 package business;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import model.Consumo;
 import model.Imovel;
@@ -149,7 +148,7 @@ public class ControladorImovel {
     
     // Guarda a posição do imovel selecionado na lista de imoveis ordenada por inscrição
     public void setImovelListPosition(int position){
-    	this.imovelListPosition = position;
+    	imovelListPosition = position;
 //    	dataManipulator.updateConfiguracao("posicao_cadastro_selecionado", position);
     }
     

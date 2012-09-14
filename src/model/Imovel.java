@@ -1707,6 +1707,15 @@ public class Imovel {
     public List<Medidor> getMedidores() {
     	return medidores;
     }
+    
+    public Medidor getMedidorPorTipoMedicao(int tipoMedicao) {
+    	for (Medidor m : medidores) {
+			if (m.getTipoMedicao() == tipoMedicao)
+				return m;
+		}
+    	
+    	return null;
+    }
 
     public List<DadosCategoria> getDadosCategoria() {
     	return dadosCategoria;
@@ -3304,6 +3313,25 @@ public class Imovel {
 
     public int getSequencialRotaMarcacao() {
 	return sequencialRotaMarcacao;
-    }    
+    }
+
+	public List<TarifacaoMinima> getTarifacoesMinimas() {
+		return tarifacoesMinimas;
+	}
+
+	public void setTarifacoesMinimas(List<TarifacaoMinima> tarifacoesMinimas) {
+		this.tarifacoesMinimas = tarifacoesMinimas;
+	}
+
+	public List<TarifacaoComplementar> getTarifacoesComplementares() {
+		return tarifacoesComplementares;
+	}
+
+	public void setTarifacoesComplementares(
+			List<TarifacaoComplementar> tarifacoesComplementares) {
+		this.tarifacoesComplementares = tarifacoesComplementares;
+	}    
+    
+    
     
 }

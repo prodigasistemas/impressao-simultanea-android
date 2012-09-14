@@ -3,28 +3,16 @@ package views;
 import java.util.ArrayList;
 
 import model.DadosCategoria;
-
-import util.Constantes;
-
-import com.IS.R;
-
-import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import business.ControladorImovel;
+
+import com.IS.R;
 
 public class ImovelTab extends Fragment {
 
@@ -56,32 +44,34 @@ public class ImovelTab extends Fragment {
 		view = inflater.inflate(R.layout.imoveltab, container, false);
 		
 		// Define a imagem de fundo de acordo com a orientacao do dispositivo
-	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
+	    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 	    	view.setBackgroundResource(R.drawable.fundocadastro);
 	    else
-	    	view.setBackgroundResource(R.drawable.landscapte_background);
+	    	view.setBackgroundResource(R.drawable.landscape_background);
 		
 		int situacaoLigAgua = Integer.parseInt(ControladorImovel.getInstancia().getImovelSelecionado().getSituacaoLigAgua());
 		int situacaoLigEsgoto = Integer.parseInt(ControladorImovel.getInstancia().getImovelSelecionado().getSituacaoLigEsgoto());
 		
 		
-		int i = 0;
 		String economias = "";
 		String categorias = "";
+		int qtdDadosCategoria = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().size();
 		
 		for (DadosCategoria dc : ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria()) {
-			if (i > 1) {
-				economias += "\n";
-				categorias += "\n";
-				i = 0;
-			}
 			
 			economias += ""+Integer.parseInt(""+dc.getQtdEconomiasSubcategoria());
 			categorias += dc.getDescricaoCategoria();
+			
+			
+			if (qtdDadosCategoria > 1) {
+				economias += "\n";
+				categorias += "\n";
+			} else 
+				break;
 
-			i++;
 		}
-
+		
+		
 		nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
 		matricula = (TextView) view.findViewById(R.id.matricula);
 		inscricao = (TextView) view.findViewById(R.id.inscricao);
@@ -109,7 +99,7 @@ public class ImovelTab extends Fragment {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscapte_background));
+			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscape_background));
 		else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
 			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.fundocadastro));
 	}

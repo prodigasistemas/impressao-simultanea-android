@@ -61,7 +61,7 @@ public class MedidorTab extends Fragment {
 	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
 	    	view.setBackgroundResource(R.drawable.fundocadastro);
 	    else
-	    	view.setBackgroundResource(R.drawable.landscapte_background);
+	    	view.setBackgroundResource(R.drawable.landscape_background);
 	    
 		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0).getMatricula());
 //		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro());
@@ -138,7 +138,7 @@ public class MedidorTab extends Fragment {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscapte_background));
+			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscape_background));
 		else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
 			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.fundocadastro));
 	}

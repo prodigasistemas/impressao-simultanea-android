@@ -4,19 +4,23 @@ import helper.EfetuarRateioConsumoHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import model.Anormalidade;
 import model.Configuracao;
 import model.Consumo;
 import model.Conta;
+import model.Credito;
 import model.DadosCategoria;
 import model.DadosGerais;
+import model.Debito;
+import model.HistoricoConsumo;
 import model.Imovel;
+import model.Imposto;
 import model.Medidor;
 import model.SituacaoTipo;
+import model.TarifacaoComplementar;
+import model.TarifacaoMinima;
 import util.Constantes;
 import util.ParserUtil;
 import android.content.ContentValues;
@@ -34,7 +38,6 @@ public class DataManipulator {
 	private DbHelper openHelper;
 	static SQLiteDatabase db;
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	private static int matricula;
 
 	public DataManipulator(Context context) {
 		DataManipulator.context = context;
@@ -62,13 +65,13 @@ public class DataManipulator {
 		return ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria();
 	}
 
-	public Medidor getMedidorSelecionado() {
-		return ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0);
-	}
+//	public Medidor getMedidorSelecionado() {
+//		return ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0);
+//	}
 
-	public Conta getContaSelecionado() {
-		return ControladorImovel.getInstancia().getImovelSelecionado().getContas().get(0);
-	}
+//	public Conta getContaSelecionado() {
+//		return ControladorImovel.getInstancia().getImovelSelecionado().getContas().get(0);
+//	}
 
 	public void deleteTable(String tableName) {
 		db.delete(tableName, null, null);
@@ -98,7 +101,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 
@@ -128,7 +131,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 
@@ -155,7 +158,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 	
@@ -229,26 +232,25 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 
-	public void SelectConta(long idImovel) {
-
-		Cursor cursor = db.query(Constantes.TABLE_CONTA, null, "id_imovel = "+ idImovel, null, null, null, "id asc");
-
-		if (cursor.moveToFirst()) {
-			getContaSelecionado().setAnoMes(cursor.getString(1));
-			getContaSelecionado().setValor(cursor.getString(2));
-			getContaSelecionado().setDataVencimento(cursor.getString(3));
-			getContaSelecionado().setValorAcrescimosImpontualidade(cursor.getString(4));
-		}
-
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
-		cursor.close();
-	}
+//	public void SelectConta(long idImovel) {
+//
+//		Cursor cursor = db.query(Constantes.TABLE_CONTA, null, "id_imovel = "+ idImovel, null, null, null, "id asc");
+//
+//		if (cursor.moveToFirst()) {
+//			getContaSelecionado().setAnoMes(cursor.getString(1));
+//			getContaSelecionado().setValor(cursor.getString(2));
+//			getContaSelecionado().setDataVencimento(cursor.getString(3));
+//			getContaSelecionado().setValorAcrescimosImpontualidade(cursor.getString(4));
+//		}
+//
+//		if (cursor != null && !cursor.isClosed()) {
+//			cursor.close();
+//		}
+//	}
 
 	public void selectMedidores(int matricula) {
 		
@@ -273,10 +275,10 @@ public class DataManipulator {
 																		 "matricula" }, "matricula = " + matricula, null, null, null, "id asc");
 		
 		Medidor medidor = new Medidor();
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().clear();
 
 		if (cursor.moveToFirst()) {
-			
-//			ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().clear();
 			
 			medidor.setTipoMedicao(cursor.getString(0));
 			medidor.setNumeroHidrometro(cursor.getString(1));
@@ -301,12 +303,11 @@ public class DataManipulator {
 			Log.i("Nenhum resgistro!", "Sem registro");
 		}
 
-		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().add(medidor	);
+		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().add(medidor);
 		
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
 	}
 
 	public void selectGeral() {
@@ -368,7 +369,6 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
 	}
 	
 	public boolean selectImovel(String condition){
@@ -457,7 +457,7 @@ public class DataManipulator {
 																		"imovel_enviado",
 																		"indc_imovel_impresso",
 																		"indc_geracao"}, condition, null, null, null,  "inscricao asc");
-
+		
 		if (cursor.moveToFirst()) {
 			result = true;
 			
@@ -549,6 +549,8 @@ public class DataManipulator {
 	           cursor.close();
 	     }
 		 
+		 selectDependenciasImovel(ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
+		 
 		 return result;
 	}
 	
@@ -567,80 +569,218 @@ public class DataManipulator {
 	
 	public void selectHistoricosConsumo(int matricula){
 		
+		Cursor cursor = db.query(Constantes.TABLE_HISTORICO_CONSUMO, new String[] {"tipo_ligacao","ano_mes_referencia",
+																				"consumo","anormalidade_leitura", "anormalidade_consumo"}, 
+																				"matricula = " + matricula, null, null, null, null);
+		
+		HistoricoConsumo hc;
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getHistoricosConsumo().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				hc = new HistoricoConsumo();
+				
+				hc.setTipoLigacao(cursor.getString(0));
+				hc.setAnoMesReferencia(cursor.getString(1));
+				hc.setConsumo(cursor.getString(2));
+				hc.setAnormalidadeLeitura(cursor.getString(3));
+				hc.setAnormalidadeConsumo(cursor.getString(4));
+				
+				ControladorImovel.getInstancia().getImovelSelecionado().getHistoricosConsumo().add(hc);
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 	}
 	
-	public void selectDebitos(int matricula){
+	public void selectDebitos(int matricula) {
+		
+		Cursor cursor = db.query(Constantes.TABLE_DEBITO, new String[] {"descricao","valor","codigo","indc_uso"}, 
+																		"matricula = " + matricula, null, null, null, null);
+		Debito debito;
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getDebitos().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				debito = new Debito();
+				
+				debito.setDescricao(cursor.getString(0));
+				debito.setValor(cursor.getString(1));
+				debito.setCodigo(cursor.getString(2));
+				debito.setIndcUso(cursor.getShort(3));
+				
+				ControladorImovel.getInstancia().getImovelSelecionado().getDebitos().add(debito);
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 		
 	}
 	
 	public void selectCreditos(int matricula){
+		Cursor cursor = db.query(Constantes.TABLE_CREDITO, new String[] {"descricao","valor","codigo","indc_uso"}, 
+				"matricula = " + matricula, null, null, null, null);
 		
+		Credito credito;
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getCreditos().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				credito = new Credito();
+				
+				credito.setDescricao(cursor.getString(0));
+				credito.setValor(cursor.getString(1));
+				credito.setCodigo(cursor.getString(2));
+				credito.setIndcUso(cursor.getShort(3));
+				
+				ControladorImovel.getInstancia().getImovelSelecionado().getCreditos().add(credito);
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 	}
 	
 	public void selectImpostos(int matricula){
+
+		Cursor cursor = db.query(Constantes.TABLE_IMPOSTO, new String[] {"tipo_imposto" ,"descricao_imposto", "percentual_aliquota"},
+																		 "matricula = " + matricula, null, null, null, null);
 		
+		Imposto imposto;
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getImpostos().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				imposto = new Imposto();
+				
+				imposto.setTipoImposto(cursor.getString(0));
+				imposto.setDescricaoImposto(cursor.getString(1));
+				imposto.setPercentualAlicota(cursor.getString(2));
+				
+				ControladorImovel.getInstancia().getImovelSelecionado().getImpostos().add(imposto);
+				
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 	}
 	
 	public void selectContas(int matricula){
 		
+		Cursor cursor = db.query(Constantes.TABLE_CONTA, new String[] {"ano_mes_referencia_conta", "valor_conta", "data_vencimento_conta", 
+																		"valor_acresc_impontualidade"},
+																		"matricula = " + matricula, null, null, null, null);
+
+		Conta conta;
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getContas().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				conta = new Conta();
+				
+				conta.setAnoMes(cursor.getString(0));
+				conta.setValor(cursor.getString(1));
+				conta.setDataVencimento(cursor.getString(2));
+				conta.setValorAcrescimosImpontualidade(cursor.getString(3));
+				
+				ControladorImovel.getInstancia().getImovelSelecionado().getContas().add(conta);
+				
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 	}
 	
 	public void selectTarifacoesMinimas(int matricula){
+
+		Cursor cursor = db.query(Constantes.TABLE_TARIFACAO_MINIMA, new String[] {"codigo", "data_vigencia", "codigo_categoria", "codigo_subcategoria",
+																				  "consumo_minimo_subcategoria", "tarifa_minima_categoria"},
+																		"matricula = " + matricula, null, null, null, null);
+
+		TarifacaoMinima tm;
 		
+		ControladorImovel.getInstancia().getImovelSelecionado().getTarifacoesMinimas().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				tm = new TarifacaoMinima();
+				
+				tm.setCodigo(cursor.getString(0));
+				tm.setDataVigencia(cursor.getString(1));
+				tm.setCodigoCategoria(cursor.getString(2));
+				tm.setCodigoSubcategoria(cursor.getString(3));
+				tm.setConsumoMinimoSubcategoria(cursor.getString(4));
+				tm.setTarifaMinimaCategoria(cursor.getString(5));
+				
+				ControladorImovel.getInstancia().getImovelSelecionado().getTarifacoesMinimas().add(tm);
+			
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 	}
 	public void selectTarifacoesComplementares(int matricula){
+
+		Cursor cursor = db.query(Constantes.TABLE_TARIFACAO_COMPLEMENTAR, new String[] {"codigo", "data_inicio_vigencia", "codigo_categoria", 
+																						"codigo_subcategoria", "limite_inicial_faixa",
+																						"limite_final_faixa", "valor_m3_faixa"},
+																						"matricula = " + matricula, null, null, null, null);
+
+		TarifacaoComplementar tc;
 		
+		ControladorImovel.getInstancia().getImovelSelecionado().getTarifacoesComplementares().clear();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				try {
+					
+					tc = new TarifacaoComplementar();
+					
+					tc.setCodigo(cursor.getInt(0));
+					tc.setDataInicioVigencia(dateFormat.parse(cursor.getString(1)));
+					tc.setCodigoCategoria(cursor.getInt(2));
+					tc.setCodigoSubcategoria(cursor.getInt(3));
+					tc.setLimiteInicialFaixa(cursor.getInt(4));
+					tc.setLimiteFinalFaixa(cursor.getInt(5));
+					tc.setValorM3Faixa(cursor.getInt(6));
+					
+					ControladorImovel.getInstancia().getImovelSelecionado().getTarifacoesComplementares().add(tc);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+			} while (cursor.moveToNext());
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}	
 	}
 	
-//	public List<Imovel> selectImovelCondition(String condition){
-//		
-//		List<Imovel> imoveis = new ArrayList<Imovel>();
-//		
-//		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
-//																		"matricula",
-//																		"nome_usuario",
-//																		"endereco",
-//																		"situacao_lig_agua",
-//																		"situacao_lig_esgoto",
-//																		"sequencial_rota",
-//																		"inscricao"}, condition, null, null, null,  "inscricao asc");
-//		
-//		Log.i("LINHAS", ""+cursor.getCount());
-//		
-//		if (cursor.moveToFirst()) {
-//        	do {
-//        		Imovel imovel = new Imovel();
-//        		
-//        		imovel.setId(cursor.getLong(0));
-//        		imovel.setMatricula(cursor.getInt(1));
-//        		imovel.setNomeUsuario(cursor.getString(2));
-//        		imovel.setEndereco(cursor.getString(3));
-//        		imovel.setSituacaoLigAgua(cursor.getString(4));
-//        		imovel.setSituacaoLigEsgoto(cursor.getString(5));
-//        		imovel.setSequencialRota(cursor.getString(6));
-//        		imovel.setInscricao(cursor.getString(7));
-//
-//            	imoveis.add(imovel);
-//        	} while (cursor.moveToNext());
-//		}
-//		
-//		 if (cursor != null && !cursor.isClosed()) {
-//	           cursor.close();
-//	     }
-//		 
-//		 if (imoveis.size() > 0) {
-//				selectDadosCategoria(imoveis.get(0));
-//		 }
-//	     
-//	     return imoveis;
-//	}
-//	
+	
 	public void selectDadosCategoria(int matricula) {
 		Cursor cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
 																				"descricao_categoria"}, 
 																				"matricula = " + matricula, null, null, null, null);
 
-//			ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
+		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
 			
 			if (cursor.moveToFirst()) {
 				do {
@@ -671,10 +811,9 @@ public class DataManipulator {
 			elementValue = cursor.getString(0);
 		}
 
-//		if (cursor != null && !cursor.isClosed()) {
-//			cursor.close();
-//		}
-		cursor.close();
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 
 		return elementValue;
 	}
@@ -703,7 +842,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 
@@ -732,7 +871,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return anormalidade;
 	}
 	
@@ -757,7 +896,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 	
@@ -783,7 +922,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return consumo;
 	}
 
@@ -812,7 +951,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return helper;
 	}
 
@@ -834,7 +973,6 @@ public class DataManipulator {
 			cursor.close();
 		}
 		
-		cursor.close();
 		return quantidadeImoveisCondominio;
 	}
 
@@ -856,13 +994,10 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-//		if (cursor != null && !cursor.isClosed()) {
-//			cursor.close();
-//		}
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
 		
-		cursor.close();
-
-		ContentValues initialValues = new ContentValues();
 	}
 
 	
@@ -880,7 +1015,7 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
+
 		return list;
 	}
 
@@ -897,7 +1032,6 @@ public class DataManipulator {
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
-		cursor.close();
 		return codigo;
 	}
 
@@ -914,7 +1048,6 @@ public class DataManipulator {
 			if (cursor != null && !cursor.isClosed()) {
 				cursor.close();
 			}
-			cursor.close();
 			return descricao;
 
 		} else {
@@ -964,7 +1097,6 @@ public class DataManipulator {
 		SituacaoTipo situacaoTipo = SituacaoTipo.getInstancia();
 		
 		int matricula = Integer.parseInt(parser.obterDadoParser(9));
-		DataManipulator.matricula = matricula;
 		
 		initialValues.put("matricula", matricula);
 		initialValues.put("nome_gerencia_regional", parser.obterDadoParser(25));

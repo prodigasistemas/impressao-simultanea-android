@@ -33,7 +33,7 @@ public class TarifacaoMinima {
 		this.matricula = matricula;
 	}
 
-	public void setcodigo(String codigo) {
+	public void setCodigo(String codigo) {
 		this.codigo = Util.verificarNuloInt(codigo);
 	}
 

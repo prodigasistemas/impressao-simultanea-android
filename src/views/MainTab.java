@@ -1,17 +1,13 @@
 package views;
 
-import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import util.Constantes;
-import util.Util;
-
-import model.Consumo;
 import model.Imovel;
+import model.Medidor;
 import util.Constantes;
 import util.ImpressaoContaCosanpa;
+import util.Util;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -46,7 +42,6 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
 import business.BusinessConta;
-import business.ControladorConta;
 import business.ControladorImovel;
 import business.ControladorRota;
 
@@ -82,7 +77,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
 	    	tabHost.setBackgroundResource(R.drawable.fundocadastro);
 	    else
-	    	tabHost.setBackgroundResource(R.drawable.landscapte_background);
+	    	tabHost.setBackgroundResource(R.drawable.landscape_background);
 	    
 	    FragmentManager fm = getSupportFragmentManager();
 	    Fragment fragment = fm.findFragmentById(android.R.id.tabcontent);
@@ -95,12 +90,10 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    
 	    addTab("imovel", "Imóvel", R.drawable.tab_imovel, R.layout.imoveltab, ImovelTab.class);
 
-	    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0).getNumeroHidrometro() != "") {
-	    	addTab("medidor", "Medidor", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
-
-	    } else {
-	    	addTab("conta", "Conta", R.drawable.text, R.layout.contatab, ContaTab.class);
-	    }
+	    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidorPorTipoMedicao(Constantes.LIGACAO_AGUA) != null)
+	    	addTab("medidor", "Medidor Água", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
+	    else if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidorPorTipoMedicao(Constantes.LIGACAO_POCO) != null)
+	    	addTab("medidor", "Medidor Poço", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
 
 	}
 	
@@ -397,7 +390,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			return;
 		}
 		
-//		ControladorImovel.getInstancia().setImovelListPosition(0);
+		ControladorImovel.getInstancia()
+				.setImovelListPosition(new Integer(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getId()))-1);
 		
 	}
 	
@@ -478,7 +472,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscapte_background));
+			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscape_background));
 		else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
 			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.fundocadastro));
 	}
