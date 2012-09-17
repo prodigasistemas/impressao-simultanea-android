@@ -513,7 +513,7 @@ public class ControladorConta {
 	        //c.setTime( getImovelSelecionado().getdata );
 
 	        int anoMes = Util.subtrairMesDoAnoMes( Integer.parseInt( DadosGerais.getInstancia().getAnoMesFaturamento() ) , 1);
-	        HistoricoConsumo reg3 = getImovelSelecionado().getRegistro3(anoMes);
+	        HistoricoConsumo reg3 = getImovelSelecionado().getHistoricoFaturamento(anoMes);
 
 
 		int anormConsumoAnterior = Constantes.NULO_INT;
@@ -1025,7 +1025,7 @@ public class ControladorConta {
 
     private void dadosFaturamentoEspecialNaoMedido(Consumo consumo, int ligacaoTipo) {
 
-	Medidor reg8 = getImovelSelecionado().getRegistro8(ligacaoTipo);
+	Medidor reg8 = getImovelSelecionado().getMedidor(ligacaoTipo);
 
 	int cMedio;
 
@@ -1108,7 +1108,7 @@ public class ControladorConta {
 
     private void dadosFaturamentoEspecialMedido(Consumo consumo, int ligacaoTipo) {
 
-	Medidor imReg8 = getImovelSelecionado().getRegistro8(ligacaoTipo);
+	Medidor imReg8 = getImovelSelecionado().getMedidor(ligacaoTipo);
 
 	int cMedio;
 
@@ -1620,10 +1620,10 @@ public class ControladorConta {
 		
     		//Se data de instalaçao do hidrometro IGUAL data de leitura anterior informada   E   
     		//Data de ligação de fornecimento ANTERIOR à data de instalaçao do Hidrometro
-        	if (Util.compararData(getImovelSelecionado().getRegistro8(tipoMedicao).getDataInstalacaoHidrometro(), 
-    				getImovelSelecionado().getRegistro8(tipoMedicao).getDataLeituraAnteriorInformada()) == 0 &&
-    				Util.compararData(getImovelSelecionado().getRegistro8(tipoMedicao).getDataLigacaoFornecimento(), 
-    						getImovelSelecionado().getRegistro8(tipoMedicao).getDataInstalacaoHidrometro()) < 0 ){
+        	if (Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro(), 
+    				getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) == 0 &&
+    				Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataLigacaoFornecimento(), 
+    						getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro()) < 0 ){
        		 
        		 	result = true;
         	}
@@ -1641,10 +1641,10 @@ public class ControladorConta {
     		//Se data de instalaçao do hidrometro APOS OU IGUAL data de leitura anterior informada   E   
     		//Data de instalaçao do hidrometro ANTERIOR OU IGUAL que data de leitura atual informada E
     		//Houve leitura ou anormalidade no mes anterior (para diferenciar de nova instalação de hidrometro)
-	    	 if ( ( Util.compararData(getImovelSelecionado().getRegistro8(tipoMedicao).getDataInstalacao(), 
-	    			 	getImovelSelecionado().getRegistro8(tipoMedicao).getDataLeituraAnteriorInformada()) >= 0 ) && 
-	    			(Util.compararData(getImovelSelecionado().getRegistro8(tipoMedicao).getDataInstalacao(), 
-	    				getImovelSelecionado().getRegistro8(tipoMedicao).getDataLeitura()) <= 0 ) &&
+	    	 if ( ( Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
+	    			 	getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) >= 0 ) && 
+	    			(Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
+	    				getImovelSelecionado().getMedidor(tipoMedicao).getDataLeitura()) <= 0 ) &&
 	    			(houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao)) ) {
 	    		 
 	    		 result = true;
@@ -1664,10 +1664,10 @@ public class ControladorConta {
     		
     		//Se data de instalaçao do hidrometro IGUAL data de leitura anterior informada   E   
     		//Data de ligação de fornecimento IGUAL à data de instalaçao do Hidrometro.
-    	    if (Util.compararData(getImovelSelecionado().getRegistro8(tipoMedicao).getDataInstalacao(), 
-    	    		getImovelSelecionado().getRegistro8(tipoMedicao).getDataLeituraAnteriorInformada()) == 0 &&
-    			Util.compararData(getImovelSelecionado().getRegistro8(tipoMedicao).getDataLigacaoFornecimento(), 
-    					getImovelSelecionado().getRegistro8(tipoMedicao).getDataInstalacaoHidrometro()) == 0 ){
+    	    if (Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
+    	    		getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) == 0 &&
+    			Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataLigacaoFornecimento(), 
+    					getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro()) == 0 ){
     	    	
     	    	result =  true;
     	    }
@@ -1701,7 +1701,7 @@ public class ControladorConta {
     public boolean houveLeituraOuAnormalidadeLeituraMesAnterior(int tipoMedicao){
     	boolean resultado = false;
 
-    	if(getImovelSelecionado().getRegistro8(tipoMedicao).getLeituraAnteriorInformada() != Constantes.NULO_INT ){
+    	if(getImovelSelecionado().getMedidor(tipoMedicao).getLeituraAnteriorInformada() != Constantes.NULO_INT ){
     		resultado = true;
     	}
     	
@@ -1731,10 +1731,10 @@ public class ControladorConta {
     		&& DadosGerais.getInstancia().getIndicadorAjusteConsumo() == Constantes.SIM) {
     	    // [SF0017] - Ajuste Mensal do Consumo
     	    if (tipoMedicao == LIGACAO_AGUA) {
-    		ajusteMensalConsumo(getImovelSelecionado().getRegistro8(tipoMedicao), tipoMedicao, consumoAgua);
+    		ajusteMensalConsumo(getImovelSelecionado().getMedidor(tipoMedicao), tipoMedicao, consumoAgua);
     	    }
     	    if (tipoMedicao == LIGACAO_POCO) {
-    		ajusteMensalConsumo(getImovelSelecionado().getRegistro8(tipoMedicao), tipoMedicao, consumoEsgoto);
+    		ajusteMensalConsumo(getImovelSelecionado().getMedidor(tipoMedicao), tipoMedicao, consumoEsgoto);
     	    }
     	}
     	
@@ -1746,11 +1746,11 @@ public class ControladorConta {
     	// Verifica qual o tipo de medição e obtém o número de dígitos
     	// do hidrômetro
     	if (tipoMedicao == LIGACAO_AGUA) {
-    	    numeroDigitosHidrometro = getImovelSelecionado().getRegistro8(
+    	    numeroDigitosHidrometro = getImovelSelecionado().getMedidor(
     		    Constantes.LIGACAO_AGUA).getNumDigitosLeitura();
 
     	} else if (tipoMedicao == LIGACAO_POCO) {
-    	    numeroDigitosHidrometro = getImovelSelecionado().getRegistro8(
+    	    numeroDigitosHidrometro = getImovelSelecionado().getMedidor(
     		    Constantes.LIGACAO_POCO).getNumDigitosLeitura();
     	}
     	return numeroDigitosHidrometro;

@@ -123,32 +123,32 @@ public class Consumo {
           
           if(tipoMedicao == ControladorConta.LIGACAO_AGUA){
               
-              if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(ControladorConta.LIGACAO_AGUA) != null) {
+              if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_AGUA) != null) {
         	 
-        	 if(ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(ControladorConta.LIGACAO_AGUA).
+        	 if(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_AGUA).
         		 getLeituraAtualFaturamento()!= Constantes.NULO_INT){
         	     
-        	     	leituraFaturadaAtual = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(ControladorConta.LIGACAO_AGUA).
+        	     	leituraFaturadaAtual = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_AGUA).
         	     		getLeituraAtualFaturamento() - restoDiv;
         	  
         	     	ControladorImovel.getInstancia().getImovelSelecionado().
-        	  		getRegistro8(ControladorConta.LIGACAO_AGUA).setLeituraAtualFaturamento(leituraFaturadaAtual);
+        	  		getMedidor(ControladorConta.LIGACAO_AGUA).setLeituraAtualFaturamento(leituraFaturadaAtual);
         	   }
         	 
               }
               
           }else{
               
-              if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(ControladorConta.LIGACAO_POCO) != null) {
+              if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_POCO) != null) {
          	 
-         	 if(ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(ControladorConta.LIGACAO_POCO).
+         	 if(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_POCO).
          		 getLeituraAtualFaturamento()!= Constantes.NULO_INT){
          	     
-         	     	leituraFaturadaAtual = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(ControladorConta.LIGACAO_POCO).
+         	     	leituraFaturadaAtual = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_POCO).
          	     		getLeituraAtualFaturamento() - restoDiv;
          	  
          	     	ControladorImovel.getInstancia().getImovelSelecionado().
-         	  		getRegistro8(ControladorConta.LIGACAO_POCO).setLeituraAtualFaturamento(leituraFaturadaAtual);
+         	  		getMedidor(ControladorConta.LIGACAO_POCO).setLeituraAtualFaturamento(leituraFaturadaAtual);
          	   }
          	 
                }
