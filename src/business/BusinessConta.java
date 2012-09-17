@@ -79,8 +79,14 @@ package business;
 import java.io.IOException;
 import java.util.Vector;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.view.View;
+
 import util.Constantes;
 import util.Util;
+import views.MainTab;
 import views.MedidorTab;
 
 import model.Anormalidade;
@@ -96,6 +102,9 @@ public class BusinessConta {
     private boolean leituraInvalida = false;
     private static final int ANORMALIDADE_CALCULO_MEDIA = 90;
     private static BusinessConta instancia;
+    private static Context activityContext;
+	AlertDialog dialog;
+
 
     /**
      * Metodo responsavel por chamar o calculo do consumo
@@ -301,31 +310,25 @@ public class BusinessConta {
 		leituraInvalida = false;
 		Consumo validacao = null;
 		
-		ValidacaoLeitura vl = ValidacaoLeitura.getInstancia();
-	
 		// Se nao for rota toda calculada pela média ou não descarta leitura e anormalidade informada pelo usário
 		if (ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.NAO && !descartaLeitura){
 			
 			if ( !getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)){
 			
-			
-				if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null && 
-					getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) == null) {
+				if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null && 
+					getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null) {
 				    
 					String leituraTexto = MedidorTab.getLeituraCampo();
-//				    Vector anormalidades = FileManager.getAnormalidades(true);
-			//	    Daniel
-//				    if (!anormalidades.isEmpty()){
-				    	Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(Integer.parseInt(MedidorTab.getCodigoAnormalidade()));
-				    	leituraInvalida = vl.validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_AGUA );
-//				    }
-//				} else if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null && 
-//							getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
-//				    
-//					String leituraTexto = AbaHidrometroPoco.getInstancia().getLeituraCampo().getText();
-//				    Vector anormalidades = FileManager.getAnormalidades(true);
-//				    Anormalidade anormalidade = (Anormalidade) anormalidades.elementAt(AbaHidrometroPoco.getInstancia().getAnormalidadeIndex());
-//				    leituraInvalida = vl.validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_POCO );
+				    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorTab.getCodigoAnormalidade(), true);
+				    leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_AGUA );
+
+				} else if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null && 
+						   getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
+				    
+					String leituraTexto = MedidorTab.getLeituraCampo();
+			    	Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorTab.getCodigoAnormalidade(), true);
+			    	leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_AGUA );
+
 //				} else if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null && 
 //							getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
 //				    
@@ -348,14 +351,14 @@ public class BusinessConta {
 	
 			if (descartaLeitura){
 				
-				validacao = BusinessConta.getInstancia().CalculoConsumoDescartaLeitura();			
+				validacao = BusinessConta.instancia.CalculoConsumoDescartaLeitura();			
 			
 			}else if(ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.SIM){
 				
-				validacao = BusinessConta.getInstancia().chamarCalculoConsumoMedio(salvarImovel);			
+				validacao = BusinessConta.instancia.chamarCalculoConsumoMedio(salvarImovel);			
 			
 			}else{
-				validacao = BusinessConta.getInstancia().chamarCalculoConsumo(salvarImovel);			
+				validacao = BusinessConta.instancia.chamarCalculoConsumo(salvarImovel);			
 			}
 		    
 			double valorTotalConta = getImovelSelecionado().getValorConta();
@@ -372,9 +375,21 @@ public class BusinessConta {
 			    }
 			    mensagemConsumo = null;	    
 			}
+		
+		}else{
+			
+			AlertDialog.Builder a = new AlertDialog.Builder(instancia.activityContext);
+			a.setTitle("Aviso");
+			a.setMessage(ValidacaoLeitura.getInstancia().getReturnMessage());
+			
+			a.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface arg0, int arg1) {}
+			});
+
+			a.show();
 		}
-	// Daniel - setting variables to null	
-		vl = null;
+		
+		// Daniel - setting variables to null	
 		validacao = null;
 		
 		return leituraInvalida;
@@ -385,11 +400,14 @@ public class BusinessConta {
      * 
      * @return instancia
      */
-    public static BusinessConta getInstancia() {
-	if (instancia == null) {
-	    instancia = new BusinessConta();
-	}
-	return instancia;
+    public static BusinessConta getInstancia(Context context) {
+
+    	if (BusinessConta.instancia == null) {
+    		BusinessConta.instancia = new BusinessConta();
+		}
+
+    	BusinessConta.instancia.activityContext = context;
+		return BusinessConta.instancia;
     }
 
     public static void mensagemConsumo(String mensagem, double valor) {
@@ -434,5 +452,4 @@ public class BusinessConta {
     private Imovel getImovelSelecionado(){
     	return ControladorImovel.getInstancia().getImovelSelecionado();
     }
-
 }

@@ -147,7 +147,7 @@ public class ValidacaoLeitura {
 		    anormalidadeValor = anormalidade.getCodigo();
 		}
 		
-		if ( getImovelSelecionado().getRegistro8(tipoValidacao) != null ){
+		if ( getImovelSelecionado().getMedidor(tipoValidacao) != null ){
 		    // Validamos a leitura do hidrometro
 			
 		    if (leituraDigitada == null || leituraDigitada.equalsIgnoreCase("")) {
@@ -185,12 +185,12 @@ public class ValidacaoLeitura {
 				int numeroDigitosHidrometro = 0;
 				
 				// Daniel - Obtém o número de dígitos do hidrometro.
-		 		if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null){
+		 		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
 		 			
-		 			numeroDigitosHidrometro = getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getNumDigitosLeitura();
+		 			numeroDigitosHidrometro = getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getNumDigitosLeitura();
 	
-				}else if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null){
-					numeroDigitosHidrometro = getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getNumDigitosLeitura();		
+				}else if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
+					numeroDigitosHidrometro = getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getNumDigitosLeitura();		
 				}
 				
 		 		int leituraMaximaPermitida = ((int) Util.pow(10,numeroDigitosHidrometro)) - 1;
@@ -207,17 +207,17 @@ public class ValidacaoLeitura {
 		    	//	Daniel - verifica se valor esta fora de faixa    	
 				if ( 
 					( intLeitura != Constantes.NULO_INT && 
-							( (getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaInicial() < getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaFinal()) &&
-									(intLeitura < getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaInicial() || 
-									 intLeitura > getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaFinal()) ) 
+							( (getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaInicial() < getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaFinal()) &&
+									(intLeitura < getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaInicial() || 
+									 intLeitura > getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaFinal()) ) 
 									 																								)
 		
 						||
 						
 				   ( intLeitura != Constantes.NULO_INT && 
-						   ( (getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaInicial() > getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaFinal()) &&
-									(intLeitura < getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaInicial() && 
-									 intLeitura > getImovelSelecionado().getRegistro8(tipoValidacao).getLeituraEsperadaFinal()) ) 
+						   ( (getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaInicial() > getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaFinal()) &&
+									(intLeitura < getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaInicial() && 
+									 intLeitura > getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaFinal()) ) 
 									 																								)	
 																																		) {
 				    
@@ -239,7 +239,7 @@ public class ValidacaoLeitura {
 						if ( tipoValidacao == Constantes.LIGACAO_AGUA ){
 						    leituraDigitadaAnterior = MedidorTab.getLeituraDigitada();
 						} else {
-						    leituraDigitadaAnterior = getImovelSelecionado().getRegistro8(tipoValidacao).getLeitura();
+						    leituraDigitadaAnterior = getImovelSelecionado().getMedidor(tipoValidacao).getLeitura();
 						}
 						
 						if ( intLeitura == leituraDigitadaAnterior  && contagemValidacoes != 0) {			    
@@ -249,7 +249,7 @@ public class ValidacaoLeitura {
 						    	this.contagemValidacoesPoco = 0;
 						    }			    
 						    
-						    getImovelSelecionado().getRegistro8(tipoValidacao).setLeitura( intLeitura );
+						    getImovelSelecionado().getMedidor(tipoValidacao).setLeitura( intLeitura );
 						    ControladorRota.getInstancia().getDataManipulator().salvarImovel(( getImovelSelecionado()));			    
 						} else {
 						    if ( tipoValidacao == Constantes.LIGACAO_AGUA ){		    
@@ -260,7 +260,7 @@ public class ValidacaoLeitura {
 						    } else {
 	
 						    	getImovelSelecionado().setContagemValidacaoPoco(getImovelSelecionado().getContagemValidacaoPoco() + 1);
-						    	getImovelSelecionado().getRegistro8(tipoValidacao).setLeitura( intLeitura );
+						    	getImovelSelecionado().getMedidor(tipoValidacao).setLeitura( intLeitura );
 						    	MedidorTab.setLeituraCampo("");
 						    }			    
 						    

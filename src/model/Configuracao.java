@@ -141,10 +141,10 @@ public class Configuracao {
     public void incrementarContadorVisitados() {
 
 		if (ControladorImovel.getInstancia().getImovelSelecionado()
-			.getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+			.getMedidor(Constantes.LIGACAO_AGUA) != null) {
 	
 		    int anormalidade = ControladorImovel.getInstancia()
-			    .getImovelSelecionado().getRegistro8(
+			    .getImovelSelecionado().getMedidor(
 				    Constantes.LIGACAO_AGUA).getAnormalidade();
 	
 		    if (anormalidade == 0) {
@@ -154,9 +154,9 @@ public class Configuracao {
 		    	this.setContadorVisitadosAnormalidade(Configuracao.getInstancia().getContadorVisitadosAnormalidade() + 1);
 		    }
 		
-		} else if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
+		} else if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
 	
-		    int anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getAnormalidade();
+		    int anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade();
 	
 		    if (anormalidade == 0) {
 		    	this.setContadorVisitadosSemAnormalidade(Configuracao.getInstancia().getContadorVisitadosSemAnormalidade() + 1);

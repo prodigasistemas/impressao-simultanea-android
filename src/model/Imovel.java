@@ -233,8 +233,6 @@ public class Imovel {
 		return this.imovelEnviado;
 	}
 
-
-
 	public double getValorRateioAgua() {
 		return valorRateioAgua;
 	}
@@ -451,10 +449,10 @@ public class Imovel {
 		if (!dadosRelatorio.idsNaoLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsNaoLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
-			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 				Constantes.LIGACAO_AGUA).getLeituraRelatorio();
-			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 				Constantes.LIGACAO_AGUA)
 				.getAnormalidadeRelatorio();
 
@@ -481,9 +479,9 @@ public class Imovel {
 			}
 		    }
 
-		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA)
 			    .setLeituraRelatorio(Constantes.NULO_INT);
-		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA)
 			    .setAnormalidadeRelatorio(Constantes.NULO_INT);
 
 		}
@@ -499,21 +497,21 @@ public class Imovel {
 
 		dadosRelatorio.idsNaoLidosRelatorio.removeElement(id);
 
-		if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
-		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA)
+		if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA)
 			    .getAnormalidade();
-		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 			    Constantes.LIGACAO_AGUA).getAnormalidadeRelatorio();
-		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 			    Constantes.LIGACAO_AGUA).getLeituraRelatorio();
 		}
 
 		if (!dadosRelatorio.idsLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
 
-			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 				Constantes.LIGACAO_AGUA).getAnormalidade();
 
 			/**
@@ -536,7 +534,7 @@ public class Imovel {
 			 * Caso o imóvel seja não medido, o mesmo será inserido
 			 * como lido com leitura nas informações do relatório
 			 */
-			if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) == null) {
+			if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null) {
 			    Util.inserirValoresStringRelatorio("("
 				    + stringQuadra + ")", false, true);
 			}
@@ -548,7 +546,7 @@ public class Imovel {
 		    // lido novamente colocando uma anormalidade
 		    // o mesmo deve ser retirado do relatorio como lido com
 		    // leitura e inserido como lido com anormalidade
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
 
 			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
 
@@ -612,11 +610,11 @@ public class Imovel {
 		if (!dadosRelatorio.idsNaoLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsNaoLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
-			    && ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
-			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
+			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
+			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 				Constantes.LIGACAO_POCO).getLeituraRelatorio();
-			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 				Constantes.LIGACAO_POCO)
 				.getAnormalidadeRelatorio();
 
@@ -643,9 +641,9 @@ public class Imovel {
 			}
 		    }
 
-		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO)
 			    .setLeituraRelatorio(Constantes.NULO_INT);
-		    ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
+		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO)
 			    .setAnormalidadeRelatorio(Constantes.NULO_INT);
 
 		}
@@ -661,22 +659,22 @@ public class Imovel {
 
 		dadosRelatorio.idsNaoLidosRelatorio.removeElement(id);
 
-		if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
-		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO)
+		if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
+		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO)
 			    .getAnormalidade();
-		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 			    Constantes.LIGACAO_POCO).getAnormalidadeRelatorio();
-		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 			    Constantes.LIGACAO_POCO).getLeituraRelatorio();
 		}
 
 		if (!dadosRelatorio.idsLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
-			    && ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
+			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
 
-			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(
+			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
 				Constantes.LIGACAO_POCO).getAnormalidade();
 
 			/**
@@ -695,7 +693,7 @@ public class Imovel {
 			}
 
 		    } else {
-			if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null
+			if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null
 				&& ControladorImovel.getInstancia().getImovelSelecionado().getConsumoAgua() == null) {
 
 			    /**
@@ -714,8 +712,8 @@ public class Imovel {
 		    // lido novamente colocando uma anormalidade
 		    // o mesmo deve ser retirado do relatorio como lido com
 		    // leitura e inserido como lido com anormalidade
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null
-			    && ControladorImovel.getInstancia().getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) == null) {
+		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
+			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
 			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
 
 			    Util.inserirValoresStringRelatorioConsumoNulo("("
@@ -750,30 +748,27 @@ public class Imovel {
     }
 
     public void setMatricula(String matricula) {
-	this.matricula = Util.verificarNuloInt(matricula);
+    	this.matricula = Util.verificarNuloInt(matricula);
     }
 
     public void setNomeGerenciaRegional(String nomeGerenciaRegional) {
-	this.nomeGerenciaRegional = Util
-		.verificarNuloString(nomeGerenciaRegional);
+    	this.nomeGerenciaRegional = Util.verificarNuloString(nomeGerenciaRegional);
     }
 
     public void setNomeEscritorio(String nomeEscritorio) {
-	this.nomeEscritorio = Util.verificarNuloString(nomeEscritorio);
+    	this.nomeEscritorio = Util.verificarNuloString(nomeEscritorio);
     }
 
     public void setNomeUsuario(String nomeUsuario) {
-	this.nomeUsuario = Util.verificarNuloString(nomeUsuario);
+    	this.nomeUsuario = Util.verificarNuloString(nomeUsuario);
     }
 
     public void setDataVencimento(String dataVencimento) {
-	this.dataVencimento = Util.getData(Util
-		.verificarNuloString(dataVencimento));
+    	this.dataVencimento = Util.getData(Util.verificarNuloString(dataVencimento));
     }
 
     public void setDataValidadeConta(String dataValidadeConta) {
-	this.dataValidadeConta = Util.getData(Util
-		.verificarNuloString(dataValidadeConta));
+    	this.dataValidadeConta = Util.getData(Util.verificarNuloString(dataValidadeConta));
     }
 
     public void setInscricao(String inscricao) {
@@ -790,408 +785,356 @@ public class Imovel {
     }
 
     public void setEndereco(String endereco) {
-	this.endereco = Util.verificarNuloString(endereco);
+    	this.endereco = Util.verificarNuloString(endereco);
     }
 
     public void setAnoMesConta(String anoMesConta) {
-	this.anoMesConta = Util.verificarNuloString(anoMesConta);
+    	this.anoMesConta = Util.verificarNuloString(anoMesConta);
     }
 
     public void setDigitoVerificadorConta(String digitoVerificadorConta) {
-	this.digitoVerificadorConta = Util
-		.verificarNuloInt(digitoVerificadorConta);
+    	this.digitoVerificadorConta = Util.verificarNuloInt(digitoVerificadorConta);
     }
 
     public void setCodigoResponsavel(String codigoResponsavel) {
-	this.codigoResponsavel = Util.verificarNuloString(codigoResponsavel);
+    	this.codigoResponsavel = Util.verificarNuloString(codigoResponsavel);
     }
 
     public void setNomeResponsavel(String nomeResponsavel) {
-	this.nomeResponsavel = Util.verificarNuloString(nomeResponsavel);
+    	this.nomeResponsavel = Util.verificarNuloString(nomeResponsavel);
     }
 
     public void setEnderecoEntrega(String enderecoEntrega) {
-	this.enderecoEntrega = Util.verificarNuloString(enderecoEntrega);
+    	this.enderecoEntrega = Util.verificarNuloString(enderecoEntrega);
     }
 
     public void setSituacaoLigAgua(String situacaoLigAgua) {
-	this.situacaoLigAgua = Util.verificarNuloString(situacaoLigAgua);
+    	this.situacaoLigAgua = Util.verificarNuloString(situacaoLigAgua);
     }
 
     public void setSituacaoLigEsgoto(String situacaoLigEsgoto) {
-	this.situacaoLigEsgoto = Util.verificarNuloString(situacaoLigEsgoto);
+    	this.situacaoLigEsgoto = Util.verificarNuloString(situacaoLigEsgoto);
     }
 
     public void setDescricaoBanco(String descricaoBanco) {
-	this.descricaoBanco = Util.verificarNuloString(descricaoBanco);
+    	this.descricaoBanco = Util.verificarNuloString(descricaoBanco);
     }
 
     public void setCodigoAgencia(String codigoAgencia) {
-	this.codigoAgencia = Util.verificarNuloString(codigoAgencia);
+    	this.codigoAgencia = Util.verificarNuloString(codigoAgencia);
     }
 
     public void setMatriculaCondominio(String matriculaCondominio) {
-	this.matriculaCondominio = Util.verificarNuloInt(matriculaCondominio);
+    	this.matriculaCondominio = Util.verificarNuloInt(matriculaCondominio);
     }
 
     public void setIndcCondominio(String indcCondominio) {
-	this.indcCondominio = Util.verificarNuloInt(indcCondominio);
+    	this.indcCondominio = Util.verificarNuloInt(indcCondominio);
     }
 
     public void setCodigoPerfil(String codigoPerfil) {
-	this.codigoPerfil = Util.verificarNuloString(codigoPerfil);
+    	this.codigoPerfil = Util.verificarNuloString(codigoPerfil);
     }
 
     public void setConsumoMedio(String consumoMedio) {
-	this.consumoMedio = Util.verificarNuloInt(consumoMedio);
+    	this.consumoMedio = Util.verificarNuloInt(consumoMedio);
     }
 
     public void setIndcFaturamentoAgua(String indcFaturamentoAgua) {
-	this.indcFaturamentoAgua = Util.verificarNuloInt(indcFaturamentoAgua);
+    	this.indcFaturamentoAgua = Util.verificarNuloInt(indcFaturamentoAgua);
     }
 
     public void setIndcFaturamentoEsgoto(String indcFaturamentoEsgoto) {
-	this.indcFaturamentoEsgoto = Util
-		.verificarNuloInt(indcFaturamentoEsgoto);
+    	this.indcFaturamentoEsgoto = Util.verificarNuloInt(indcFaturamentoEsgoto);
     }
 
     public void setIndcEmissaoConta(String indcEmissaoConta) {
-	this.indcEmissaoConta = Util.verificarNuloInt(indcEmissaoConta);
+    	this.indcEmissaoConta = Util.verificarNuloInt(indcEmissaoConta);
     }
 
     public void setConsumoMinAgua(String consumoMinAgua) {
-	this.consumoMinAgua = Util.verificarNuloInt(consumoMinAgua);
+    	this.consumoMinAgua = Util.verificarNuloInt(consumoMinAgua);
     }
 
     public void setConsumoMinEsgoto(String consumoMinEsgoto) {
-	this.consumoMinEsgoto = Util.verificarNuloInt(consumoMinEsgoto);
+    	this.consumoMinEsgoto = Util.verificarNuloInt(consumoMinEsgoto);
     }
 
     public void setPercentColetaEsgoto(String percentColetaEsgoto) {
-	this.percentColetaEsgoto = Util
-		.verificarNuloDouble(percentColetaEsgoto);
+    	this.percentColetaEsgoto = Util.verificarNuloDouble(percentColetaEsgoto);
     }
 
     public void setPercentCobrancaEsgoto(String percentCobrancaEsgoto) {
-	this.percentCobrancaEsgoto = Util
-		.verificarNuloDouble(percentCobrancaEsgoto);
+    	this.percentCobrancaEsgoto = Util.verificarNuloDouble(percentCobrancaEsgoto);
     }
 
     public void setTipoPoco(String tipoPoco) {
-	this.tipoPoco = Util.verificarNuloInt(tipoPoco);
+    	this.tipoPoco = Util.verificarNuloInt(tipoPoco);
     }
 
     public void setCodigoTarifa(String codigoTarifa) {
-	this.codigoTarifa = Util.verificarNuloInt(codigoTarifa);
+    	this.codigoTarifa = Util.verificarNuloInt(codigoTarifa);
     }
 
     public void setConsumoEstouro(String consumoEstouro) {
-	this.consumoEstouro = Util.verificarNuloInt(consumoEstouro);
+    	this.consumoEstouro = Util.verificarNuloInt(consumoEstouro);
     }
 
     public void setAltoConsumo(String altoConsumo) {
-	this.altoConsumo = Util.verificarNuloInt(altoConsumo);
+    	this.altoConsumo = Util.verificarNuloInt(altoConsumo);
     }
 
     public void setBaixoConsumo(String baixoConsumo) {
-	this.baixoConsumo = Util.verificarNuloInt(baixoConsumo);
+    	this.baixoConsumo = Util.verificarNuloInt(baixoConsumo);
     }
 
     public void setFatorMultEstouro(String fatorMultEstouro) {
-	this.fatorMultEstouro = Util.verificarNuloDouble(fatorMultEstouro);
+    	this.fatorMultEstouro = Util.verificarNuloDouble(fatorMultEstouro);
     }
 
     public void setFatorMultMediaAltoConsumo(String fatorMultMediaAltoConsumo) {
-	this.fatorMultMediaAltoConsumo = Util
-		.verificarNuloDouble(fatorMultMediaAltoConsumo);
+    	this.fatorMultMediaAltoConsumo = Util.verificarNuloDouble(fatorMultMediaAltoConsumo);
     }
 
     public void setPercentBaixoConsumo(String percentBaixoConsumo) {
-	this.percentBaixoConsumo = Util
-		.verificarNuloDouble(percentBaixoConsumo);
+    	this.percentBaixoConsumo = Util.verificarNuloDouble(percentBaixoConsumo);
     }
 
     public void setConsumoMaximo(String consumoMaximo) {
-	this.consumoMaximo = Util.verificarNuloInt(consumoMaximo);
+    	this.consumoMaximo = Util.verificarNuloInt(consumoMaximo);
     }
 
     public void setNumeroConta(String numeroConta) {
-	this.numeroConta = Util.verificarNuloInt(numeroConta);
+    	this.numeroConta = Util.verificarNuloInt(numeroConta);
     }
 
     public void setTipoCalculoTarifa(String tipoCalculoTarifa) {
-	this.tipoCalculoTarifa = Util.verificarNuloInt(tipoCalculoTarifa);
+    	this.tipoCalculoTarifa = Util.verificarNuloInt(tipoCalculoTarifa);
     }
 
     public void setGrupoFaturamento(String grupoFaturamento) {
-	this.grupoFaturamento = Util.verificarNuloInt(grupoFaturamento);
+    	this.grupoFaturamento = Util.verificarNuloInt(grupoFaturamento);
     }
 
     public void setCodigoRota(String codigoRota) {
-	this.codigoRota = Util.verificarNuloInt(codigoRota);
+    	this.codigoRota = Util.verificarNuloInt(codigoRota);
     }
 
     public void setEnderecoAtendimento(String enderecoAtendimento) {
-	this.enderecoAtendimento = Util
-		.verificarNuloString(enderecoAtendimento);
+    	this.enderecoAtendimento = Util.verificarNuloString(enderecoAtendimento);
     }
 
     public void setTelefoneLocalidadeDDD(String telefoneLocalidadeDDD) {
-	this.telefoneLocalidadeDDD = Util
-		.verificarNuloString(telefoneLocalidadeDDD);
+    	this.telefoneLocalidadeDDD = Util.verificarNuloString(telefoneLocalidadeDDD);
     }
 
     public void setSequencialRota(String sequencialRota) {
-	this.sequencialRota = Util.verificarNuloInt(sequencialRota);
+    	this.sequencialRota = Util.verificarNuloInt(sequencialRota);
     }
 
     public void setMensagemConta1(String mensagemConta1) {
-	this.mensagemConta1 = Util.verificarNuloString(mensagemConta1);
+    	this.mensagemConta1 = Util.verificarNuloString(mensagemConta1);
     }
 
     public void setMensagemConta2(String mensagemConta2) {
-	this.mensagemConta2 = Util.verificarNuloString(mensagemConta2);
+    	this.mensagemConta2 = Util.verificarNuloString(mensagemConta2);
     }
 
     public void setMensagemConta3(String mensagemConta3) {
-	this.mensagemConta3 = Util.verificarNuloString(mensagemConta3);
+    	this.mensagemConta3 = Util.verificarNuloString(mensagemConta3);
     }
 
     public void setTurbidezPadrao(String turbidezPadrao) {
-	this.turbidezPadrao = Util.verificarNuloString(turbidezPadrao);
+    	this.turbidezPadrao = Util.verificarNuloString(turbidezPadrao);
     }
 
     public void setPhPadrao(String phPadrao) {
-	this.phPadrao = Util.verificarNuloString(phPadrao);
+    	this.phPadrao = Util.verificarNuloString(phPadrao);
     }
 
     public void setCorPadrao(String corPadrao) {
-	this.corPadrao = Util.verificarNuloString(corPadrao);
+    	this.corPadrao = Util.verificarNuloString(corPadrao);
     }
 
     public void setCloroPadrao(String cloroPadrao) {
-	this.cloroPadrao = Util.verificarNuloString(cloroPadrao);
+    	this.cloroPadrao = Util.verificarNuloString(cloroPadrao);
     }
 
     public void setFluorPadrao(String fluorPadrao) {
-	this.fluorPadrao = Util.verificarNuloString(fluorPadrao);
+    	this.fluorPadrao = Util.verificarNuloString(fluorPadrao);
     }
 
     public void setFerroPadrao(String ferroPadrao) {
-	this.ferroPadrao = Util.verificarNuloString(ferroPadrao);
+    	this.ferroPadrao = Util.verificarNuloString(ferroPadrao);
     }
 
     public void setColiformesTotaisPadrao(String coliformesTotaisPadrao) {
-	this.coliformesTotaisPadrao = Util
-		.verificarNuloString(coliformesTotaisPadrao);
+    	this.coliformesTotaisPadrao = Util.verificarNuloString(coliformesTotaisPadrao);
     }
 
     public void setColiformesFecaisPadrao(String coliformesFecaisPadrao) {
-	this.coliformesFecaisPadrao = Util
-		.verificarNuloString(coliformesFecaisPadrao);
+    	this.coliformesFecaisPadrao = Util.verificarNuloString(coliformesFecaisPadrao);
     }
 
     public void setNitratoPadrao(String nitratoPadrao) {
-	this.nitratoPadrao = Util.verificarNuloString(nitratoPadrao);
+    	this.nitratoPadrao = Util.verificarNuloString(nitratoPadrao);
     }
 
-    public void setColiformesTermoTolerantesPadrao(
-	    String coliformesTermoTolerantesPadrao) {
-	this.coliformesTermoTolerantesPadrao = Util
-		.verificarNuloString(coliformesTermoTolerantesPadrao);
+    public void setColiformesTermoTolerantesPadrao(String coliformesTermoTolerantesPadrao) {
+    	this.coliformesTermoTolerantesPadrao = Util.verificarNuloString(coliformesTermoTolerantesPadrao);
     }
 
     public void setAmReferenciaQualidadeAgua(String amReferenciaQualidadeAgua) {
-	this.amReferenciaQualidadeAgua = Util
-		.verificarNuloInt(amReferenciaQualidadeAgua);
+    	this.amReferenciaQualidadeAgua = Util.verificarNuloInt(amReferenciaQualidadeAgua);
     }
 
     public void setNumeroCloroResidual(String numeroCloroResidual) {
-	this.numeroCloroResidual = Util
-		.verificarNuloDouble(numeroCloroResidual);
+    	this.numeroCloroResidual = Util.verificarNuloDouble(numeroCloroResidual);
     }
 
     public void setNumeroTurbidez(String numeroTurbidez) {
-	this.numeroTurbidez = Util.verificarNuloDouble(numeroTurbidez);
+    	this.numeroTurbidez = Util.verificarNuloDouble(numeroTurbidez);
     }
 
     public void setNumeroPh(String numeroPh) {
-	this.numeroPh = Util.verificarNuloDouble(numeroPh);
+    	this.numeroPh = Util.verificarNuloDouble(numeroPh);
     }
 
     public void setNumeroCor(String numeroCor) {
-	this.numeroCor = Util.verificarNuloDouble(numeroCor);
+    	this.numeroCor = Util.verificarNuloDouble(numeroCor);
     }
 
     public void setNumeroFluor(String numeroFluor) {
-	this.numeroFluor = Util.verificarNuloDouble(numeroFluor);
+    	this.numeroFluor = Util.verificarNuloDouble(numeroFluor);
     }
 
     public void setNumeroFerro(String numeroFerro) {
-	this.numeroFerro = Util.verificarNuloDouble(numeroFerro);
+    	this.numeroFerro = Util.verificarNuloDouble(numeroFerro);
     }
 
     public void setNumeroColiformesTotais(String numeroColiformesTotais) {
-	this.numeroColiformesTotais = Util
-		.verificarNuloDouble(numeroColiformesTotais);
+    	this.numeroColiformesTotais = Util.verificarNuloDouble(numeroColiformesTotais);
     }
 
     public void setNumeroColiformesFecais(String numeroColiformesFecais) {
-	this.numeroColiformesFecais = Util
-		.verificarNuloDouble(numeroColiformesFecais);
+    	this.numeroColiformesFecais = Util.verificarNuloDouble(numeroColiformesFecais);
     }
 
     public void setNumeroNitrato(String numeroNitrato) {
-	this.numeroNitrato = Util.verificarNuloDouble(numeroNitrato);
+    	this.numeroNitrato = Util.verificarNuloDouble(numeroNitrato);
     }
 
-    public void setNumeroColiformesTermoTolerantes(
-	    String numeroColiformesTermoTolerantes) {
-	this.numeroColiformesTermoTolerantes = Util
-		.verificarNuloDouble(numeroColiformesTermoTolerantes);
+    public void setNumeroColiformesTermoTolerantes(String numeroColiformesTermoTolerantes) {
+    	this.numeroColiformesTermoTolerantes = Util.verificarNuloDouble(numeroColiformesTermoTolerantes);
     }
 
     public void setDescricaoFonteCapacitacao(String descricaoFonteCapacitacao) {
-	this.descricaoFonteCapacitacao = Util
-		.verificarNuloString(descricaoFonteCapacitacao);
+    	this.descricaoFonteCapacitacao = Util.verificarNuloString(descricaoFonteCapacitacao);
     }
 
     public void setQuantidadeTurbidezExigidas(String quantidadeTurbidezExigidas) {
-	this.quantidadeTurbidezExigidas = Util
-		.verificarNuloInt(quantidadeTurbidezExigidas);
+    	this.quantidadeTurbidezExigidas = Util.verificarNuloInt(quantidadeTurbidezExigidas);
     }
 
     public void setQuantidadeCorExigidas(String quantidadeCorExigidas) {
-	this.quantidadeCorExigidas = Util
-		.verificarNuloInt(quantidadeCorExigidas);
+    	this.quantidadeCorExigidas = Util.verificarNuloInt(quantidadeCorExigidas);
     }
 
     public void setQuantidadeCloroExigidas(String quantidadeCloroExigidas) {
-	this.quantidadeCloroExigidas = Util
-		.verificarNuloInt(quantidadeCloroExigidas);
+    	this.quantidadeCloroExigidas = Util.verificarNuloInt(quantidadeCloroExigidas);
     }
 
     public void setQuantidadeFluorExigidas(String quantidadeFluorExigidas) {
-	this.quantidadeFluorExigidas = Util
-		.verificarNuloInt(quantidadeFluorExigidas);
+    	this.quantidadeFluorExigidas = Util.verificarNuloInt(quantidadeFluorExigidas);
     }
 
-    public void setQuantidadeColiformesTotaisExigidas(
-	    String quantidadeColiformesTotaisExigidas) {
-	this.quantidadeColiformesTotaisExigidas = Util
-		.verificarNuloInt(quantidadeColiformesTotaisExigidas);
+    public void setQuantidadeColiformesTotaisExigidas(String quantidadeColiformesTotaisExigidas) {
+    	this.quantidadeColiformesTotaisExigidas = Util.verificarNuloInt(quantidadeColiformesTotaisExigidas);
     }
 
-    public void setQuantidadeColiformesFecaisExigidas(
-	    String quantidadeColiformesFecaisExigidas) {
-	this.quantidadeColiformesFecaisExigidas = Util
-		.verificarNuloInt(quantidadeColiformesFecaisExigidas);
+    public void setQuantidadeColiformesFecaisExigidas(String quantidadeColiformesFecaisExigidas) {
+    	this.quantidadeColiformesFecaisExigidas = Util.verificarNuloInt(quantidadeColiformesFecaisExigidas);
     }
 
-    public void setQuantidadeColiformesTermoTolerantesExigidas(
-	    String quantidadeColiformesTermoTolerantesExigidas) {
-	this.quantidadeColiformesTermoTolerantesExigidas = Util
-		.verificarNuloInt(quantidadeColiformesTermoTolerantesExigidas);
+    public void setQuantidadeColiformesTermoTolerantesExigidas(String quantidadeColiformesTermoTolerantesExigidas) {
+    	this.quantidadeColiformesTermoTolerantesExigidas = Util.verificarNuloInt(quantidadeColiformesTermoTolerantesExigidas);
     }
 
-    public void setQuantidadeTurbidezAnalisadas(
-	    String quantidadeTurbidezAnalisadas) {
-	this.quantidadeTurbidezAnalisadas = Util
-		.verificarNuloInt(quantidadeTurbidezAnalisadas);
+    public void setQuantidadeTurbidezAnalisadas(String quantidadeTurbidezAnalisadas) {
+    	this.quantidadeTurbidezAnalisadas = Util.verificarNuloInt(quantidadeTurbidezAnalisadas);
     }
 
     public void setQuantidadeCorAnalisadas(String quantidadeCorAnalisadas) {
-	this.quantidadeCorAnalisadas = Util
-		.verificarNuloInt(quantidadeCorAnalisadas);
+    	this.quantidadeCorAnalisadas = Util.verificarNuloInt(quantidadeCorAnalisadas);
     }
 
     public void setQuantidadeCloroAnalisadas(String quantidadeCloroAnalisadas) {
-	this.quantidadeCloroAnalisadas = Util
-		.verificarNuloInt(quantidadeCloroAnalisadas);
+    	this.quantidadeCloroAnalisadas = Util.verificarNuloInt(quantidadeCloroAnalisadas);
     }
 
     public void setQuantidadeFluorAnalisadas(String quantidadeFluorAnalisadas) {
-	this.quantidadeFluorAnalisadas = Util
-		.verificarNuloInt(quantidadeFluorAnalisadas);
+    	this.quantidadeFluorAnalisadas = Util.verificarNuloInt(quantidadeFluorAnalisadas);
     }
 
-    public void setQuantidadeColiformesTotaisAnalisadas(
-	    String quantidadeColiformesTotaisAnalisadas) {
-	this.quantidadeColiformesTotaisAnalisadas = Util
-		.verificarNuloInt(quantidadeColiformesTotaisAnalisadas);
+    public void setQuantidadeColiformesTotaisAnalisadas(String quantidadeColiformesTotaisAnalisadas) {
+    	this.quantidadeColiformesTotaisAnalisadas = Util.verificarNuloInt(quantidadeColiformesTotaisAnalisadas);
     }
 
-    public void setQuantidadeColiformesFecaisAnalisadas(
-	    String quantidadeColiformesFecaisAnalisadas) {
-	this.quantidadeColiformesFecaisAnalisadas = Util
-		.verificarNuloInt(quantidadeColiformesFecaisAnalisadas);
+    public void setQuantidadeColiformesFecaisAnalisadas(String quantidadeColiformesFecaisAnalisadas) {
+    	this.quantidadeColiformesFecaisAnalisadas = Util.verificarNuloInt(quantidadeColiformesFecaisAnalisadas);
     }
 
-    public void setQuantidadeColiformesTermoTolerantesAnalisadas(
-	    String quantidadeColiformesTermoTolerantesAnalisadas) {
-	this.quantidadeColiformesTermoTolerantesAnalisadas = Util
-		.verificarNuloInt(quantidadeColiformesTermoTolerantesAnalisadas);
+    public void setQuantidadeColiformesTermoTolerantesAnalisadas(String quantidadeColiformesTermoTolerantesAnalisadas) {
+    	this.quantidadeColiformesTermoTolerantesAnalisadas = Util.verificarNuloInt(quantidadeColiformesTermoTolerantesAnalisadas);
     }
 
     public void setQuantidadeTurbidezConforme(String quantidadeTurbidezConforme) {
-	this.quantidadeTurbidezConforme = Util
+    	this.quantidadeTurbidezConforme = Util
 		.verificarNuloInt(quantidadeTurbidezConforme);
     }
 
     public void setQuantidadeCorConforme(String quantidadeCorConforme) {
-	this.quantidadeCorConforme = Util
+    	this.quantidadeCorConforme = Util
 		.verificarNuloInt(quantidadeCorConforme);
     }
 
     public void setQuantidadeCloroConforme(String quantidadeCloroConforme) {
-	this.quantidadeCloroConforme = Util
+    	this.quantidadeCloroConforme = Util
 		.verificarNuloInt(quantidadeCloroConforme);
     }
 
     public void setQuantidadeFluorConforme(String quantidadeFluorConforme) {
-	this.quantidadeFluorConforme = Util
+    	this.quantidadeFluorConforme = Util
 		.verificarNuloInt(quantidadeFluorConforme);
     }
 
-    public void setQuantidadeColiformesTotaisConforme(
-	    String quantidadeColiformesTotaisConforme) {
-	this.quantidadeColiformesTotaisConforme = Util
-		.verificarNuloInt(quantidadeColiformesTotaisConforme);
+    public void setQuantidadeColiformesTotaisConforme(String quantidadeColiformesTotaisConforme) {
+    	this.quantidadeColiformesTotaisConforme = Util.verificarNuloInt(quantidadeColiformesTotaisConforme);
     }
 
-    public void setQuantidadeColiformesFecaisConforme(
-	    String quantidadeColiformesFecaisConforme) {
-	this.quantidadeColiformesFecaisConforme = Util
-		.verificarNuloInt(quantidadeColiformesFecaisConforme);
+    public void setQuantidadeColiformesFecaisConforme(String quantidadeColiformesFecaisConforme) {
+    	this.quantidadeColiformesFecaisConforme = Util.verificarNuloInt(quantidadeColiformesFecaisConforme);
     }
 
-    public void setQuantidadeColiformesTermoTolerantesConforme(
-	    String quantidadeColiformesTermoTolerantesConforme) {
-	this.quantidadeColiformesTermoTolerantesConforme = Util
-		.verificarNuloInt(quantidadeColiformesTermoTolerantesConforme);
+    public void setQuantidadeColiformesTermoTolerantesConforme(String quantidadeColiformesTermoTolerantesConforme) {
+    	this.quantidadeColiformesTermoTolerantesConforme = Util.verificarNuloInt(quantidadeColiformesTermoTolerantesConforme);
     }
 
     public void setConsumoMinimoImovel(String consumoMinimoImovel) {
     	this.consumoMinimoImovel = Util.verificarNuloInt(consumoMinimoImovel);
-        }
+	}
 
     public void setConsumoMinimoImovelNaoMedido(String consumoMinimoImovelNaoMedido) {
     	this.consumoMinimoImovelNaoMedido = Util.verificarNuloInt(consumoMinimoImovelNaoMedido);
-        }
-
+    }
     
-    public void setIndicadorParalizarFaturamentoAgua(
-	    String indicadorParalizarFaturamentoAgua) {
-	this.indicadorParalizarFaturamentoAgua = Util
-		.verificarNuloInt(indicadorParalizarFaturamentoAgua);
+    public void setIndicadorParalizarFaturamentoAgua(String indicadorParalizarFaturamentoAgua) {
+    	this.indicadorParalizarFaturamentoAgua = Util.verificarNuloInt(indicadorParalizarFaturamentoAgua);
     }
 
-    public void setIndicadorParalizarFaturamentoEsgoto(
-	    String indicadorParalizarFaturamentoEsgoto) {
-	this.indicadorParalizarFaturamentoEsgoto = Util
-		.verificarNuloInt(indicadorParalizarFaturamentoEsgoto);
+    public void setIndicadorParalizarFaturamentoEsgoto(String indicadorParalizarFaturamentoEsgoto) {
+    	this.indicadorParalizarFaturamentoEsgoto = Util.verificarNuloInt(indicadorParalizarFaturamentoEsgoto);
     }
-
 
     public String getInscricao() {
 	    if (inscricao.length() == 16){
@@ -1201,367 +1144,367 @@ public class Imovel {
     }
 
     public String getEndereco() {
-	return endereco;
+    	return endereco;
     }
 
     public String getAnoMesConta() {
-	return anoMesConta;
+    	return anoMesConta;
     }
 
     public int getDigitoVerificadorConta() {
-	return digitoVerificadorConta;
+    	return digitoVerificadorConta;
     }
 
     public String getCodigoResponsavel() {
-	return codigoResponsavel;
+    	return codigoResponsavel;
     }
 
     public String getNomeResponsavel() {
-	return nomeResponsavel;
+    	return nomeResponsavel;
     }
 
     public String getEnderecoEntrega() {
-	return enderecoEntrega;
+    	return enderecoEntrega;
     }
 
     public String getSituacaoLigAgua() {
-	return situacaoLigAgua;
+    	return situacaoLigAgua;
     }
 
     public String getSituacaoLigEsgoto() {
-	return situacaoLigEsgoto;
+    	return situacaoLigEsgoto;
     }
 
     public String getDescricaoBanco() {
-	return descricaoBanco;
+    	return descricaoBanco;
     }
 
     public String getCodigoAgencia() {
-	return codigoAgencia;
+    	return codigoAgencia;
     }
 
     public int getMatriculaCondominio() {
-	return matriculaCondominio;
+    	return matriculaCondominio;
     }
 
     public int getIndcCondominio() {
-	return indcCondominio;
+    	return indcCondominio;
     }
 
     public String getCodigoPerfil() {
-	return codigoPerfil;
+    	return codigoPerfil;
     }
 
     public int getConsumoMedio() {
-	return consumoMedio;
+    	return consumoMedio;
     }
 
     public int getIndcFaturamentoAgua() {
-	return indcFaturamentoAgua;
+    	return indcFaturamentoAgua;
     }
 
     public int getIndcFaturamentoEsgoto() {
-	return indcFaturamentoEsgoto;
+    	return indcFaturamentoEsgoto;
     }
 
     public int getIndcEmissaoConta() {
-	return indcEmissaoConta;
+    	return indcEmissaoConta;
     }
 
     public int getConsumoMinAgua() {
-	return consumoMinAgua;
+    	return consumoMinAgua;
     }
 
     public int getConsumoMinEsgoto() {
-	return consumoMinEsgoto;
+    	return consumoMinEsgoto;
     }
 
     public double getPercentColetaEsgoto() {
-	return percentColetaEsgoto;
+    	return percentColetaEsgoto;
     }
 
     public double getPercentCobrancaEsgoto() {
-	return percentCobrancaEsgoto;
+    	return percentCobrancaEsgoto;
     }
 
     public int getTipoPoco() {
-	return tipoPoco;
+    	return tipoPoco;
     }
 
     public int getCodigoTarifa() {
-	return codigoTarifa;
+    	return codigoTarifa;
     }
 
     public int getConsumoEstouro() {
-	return consumoEstouro;
+    	return consumoEstouro;
     }
 
     public int getAltoConsumo() {
-	return altoConsumo;
+    	return altoConsumo;
     }
 
     public int getBaixoConsumo() {
-	return baixoConsumo;
+    	return baixoConsumo;
     }
 
     public double getFatorMultEstouro() {
-	return fatorMultEstouro;
+    	return fatorMultEstouro;
     }
 
     public double getFatorMultMediaAltoConsumo() {
-	return fatorMultMediaAltoConsumo;
+    	return fatorMultMediaAltoConsumo;
     }
 
     public double getPercentBaixoConsumo() {
-	return percentBaixoConsumo;
+    	return percentBaixoConsumo;
     }
 
     public int getConsumoMaximo() {
-	return consumoMaximo;
+    	return consumoMaximo;
     }
 
     public int getNumeroConta() {
-	return numeroConta;
+    	return numeroConta;
     }
 
     public int getTipoCalculoTarifa() {
-	return tipoCalculoTarifa;
+    	return tipoCalculoTarifa;
     }
 
     public int getGrupoFaturamento() {
-	return grupoFaturamento;
+    	return grupoFaturamento;
     }
 
     public int getCodigoRota() {
-	return codigoRota;
+    	return codigoRota;
     }
 
     public String getEnderecoAtendimento() {
-	return enderecoAtendimento;
+    	return enderecoAtendimento;
     }
 
     public String getTelefoneLocalidadeDDD() {
-	return telefoneLocalidadeDDD;
+    	return telefoneLocalidadeDDD;
     }
 
     public int getSequencialRota() {
-	return sequencialRota;
+    	return sequencialRota;
     }
 
     public String getMensagemConta1() {
-	return mensagemConta1;
+    	return mensagemConta1;
     }
 
     public String getMensagemConta2() {
-	return mensagemConta2;
+    	return mensagemConta2;
     }
 
     public String getMensagemConta3() {
-	return mensagemConta3;
+    	return mensagemConta3;
     }
 
     public String getTurbidezPadrao() {
-	return turbidezPadrao;
+    	return turbidezPadrao;
     }
 
     public String getPhPadrao() {
-	return phPadrao;
+    	return phPadrao;
     }
 
     public String getCorPadrao() {
-	return corPadrao;
+    	return corPadrao;
     }
 
     public String getCloroPadrao() {
-	return cloroPadrao;
+    	return cloroPadrao;
     }
 
     public String getFluorPadrao() {
-	return fluorPadrao;
+    	return fluorPadrao;
     }
 
     public String getFerroPadrao() {
-	return ferroPadrao;
+    	return ferroPadrao;
     }
 
     public String getColiformesTotaisPadrao() {
-	return coliformesTotaisPadrao;
+    	return coliformesTotaisPadrao;
     }
 
     public String getColiformesFecaisPadrao() {
-	return coliformesFecaisPadrao;
+    	return coliformesFecaisPadrao;
     }
 
     public String getNitratoPadrao() {
-	return nitratoPadrao;
+    	return nitratoPadrao;
     }
 
     public String getColiformesTermoTolerantesPadrao() {
-	return coliformesTermoTolerantesPadrao;
+    	return coliformesTermoTolerantesPadrao;
     }
 
     public int getAmReferenciaQualidadeAgua() {
-	return amReferenciaQualidadeAgua;
+    	return amReferenciaQualidadeAgua;
     }
 
     public double getNumeroCloroResidual() {
-	return numeroCloroResidual;
+    	return numeroCloroResidual;
     }
 
     public double getNumeroTurbidez() {
-	return numeroTurbidez;
+    	return numeroTurbidez;
     }
 
     public double getNumeroPh() {
-	return numeroPh;
+    	return numeroPh;
     }
 
     public double getNumeroCor() {
-	return numeroCor;
+    	return numeroCor;
     }
 
     public double getNumeroFluor() {
-	return numeroFluor;
+    	return numeroFluor;
     }
 
     public double getNumeroFerro() {
-	return numeroFerro;
+    	return numeroFerro;
     }
 
     public double getNumeroColiformesTotais() {
-	return numeroColiformesTotais;
+    	return numeroColiformesTotais;
     }
 
     public double getNumeroColiformesFecais() {
-	return numeroColiformesFecais;
+    	return numeroColiformesFecais;
     }
 
     public double getNumeroNitrato() {
-	return numeroNitrato;
+    	return numeroNitrato;
     }
 
     public double getNumeroColiformesTermoTolerantes() {
-	return numeroColiformesTermoTolerantes;
+    	return numeroColiformesTermoTolerantes;
     }
 
     public String getDescricaoFonteCapacitacao() {
-	return descricaoFonteCapacitacao;
+    	return descricaoFonteCapacitacao;
     }
 
     public int getQuantidadeTurbidezExigidas() {
-	return quantidadeTurbidezExigidas;
+    	return quantidadeTurbidezExigidas;
     }
 
     public int getQuantidadeCorExigidas() {
-	return quantidadeCorExigidas;
+    	return quantidadeCorExigidas;
     }
 
     public int getQuantidadeCloroExigidas() {
-	return quantidadeCloroExigidas;
+    	return quantidadeCloroExigidas;
     }
 
     public int getQuantidadeFluorExigidas() {
-	return quantidadeFluorExigidas;
+    	return quantidadeFluorExigidas;
     }
 
     public int getQuantidadeColiformesTotaisExigidas() {
-	return quantidadeColiformesTotaisExigidas;
+    	return quantidadeColiformesTotaisExigidas;
     }
 
     public int getQuantidadeColiformesFecaisExigidas() {
-	return quantidadeColiformesFecaisExigidas;
+    	return quantidadeColiformesFecaisExigidas;
     }
 
     public int getQuantidadeColiformesTermoTolerantesExigidas() {
-	return quantidadeColiformesTermoTolerantesExigidas;
+    	return quantidadeColiformesTermoTolerantesExigidas;
     }
 
     public int getQuantidadeTurbidezAnalisadas() {
-	return quantidadeTurbidezAnalisadas;
+    	return quantidadeTurbidezAnalisadas;
     }
 
     public int getQuantidadeCorAnalisadas() {
-	return quantidadeCorAnalisadas;
+    	return quantidadeCorAnalisadas;
     }
 
     public int getQuantidadeCloroAnalisadas() {
-	return quantidadeCloroAnalisadas;
+    	return quantidadeCloroAnalisadas;
     }
 
     public int getQuantidadeFluorAnalisadas() {
-	return quantidadeFluorAnalisadas;
+    	return quantidadeFluorAnalisadas;
     }
 
     public int getQuantidadeColiformesTotaisAnalisadas() {
-	return quantidadeColiformesTotaisAnalisadas;
+    	return quantidadeColiformesTotaisAnalisadas;
     }
 
     public int getQuantidadeColiformesFecaisAnalisadas() {
-	return quantidadeColiformesFecaisAnalisadas;
+    	return quantidadeColiformesFecaisAnalisadas;
     }
 
     public int getQuantidadeColiformesTermoTolerantesAnalisadas() {
-	return quantidadeColiformesTermoTolerantesAnalisadas;
+    	return quantidadeColiformesTermoTolerantesAnalisadas;
     }
 
     public int getQuantidadeTurbidezConforme() {
-	return quantidadeTurbidezConforme;
+    	return quantidadeTurbidezConforme;
     }
 
     public int getQuantidadeCorConforme() {
-	return quantidadeCorConforme;
+    	return quantidadeCorConforme;
     }
 
     public int getQuantidadeCloroConforme() {
-	return quantidadeCloroConforme;
+    	return quantidadeCloroConforme;
     }
 
     public int getQuantidadeFluorConforme() {
-	return quantidadeFluorConforme;
+    	return quantidadeFluorConforme;
     }
 
     public int getQuantidadeColiformesTotaisConforme() {
-	return quantidadeColiformesTotaisConforme;
+    	return quantidadeColiformesTotaisConforme;
     }
 
     public int getQuantidadeColiformesFecaisConforme() {
-	return quantidadeColiformesFecaisConforme;
+    	return quantidadeColiformesFecaisConforme;
     }
 
     public int getQuantidadeColiformesTermoTolerantesConforme() {
-	return quantidadeColiformesTermoTolerantesConforme;
+    	return quantidadeColiformesTermoTolerantesConforme;
     }
 
     public int getConsumoMinimoImovel() {
     	return consumoMinimoImovel;
-        }
+	}
 
     public int getconsumoMinimoImovelNaoMedido() {
     	return consumoMinimoImovelNaoMedido;
-        }
+    }
     
     public String getMensagemEstouroConsumo1() {
-	return mensagemEstouroConsumo1;
+    	return mensagemEstouroConsumo1;
     }
 
     public void setMensagemEstouroConsumo1(String mensagemEstouroConsumo1) {
-	this.mensagemEstouroConsumo1 = mensagemEstouroConsumo1;
+    	this.mensagemEstouroConsumo1 = mensagemEstouroConsumo1;
     }
 
     public String getMensagemEstouroConsumo2() {
-	return mensagemEstouroConsumo2;
+    	return mensagemEstouroConsumo2;
     }
 
     public void setMensagemEstouroConsumo2(String mensagemEstouroConsumo2) {
-	this.mensagemEstouroConsumo2 = mensagemEstouroConsumo2;
+    	this.mensagemEstouroConsumo2 = mensagemEstouroConsumo2;
     }
 
     public String getMensagemEstouroConsumo3() {
-	return mensagemEstouroConsumo3;
+    	return mensagemEstouroConsumo3;
     }
 
     public void setMensagemEstouroConsumo3(String mensagemEstouroConsumo3) {
-	this.mensagemEstouroConsumo3 = mensagemEstouroConsumo3;
+    	this.mensagemEstouroConsumo3 = mensagemEstouroConsumo3;
     }
 
     public void adicionaRegistro5(Credito reg) {
@@ -1579,50 +1522,53 @@ public class Imovel {
 
     public String getNumeroHidrometro(int tipoMedicao) {
 
-	String retorno = null;
-
-	if (this.medidores != null) {
-	    int tamanho = this.medidores.size();
-
-	    for (int i = 0; i < tamanho; i++) {
-		Medidor reg8 = (Medidor) this.medidores.get(i);
-		if (reg8.getTipoMedicao() == tipoMedicao) {
-		    retorno = reg8.getNumeroHidrometro();
+		String retorno = null;
+	
+		if (this.medidores != null) {
+		    int tamanho = this.medidores.size();
+	
+		    for (int i = 0; i < tamanho; i++) {
+				Medidor medidor = (Medidor) this.medidores.get(i);
+				if (medidor.getTipoMedicao() == tipoMedicao) {
+				    retorno = medidor.getNumeroHidrometro();
+				}
+		    }
 		}
-	    }
-	}
-
-	return retorno;
+	
+		return retorno;
     }
-
+	
     public int getQuantidadeEconomiasTotal() {
-	int tamanho = this.dadosCategoria.size();
-	int retorno = 0;
-	for (int i = 0; i < tamanho; i++) {
-	    retorno = retorno
-		    + ((DadosCategoria) this.dadosCategoria.get(i))
-			    .getQtdEconomiasSubcategoria();
-	}
-
-	return retorno;
+		int tamanho = this.dadosCategoria.size();
+		int retorno = 0;
+		
+		for (int i = 0; i < tamanho; i++) {
+		    
+			retorno = retorno + ((DadosCategoria) this.dadosCategoria.get(i)).getQtdEconomiasSubcategoria();
+		}
+	
+		return retorno;
     }
 
-    public Medidor getRegistro8(int tipoMedicao) {
-	Medidor retorno = null;
-	if (this.medidores != null) {
-	    int tamanho = this.medidores.size();
-	    for (int i = 0; i < tamanho; i++) {
-			Medidor reg8 = (Medidor) this.medidores.get(i);
-			if (reg8.getTipoMedicao() == tipoMedicao) {
-			    retorno = reg8;
-			}
-	    }
-	}
+    public Medidor getMedidor(int tipoMedicao) {
+		Medidor retorno = null;
 
-	return retorno;
+		if (this.medidores != null) {
+		    int tamanho = this.medidores.size();
+
+		    for (int i = 0; i < tamanho; i++) {
+				
+		    	Medidor medidor = (Medidor) this.medidores.get(i);
+				if (medidor.getTipoMedicao() == tipoMedicao) {
+				    retorno = medidor;
+				}
+		    }
+		}
+	
+		return retorno;
     }
     
-    public boolean isRegistro3Empty(){
+    public boolean isHistoricoFaturamentoEmpty(){
     	boolean isEmpty = false;
     	if (this.historicoConsumo == null){
     		isEmpty = true;
@@ -1630,18 +1576,18 @@ public class Imovel {
     	return isEmpty;
     }
 
-    public HistoricoConsumo getRegistro3(int anoMes) {
+    public HistoricoConsumo getHistoricoFaturamento(int anoMes) {
     	HistoricoConsumo retorno = null;
 
     	if (this.historicoConsumo != null){
 	    	int tamanho = this.historicoConsumo.size();
 			for (int i = 0; i < tamanho; i++) {
-			    HistoricoConsumo reg3 = (HistoricoConsumo) this.historicoConsumo.get(i);
+			    HistoricoConsumo historicoFaturamento = (HistoricoConsumo) this.historicoConsumo.get(i);
 		
-			    int anoMesReferencia = reg3.getAnoMesReferencia();
+			    int anoMesReferencia = historicoFaturamento.getAnoMesReferencia();
 		
 			    if (anoMesReferencia == anoMes) {
-			    	retorno = reg3;
+			    	retorno = historicoFaturamento;
 			    }
 			}
     	}
@@ -1649,55 +1595,59 @@ public class Imovel {
     }
 
     public HistoricoConsumo getRegistro3(int anoMes, int idAnormalidadeConsumo) {
-	int tamanho = 0;
-	if (this.historicoConsumo != null && !this.historicoConsumo.isEmpty()) {
-	    tamanho = this.historicoConsumo.size();
-	}
-	HistoricoConsumo retorno = null;
-	for (int i = 0; i < tamanho; i++) {
-	    HistoricoConsumo reg3 = (HistoricoConsumo) this.historicoConsumo.get(i);
-
-	    int anoMesReferencia = reg3.getAnoMesReferencia();
-
-	    if (anoMes == anoMesReferencia
-		    && reg3.getAnormalidadeConsumo() == idAnormalidadeConsumo) {
-		retorno = reg3;
-	    }
-	}
-
-	return retorno;
+		int tamanho = 0;
+		
+		if (this.historicoConsumo != null && !this.historicoConsumo.isEmpty()) {
+		    tamanho = this.historicoConsumo.size();
+		}
+		
+		HistoricoConsumo retorno = null;
+		
+		for (int i = 0; i < tamanho; i++) {
+		    HistoricoConsumo reg3 = (HistoricoConsumo) this.historicoConsumo.get(i);
+	
+		    int anoMesReferencia = reg3.getAnoMesReferencia();
+	
+		    if (anoMes == anoMesReferencia && reg3.getAnormalidadeConsumo() == idAnormalidadeConsumo) {
+		    	retorno = reg3;
+		    }
+		}
+	
+		return retorno;
     }
 
-    public int getQuantidadeEconomias(int codigoCategoria,
-	    String codigoSubcategoria) {
-	int tamanho = this.dadosCategoria.size();
-	int retorno = 0;
-	DadosCategoria reg2 = null;
-	for (int i = 0; i < tamanho; i++) {
-	    reg2 = (DadosCategoria) this.dadosCategoria.get(i);
+    public int getQuantidadeEconomias(int codigoCategoria, String codigoSubcategoria) {
+		int tamanho = this.dadosCategoria.size();
+		int retorno = 0;
+		DadosCategoria dadosCategoria = null;
+		
+		for (int i = 0; i < tamanho; i++) {
+		    dadosCategoria = (DadosCategoria) this.dadosCategoria.get(i);
+	
+		    if (dadosCategoria.getCodigoCategoria() == codigoCategoria
+			    && dadosCategoria.getCodigoSubcategoria().equals(codigoSubcategoria)) {
 
-	    if (reg2.getCodigoCategoria() == codigoCategoria
-		    && reg2.getCodigoSubcategoria().equals(codigoSubcategoria)) {
-		i = tamanho;
-		retorno = reg2.getQtdEconomiasSubcategoria();
-	    }
-	}
-
-	return retorno;
+		    	i = tamanho;
+				retorno = dadosCategoria.getQtdEconomiasSubcategoria();
+		    }
+		}
+	
+		return retorno;
     }
 
     public boolean isLeituraRealizada() {
-	boolean ret = true;
-	int size = this.medidores.size();
-	for (int i = 0; i < size && ret; i++) {
-	    Medidor reg8 = (Medidor) this.medidores.get(i);
-	    if (reg8.getAnormalidade() == 0
-		    && reg8.getLeitura() == Constantes.LEITURA_INVALIDA) {
-		ret = false;
-	    }
-	}
-
-	return ret;
+		boolean ret = true;
+		int size = this.medidores.size();
+		
+		for (int i = 0; i < size && ret; i++) {
+		    Medidor medidor = (Medidor) this.medidores.get(i);
+		    
+		    if (medidor.getAnormalidade() == 0 && medidor.getLeitura() == Constantes.LEITURA_INVALIDA) {
+		    	ret = false;
+		    }
+		}
+	
+		return ret;
     }
 
     public int getQuadra() {
@@ -1775,11 +1725,11 @@ public class Imovel {
     }
 
     public List<Imposto> getImpostos() {
-	return impostos;
+    	return impostos;
     }
 
     public List<Conta> getContas() {
-	return contas;
+    	return contas;
     }
 
     /**
@@ -1791,32 +1741,34 @@ public class Imovel {
      *            codigo da categiria ou da sub
      * @return tarifa de consumo calculada;
      */
-    public TarifacaoMinima pesquisarDadosTarifaImovel(
-	    boolean tipoTarifaPorCategoria, String codigo, int codigoTarifa) {
+    public TarifacaoMinima pesquisarDadosTarifaImovel(boolean tipoTarifaPorCategoria, 
+    												  String codigo, 
+    												  int codigoTarifa) {
 
-	TarifacaoMinima retorno = null;
-
-	for (int i = 0; i < this.tarifacoesMinimas.size(); i++) {
-
-	    TarifacaoMinima registro = (TarifacaoMinima) this.tarifacoesMinimas.get(i);
-
-	    if (tipoTarifaPorCategoria) {
-		if (Integer.parseInt(codigo) == registro
-			.getCodigoCategoria()
-			&& codigoTarifa == registro.getCodigo()) {
-		    retorno = registro;
-		    break;
+		TarifacaoMinima retorno = null;
+	
+		for (int i = 0; i < this.tarifacoesMinimas.size(); i++) {
+	
+		    TarifacaoMinima registro = (TarifacaoMinima) this.tarifacoesMinimas.get(i);
+	
+		    if (tipoTarifaPorCategoria) {
+				
+		    	if ((Integer.parseInt(codigo) == registro.getCodigoCategoria()) && (codigoTarifa == registro.getCodigo())) {
+				    
+					retorno = registro;
+				    break;
+				}
+		    } else {
+				
+		    	if ((codigo.equals(registro.getCodigoSubcategoria() + "")) && (codigoTarifa == registro.getCodigo())) {
+				    	
+		    		retorno = registro;
+				    break;
+				}
+		    }
 		}
-	    } else {
-		if (codigo.equals(registro.getCodigoSubcategoria() + "")
-			&& codigoTarifa == registro.getCodigo()) {
-		    retorno = registro;
-		    break;
-		}
-	    }
-	}
-
-	return retorno;
+	
+		return retorno;
     }
 
     /**
@@ -1830,148 +1782,151 @@ public class Imovel {
      *            código da categoria ou subcategoria
      * @return
      */
-    public Vector selecionarFaixasCalculoValorFaturado(
-	    boolean tipoTarifaPorCategoria, String codigo) {
+    public Vector selecionarFaixasCalculoValorFaturado(boolean tipoTarifaPorCategoria, String codigo) {
 
-	Vector retorno = new Vector();
-
-	for (int i = 0; i < this.tarifacoesComplementares.size(); i++) {
-	    TarifacaoComplementar registro = (TarifacaoComplementar) this.tarifacoesComplementares.get(i);
-
-	    if (tipoTarifaPorCategoria) {
-		if (Integer.parseInt(codigo) == registro
-			.getCodigoCategoria()) {
-		    retorno.addElement(registro);
+		Vector retorno = new Vector();
+	
+		for (int i = 0; i < this.tarifacoesComplementares.size(); i++) {
+		    TarifacaoComplementar registro = (TarifacaoComplementar) this.tarifacoesComplementares.get(i);
+	
+		    if (tipoTarifaPorCategoria) {
+				
+		    	if (Integer.parseInt(codigo) == registro.getCodigoCategoria()) {
+				    retorno.addElement(registro);
+				}
+		    
+		    } else {
+				if (Integer.parseInt(codigo) == registro.getCodigoSubcategoria()) {
+				    
+					retorno.addElement(registro);
+				}
+		    }
 		}
-	    } else {
-		if (Integer.parseInt(codigo) == registro
-			.getCodigoSubcategoria()) {
-		    retorno.addElement(registro);
-		}
-	    }
-	}
-
-	return retorno;
+	
+		return retorno;
     }
 
     public double getValorAgua() {
 
-	double soma = 0d;
-
-	for (int i = 0; i < this.dadosCategoria.size(); i++) {
-	    if ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i))
-		    .getFaturamentoAgua() != null) {
-		soma += ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria
-			.get(i)).getFaturamentoAgua()).getValorFaturado();
-	    }
-	}
-
-	return Util.arredondar(soma, 2);
+		double soma = 0d;
+	
+		for (int i = 0; i < this.dadosCategoria.size(); i++) {
+		    
+			if ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i)).getFaturamentoAgua() != null) {
+		    	soma += ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i)).getFaturamentoAgua()).getValorFaturado();
+		    }
+		}
+	
+		return Util.arredondar(soma, 2);
     }
 
     public double getValorEsgoto() {
 
-	double soma = 0d;
-
-	for (int i = 0; i < this.dadosCategoria.size(); i++) {
-	    if ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i))
-		    .getFaturamentoEsgoto() != null) {
-		soma += ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria
-			.get(i)).getFaturamentoEsgoto())
-			.getValorFaturado();
-	    }
-	}
-
-	return Util.arredondar(soma, 2);
+		double soma = 0d;
+	
+		for (int i = 0; i < this.dadosCategoria.size(); i++) {
+		    
+			if ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i)).getFaturamentoEsgoto() != null) {
+				soma += ((DadosFaturamento) ((DadosCategoria) this.dadosCategoria.get(i)).getFaturamentoEsgoto()).getValorFaturado();
+		    }
+		}
+	
+		return Util.arredondar(soma, 2);
     }
 
     public double getValorDebitos() {
 
-	double soma = 0d;
-
-	if (this.getDebitos() != null) {
-	    for (int i = 0; i < this.getDebitos().size(); i++) {
-		soma += ((Debito) (this.getDebitos().get(i)))
-			.getValor();
-	    }
-	}
-
-	return Util.arredondar(soma, 2);
+		double soma = 0d;
+	
+		if (this.getDebitos() != null) {
+		    for (int i = 0; i < this.getDebitos().size(); i++) {
+		    	soma += ((Debito) (this.getDebitos().get(i))).getValor();
+		    }
+		}
+	
+		return Util.arredondar(soma, 2);
     }
 
     public double getValorCreditos() {
 
-	double soma = 0d;
-
-//	Daniel - Tratamento de Bônus Social
-	if (this.getCreditos() != null) {
-	    for (int i = 0; i < this.getCreditos().size(); i++) {
-	    	if( ((Credito) (this.getCreditos().get(i))).getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)  &&
-	    		Integer.parseInt(this.getCodigoPerfil()) == PERFIL_BONUS_SOCIAL &&
-	    		this.getConsumoAgua() != null &&
-	    		this.getConsumoAgua().getConsumoCobradoMes() > 10 ){
-	    		
-	    			System.out.println("CREDITO DE BONUS SOCIAL DESCARTADO!");
-
-	    	}else{
-	    		soma += ((Credito) (this.getCreditos().get(i))).getValor();
-	    	}
-	    }
-	}
-
-	if (valorResidualCredito != 0d) {
-	    soma = soma - this.valorResidualCredito;
-	}
-
-	return Util.arredondar(soma, 2);
+		double soma = 0d;
+	
+	//	Daniel - Tratamento de Bônus Social
+		if (this.getCreditos() != null) {
+		    
+			for (int i = 0; i < this.getCreditos().size(); i++) {
+		    	
+				if( ((Credito) (this.getCreditos().get(i))).getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)  &&
+		    		Integer.parseInt(this.getCodigoPerfil()) == PERFIL_BONUS_SOCIAL &&
+		    		this.getConsumoAgua() != null &&
+		    		this.getConsumoAgua().getConsumoCobradoMes() > 10 ){
+		    		
+		    			System.out.println("CREDITO DE BONUS SOCIAL DESCARTADO!");
+	
+		    	}else{
+		    		soma += ((Credito) (this.getCreditos().get(i))).getValor();
+		    	}
+		    }
+		}
+	
+		if (valorResidualCredito != 0d) {
+		    soma = soma - this.valorResidualCredito;
+		}
+	
+		return Util.arredondar(soma, 2);
     }
 
     public double getValorContaSem() {
 
-	double valorContaSem = (this.getValorAgua()
-		+ this.getValorEsgoto() + this.getValorDebitos() 
-		+ this.getValorRateioAgua() + this.getValorRateioEsgoto())
-		- this.getValorCreditos();
-
-	if (valorContaSem < 0d) {
-	    valorContaSem = 0d;
-	}
-	return Util.arredondar(valorContaSem, 2);
+		double valorContaSem = (this.getValorAgua()
+								+ this.getValorEsgoto()
+								+ this.getValorDebitos() 
+								+ this.getValorRateioAgua()
+								+ this.getValorRateioEsgoto())
+								- this.getValorCreditos();
+	
+		if (valorContaSem < 0d) {
+		    valorContaSem = 0d;
+		}
+		return Util.arredondar(valorContaSem, 2);
     }
 
-    public double getValors() {
-	double soma = 0d;
-	if (impostos != null) {
-	    for (int i = 0; i < this.impostos.size(); i++) {
-		double percentualAlicota = ((Imposto) (this.impostos
-			.get(i))).getPercentualAlicota();
-		double valor = this.getValorContaSem()
-			* Util.arredondar((percentualAlicota / 100), 7);
-		soma += valor;
-	    }
-	}
-
-	return Util.arredondar(soma, 2);
+    public double getValores() {
+		double soma = 0d;
+		
+		if (impostos != null) {
+		    
+			for (int i = 0; i < this.impostos.size(); i++) {
+				double percentualAlicota = ((Imposto) (this.impostos.get(i))).getPercentualAlicota();
+				double valor = this.getValorContaSem() * Util.arredondar((percentualAlicota / 100), 7);
+				soma += valor;
+		    }
+		}
+	
+		return Util.arredondar(soma, 2);
     }
 
     public double getValorConta() {
 
-	double valorConta = this.getValorContaSem()
-		- this.getValors();
-	if (valorConta < 0d) {
-	    valorConta = 0d;
-	}
-	return Util.arredondar(valorConta, 2);
+		double valorConta = this.getValorContaSem() - this.getValores();
+		
+		if (valorConta < 0d) {
+		    valorConta = 0d;
+		}
+		
+		return Util.arredondar(valorConta, 2);
     }
 
     public double getValorContaSemCreditos() {
 
-	double valorContaSemCreditos = (this.getValorAgua()
-		+ this.getValorEsgoto() + this.getValorDebitos() 
-		+ this.getValorRateioAgua() + this.getValorRateioEsgoto()
-		- this.getValors());
-
-	return Util.arredondar(valorContaSemCreditos, 2);
+		double valorContaSemCreditos = (this.getValorAgua()
+										+ this.getValorEsgoto()
+										+ this.getValorDebitos() 
+										+ this.getValorRateioAgua()
+										+ this.getValorRateioEsgoto()
+										- this.getValores());
+	
+		return Util.arredondar(valorContaSemCreditos, 2);
     }
 
     public String getLocalidade() {
@@ -1984,31 +1939,31 @@ public class Imovel {
 
     public String getInscricaoFormatada() {
 		String inscricaoFormatada = this.inscricao.trim();
-		    localidade = inscricaoFormatada.substring(0, 3);
-		    setor = inscricaoFormatada.substring(3, 6);
-		    quadra = inscricaoFormatada.substring(6, 10);
-		    lote = inscricaoFormatada.substring(10, 14);
-		    sublote = inscricaoFormatada.substring(14, 17);
+		localidade = inscricaoFormatada.substring(0, 3);
+		setor = inscricaoFormatada.substring(3, 6);
+		quadra = inscricaoFormatada.substring(6, 10);
+		lote = inscricaoFormatada.substring(10, 14);
+		sublote = inscricaoFormatada.substring(14, 17);
 	
-		    inscricaoFormatada = localidade + "." + setor + "." + quadra + "." + lote + "." + sublote;
+		inscricaoFormatada = localidade + "." + setor + "." + quadra + "." + lote + "." + sublote;
 	
 		return inscricaoFormatada;
     }
 
     public void setId(long imovelId) {
-	this.id = imovelId;
+    	this.id = imovelId;
     }
 
     public long getId() {
-	return id;
+    	return id;
     }
 
     public int getAnormalidadeSemHidrometro() {
-	return anormalidadeSemHidrometro;
+    	return anormalidadeSemHidrometro;
     }
 
     public void setAnormalidadeSemHidrometro(int anormalidadeSemHidrometro) {
-	this.anormalidadeSemHidrometro = anormalidadeSemHidrometro;
+    	this.anormalidadeSemHidrometro = anormalidadeSemHidrometro;
     }
 
     /**
@@ -2020,52 +1975,50 @@ public class Imovel {
      *            codigo da categiria ou da sub
      * @return tarifa de consumo calculada;
      */
-    public TarifacaoMinima pesquisarDadosTarifaImovel(
-	    boolean tipoTarifaPorCategoria, String codigoCategoria,
-	    String codigoSubCategoria, int codigoTarifa, Date dataInicioVigencia) {
+    public TarifacaoMinima pesquisarDadosTarifaImovel( boolean tipoTarifaPorCategoria, 
+    												   String codigoCategoria,
+    												   String codigoSubCategoria, 
+    												   int codigoTarifa, 
+    												   Date dataInicioVigencia) {
 
-	TarifacaoMinima retorno = null;
-
-	for (int i = 0; i < tarifacoesMinimas.size(); i++) {
-
-	    TarifacaoMinima registro = (TarifacaoMinima) tarifacoesMinimas.get(i);
-
-	    if (tipoTarifaPorCategoria) {
-
-		// System.out.println( registro.getCodigoCategoriaReg9() );
-
-		if (Util.compararData(dataInicioVigencia, registro
-			.getDataVigencia()) == 0
-			&& codigoTarifa == registro.getCodigo()
-			&& Integer.parseInt(codigoCategoria) == registro
-				.getCodigoCategoria()
-			&& (registro.getCodigoSubcategoria() == Constantes.NULO_INT || registro
-				.getCodigoSubcategoria() == 0)) {
-		    retorno = registro;
-		    break;
+		TarifacaoMinima retorno = null;
+	
+		for (int i = 0; i < tarifacoesMinimas.size(); i++) {
+	
+		    TarifacaoMinima tarifacaoMinima = (TarifacaoMinima) tarifacoesMinimas.get(i);
+	
+		    if (tipoTarifaPorCategoria) {
+	
+			// System.out.println( registro.getCodigoCategoriaReg9() );
+	
+			if (Util.compararData(dataInicioVigencia, tarifacaoMinima.getDataVigencia()) == 0
+				&& codigoTarifa == tarifacaoMinima.getCodigo()
+				&& Integer.parseInt(codigoCategoria) == tarifacaoMinima.getCodigoCategoria()
+				&& (tarifacaoMinima.getCodigoSubcategoria() == Constantes.NULO_INT || tarifacaoMinima.getCodigoSubcategoria() == 0)) {
+			    	
+					retorno = tarifacaoMinima;
+					break;
+			}
+		    } else {
+		    	
+				if (Util.compararData(dataInicioVigencia, tarifacaoMinima.getDataVigencia()) == 0
+					&& codigoTarifa == tarifacaoMinima.getCodigo()
+					&& Integer.parseInt(codigoCategoria) == tarifacaoMinima.getCodigoCategoria()
+					&& Integer.parseInt(codigoSubCategoria) == tarifacaoMinima.getCodigoSubcategoria()) {
+					    
+						retorno = tarifacaoMinima;
+					    break;
+				}
+		    }
 		}
-	    } else {
-		if (Util.compararData(dataInicioVigencia, registro
-			.getDataVigencia()) == 0
-			&& codigoTarifa == registro.getCodigo()
-			&& Integer.parseInt(codigoCategoria) == registro
-				.getCodigoCategoria()
-			&& Integer.parseInt(codigoSubCategoria) == registro
-				.getCodigoSubcategoria()) {
-		    retorno = registro;
-		    break;
-		}
-	    }
-	}
-
-	return retorno;
+	
+		return retorno;
     }
 
     /**
      * seleciona as faixas para calcular o valor faturado
      * 
-     * @param tipoTarifaPorCategoria informa se o tipo de calculo da tarifa é
-     * por categoria
+     * @param tipoTarifaPorCategoria informa se o tipo de calculo da tarifa é por categoria
      * 
      * @param inicioVigencia data de inicio da vigencia
      * 
@@ -2073,144 +2026,149 @@ public class Imovel {
      * 
      * @return
      */
-    public Vector selecionarFaixasCalculoValorFaturado(
-	    boolean tipoTarifaPorCategoria, String codigo, int codigoTarifa,
-	    Date dataInicioVigencia) {
+    public Vector selecionarFaixasCalculoValorFaturado(boolean tipoTarifaPorCategoria, 
+    												   String codigo, 
+    												   int codigoTarifa,
+    												   Date dataInicioVigencia) {
 
-	Vector retorno = new Vector();
+		Vector retorno = new Vector();
+	
+		for (int i = 0; i < tarifacoesComplementares.size(); i++) {
+		    
+			TarifacaoComplementar tarifacaoComplementar = (TarifacaoComplementar) tarifacoesComplementares.get(i);
+	
+		    if (tipoTarifaPorCategoria) {
+				
+		    	if (Util.compararData(dataInicioVigencia, tarifacaoComplementar.getDataInicioVigencia()) == 0
+					&& codigoTarifa == tarifacaoComplementar.getCodigo()
+					&& Integer.parseInt(codigo) == tarifacaoComplementar.getCodigoCategoria()
+					&& (tarifacaoComplementar.getCodigoSubcategoria() == Constantes.NULO_INT || tarifacaoComplementar.getCodigoSubcategoria() == 0)) {
+				    
+		    			retorno.addElement(tarifacaoComplementar);
+				}
+		    } else {
 
-	for (int i = 0; i < tarifacoesComplementares.size(); i++) {
-	    TarifacaoComplementar registro = (TarifacaoComplementar) tarifacoesComplementares.get(i);
-
-	    if (tipoTarifaPorCategoria) {
-		if (Util.compararData(dataInicioVigencia, registro
-			.getDataInicioVigencia()) == 0
-			&& codigoTarifa == registro.getCodigo()
-			&& Integer.parseInt(codigo) == registro
-				.getCodigoCategoria()
-			&& (registro.getCodigoSubcategoria() == Constantes.NULO_INT || registro
-				.getCodigoSubcategoria() == 0)) {
-		    retorno.addElement(registro);
+		    	if (Util.compararData(dataInicioVigencia, tarifacaoComplementar.getDataInicioVigencia()) == 0
+		    		&& codigoTarifa == tarifacaoComplementar.getCodigo()
+		    		&& Integer.parseInt(codigo) == tarifacaoComplementar.getCodigoCategoria()
+		    		&& Integer.parseInt(codigo) == tarifacaoComplementar.getCodigoSubcategoria()) {
+			    
+		    			retorno.addElement(tarifacaoComplementar);
+		    	}
+		    }
 		}
-	    } else {
-		if (Util.compararData(dataInicioVigencia, registro
-			.getDataInicioVigencia()) == 0
-			&& codigoTarifa == registro.getCodigo()
-			&& Integer.parseInt(codigo) == registro
-				.getCodigoCategoria()
-			&& Integer.parseInt(codigo) == registro
-				.getCodigoSubcategoria()) {
-		    retorno.addElement(registro);
-		}
-	    }
-	}
-
-	return retorno;
+	
+		return retorno;
     }
 
     public String getDescricaoSitLigacaoAgua(int situacaoLigAgua) {
-	String descricaoSitLigacaoAgua = "";
-	if (situacaoLigAgua != 0) {
-	    switch (situacaoLigAgua) {
-	    case POTENCIAL:
-		descricaoSitLigacaoAgua = "POTENCIAL";
-		break;
-	    case FACTIVEL:
-		descricaoSitLigacaoAgua = "FACTIVEL";
-		break;
-	    case LIGADO:
-		descricaoSitLigacaoAgua = "LIGADO";
-		break;
-	    case EM_FISCALIZACAO:
-		descricaoSitLigacaoAgua = "LIGADO EM ANALISE.";
-		break;
-	    case CORTADO:
-		descricaoSitLigacaoAgua = "CORTADO";
-		break;
-	    case SUPRIMIDO:
-		descricaoSitLigacaoAgua = "SUPRIMIDO";
-		break;
-	    case SUPR_PARC:
-		descricaoSitLigacaoAgua = "SUPR. PARC.";
-		break;
-	    case SUPR_PARC_PEDIDO:
-		descricaoSitLigacaoAgua = "SUP. PARC. PED.";
-		break;
-	    case EM_CANCELAMENTO:
-		descricaoSitLigacaoAgua = "EM CANCEL.";
-		break;
-	    }
-	}
-	return descricaoSitLigacaoAgua;
+		String descricaoSitLigacaoAgua = "";
+		
+		if (situacaoLigAgua != 0) {
+		
+			switch (situacaoLigAgua) {
+		    
+			case POTENCIAL:
+			descricaoSitLigacaoAgua = "POTENCIAL";
+			break;
+		    case FACTIVEL:
+			descricaoSitLigacaoAgua = "FACTIVEL";
+			break;
+		    case LIGADO:
+			descricaoSitLigacaoAgua = "LIGADO";
+			break;
+		    case EM_FISCALIZACAO:
+			descricaoSitLigacaoAgua = "LIGADO EM ANALISE.";
+			break;
+		    case CORTADO:
+			descricaoSitLigacaoAgua = "CORTADO";
+			break;
+		    case SUPRIMIDO:
+			descricaoSitLigacaoAgua = "SUPRIMIDO";
+			break;
+		    case SUPR_PARC:
+			descricaoSitLigacaoAgua = "SUPR. PARC.";
+			break;
+		    case SUPR_PARC_PEDIDO:
+			descricaoSitLigacaoAgua = "SUP. PARC. PED.";
+			break;
+		    case EM_CANCELAMENTO:
+			descricaoSitLigacaoAgua = "EM CANCEL.";
+			break;
+		    }
+		}
+		return descricaoSitLigacaoAgua;
     }
 
     public String getDescricaoSitLigacaoEsgoto(int situacaoLigEsgoto) {
-	String descricaoSitLigacaoEsgoto = "";
-	if (situacaoLigEsgoto != 0) {
-	    switch (situacaoLigEsgoto) {
-	    case POTENCIAL:
-		descricaoSitLigacaoEsgoto = "POTENCIAL";
-		break;
-	    case FACTIVEL:
-		descricaoSitLigacaoEsgoto = "FACTIVEL";
-		break;
-	    case LIGADO:
-		descricaoSitLigacaoEsgoto = "LIGADO";
-		break;
-	    case EM_FISCALIZACAO:
-		descricaoSitLigacaoEsgoto = "EM FISCAL.";
-		break;
-	    case LIG_FORA_USO:
-		descricaoSitLigacaoEsgoto = "LIG. FORA DE USO";
-		break;
-	    case TAMPONADO:
-		descricaoSitLigacaoEsgoto = "TAMPONADO";
-		break;
-	    case CONVERSAO:
-		descricaoSitLigacaoEsgoto = "CONVERSAO";
-		break;
+		String descricaoSitLigacaoEsgoto = "";
+		
+		if (situacaoLigEsgoto != 0) {
+		    switch (situacaoLigEsgoto) {
 
-	    }
-	}
-	return descricaoSitLigacaoEsgoto;
+		    case POTENCIAL:
+			descricaoSitLigacaoEsgoto = "POTENCIAL";
+			break;
+		    case FACTIVEL:
+			descricaoSitLigacaoEsgoto = "FACTIVEL";
+			break;
+		    case LIGADO:
+			descricaoSitLigacaoEsgoto = "LIGADO";
+			break;
+		    case EM_FISCALIZACAO:
+			descricaoSitLigacaoEsgoto = "EM FISCAL.";
+			break;
+		    case LIG_FORA_USO:
+			descricaoSitLigacaoEsgoto = "LIG. FORA DE USO";
+			break;
+		    case TAMPONADO:
+			descricaoSitLigacaoEsgoto = "TAMPONADO";
+			break;
+		    case CONVERSAO:
+			descricaoSitLigacaoEsgoto = "CONVERSAO";
+			break;
+	
+		    }
+		}
+		return descricaoSitLigacaoEsgoto;
     }
 
     public int getIndcImoveldo() {
-	return indcImoveldo;
+    	return indcImoveldo;
     }
 
     public void setIndcImoveldo(int indcImoveldo) {
-	this.indcImoveldo = indcImoveldo;
+    	this.indcImoveldo = indcImoveldo;
     }
 
     public double getValorDebitosAnteriores() {
 
-	double soma = 0d;
-
-	if (this.contas != null) {
-	    for (int i = 0; i < this.contas.size(); i++) {
-		soma += ((Conta) (this.contas.get(i)))
-			.getValor();
-	    }
-	}
-
-	return Util.arredondar(soma, 2);
+		double soma = 0d;
+	
+		if (this.contas != null) {
+		    
+			for (int i = 0; i < this.contas.size(); i++) {
+		    	soma += ((Conta) (this.contas.get(i))).getValor();
+		    }
+		}
+	
+		return Util.arredondar(soma, 2);
     }
 
     public String toString() {
-	return this.getMatricula() + " - " + this.getEndereco();
+    	return this.getMatricula() + " - " + this.getEndereco();
     }
 
     public String getCpfCnpjCliente() {
-	return cpfCnpjCliente;
+    	return cpfCnpjCliente;
     }
 
     public void setCpfCnpjCliente(String cpfCnpjCliente) {
-	this.cpfCnpjCliente = cpfCnpjCliente;
+    	this.cpfCnpjCliente = cpfCnpjCliente;
     }
 
     public double getValorResidualCredito() {
-	return valorResidualCredito;
+    	return valorResidualCredito;
     }
 
     public void setValorResidualCredito(double valorResidualCredito) {
@@ -2228,26 +2186,28 @@ public class Imovel {
      **/
     public boolean enviarAoImprimir() {
 
-	// Verificamos o valor mínimo da conta
-	boolean enviarContaValorMaiorPermitido = isValorContaAcimaDoMinimo();
-
-// Daniel - Imovel deve ter sido impresso também.
-	/**
-	 * Será necessário reenviar caso haja alteração na leitura de agua ou
-	 * anormalidade de agua ou na leitura de poco ou anormalidade de poco ou
-	 * na anormalidade sem hidrometro. Imóveis que possuem débito do tipo
-	 * cortado de água, com esgoto à 30%, devem ser enviados apenas no final
-	 **/
-	if (this.indcImovelCalculado == Constantes.SIM && 
-		    this.indcImovelEnviado == Constantes.NAO && 
-		   (this.indcImovelImpresso == Constantes.SIM || this.indcGeracao == Constantes.NAO) && 
-		    this.valorResidualCredito == 0d && 
-		    this.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 ) == null &&
-		    enviarContaValorMaiorPermitido) {
-		    return true;
-	} else {
-	    return false;
-	}
+		// Verificamos o valor mínimo da conta
+		boolean enviarContaValorMaiorPermitido = isValorContaAcimaDoMinimo();
+	
+		// Daniel - Imovel deve ter sido impresso também.
+		/**
+		 * Será necessário reenviar caso haja alteração na leitura de agua ou
+		 * anormalidade de agua ou na leitura de poco ou anormalidade de poco ou
+		 * na anormalidade sem hidrometro. Imóveis que possuem débito do tipo
+		 * cortado de água, com esgoto à 30%, devem ser enviados apenas no final
+		 **/
+		if ( this.indcImovelCalculado == Constantes.SIM && 
+			 this.indcImovelEnviado == Constantes.NAO && 
+			 (this.indcImovelImpresso == Constantes.SIM || this.indcGeracao == Constantes.NAO) && 
+			 this.valorResidualCredito == 0d && 
+			 this.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 ) == null &&
+			 enviarContaValorMaiorPermitido) {
+			 
+				return true;
+		
+		} else {
+		    return false;
+		}
     }
 
     /**
@@ -2260,8 +2220,7 @@ public class Imovel {
      * 
      **/
     public boolean enviarAoFinalizar() {
-	return this.indcImovelCalculado == Constantes.SIM
-	&& this.indcImovelEnviado == Constantes.NAO;
+    	return this.indcImovelCalculado == Constantes.SIM && this.indcImovelEnviado == Constantes.NAO;
     }
 
     public boolean isImovelCondominio() {
@@ -2273,33 +2232,31 @@ public class Imovel {
     }
    
     public int getQuantidadeImoveisCondominio() {
-	return quantidadeImoveisCondominio;
+    	return quantidadeImoveisCondominio;
     }
 
     public void setQuantidadeImoveisCondominio(int quantidadeImoveisCondominio) {
-	this.quantidadeImoveisCondominio = quantidadeImoveisCondominio;
+    	this.quantidadeImoveisCondominio = quantidadeImoveisCondominio;
     }
 
     public int getIdImovelCondominio() {
-	return idImovelCondominio;
+    	return idImovelCondominio;
     }
 
     public void setIdImovelCondominio(int idImovelCondominio) {
-	this.idImovelCondominio = idImovelCondominio;
+    	this.idImovelCondominio = idImovelCondominio;
     }
 
     public void setSituacaoTipo(SituacaoTipo situacaoTipo) {
-	this.situacaoTipo = situacaoTipo;
+    	this.situacaoTipo = situacaoTipo;
     }
 
     public Date getDataLeituraAnteriorNaoMedido() {
-	return dataLeituraAnteriorNaoMedido;
+    	return dataLeituraAnteriorNaoMedido;
     }
 
-    public void setDataLeituraAnteriorNaoMedido(
-	    String dataLeituraAnteriorNaoMedido) {
-	this.dataLeituraAnteriorNaoMedido = Util.getData(Util
-		.verificarNuloString(dataLeituraAnteriorNaoMedido));
+    public void setDataLeituraAnteriorNaoMedido(String dataLeituraAnteriorNaoMedido) {
+    	this.dataLeituraAnteriorNaoMedido = Util.getData(Util.verificarNuloString(dataLeituraAnteriorNaoMedido));
     }
 
     public Date getDataImpressaoNaoMedido() {
@@ -2330,269 +2287,16 @@ public class Imovel {
 		return dataVencimento;
 	}
 
-	public void setDataVencimento(Date dataVencimento) {
-		this.dataVencimento = dataVencimento;
-	}
-
 	public Date getDataValidadeConta() {
 		return dataValidadeConta;
 	}
 
-	public void setDataValidadeConta(Date dataValidadeConta) {
-		this.dataValidadeConta = dataValidadeConta;
-	}
-
-
-	public void setDigitoVerificadorConta(int digitoVerificadorConta) {
-		this.digitoVerificadorConta = digitoVerificadorConta;
-	}
-	
 	public String getSituacaoLigAguaString() {
 		return situacaoLigAgua.equals(Constantes.LIGADO) ? "Ligado" : "Desligado";
 	}
 
 	public String getSituacaoLigEsgotoString() {
 		return situacaoLigEsgoto.equals(Constantes.LIGADO) ? "Ligado" : "Desligado";
-	}
-
-	public void setMatriculaCondominio(int matriculaCondominio) {
-		this.matriculaCondominio = matriculaCondominio;
-	}
-
-	public void setIndcCondominio(int indcCondominio) {
-		this.indcCondominio = indcCondominio;
-	}
-
-	public void setConsumoMedio(int consumoMedio) {
-		this.consumoMedio = consumoMedio;
-	}
-
-	public void setIndcFaturamentoAgua(int indcFaturamentoAgua) {
-		this.indcFaturamentoAgua = indcFaturamentoAgua;
-	}
-
-	public void setIndcFaturamentoEsgoto(int indcFaturamentoEsgoto) {
-		this.indcFaturamentoEsgoto = indcFaturamentoEsgoto;
-	}
-
-	public void setIndcEmissaoConta(int indcEmissaoConta) {
-		this.indcEmissaoConta = indcEmissaoConta;
-	}
-
-	public void setConsumoMinAgua(int consumoMinAgua) {
-		this.consumoMinAgua = consumoMinAgua;
-	}
-
-	public void setConsumoMinEsgoto(int consumoMinEsgoto) {
-		this.consumoMinEsgoto = consumoMinEsgoto;
-	}
-
-	public void setPercentColetaEsgoto(double percentColetaEsgoto) {
-		this.percentColetaEsgoto = percentColetaEsgoto;
-	}
-
-	public void setPercentCobrancaEsgoto(double percentCobrancaEsgoto) {
-		this.percentCobrancaEsgoto = percentCobrancaEsgoto;
-	}
-
-	public void setTipoPoco(int tipoPoco) {
-		this.tipoPoco = tipoPoco;
-	}
-
-	public void setCodigoTarifa(int codigoTarifa) {
-		this.codigoTarifa = codigoTarifa;
-	}
-
-	public void setConsumoEstouro(int consumoEstouro) {
-		this.consumoEstouro = consumoEstouro;
-	}
-
-	public void setAltoConsumo(int altoConsumo) {
-		this.altoConsumo = altoConsumo;
-	}
-
-	public void setBaixoConsumo(int baixoConsumo) {
-		this.baixoConsumo = baixoConsumo;
-	}
-
-	public void setFatorMultEstouro(double fatorMultEstouro) {
-		this.fatorMultEstouro = fatorMultEstouro;
-	}
-
-	public void setFatorMultMediaAltoConsumo(double fatorMultMediaAltoConsumo) {
-		this.fatorMultMediaAltoConsumo = fatorMultMediaAltoConsumo;
-	}
-
-	public void setPercentBaixoConsumo(double percentBaixoConsumo) {
-		this.percentBaixoConsumo = percentBaixoConsumo;
-	}
-
-	public void setConsumoMaximo(int consumoMaximo) {
-		this.consumoMaximo = consumoMaximo;
-	}
-
-	public void setGrupoFaturamento(int grupoFaturamento) {
-		this.grupoFaturamento = grupoFaturamento;
-	}
-
-	public void setCodigoRota(int codigoRota) {
-		this.codigoRota = codigoRota;
-	}
-
-	public void setNumeroConta(int numeroConta) {
-		this.numeroConta = numeroConta;
-	}
-
-	public void setTipoCalculoTarifa(int tipoCalculoTarifa) {
-		this.tipoCalculoTarifa = tipoCalculoTarifa;
-	}
-
-	public void setSequencialRota(int sequencialRota) {
-		this.sequencialRota = sequencialRota;
-	}
-
-	public void setQuantidadeTurbidezExigidas(int quantidadeTurbidezExigidas) {
-		this.quantidadeTurbidezExigidas = quantidadeTurbidezExigidas;
-	}
-
-	public void setQuantidadeCorExigidas(int quantidadeCorExigidas) {
-		this.quantidadeCorExigidas = quantidadeCorExigidas;
-	}
-
-	public void setQuantidadeCloroExigidas(int quantidadeCloroExigidas) {
-		this.quantidadeCloroExigidas = quantidadeCloroExigidas;
-	}
-
-	public void setQuantidadeFluorExigidas(int quantidadeFluorExigidas) {
-		this.quantidadeFluorExigidas = quantidadeFluorExigidas;
-	}
-
-	public void setQuantidadeColiformesTotaisExigidas(
-			int quantidadeColiformesTotaisExigidas) {
-		this.quantidadeColiformesTotaisExigidas = quantidadeColiformesTotaisExigidas;
-	}
-
-	public void setQuantidadeColiformesFecaisExigidas(
-			int quantidadeColiformesFecaisExigidas) {
-		this.quantidadeColiformesFecaisExigidas = quantidadeColiformesFecaisExigidas;
-	}
-
-	public void setQuantidadeColiformesTermoTolerantesExigidas(
-			int quantidadeColiformesTermoTolerantesExigidas) {
-		this.quantidadeColiformesTermoTolerantesExigidas = quantidadeColiformesTermoTolerantesExigidas;
-	}
-
-	public void setQuantidadeTurbidezAnalisadas(int quantidadeTurbidezAnalisadas) {
-		this.quantidadeTurbidezAnalisadas = quantidadeTurbidezAnalisadas;
-	}
-
-	public void setQuantidadeCorAnalisadas(int quantidadeCorAnalisadas) {
-		this.quantidadeCorAnalisadas = quantidadeCorAnalisadas;
-	}
-
-	public void setQuantidadeCloroAnalisadas(int quantidadeCloroAnalisadas) {
-		this.quantidadeCloroAnalisadas = quantidadeCloroAnalisadas;
-	}
-
-	public void setQuantidadeFluorAnalisadas(int quantidadeFluorAnalisadas) {
-		this.quantidadeFluorAnalisadas = quantidadeFluorAnalisadas;
-	}
-
-	public void setQuantidadeColiformesTotaisAnalisadas(
-			int quantidadeColiformesTotaisAnalisadas) {
-		this.quantidadeColiformesTotaisAnalisadas = quantidadeColiformesTotaisAnalisadas;
-	}
-
-	public void setQuantidadeColiformesFecaisAnalisadas(
-			int quantidadeColiformesFecaisAnalisadas) {
-		this.quantidadeColiformesFecaisAnalisadas = quantidadeColiformesFecaisAnalisadas;
-	}
-
-	public void setQuantidadeColiformesTermoTolerantesAnalisadas(
-			int quantidadeColiformesTermoTolerantesAnalisadas) {
-		this.quantidadeColiformesTermoTolerantesAnalisadas = quantidadeColiformesTermoTolerantesAnalisadas;
-	}
-
-	public void setQuantidadeTurbidezConforme(int quantidadeTurbidezConforme) {
-		this.quantidadeTurbidezConforme = quantidadeTurbidezConforme;
-	}
-
-	public void setQuantidadeCorConforme(int quantidadeCorConforme) {
-		this.quantidadeCorConforme = quantidadeCorConforme;
-	}
-
-	public void setQuantidadeCloroConforme(int quantidadeCloroConforme) {
-		this.quantidadeCloroConforme = quantidadeCloroConforme;
-	}
-
-	public void setQuantidadeFluorConforme(int quantidadeFluorConforme) {
-		this.quantidadeFluorConforme = quantidadeFluorConforme;
-	}
-
-	public void setQuantidadeColiformesTotaisConforme(
-			int quantidadeColiformesTotaisConforme) {
-		this.quantidadeColiformesTotaisConforme = quantidadeColiformesTotaisConforme;
-	}
-
-	public void setQuantidadeColiformesFecaisConforme(
-			int quantidadeColiformesFecaisConforme) {
-		this.quantidadeColiformesFecaisConforme = quantidadeColiformesFecaisConforme;
-	}
-
-	public void setQuantidadeColiformesTermoTolerantesConforme(
-			int quantidadeColiformesTermoTolerantesConforme) {
-		this.quantidadeColiformesTermoTolerantesConforme = quantidadeColiformesTermoTolerantesConforme;
-	}
-
-	public void setConsumoMinimoImovel(int consumoMinimoImovel) {
-		this.consumoMinimoImovel = consumoMinimoImovel;
-	}
-
-	public int getConsumoMinimoImovelNaoMedido() {
-		return consumoMinimoImovelNaoMedido;
-	}
-
-	public void setConsumoMinimoImovelNaoMedido(int consumoMinimoImovelNaoMedido) {
-		this.consumoMinimoImovelNaoMedido = consumoMinimoImovelNaoMedido;
-	}
-
-	public void setDataLeituraAnteriorNaoMedido(Date dataLeituraAnteriorNaoMedido) {
-		this.dataLeituraAnteriorNaoMedido = dataLeituraAnteriorNaoMedido;
-	}
-
-	public void setIndicadorAbastecimentoAgua(short indicadorAbastecimentoAgua) {
-		this.indicadorAbastecimentoAgua = indicadorAbastecimentoAgua;
-	}
-
-	public void setIndicadorImovelSazonal(short indicadorImovelSazonal) {
-		this.indicadorImovelSazonal = indicadorImovelSazonal;
-	}
-
-	public void setIndicadorParalizarFaturamentoAgua(
-			int indicadorParalizarFaturamentoAgua) {
-		this.indicadorParalizarFaturamentoAgua = indicadorParalizarFaturamentoAgua;
-	}
-
-	public void setIndicadorParalizarFaturamentoEsgoto(
-			int indicadorParalizarFaturamentoEsgoto) {
-		this.indicadorParalizarFaturamentoEsgoto = indicadorParalizarFaturamentoEsgoto;
-	}
-
-	public void setOpcaoDebitoAutomatico(int opcaoDebitoAutomatico) {
-		this.opcaoDebitoAutomatico = opcaoDebitoAutomatico;
-	}
-
-	public void setPercentualAlternativoEsgoto(double percentualAlternativoEsgoto) {
-		this.percentualAlternativoEsgoto = percentualAlternativoEsgoto;
-	}
-
-	public void setConsumoPercentualAlternativoEsgoto(
-			int consumoPercentualAlternativoEsgoto) {
-		this.consumoPercentualAlternativoEsgoto = consumoPercentualAlternativoEsgoto;
-	}
-
-	public void setDataEmissaoDocumento(Date dataEmissaoDocumento) {
-		this.dataEmissaoDocumento = dataEmissaoDocumento;
 	}
 
 	public int getContagemValidacaoAgua() {
@@ -2616,21 +2320,19 @@ public class Imovel {
 	}
 
     public short getIndicadorAbastecimentoAgua() {
-	return indicadorAbastecimentoAgua;
+    	return indicadorAbastecimentoAgua;
     }
 
     public void setIndicadorAbastecimentoAgua(String indicadorAbastecimentoAgua) {
-	this.indicadorAbastecimentoAgua = Util
-		.verificarNuloShort(indicadorAbastecimentoAgua);
+    	this.indicadorAbastecimentoAgua = Util.verificarNuloShort(indicadorAbastecimentoAgua);
     }
 
     public short getIndicadorImovelSazonal() {
-	return indicadorImovelSazonal;
+    	return indicadorImovelSazonal;
     }
 
     public void setIndicadorImovelSazonal(String indicadorImovelSazonal) {
-	this.indicadorImovelSazonal = Util
-		.verificarNuloShort(indicadorImovelSazonal);
+    	this.indicadorImovelSazonal = Util.verificarNuloShort(indicadorImovelSazonal);
     }
 
     /**
@@ -2638,26 +2340,27 @@ public class Imovel {
      */
     public int pesquisarPrincipalCategoria() {
 
-	int idCateoria = 0;
-	int maiorQuantidadeEconomias = 0;
-
-	for (int i = 0; i < this.dadosCategoria.size(); i++) {
-
-	    DadosCategoria registro = (DadosCategoria) this.dadosCategoria.get(i);
-
-	    if (registro.getCodigoCategoria() != idCateoria) {
-		int quantidadeEconomias = this
-			.getQuantidadeEconomias(registro.getCodigoCategoria(),
-				registro.getCodigoSubcategoria());
-		if (maiorQuantidadeEconomias < quantidadeEconomias) {
-		    maiorQuantidadeEconomias = quantidadeEconomias;
-		    idCateoria = registro.getCodigoCategoria();
+		int idCateoria = 0;
+		int maiorQuantidadeEconomias = 0;
+	
+		for (int i = 0; i < this.dadosCategoria.size(); i++) {
+	
+		    DadosCategoria dadosCategoria = (DadosCategoria) this.dadosCategoria.get(i);
+	
+		    if (dadosCategoria.getCodigoCategoria() != idCateoria) {
+				
+		    	int quantidadeEconomias = this.getQuantidadeEconomias(dadosCategoria.getCodigoCategoria(),dadosCategoria.getCodigoSubcategoria());
+				
+		    	if (maiorQuantidadeEconomias < quantidadeEconomias) {
+				    
+		    		maiorQuantidadeEconomias = quantidadeEconomias;
+				    idCateoria = dadosCategoria.getCodigoCategoria();
+				}
+		    }
+	
 		}
-	    }
-
-	}
-
-	return idCateoria;
+	
+		return idCateoria;
     }
 
     /**
@@ -2670,7 +2373,7 @@ public class Imovel {
      * @return Se mudou, retornar true, senão retorna false;
      */
     public boolean verificarAlteracaoDadosImovel() {
-	return true;
+    	return true;
     }
 
     public boolean isImovelAlterado() {return true;}
@@ -2686,19 +2389,19 @@ public class Imovel {
     public boolean verificarLeituraAnormalidadeZeradas() {return true;}
 
     public int getAnormalidadeGravadaAnterior() {
-	return anormalidadeGravadaAnterior;
+    	return anormalidadeGravadaAnterior;
     }
 
     public void setAnormalidadeGravadaAnterior(int anormalidadeGravadaAnterior) {
-	this.anormalidadeGravadaAnterior = anormalidadeGravadaAnterior;
+    	this.anormalidadeGravadaAnterior = anormalidadeGravadaAnterior;
     }
 
     public int getLeituraGravadaAnterior() {
-	return leituraGravadaAnterior;
+    	return leituraGravadaAnterior;
     }
 
     public void setLeituraGravadaAnterior(int leituraGravadaAnterior) {
-	this.leituraGravadaAnterior = leituraGravadaAnterior;
+    	this.leituraGravadaAnterior = leituraGravadaAnterior;
     }
 
     /**
@@ -2741,7 +2444,7 @@ public class Imovel {
 			    .getQuantidadeEconomiasTotal();
 
 		    Medidor ligacaoAguaImovelMicro = this
-			    .getRegistro8(Constantes.LIGACAO_AGUA);
+			    .getMedidor(Constantes.LIGACAO_AGUA);
 
 			helper.setQuantidadeEconomiasAguaTotal(helper.getQuantidadeEconomiasAguaTotal() + quantidadeEconomiasImovel);
 
@@ -2761,7 +2464,7 @@ public class Imovel {
 		    // para verificarmos se o mesmo possue
 		    // tipo de rateio = 4
 		    Medidor ligacaoAguaImovelMacro = hidrometroMacro
-			    .getRegistro8(Constantes.LIGACAO_AGUA);
+			    .getMedidor(Constantes.LIGACAO_AGUA);
 		    /*
 		     * Considerar não medido de esgoto igual a não medido de
 		     * água, ou seja, de acordo com a existência de hidrometro
@@ -2772,13 +2475,13 @@ public class Imovel {
 			    && ligacaoAguaImovelMacro.getTipoRateio() == Medidor.TIPO_RATEIO_NAO_MEDIDO_AGUA) {
 
 			Medidor ligacaoAguaImovelMicro = this
-				.getRegistro8(Constantes.LIGACAO_AGUA);
+				.getMedidor(Constantes.LIGACAO_AGUA);
 
 			helper.setQuantidadeEconomiasEsgotoTotal(helper.getQuantidadeEconomiasEsgotoTotal() + quantidadeEconomiasImovel);
 
 		    } else {
 			Medidor ligacaoEsgotoImovelMicro = this
-				.getRegistro8(Constantes.LIGACAO_POCO);
+				.getMedidor(Constantes.LIGACAO_POCO);
 
 		    }
 		}
@@ -2873,27 +2576,25 @@ public class Imovel {
     }
 
     public int getIndicadorParalizarFaturamentoAgua() {
-	return indicadorParalizarFaturamentoAgua;
+    	return indicadorParalizarFaturamentoAgua;
     }
 
     public int getIndicadorParalizarFaturamentoEsgoto() {
-	return indicadorParalizarFaturamentoEsgoto;
+    	return indicadorParalizarFaturamentoEsgoto;
     }
 
     public int getOpcaoDebitoAutomatico() {
-	return opcaoDebitoAutomatico;
+    	return opcaoDebitoAutomatico;
     }
 
     public void setOpcaoDebitoAutomatico(String opcaoDebitoAutomatico) {
-	this.opcaoDebitoAutomatico = Util
-		.verificarNuloInt(opcaoDebitoAutomatico);
+    	this.opcaoDebitoAutomatico = Util.verificarNuloInt(opcaoDebitoAutomatico);
     }
 
     /**
      * @param consumo
      */
-    private void removerAdicionarIdImovelCondominioLidoHelperResumo(
-	    Consumo consumo) {
+    private void removerAdicionarIdImovelCondominioLidoHelperResumo(Consumo consumo) {
 	EfetuarRateioConsumoHelper helper = null;
 	Imovel macro = null;
 
@@ -2949,32 +2650,36 @@ public class Imovel {
      * @return Pode alterar ?
      */
     public boolean podeAlterarLeituraAnormalidade() {
-	boolean habilitar = true;
-
-	if (DadosGerais.getInstancia().getIndcBloquearReemissaoConta() == Constantes.SIM) {
-	    if (this.isImovelCondominio()) {
-
-		if (this.getIndcCondominio() == Constantes.SIM) {
-		    if (this.getIndcImovelImpresso() == Constantes.SIM) {
-			habilitar = false;
-		    }
-		} else {
-		    Imovel imovelMacro = new Imovel();
-//		    Repositorio.carregarObjeto(imovelMacro, this.getIdImovelCondominio());
-
-		    if (imovelMacro.getIndcImovelImpresso() == Constantes.SIM) {
-			habilitar = false;
+		boolean habilitar = true;
+	
+		if (DadosGerais.getInstancia().getIndcBloquearReemissaoConta() == Constantes.SIM) {
+		    
+			if (this.isImovelCondominio()) {
+	
+				if (this.getIndcCondominio() == Constantes.SIM) {
+				    
+					if (this.getIndcImovelImpresso() == Constantes.SIM) {
+				    	habilitar = false;
+				    }
+				
+				} else {
+				    Imovel imovelMacro = new Imovel();
+		//		    Repositorio.carregarObjeto(imovelMacro, this.getIdImovelCondominio());
+		
+				    if (imovelMacro.getIndcImovelImpresso() == Constantes.SIM) {
+				    	habilitar = false;
+				    }
+				}
+			
+			} else if (this.getIndcImovelImpresso() == Constantes.SIM) {
+				habilitar = false;
 		    }
 		}
-	    } else if (this.getIndcImovelImpresso() == Constantes.SIM) {
-		habilitar = false;
-	    }
-	}
-
-	return habilitar;
+	
+		return habilitar;
     }
 
-	   /**
+     /**
      * Verifica se o valor da conta informada no imóvel é superio ao valor
      * máximo permitido para impressão da mesma de acordo com o seu perfil
      * 
@@ -3051,15 +2756,16 @@ public class Imovel {
     public boolean isValorContaAcimaDoMinimo() {
 
 		// Caso o valor da conta seja menor que o valor
-		// permitido
-		// para ser impresso,
+		// permitido para ser impresso,
 		// só enviar a conta no final do processo (Finalizar Roteiro)
 		boolean enviarContaValorMenorPermitido = true;
 	
 		double valorConta = this.getValorConta();
 		double valorMinimoEmissaoConta = DadosGerais.getInstancia().getValorMinimEmissaoConta();
+
 		if (valorConta < valorMinimoEmissaoConta) {
-		    if (this.getValorCreditos() == 0d) {
+		
+			if (this.getValorCreditos() == 0d) {
 		    	enviarContaValorMenorPermitido = false;
 		    }
 		}
@@ -3076,25 +2782,24 @@ public class Imovel {
      * @return
      */
     public void setValorCreditosNitrato(double valorCreditoNitrato) {
-	if (this.creditos != null) {
-	    for (int i = 0; i < this.creditos.size(); i++) {
-
-		Credito registroDescricaoValor = ((Credito) (this.creditos
-			.get(i)));
-
-		String descricaoCredito = registroDescricaoValor.getDescricao();
-
-		if (descricaoCredito != null && !descricaoCredito.equals("")) {
-
-		    if (descricaoCredito.substring(0, 16).equals(Credito.DESCRICAO_CERDITO_NITRATO)) {
-
-			registroDescricaoValor.setValor(""
-				+ valorCreditoNitrato);
+		if (this.creditos != null) {
+		    
+			for (int i = 0; i < this.creditos.size(); i++) {
+	
+			Credito registroDescricaoValor = ((Credito) (this.creditos.get(i)));
+	
+			String descricaoCredito = registroDescricaoValor.getDescricao();
+	
+			if (descricaoCredito != null && !descricaoCredito.equals("")) {
+	
+			    if (descricaoCredito.substring(0, 16).equals(Credito.DESCRICAO_CERDITO_NITRATO)) {
+	
+			    	registroDescricaoValor.setValor("" + valorCreditoNitrato);
+			    }
+			}
+	
 		    }
 		}
-
-	    }
-	}
     }
 
     /**
@@ -3106,35 +2811,31 @@ public class Imovel {
      * 
      */
     public boolean equals(Object obj) {
-	return (obj instanceof Imovel)
-		&& ((Imovel) obj).getMatricula() == this.getMatricula();
+		return (obj instanceof Imovel) && ((Imovel) obj).getMatricula() == this.getMatricula();
     }
 
     public void setDataEmissaoDocumento(String dataEmissaoDocumento) {
-	this.dataEmissaoDocumento = Util.getData(Util
-		.verificarNuloString(dataEmissaoDocumento));
+    	this.dataEmissaoDocumento = Util.getData(Util.verificarNuloString(dataEmissaoDocumento));
     }
 
     public Date getDataEmissaoDocumento() {
-	return dataEmissaoDocumento;
+    	return dataEmissaoDocumento;
     }
 
     public void setPercentualAlternativoEsgoto(String percentColetaEsgoto) {
-	this.percentualAlternativoEsgoto = Util
-		.verificarNuloDouble(percentColetaEsgoto);
+    	this.percentualAlternativoEsgoto = Util.verificarNuloDouble(percentColetaEsgoto);
     }
 
     public void setConsumoPercentualAlternativoEsgoto(String percentColetaEsgoto) {
-	this.consumoPercentualAlternativoEsgoto = Util
-		.verificarNuloInt(percentColetaEsgoto);
+    	this.consumoPercentualAlternativoEsgoto = Util.verificarNuloInt(percentColetaEsgoto);
     }
 
     public double getPercentualAlternativoEsgoto() {
-	return percentualAlternativoEsgoto;
+    	return percentualAlternativoEsgoto;
     }
 
     public int getConsumoPercentualAlternativoEsgoto() {
-	return consumoPercentualAlternativoEsgoto;
+    	return consumoPercentualAlternativoEsgoto;
     }
 
     /**
@@ -3146,53 +2847,44 @@ public class Imovel {
      */
     public void verificarPercentualEsgotoAlternativo(int consumoFaturadoEsgoto) {
 
-	double percentualEsgoto = 0.00;
-
-	/*
-	 * CASO O IMÓVEL SEJA PARA FATURAR ESGOTO Essa verificação se faz
-	 * necessária para o pré-faturamento.
-	 */
-   	if ( (this.getIndcFaturamentoEsgoto() == Constantes.SIM) ||
-	     (this.getIndcFaturamentoEsgoto() == Constantes.NAO && this.isImovelMicroCondominio()) ){
-
-//	if (this.getIndcFaturamentoEsgoto() == Constantes.SIM) {
-
-	    // Recupera o percentual de esgoto do imóvel.
-	    percentualEsgoto = this.getPercentCobrancaEsgoto();
-
-	    // CASO O IMÓVEL SEJA PARA FATURAR ÁGUA
-	    if (this.getIndcFaturamentoAgua() == Constantes.SIM
-		    && consumoFaturadoEsgoto != Constantes.NULO_INT) {
-
-		// Caso o percentual alternativo de esgoto seja diferente de
-		// nulo
-		if (this.getPercentualAlternativoEsgoto() != Constantes.NULO_DOUBLE) {
-
-		    double qtdeEconomia = this.getQuantidadeEconomiasTotal();
-		    double consumoFaturadoEsgotoDouble = consumoFaturadoEsgoto;
-
-		    int consumoPorEconomia = Util
-			    .arredondar(consumoFaturadoEsgotoDouble
-				    / qtdeEconomia);
-
-		    // verificar se o consumo por economia eh
-		    // menor ou igual ao consumo do percentual alternativo
-		    if (consumoPorEconomia <= this
-			    .getConsumoPercentualAlternativoEsgoto()) {
-
-			// enviar como percentual de esgoto o menor valor entre
-			// percentual e percentualAlternativo
-			if (this.getPercentualAlternativoEsgoto() < percentualEsgoto) {
-			    percentualEsgoto = this
-				    .getPercentualAlternativoEsgoto();
-			}
+		double percentualEsgoto = 0.00;
+	
+		/*
+		 * CASO O IMÓVEL SEJA PARA FATURAR ESGOTO Essa verificação se faz
+		 * necessária para o pré-faturamento.
+		 */
+	   	if ( (this.getIndcFaturamentoEsgoto() == Constantes.SIM) ||
+		     (this.getIndcFaturamentoEsgoto() == Constantes.NAO && this.isImovelMicroCondominio()) ){
+	
+		    // Recupera o percentual de esgoto do imóvel.
+		    percentualEsgoto = this.getPercentCobrancaEsgoto();
+	
+		    // CASO O IMÓVEL SEJA PARA FATURAR ÁGUA
+		    if (this.getIndcFaturamentoAgua() == Constantes.SIM && consumoFaturadoEsgoto != Constantes.NULO_INT) {
+	
+				// Caso o percentual alternativo de esgoto seja diferente de nulo
+				if (this.getPercentualAlternativoEsgoto() != Constantes.NULO_DOUBLE) {
+		
+				    double qtdeEconomia = this.getQuantidadeEconomiasTotal();
+				    double consumoFaturadoEsgotoDouble = consumoFaturadoEsgoto;
+		
+				    int consumoPorEconomia = Util.arredondar(consumoFaturadoEsgotoDouble / qtdeEconomia);
+		
+				    // verificar se o consumo por economia é
+				    // menor ou igual ao consumo do percentual alternativo
+				    if (consumoPorEconomia <= this.getConsumoPercentualAlternativoEsgoto()) {
+		
+				    	// enviar como percentual de esgoto o menor valor entre
+				    	// percentual e percentualAlternativo
+						if (this.getPercentualAlternativoEsgoto() < percentualEsgoto) {
+						    percentualEsgoto = this.getPercentualAlternativoEsgoto();
+						}
+				    }
+				}
 		    }
-
 		}
-	    }
-	}
-
-	this.setPercentCobrancaEsgoto("" + percentualEsgoto);
+	
+		this.setPercentCobrancaEsgoto("" + percentualEsgoto);
     }
     
     /**
@@ -3208,14 +2900,15 @@ public class Imovel {
      */
     public Debito getDebito( String codigo ){
 	
-    Debito regTemp = new Debito();
-	regTemp.setCodigo( codigo );
-	
-	if ( this.debitos != null && this.debitos.contains( regTemp ) ){
-	    return ( Debito ) this.debitos.get( this.debitos.indexOf( regTemp ) );
-	} else {
-	    return null;
-	}
+	    Debito regTemp = new Debito();
+		regTemp.setCodigo( codigo );
+		
+		if ( this.debitos != null && this.debitos.contains( regTemp ) ){
+		    return ( Debito ) this.debitos.get( this.debitos.indexOf( regTemp ) );
+
+		} else {
+		    return null;
+		}
     }
     
     /**
@@ -3232,50 +2925,52 @@ public class Imovel {
     public Credito getCredito( String codigo ){
 	
     	Credito regTemp = new Credito();
-	regTemp.setCodigo( codigo );
+    	regTemp.setCodigo( codigo );
 	
-	if ( this.creditos != null && this.creditos.contains( regTemp ) ){
-	    return ( Credito ) this.creditos.get( this.creditos.indexOf( regTemp ) );
-	} else {
-	    return null;
-	}
+		if ( this.creditos != null && this.creditos.contains( regTemp ) ){
+		    return ( Credito ) this.creditos.get( this.creditos.indexOf( regTemp ) );
 
+		} else {
+		    return null;
+		}
 
     }
     
-    public Vector selecionarFaixasCalculoValorFaturado(
-	    boolean tipoTarifaPorCategoria, String codigoCategoria,
-	    String codigoSubCategoria, int codigoTarifa, Date dataInicioVigencia) {
+    public List<TarifacaoComplementar> selecionarFaixasCalculoValorFaturado(boolean tipoTarifaPorCategoria, 
+    												   String codigoCategoria,
+    												   String codigoSubCategoria, 
+    												   int codigoTarifa, 
+    												   Date dataInicioVigencia) {
 
-	Vector retorno = new Vector();
 
-	for (int i = 0; i < tarifacoesComplementares.size(); i++) {
-	    TarifacaoComplementar registro = (TarifacaoComplementar) tarifacoesComplementares.get(i);
+        List<TarifacaoComplementar> retorno = new ArrayList<TarifacaoComplementar>();
+	
+		for (int i = 0; i < tarifacoesComplementares.size(); i++) {
+		    
+			TarifacaoComplementar tarifacaoComplementar = (TarifacaoComplementar) tarifacoesComplementares.get(i);
+	
+		    if (tipoTarifaPorCategoria) {
 
-	    if (tipoTarifaPorCategoria) {
-		if (Util.compararData(dataInicioVigencia, registro
-			.getDataInicioVigencia()) == 0
-			&& codigoTarifa == registro.getCodigo()
-			&& Integer.parseInt(codigoCategoria) == registro
-				.getCodigoCategoria()
-			&& (registro.getCodigoSubcategoria() == Constantes.NULO_INT || registro
-				.getCodigoSubcategoria() == 0)) {
-		    retorno.addElement(registro);
+		    	if ( Util.compararData(dataInicioVigencia, tarifacaoComplementar.getDataInicioVigencia()) == 0 && 
+		    		 codigoTarifa == tarifacaoComplementar.getCodigo() && 
+					 Integer.parseInt(codigoCategoria) == tarifacaoComplementar.getCodigoCategoria() && 
+					 (tarifacaoComplementar.getCodigoSubcategoria() == Constantes.NULO_INT || tarifacaoComplementar.getCodigoSubcategoria() == 0) ) {
+				    
+		    		retorno.add(tarifacaoComplementar);
+				}
+			    
+		    } else {
+				if ( Util.compararData(dataInicioVigencia, tarifacaoComplementar.getDataInicioVigencia()) == 0 && 
+					 codigoTarifa == tarifacaoComplementar.getCodigo() &&
+					 Integer.parseInt(codigoCategoria) == tarifacaoComplementar.getCodigoCategoria() && 
+					 Integer.parseInt(codigoSubCategoria) == tarifacaoComplementar.getCodigoSubcategoria() ) {
+				    
+					retorno.add(tarifacaoComplementar);
+				}
+		    }
 		}
-	    } else {
-		if (Util.compararData(dataInicioVigencia, registro
-			.getDataInicioVigencia()) == 0
-			&& codigoTarifa == registro.getCodigo()
-			&& Integer.parseInt(codigoCategoria) == registro
-				.getCodigoCategoria()
-			&& Integer.parseInt(codigoSubCategoria) == registro
-				.getCodigoSubcategoria()) {
-		    retorno.addElement(registro);
-		}
-	    }
-	}
 
-	return retorno;
+		return retorno;
     }
 
     /**
@@ -3308,11 +3003,11 @@ public class Imovel {
     }
  
     public void setSequencialRotaMarcacao(int sequencialRotaMarcacao) {
-	this.sequencialRotaMarcacao = sequencialRotaMarcacao;
+    	this.sequencialRotaMarcacao = sequencialRotaMarcacao;
     }
 
     public int getSequencialRotaMarcacao() {
-	return sequencialRotaMarcacao;
+    	return sequencialRotaMarcacao;
     }
 
 	public List<TarifacaoMinima> getTarifacoesMinimas() {
@@ -3331,7 +3026,5 @@ public class Imovel {
 			List<TarifacaoComplementar> tarifacoesComplementares) {
 		this.tarifacoesComplementares = tarifacoesComplementares;
 	}    
-    
-    
-    
+        
 }

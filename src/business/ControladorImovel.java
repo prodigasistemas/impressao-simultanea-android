@@ -43,8 +43,7 @@ public class ControladorImovel {
     	initImovelTabs();
     	setImovelListPosition(listPosition);
     	idImovelSelecionado = getIdImovelSelecionado(listPosition, null);
-    	ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado);
-    	ControladorRota.getInstancia().dataManipulator.selectDependenciasImovel(imovelSelecionado.getMatricula());
+    	instancia.setImovelSelecionado(ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado));
     }
     
     public void setImovelSelecionadoByListPositionInConsulta(int listPositionInConsulta, String condition){
@@ -52,16 +51,14 @@ public class ControladorImovel {
     	idImovelSelecionado = getIdImovelSelecionado(listPositionInConsulta, condition);
     	setImovelListPosition(getImovelListPositionById(idImovelSelecionado));
 
-    	ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + idImovelSelecionado);
-    	ControladorRota.getInstancia().dataManipulator.selectDependenciasImovel(imovelSelecionado.getMatricula());
+    	instancia.setImovelSelecionado(ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado));
     }
     
     public void setImovelSelecionado(long id){
     	initImovelTabs();
     	idImovelSelecionado = id;
 
-    	ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado);
-    	ControladorRota.getInstancia().dataManipulator.selectDependenciasImovel(imovelSelecionado.getMatricula());
+    	instancia.setImovelSelecionado(ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado));
     }
     
     public void initImovelTabs(){

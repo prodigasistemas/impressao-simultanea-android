@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import model.Imovel;
-import model.Medidor;
 import util.Constantes;
 import util.ImpressaoContaCosanpa;
 import util.Util;
@@ -186,7 +185,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	if (habilitaOpcaoImpressao){
 	    		//Daniel - Verificar se a data atual é anterior ao mes de referencia da rota em andamento.
 	    		if(Util.compararData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()) > 0){
-	    			showMessage(getCurrentFocus(), "Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
+	    			showMessage("Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
 
 	    		// Data do celular esta correta.
 	    		}else{
@@ -198,12 +197,12 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	   					 (getImovelSelecionado().getConsumoAgua() != null || getImovelSelecionado().getConsumoEsgoto() != null) ) {
 	   				
 	   					// Nao será recalculado o consumo
-	   					showMessage(getCurrentFocus(), "Novos valores de leitura e anormalidade serão desconsiderados.");
-				    	leituraInvalida = BusinessConta.getInstancia().imprimirCalculo(true, true);
+	   					showMessage("Novos valores de leitura e anormalidade serão desconsiderados.");
+				    	leituraInvalida = BusinessConta.getInstancia(this).imprimirCalculo(true, true);
 	    			
 	    			}else{
 	    				// calcula consumo
-			    		leituraInvalida = BusinessConta.getInstancia().imprimirCalculo(true, false);
+			    		leituraInvalida = BusinessConta.getInstancia(this).imprimirCalculo(true, false);
 	    			}
 		
 //    				getImovelSelecionado().setIndcGeracao(Constantes.SIM);
@@ -252,18 +251,18 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 //		    		
 //    				if (!leituraInvalida && !emiteConta){
 //    					
-//    	    			showMessage(getCurrentFocus(), "Conta do imóvel nao pode ser emitida!");
+//    	    			showMessage("Conta do imóvel nao pode ser emitida!");
 //	    				permiteImpressao = false;
 //    				
 //    				} else if (!leituraInvalida && (valorContaMaiorPermitido || reterConta)){
 //    				
 //	    				getImovelSelecionado().setIndcGeracao(Constantes.NAO);
 //	    				Repositorio.salvarObjeto(getImovelSelecionado());
-//    	    			showMessage(getCurrentFocus(), "Conta retida, entrega posterior!");	
+//    	    			showMessage("Conta retida, entrega posterior!");	
 //	    				permiteImpressao = false;
 //
 //    				} else if (!leituraInvalida && !valorAcimaDoMinimo) {
-//    					showMessage(getCurrentFocus(), "Valor da conta menor que o permitido!");
+//    					showMessage("Valor da conta menor que o permitido!");
 //	    				// Imovel com conta abaixo do minimo nao deve ser impresso, mas não deve fazer parte dos imoveis com conta a imprimir no Gsan. 
 //	    				getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
 //	    				Repositorio.salvarObjeto(getImovelSelecionado());
@@ -275,11 +274,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 //						
 //	    				getImovelSelecionado().setIndcGeracao(Constantes.NAO);
 //	    				Repositorio.salvarObjeto(getImovelSelecionado());
-//	    				showMessage(getCurrentFocus(), "Não é permitido a impressão de conta deste imóvel.");	
+//	    				showMessage("Não é permitido a impressão de conta deste imóvel.");	
 //	    				permiteImpressao = false;
 //
 //	    			} else if ( !leituraInvalida && valorConta == 0d && getImovelSelecionado().getValorResidualCredito() == 0d) {
-//	    				showMessage(getCurrentFocus(), "Conta com valor zerado e sem crédito. Não imprimir!");
+//	    				showMessage("Conta com valor zerado e sem crédito. Não imprimir!");
 //	    				permiteImpressao = false;
 //
 //	    			// Daniel - Imovel com Endereço alternativo
@@ -288,7 +287,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 //	    			} else if (!leituraInvalida && 
 //				    			Configuracao.getInstancia().getIdsImoveisEndereçoEntrega().contains(new Integer(getImovelSelecionado().getId()))){
 //
-//	    				showMessage(getCurrentFocus(), "Conta do imóvel nao pode ser emitida! Entrega  posterior!");	
+//	    				showMessage("Conta do imóvel nao pode ser emitida! Entrega  posterior!");	
 //	    				permiteImpressao = false;
 //
 ////	    			} else if (!leituraInvalida && 
@@ -360,7 +359,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    		
 	    	}
 	    }else{
-	    	showMessage(getCurrentFocus(), "Não é permitido imprimir.");
+	    	showMessage("Não é permitido imprimir.");
 	    }
 	    	
 	    	
@@ -385,7 +384,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	public void localizarImovelPendente() {
 		
 		// Se nao encontrar imovel com status pendente
-		if (!ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_PENDENTE)) {
+		if (ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_PENDENTE) == null) {
 			Toast.makeText(this, "Não existem imóveis pendentes", 10).show();
 			return;
 		}
@@ -448,7 +447,13 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     	dialog.show();
 	}
 	
-	
+	public void showMessage(String message){
+
+		dialog = new AlertDialog.Builder(this).create();
+    	dialog.setTitle(message);
+    	dialog.setView(getCurrentFocus());
+    	dialog.show();
+	}
 	
 	public Imovel getImovelSelecionado() {
 		return ControladorImovel.getInstancia().getImovelSelecionado();
@@ -476,8 +481,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
 			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.fundocadastro));
 	}
-
-	
 	
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		
