@@ -94,6 +94,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	addTab("medidor", "Medidor Água", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
 	    else if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidorPorTipoMedicao(Constantes.LIGACAO_POCO) != null)
 	    	addTab("medidor", "Medidor Poço", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
+	    
+//	    addTab("conta", "Conta", R.drawable.text, R.layout.contatab, ContaTab.class);
 
 	}
 	
@@ -101,7 +103,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	public void addTab(String tag, String titulo, int imagem, final int view, Class classe) {
 		TabHost.TabSpec tabSpec;
 	    Resources res = getResources();
-	    Intent intent = null;
 	    
 	    String title = titulo;
 	    
@@ -109,7 +110,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	title = titulo + " - "+ControladorImovel.getInstancia().getImovelSelecionado().getId()+" de " + ListaImoveis.tamanhoListaImoveis;
 	    }
 		
-		intent = new Intent().setClass(this, classe);
 	    tabSpec = tabHost.newTabSpec(tag).setIndicator(title, res.getDrawable(imagem)).setContent(new TabContentFactory() {
 
             public View createTabContent(String tag) {
