@@ -79,7 +79,7 @@ package business;
 
 import util.Constantes;
 import util.Util;
-import views.MedidorTab;
+import views.MedidorAguaTab;
 import model.Anormalidade;
 import model.Imovel;
 
@@ -237,7 +237,7 @@ public class ValidacaoLeitura {
 						int leituraDigitadaAnterior;
 						
 						if ( tipoValidacao == Constantes.LIGACAO_AGUA ){
-						    leituraDigitadaAnterior = MedidorTab.getLeituraDigitada();
+						    leituraDigitadaAnterior = MedidorAguaTab.getLeituraDigitada();
 						} else {
 						    leituraDigitadaAnterior = getImovelSelecionado().getMedidor(tipoValidacao).getLeitura();
 						}
@@ -255,13 +255,13 @@ public class ValidacaoLeitura {
 						    if ( tipoValidacao == Constantes.LIGACAO_AGUA ){		    
 						    	getImovelSelecionado().setContagemValidacaoAgua( getImovelSelecionado().getContagemValidacaoAgua() + 1);
 	
-						    	MedidorTab.setLeituraDigitada( intLeitura );
-						    	MedidorTab.setLeituraCampo("");
+						    	MedidorAguaTab.setLeituraDigitada( intLeitura );
+						    	MedidorAguaTab.setLeituraCampo("");
 						    } else {
 	
 						    	getImovelSelecionado().setContagemValidacaoPoco(getImovelSelecionado().getContagemValidacaoPoco() + 1);
 						    	getImovelSelecionado().getMedidor(tipoValidacao).setLeitura( intLeitura );
-						    	MedidorTab.setLeituraCampo("");
+						    	MedidorAguaTab.setLeituraCampo("");
 						    }			    
 						    
 						    ControladorRota.getInstancia().getDataManipulator().salvarImovel( getImovelSelecionado() );			    

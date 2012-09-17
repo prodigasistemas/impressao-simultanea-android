@@ -28,7 +28,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class MedidorTab extends Fragment {
+public class MedidorAguaTab extends Fragment {
 	
 	
 	static boolean consideraEventoItemSelectedListenerCodigoAnormalidade;
@@ -152,11 +152,11 @@ public class MedidorTab extends Fragment {
 	}
 
 	public static void setLeituraDigitada(int leituraDigitada) {
-		MedidorTab.leituraDigitada = leituraDigitada;
+		MedidorAguaTab.leituraDigitada = leituraDigitada;
     }
 
     public static int getLeituraDigitada() {
-    	return MedidorTab.leituraDigitada;
+    	return MedidorAguaTab.leituraDigitada;
     }
 
     public static String getLeituraCampo() {

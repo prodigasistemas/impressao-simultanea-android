@@ -90,9 +90,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    addTab("imovel", "Imóvel", R.drawable.tab_imovel, R.layout.imoveltab, ImovelTab.class);
 
 	    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidorPorTipoMedicao(Constantes.LIGACAO_AGUA) != null)
-	    	addTab("medidor", "Medidor Água", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
+	    	addTab("medidor", "Medidor Água", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorAguaTab.class);
 	    else if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidorPorTipoMedicao(Constantes.LIGACAO_POCO) != null)
-	    	addTab("medidor", "Medidor Poço", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorTab.class);
+	    	addTab("medidor", "Medidor Poço", R.drawable.tab_medidor, R.layout.medidoraguatab, MedidorPocoTab.class);
 	    
 //	    addTab("conta", "Conta", R.drawable.text, R.layout.contatab, ContaTab.class);
 
@@ -466,7 +466,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		if (tabId.equals("imovel"))
 			ft.add(android.R.id.tabcontent, new ImovelTab());
 		else if (tabId.equals("medidor"))
-			ft.add(android.R.id.tabcontent, new MedidorTab());
+			ft.add(android.R.id.tabcontent, new MedidorAguaTab());
 		else if (tabId.equals("conta"))
 			ft.add(android.R.id.tabcontent, new ContaTab());
 		

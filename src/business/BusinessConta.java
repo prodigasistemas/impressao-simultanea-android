@@ -76,23 +76,16 @@
  */
 package business;
 
-import java.io.IOException;
-import java.util.Vector;
-
+import model.Anormalidade;
+import model.Consumo;
+import model.Imovel;
+import util.Constantes;
+import util.Util;
+import views.MedidorAguaTab;
+import views.MedidorPocoTab;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.view.View;
-
-import util.Constantes;
-import util.Util;
-import views.MainTab;
-import views.MedidorTab;
-
-import model.Anormalidade;
-import model.Consumo;
-import model.DadosGerais;
-import model.Imovel;
 
 public class BusinessConta {
 
@@ -318,15 +311,15 @@ public class BusinessConta {
 				if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null && 
 					getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null) {
 				    
-					String leituraTexto = MedidorTab.getLeituraCampo();
-				    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorTab.getCodigoAnormalidade(), true);
+					String leituraTexto = MedidorAguaTab.getLeituraCampo();
+				    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
 				    leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_AGUA );
 
 				} else if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null && 
 						   getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
 				    
-					String leituraTexto = MedidorTab.getLeituraCampo();
-			    	Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorTab.getCodigoAnormalidade(), true);
+					String leituraTexto = MedidorPocoTab.getLeituraCampo();
+			    	Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
 			    	leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_AGUA );
 
 //				} else if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null && 
