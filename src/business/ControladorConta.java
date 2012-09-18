@@ -83,6 +83,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.ipad.basic.DadosRelatorio;
+import com.ipad.basic.ImovelConta;
+import com.ipad.basic.ImovelReg8;
+import com.ipad.basic.RegistroBasico;
+import com.ipad.basic.SituacaoTipo;
+import com.ipad.basic.helper.EfetuarRateioConsumoDispositivoMovelHelper;
+import com.ipad.io.Repositorio;
+
 import util.Constantes;
 import util.Util;
 
@@ -181,9 +189,329 @@ public class ControladorConta {
     }
 
     /**
+     * Calcular o valor da Conta e do Consumo
+     * 
+     * @param
+     * @return
+     */
+    public Consumo[] calcularContaConsumo() {
+
+		Consumo[] consumos = new Consumo[2];
+		ControladorConta.instancia.calcularConta();
+		consumos[0] = ControladorConta.instancia.getConsumoAgua();
+		consumos[1] = ControladorConta.instancia.getConsumoEsgoto();
+	
+		ControladorConta.instancia.setConsumoAgua(null);
+		ControladorConta.instancia.setConsumoEsgoto(null);
+	
+		return consumos;
+    }
+    
+    /**
      * [UC0740] Calcular Consumo no Dispositivo Móvel
      */
-    public void calcularConta() {}
+    public void calcularConta() {
+
+    	// [UC0740] 2.
+       	if ( (getImovelSelecionado().getIndcFaturamentoAgua() == SIM) ||
+       		 (getImovelSelecionado().getIndcFaturamentoAgua() == NAO && getImovelSelecionado().isImovelMicroCondominio()) ){
+
+    	    // [UC0740] 2.1.
+    	    if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_AGUA) != null) {
+    			this.calcularConsumo(LIGACAO_AGUA);
+    	
+    			// Caso o consumo a ser cobrado no mês seja menor que o consumo
+    			// mínimo de água
+    			if ((getImovelSelecionado().getConsumoMinAgua() != Constantes.NULO_INT)
+    				&& (consumoAgua.getConsumoCobradoMes() < getImovelSelecionado().getConsumoMinAgua())) {
+    			    // Seta o consumo histórico
+    				consumoAgua.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinAgua());
+    			    // Seta o consumo anormalidade
+    				consumoAgua.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+    			}
+    		// [UC0740] 2.2.
+    	    } else {
+    			int consumoMinimo = 0;
+    			int consumoTipo = 0;
+    			if (getImovelSelecionado().getConsumoMinAgua() != Constantes.NULO_INT) {
+    			    consumoMinimo = getImovelSelecionado().getConsumoMinAgua();
+    			    consumoTipo = CONSUMO_TIPO_MINIMO_FIX;
+    			} else {
+    			    consumoMinimo = getImovelSelecionado().getconsumoMinimoImovelNaoMedido();
+    			    consumoTipo = CONSUMO_TIPO_NAO_MEDIDO;
+    			}
+    	
+    			this.setConsumoAgua(new Consumo(Constantes.NULO_INT,
+    				consumoMinimo, Constantes.NULO_INT, consumoTipo,
+    				Constantes.NULO_INT, Constantes.NULO_INT));
+    	
+    			// verifica se existe situação tipo
+    			if (getImovelSelecionado().getSituacaoTipo() != null
+    				&& !getImovelSelecionado().getSituacaoTipo().equals("")) {
+    			    
+    			    if (getImovelSelecionado().getSituacaoTipo().getIndcValidaAgua() == Constantes.SIM) {
+    			    	dadosFaturamentoEspecialNaoMedido(consumoAgua,LIGACAO_AGUA);
+    			    }
+    			}
+    	    }
+    	} else {
+    	    this.consumoAgua = null;
+    	}
+
+    	// [UC0740] 4.
+    	int qtdEconomias = getImovelSelecionado().getQuantidadeEconomiasTotal();
+
+    	if (qtdEconomias > 1) {
+    	    // [SB0009]
+    	    if (consumoAgua != null
+    		    && consumoAgua.getConsumoCobradoMes() != Constantes.NULO_INT) {
+    	    	
+    	    	int leituraAnterior = Constantes.NULO_INT;
+
+    			if (getImovelSelecionado().getMedidor(LIGACAO_AGUA) != null) {
+    			    
+    				leituraAnterior = getImovelSelecionado().getMedidor(LIGACAO_AGUA).getLeituraAnterior();
+    			}
+    	
+    			consumoAgua.ajustar(qtdEconomias, leituraAnterior, LIGACAO_AGUA);
+    	    }
+    	}
+
+    	if (consumoAgua != null
+    		&& (consumoAgua.getTipoConsumo() != CONSUMO_TIPO_NAO_MEDIDO || consumoAgua.getTipoConsumo() != CONSUMO_TIPO_MINIMO_FIX)) {
+    		
+    		Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA);
+    	    
+    		if (medidor != null) {
+    	    	consumoAgua.setDiasConsumo(Util.obterModuloDiferencasDatasDias(medidor.getDataLeituraAnteriorFaturada(), Util.dataAtual()));
+    	    }
+    	}
+
+    	// Guardamos o consumo original
+    	if (consumoAgua != null) {
+    		consumoAgua.setConsumoCobradoMesOriginal(consumoAgua.getConsumoCobradoMes());
+    	}
+
+    	// [UC0740] 3.
+    	if (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM) {
+
+    	    // [UC0740] 3.1.
+    	    if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_POCO) != null) {
+    			this.calcularConsumo( LIGACAO_POCO);
+    	
+    			// Caso exista Consumo a Ser Cobrado no Mês da ligação de água,
+    			// o Consumo a Ser Cobrado no Mês de esgoto = (Cobrado no Mês da
+    			// ligação de água + Consumo a Ser Cobrado no Mês);
+    			// caso contrário, o Consumo a Ser Cobrado no Mês de esgoto =
+    			// Consumo a Ser Cobrado no Mês.
+    			if (consumoAgua != null && consumoAgua.getConsumoCobradoMes() != Constantes.NULO_INT) {
+    			    
+    				// Seta o consumo histórico
+    			    int consumoFaturadoMes = consumoAgua.getConsumoCobradoMes() + consumoEsgoto.getConsumoCobradoMes();
+    	
+    			    consumoEsgoto.setConsumoCobradoMes(consumoFaturadoMes);
+    			}
+
+    		// [UC0740] 3.2.
+    	    } else {
+
+    			int consumoMinnoEsgoto = 0;
+    			if (getImovelSelecionado().getConsumoMinEsgoto() != Constantes.NULO_INT) {
+    			    consumoMinnoEsgoto = getImovelSelecionado().getConsumoMinEsgoto();
+    			}
+    	
+    			this.setConsumoEsgoto(new Consumo(Constantes.NULO_INT,
+    								  			  consumoMinnoEsgoto, 
+    								  			  Constantes.NULO_INT,
+    								  			  CONSUMO_TIPO_NAO_MEDIDO, 
+    								  			  Constantes.NULO_INT,
+    								  			  Constantes.NULO_INT));
+    	
+    		   	if ( (getImovelSelecionado().getIndcFaturamentoAgua() == SIM) ||
+    		      	 (getImovelSelecionado().getIndcFaturamentoAgua() == NAO && getImovelSelecionado().isImovelMicroCondominio()) ){
+    				
+    		   		consumoEsgoto.setConsumoCobradoMes(consumoAgua.getConsumoCobradoMes());
+    			
+    		   	} else {
+    				consumoEsgoto.setConsumoCobradoMes(getImovelSelecionado().getconsumoMinimoImovelNaoMedido());
+    			}
+    	
+    			// Caso o consumo a ser cobrado mês seja inferior ao consumo mínimo
+    			if ((getImovelSelecionado().getConsumoMinEsgoto() != Constantes.NULO_INT)
+    				&& consumoEsgoto.getConsumoCobradoMes() < getImovelSelecionado().getConsumoMinEsgoto()) {
+    	
+    			    // O consumo a ser cobrado mês será o consumo mínimo da ligação de esgoto
+    				consumoEsgoto.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinEsgoto());
+    	
+    			    // A anormalidade de consumo será o consumo mínimo fixado de esgoto
+    				consumoEsgoto.setAnormalidadeConsumo(Consumo.CONSUMO_MINIMO_FIXADO);
+    	
+    			    /*
+    			     * Colocado por Raphael Rossiter em 17/03/2009 - Analista:
+    			     * Aryed Lins O TIPO do consumo será CONSUMO_MINIMO_FIXADO
+    			     */
+    				consumoEsgoto.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+    			}
+    	
+    			// verifica se existe situação tipo
+    			if (getImovelSelecionado().getSituacaoTipo() != null
+    				&& !getImovelSelecionado().getSituacaoTipo().equals("")) {
+    			    SituacaoTipo situacaoTipo = getImovelSelecionado().getSituacaoTipo();
+    			    if (situacaoTipo.getIndcValidaEsgoto() == Constantes.SIM) {
+    				dadosFaturamentoEspecialNaoMedido(consumoEsgoto, LIGACAO_POCO);
+    			    }
+    			}
+    	    }
+
+    	    // [UC0740] 3.3.
+    	    this.consumoEsgoto
+    		    .setConsumoCobradoMes(Util.arredondar(((consumoEsgoto
+    			    .getConsumoCobradoMes() * getImovelSelecionado()
+    			    .getPercentColetaEsgoto()) / 100)));
+    	}
+    	
+    	/*
+    	 * 4.Caso o imóvel não esteja mais cortado (Situação da Ligação de Agua <> 5 do registro tipo 1), 
+    	 * ou o consumo de água tenha sido real e maior que zero (Tipo de Consumo = 1 e o Consumo a ser 
+    	 * Cobrado no Mês maior que zero da tabela ),  excluir o  débito a cobrar referente a Tarifa de 
+    	 * Cortado Dec. 18.251/94 ( excluir registro do tipo 4 com Código do débito igual ao código do 
+    	 * débito 99).
+    	 */	
+    	Debito debito = getImovelSelecionado().getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
+    	
+    	// Caso o débito exista, reiniciamos para o estado inicial,
+    	// caso haja necessidade de recalculo. 
+    	if ( debito != null ){
+    	    debito.setIndcUso( (short)Constantes.SIM );
+    	    getImovelSelecionado().setIndcFaturamentoAgua( Constantes.SIM+"" );
+    	}
+    	
+    	if ( ( !getImovelSelecionado().getSituacaoLigAgua().equals( Constantes.CORTADO ) ) ||
+    	     ( consumoAgua != null && 
+    	       consumoAgua.getTipoConsumo() == CONSUMO_TIPO_REAL && 
+    	       consumoAgua.getConsumoCobradoMes() > 0 ) ){
+    	    
+    	    if ( debito != null ){
+    	    	debito.setIndcUso( (short) Constantes.NAO );
+    	    }
+    	}
+
+    	if (qtdEconomias > 1) {
+    	    if (consumoEsgoto != null
+    		    && consumoEsgoto.getConsumoCobradoMes() != Constantes.NULO_INT) {
+    			int leituraAnterior = Constantes.NULO_INT;
+    			
+    			if (getImovelSelecionado().getMedidor(LIGACAO_POCO) != null) {
+    			    leituraAnterior = getImovelSelecionado().getMedidor(LIGACAO_POCO).getLeituraAnterior();
+    			}
+    			consumoEsgoto.ajustar(qtdEconomias, leituraAnterior, LIGACAO_POCO);
+    	    }
+    	}
+
+    	if (consumoEsgoto != null && 
+    			(consumoEsgoto.getTipoConsumo() != CONSUMO_TIPO_NAO_MEDIDO || 
+    			 consumoEsgoto.getTipoConsumo() != CONSUMO_TIPO_MINIMO_FIX)) {
+    	    
+    			Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO);
+    			if (medidor != null) {
+    				consumoEsgoto.setDiasConsumo(Util.obterModuloDiferencasDatasDias(medidor
+    						.getDataLeituraAnteriorFaturada(), Util.dataAtual()));
+    			}
+    	}
+
+    	if (consumoEsgoto != null) {
+    		consumoEsgoto.setConsumoCobradoMesOriginal(consumoEsgoto
+    		    .getConsumoCobradoMes());
+    	}
+
+    	// Caso nao seja calculado o consumo de agua nem o de poco, porem o
+    	// imovel possua débito, diminuimos ele dos não lidos
+    	if (consumoAgua == null && consumoEsgoto == null
+    		&& getImovelSelecionado().getValorDebitos() >= 0) {
+
+    	    if (getImovelSelecionado().isImovelCondominio()) {
+
+    			EfetuarRateioConsumoDispositivoMovelHelper helper = null;
+    			Imovel macro = null;
+    	
+    			if (getImovelSelecionado().getIdImovelCondominio() != Constantes.NULO_INT) {
+    			    macro = new Imovel();
+    			    Repositorio.carregarObjeto(macro, getImovelSelecionado()
+    				    .getIdImovelCondominio());
+    			    helper = macro
+    				    .getEfetuarRateioConsumoDispositivoMovelHelper();
+    			} else if (getImovelSelecionado().getIndcCondominio() == Constantes.SIM) {
+    			    helper = getImovelSelecionado()
+    				    .getEfetuarRateioConsumoDispositivoMovelHelper();
+    			}
+    	
+    			helper.getIdsAindaFaltamSerCalculador().removeElement(
+    				new Integer(getImovelSelecionado().getId()));
+    	
+    			if (macro != null) {
+    			    macro.setEfetuarRateioConsumoDispositivoMovelHelper(helper);
+    			    Repositorio.salvarObjeto(macro);
+    			} else {
+    			    getImovelSelecionado()
+    				    .setEfetuarRateioConsumoDispositivoMovelHelper(helper);
+    			}
+    	    }
+
+    	    Integer id = new Integer(getImovelSelecionado().getId());
+    	    int quadra = getImovelSelecionado().getQuadra();
+    	    String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
+    		    .valueOf(quadra));
+
+    	    DadosRelatorio.getInstancia().idsNaoLidosRelatorio.removeElement(id);
+
+    	    if (!DadosRelatorio.getInstancia().idsLidosRelatorio.contains(id)) {
+    	    	DadosRelatorio.getInstancia().idsLidosRelatorio.addElement(id);
+
+    		Util.inserirValoresStringRelatorio("(" + stringQuadra + ")",
+    			false, true);
+
+    	    }
+    	    
+    	}
+    	
+    	/*
+    	 * É possivel que mesmo que imóvel
+    	 * não possua consumo de agua e/ou de esgoto
+    	 * ele tenha hidrometro. Sendo assim a leitura
+    	 * precisa ser enviada para o gsa, sendo assim
+    	 * guardada no historico.
+    	 * 
+    	 * Ex: (CAERN)
+    	 *   Imovel cortado de agua e com hidrometro
+    	 *   Imovel ligado de esgoto e sem hidrometro de poço
+    	 *   
+    	 *   Mes não tento consumo de agua, a leitura
+    	 *   é enviada ao GSAN.
+    	 * 
+    	 */
+    	if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_AGUA) != null) {
+    	    Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_AGUA);
+        	 	medidor.setDataLeitura(Util.dataAtual());
+    	}
+        	 
+    	if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_POCO) != null) {
+    		Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_POCO);
+    	    medidor.setDataLeitura(Util.dataAtual());
+    	}	
+    	
+    	Repositorio.salvarObjeto(getImovelSelecionado());
+
+    	// Verifica se o imóvel tem um percentual de esgoto alternativo
+    	if (consumoEsgoto != null) {
+    	    getImovelSelecionado().verificarPercentualEsgotoAlternativo(consumoEsgoto
+    		    .getConsumoCobradoMes());
+    	}
+
+    	// [UC0740] 5. - Calcular Valores de Água/Esgoto
+    	if (!getImovelSelecionado().isImovelCondominio()) {
+    	    this.calcularValores();
+    	}
+    }
 
     /**
      * [SB0000] - Calcular Consumo
