@@ -6,40 +6,17 @@ import util.Constantes;
 
 public class Consumo {
     
+	private int matricula;
     private int consumoMedidoMes;
     private int consumoCobradoMes;
     private int consumoCobradoMesImoveisMicro;
-    
-    // Esse campo foi criado para que
-    // possamos guardar o consumo que foi calculado
-    // originalmente, sem o rateio. Isso é necessário
-    // para que caso o seja necessário refazer o calculo
-    // esse valor possa ser recuperado
-    private int consumoCobradoMesOriginal;
-    
-    public int getConsumoCobradoMesOriginal() {
-		return consumoCobradoMesOriginal;
-	}
-
-	public void setConsumoCobradoMesOriginal(int consumoCobradoMesOriginal) {
-		this.consumoCobradoMesOriginal = consumoCobradoMesOriginal;
-	}
-
-	public int getConsumoCobradoMesImoveisMicro() {
-		return consumoCobradoMesImoveisMicro;
-	}
-
-	public void setConsumoCobradoMesImoveisMicro(int consumoCobradoMesImoveisMicro) {
-		this.consumoCobradoMesImoveisMicro = consumoCobradoMesImoveisMicro;
-	}
-
     private int leituraAtual;
     private int tipoConsumo;
     private long diasConsumo;
     private int anormalidadeConsumo;
 	private int anormalidadeLeituraFaturada;
-    
-    //Constantes
+	
+	//Constantes
     public static final int CONSUMO_ANORM_INFORMADO         = 2;
     public static final int CONSUMO_ANORM_BAIXO_CONSUMO     = 4;
     public static final int CONSUMO_ANORM_ESTOURO           = 5;
@@ -55,7 +32,39 @@ public class Consumo {
     public static final int CONSUMO_ANORM_VIRADA_HIDROMETRO = 16;
     public static final int ANORMALIDADE_LEITURA = 17;
     
+    // Esse campo foi criado para que
+    // possamos guardar o consumo que foi calculado
+    // originalmente, sem o rateio. Isso é necessário
+    // para que caso o seja necessário refazer o calculo
+    // esse valor possa ser recuperado
+    private int consumoCobradoMesOriginal;
     
+    
+    
+    public int getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(int matricula) {
+		this.matricula = matricula;
+	}
+
+	public int getConsumoCobradoMesOriginal() {
+		return consumoCobradoMesOriginal;
+	}
+
+	public void setConsumoCobradoMesOriginal(int consumoCobradoMesOriginal) {
+		this.consumoCobradoMesOriginal = consumoCobradoMesOriginal;
+	}
+
+	public int getConsumoCobradoMesImoveisMicro() {
+		return consumoCobradoMesImoveisMicro;
+	}
+
+	public void setConsumoCobradoMesImoveisMicro(int consumoCobradoMesImoveisMicro) {
+		this.consumoCobradoMesImoveisMicro = consumoCobradoMesImoveisMicro;
+	}
+
     public int getAnormalidadeLeituraFaturada() {
 		return anormalidadeLeituraFaturada;
 	}

@@ -915,7 +915,15 @@ public class DataManipulator {
 	public Consumo selectConsumoImovelByTipoMedicao(int matricula, int tipoMedicao) {
 
 		Consumo consumo = null;
-		Cursor cursor = db.query(Constantes.TABLE_CONSUMO_IMOVEL, null , "matricula = ? AND tipo_medicao = ?", new String []{String.valueOf(matricula), String.valueOf(tipoMedicao)}, null, null, "matricula asc");
+		Cursor cursor = null;
+		
+		if (tipoMedicao == Constantes.LIGACAO_AGUA) {
+			cursor = db.query(Constantes.TABLE_CONSUMO_AGUA, null , "matricula = ?", 
+					new String []{String.valueOf(matricula)}, null, null, "matricula asc");
+		} else if (tipoMedicao == Constantes.LIGACAO_POCO) {
+			cursor = db.query(Constantes.TABLE_CONSUMO_ESGOTO, null , "matricula = ?", 
+					new String []{String.valueOf(matricula)}, null, null, "matricula asc");
+		}
 		if (cursor.moveToFirst()) {
 			do {
 				consumo = new Consumo();
@@ -931,17 +939,53 @@ public class DataManipulator {
 
 			} while (cursor.moveToNext());
 		}
+		
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
 
 		return consumo;
 	}
+	
+	public long saveRateioCondominio(EfetuarRateioConsumoHelper rateio) {
+		
+		Cursor cursor = db.query(Constantes.TABLE_RATEIO_CONDOMINIO, null , 
+				"matricula_macro = ? ", new String []{String.valueOf(rateio.getMatriculaMacro())}, null, null, null);
+		
+		long retorno = -1;
+		
+		ContentValues values = new ContentValues();
+		values.put("matricula_macro", rateio.getMatriculaMacro());
+		values.put("matricula_ultimo_micro", rateio.getMatriculaUltimoImovelMicro());
+		values.put("quantidade_economia_agua_total", rateio.getQuantidadeEconomiasAguaTotal());
+		values.put("consumo_ligacao_agua_total", rateio.getConsumoLigacaoAguaTotal());
+		values.put("quantidade_economia_esgoto_total", rateio.getQuantidadeEconomiasEsgotoTotal());
+		values.put("consumo_ligacao_esgoto_total", rateio.getConsumoLigacaoEsgotoTotal());
+		values.put("consumo_minimo_total", rateio.getConsumoMinimoTotal());
+		values.put("consumo_para_rateio_agua", rateio.getConsumoParaRateioAgua());
+		values.put("conta_para_rateio_agua", rateio.getContaParaRateioAgua());
+		values.put("consumo_para_rateio_esgoto", rateio.getConsumoParaRateioEsgoto());
+		values.put("conta_para_rateio_esgoto", rateio.getContaParaRateioEsgoto());
+		values.put("reter_impressao_contas", rateio.getReterImpressaoConta());
+		values.put("passos", rateio.getPassos());
+		
+		if (cursor.moveToFirst()) {
+			retorno = db.update(Constantes.TABLE_RATEIO_CONDOMINIO, values, "matricula_macro = ?", new String[] {String.valueOf(rateio.getMatriculaMacro())});
+		} else {
+			retorno = db.insert(Constantes.TABLE_RATEIO_CONDOMINIO, null, values);
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+		
+		return retorno;
+	}
 
 	public EfetuarRateioConsumoHelper selectEfetuarRateioConsumoHelper(int matriculaMacro) {
 
 		EfetuarRateioConsumoHelper helper = null;
-		Cursor cursor = db.query(Constantes.TABLE_RATEIO_CONSUMO_HELPER, null , "matricula_macro = ? ", new String []{String.valueOf(matriculaMacro)}, null, null, "matricula_macro asc");
+		Cursor cursor = db.query(Constantes.TABLE_RATEIO_CONDOMINIO, null , "matricula_macro = ? ", new String []{String.valueOf(matriculaMacro)}, null, null, "matricula_macro asc");
 		if (cursor.moveToFirst()) {
 			do {
 				
@@ -971,7 +1015,8 @@ public class DataManipulator {
 
 		int quantidadeImoveisCondominio = 0;
 
-		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, null , "matricula = ? OR matricula_condominio = ?", new String []{String.valueOf(matriculaMacro), String.valueOf(matriculaMacro)}, null, null, "inscricao asc");
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, null , "matricula = ? OR matricula_condominio = ?", 
+				new String []{String.valueOf(matriculaMacro), String.valueOf(matriculaMacro)}, null, null, "inscricao asc");
 		
 		if (cursor.moveToFirst()) {
 		
@@ -1392,8 +1437,47 @@ public class DataManipulator {
 		initialValues.put("data_ligacao_fornecimento", parser.obterDadoParser(8));
 		initialValues.put("tipo_rateio", parser.obterDadoParser(1));
 		initialValues.put("leitura_instalacao_hidrometro", parser.obterDadoParser(7));
+		
 
 		return db.insert(Constantes.TABLE_MEDIDOR, null, initialValues);
+	}
+	
+	public long updateMedidor(int matricula, Medidor novo) {
+
+		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, null,
+				 "matricula = " + matricula, null, null, null, null);
+		ContentValues values = null;
+		int retorno = -1;
+		
+		if (cursor.moveToFirst()) {
+			values = new ContentValues();
+			
+			values.put("matricula", novo.getMatricula());
+			values.put("tipo_medicao", novo.getTipoMedicao());
+			values.put("numero_hidrometro", novo.getNumeroHidrometro());
+			values.put("data_instalacao_hidrometro", ""+novo.getDataInstalacaoHidrometro());
+			values.put("num_digitos_leitura_hidrometro", novo.getNumDigitosLeituraHidrometro());
+			values.put("leitura_anterior_faturamento", novo.getLeituraAnteriorFaturamento());
+			values.put("data_leitura_anterior_faturamento", ""+novo.getDataLeituraAnteriorFaturada());
+			values.put("codigo_situacao_leitura_anterior", novo.getCodigoSituacaoLeituraAnterior());
+			values.put("leitura_esperada_inicial", novo.getLeituraEsperadaInicial());
+			values.put("leitura_esperada_final", novo.getLeituraEsperadaFinal());
+			values.put("consumo_medio", novo.getConsumoMedio());
+			values.put("local_instalacao", novo.getLocalInstalacao());
+			values.put("leitura_anterior_informada", ""+novo.getLeituraAnteriorInformada());
+			values.put("data_leitura_anterior_informada", ""+novo.getDataLeituraAnteriorInformada());
+			values.put("data_ligacao_fornecimento", ""+novo.getDataLigacaoFornecimento());
+			values.put("tipo_rateio", novo.getTipoRateio());
+			values.put("leitura_instalacao_hidrometro", novo.getLeituraInstalacaoHidrometro());
+			
+			retorno = db.update(Constantes.TABLE_MEDIDOR, values, "matricula = ?", new String[] {String.valueOf(matricula)});
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+		
+		return retorno;
 	}
 
 	public long insertTarifacaoComplementar(String linhaArquivo) {
@@ -1504,7 +1588,71 @@ public class DataManipulator {
 		
 		return db.insert(Constantes.TABLE_CONSUMO_ANORMALIDADE_ACAO, null, initialValues);
 	}
-
+	
+	public long saveConsumoAgua(Consumo consumo) {
+		
+		Cursor cursor = db.query(Constantes.TABLE_CONSUMO_AGUA, null,
+				 "matricula = " + consumo.getMatricula(), null, null, null, null);
+		
+		long retorno = -1;
+		
+		ContentValues values = new ContentValues();
+		values.put("consumo_medido_mes", consumo.getConsumoMedidoMes());
+		values.put("consumo_cobrado_mes", consumo.getConsumoCobradoMes());
+		values.put("consumo_cobrado_mes_imovel_micro", consumo.getConsumoCobradoMesImoveisMicro());
+		values.put("consumo_cobrado_mes_original", consumo.getConsumoCobradoMesOriginal());
+		values.put("leitura_atual", consumo.getLeituraAtual());
+		values.put("tipo_consumo", consumo.getTipoConsumo());
+		values.put("dias_consumo", consumo.getDiasConsumo());
+		values.put("anormalidade_consumo", consumo.getAnormalidadeConsumo());
+		values.put("anormalidade_leitura_faturada", consumo.getAnormalidadeLeituraFaturada());
+		
+		if (cursor.moveToFirst()) {
+			retorno = db.update(Constantes.TABLE_CONSUMO_AGUA, values, "matricula = ?", new String[] {String.valueOf(consumo.getMatricula())});
+		} else {
+			retorno = db.insert(Constantes.TABLE_CONSUMO_AGUA, null, values);
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+		
+		return retorno;
+		
+	}
+	
+	public long saveConsumoEsgoto(Consumo consumo) {
+		
+		Cursor cursor = db.query(Constantes.TABLE_CONSUMO_ESGOTO, null,
+				 "matricula = " + consumo.getMatricula(), null, null, null, null);
+		
+		long retorno = -1;
+		
+		ContentValues values = new ContentValues();
+		values.put("consumo_medido_mes", consumo.getConsumoMedidoMes());
+		values.put("consumo_cobrado_mes", consumo.getConsumoCobradoMes());
+		values.put("consumo_cobrado_mes_imovel_micro", consumo.getConsumoCobradoMesImoveisMicro());
+		values.put("consumo_cobrado_mes_original", consumo.getConsumoCobradoMesOriginal());
+		values.put("leitura_atual", consumo.getLeituraAtual());
+		values.put("tipo_consumo", consumo.getTipoConsumo());
+		values.put("dias_consumo", consumo.getDiasConsumo());
+		values.put("anormalidade_consumo", consumo.getAnormalidadeConsumo());
+		values.put("anormalidade_leitura_faturada", consumo.getAnormalidadeLeituraFaturada());
+		
+		if (cursor.moveToFirst()) {
+			retorno = db.update(Constantes.TABLE_CONSUMO_ESGOTO, values, "matricula = ?", new String[] {String.valueOf(consumo.getMatricula())});
+		} else {
+			retorno = db.insert(Constantes.TABLE_CONSUMO_ESGOTO, null, values);
+		}
+		
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+		
+		return retorno;
+		
+	}
+	
 	public void updateConfiguracao(String parametroName, int value) {
 		   
 		ContentValues initialValues = new ContentValues();
@@ -1574,57 +1722,4 @@ public class DataManipulator {
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
 	}
-
-	public void salvarConsumo(Consumo consumo, int matricula, int tipoMedicao){
-
-		ContentValues initialValues = new ContentValues();
-		
-		initialValues.put("matricula", matricula);
-		initialValues.put("tipo_medicao", tipoMedicao);
-		initialValues.put("consumo_medido_mes", consumo.getConsumoMedidoMes());
-		initialValues.put("consumo_cobrado_mes", consumo.getConsumoCobradoMes());
-		initialValues.put("consumo_cobrado_mes_imovel_micro", consumo.getConsumoCobradoMesImoveisMicro());
-		initialValues.put("consumo_cobrado_mes_original", consumo.getConsumoCobradoMesOriginal());
-		initialValues.put("leitura_atual", consumo.getLeituraAtual());
-		initialValues.put("tipo_consumo", consumo.getTipoConsumo());
-		initialValues.put("dias_consumo", consumo.getDiasConsumo());
-		initialValues.put("anormalidade_consumo", consumo.getAnormalidadeConsumo());
-		initialValues.put("anormalidade_leitura_faturada", consumo.getAnormalidadeLeituraFaturada());
-
-		// verifica se Elemento já existe na tabela para atualizar ou inserir.
-		if (selectConsumoImovelByTipoMedicao(matricula, tipoMedicao) != null){
-			db.update(Constantes.TABLE_CONSUMO_IMOVEL, initialValues, "matricula=? AND tipo_medicao=?", new String []{String.valueOf(matricula), String.valueOf(tipoMedicao)});
-			
-		}else{
-			db.insert(Constantes.TABLE_CONSUMO_IMOVEL, null, initialValues);
-		}
-	}
-	
-	public void salvarEfetuarRateioConsumoHelper(EfetuarRateioConsumoHelper helper, int matriculaMacro){
-
-		ContentValues initialValues = new ContentValues();
-		
-		initialValues.put("matricula_macro", matriculaMacro);
-		initialValues.put("matricula_ultimo_micro", helper.getMatriculaUltimoImovelMicro());
-		initialValues.put("quantidade_economia_agua_total", helper.getQuantidadeEconomiasAguaTotal());
-		initialValues.put("consumo_ligacao_agua_total", helper.getConsumoLigacaoAguaTotal());
-		initialValues.put("quantidade_economia_esgoto_total", helper.getQuantidadeEconomiasEsgotoTotal());
-		initialValues.put("consumo_ligacao_esgoto_total", helper.getConsumoLigacaoEsgotoTotal());
-		initialValues.put("consumo_minimo_total", helper.getConsumoMinimoTotal());
-		initialValues.put("consumo_para_rateio_agua", helper.getConsumoParaRateioAgua());
-		initialValues.put("conta_para_rateio_agua", helper.getContaParaRateioAgua());
-		initialValues.put("consumo_para_rateio_esgoto", helper.getConsumoParaRateioEsgoto());
-		initialValues.put("conta_para_rateio_esgoto", helper.getContaParaRateioEsgoto());
-		initialValues.put("reter_impressao_contas", helper.getReterImpressaoConta());
-		initialValues.put("passos", helper.getPassos());
-
-		// verifica se Elemento já existe na tabela para atualizar ou inserir.
-		if (selectEfetuarRateioConsumoHelper(matriculaMacro) != null){
-			db.update(Constantes.TABLE_CONSUMO_IMOVEL, initialValues, "matricula_macro=?", new String []{String.valueOf(matriculaMacro)});
-			
-		}else{
-			db.insert(Constantes.TABLE_CONSUMO_IMOVEL, null, initialValues);
-		}
-	}
-
 }

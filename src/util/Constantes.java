@@ -91,12 +91,13 @@ public class Constantes {
     public static final String TABLE_GERAL = "geral";
     public static final String TABLE_CONSUMO_ANORMALIDADE_ACAO = "consumo_anormalidade_acao";
     public static final String TABLE_ANORMALIDADE = "anormalidade";
-    public static final String TABLE_CONSUMO_IMOVEL = "consumo_imovel";
     public static final String TABLE_FATURAMENTO_IMOVEL = "faturamento_imovel";
     public static final String TABLE_CONFIGURACAO = "configuracao";
     public static final String TABLE_ANORMALIDADE_IMOVEL = "anormalidade_imovel";
     public static final String TABLE_SITUACAO_TIPO = "situacao_tipo";
-    public static final String TABLE_RATEIO_CONSUMO_HELPER = "rateio_consumo_helper";
+    public static final String TABLE_RATEIO_CONDOMINIO = "rateio_condominio";
+    public static final String TABLE_CONSUMO_AGUA = "consumo_agua";
+    public static final String TABLE_CONSUMO_ESGOTO = "consumo_esgoto";
     
     public static final String DATABASE_NAME = "ImpressaoSimultanea.db";
 	public static final String DATABASE_PATH = "/data/data/com.IS/databases/";

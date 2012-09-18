@@ -22,7 +22,7 @@ public class EfetuarRateioConsumoHelper {
     private long id;
 
     private int matriculaUltimoImovelMicro;
-
+    private int matriculaMacro;
     int quantidadeEconomiasAguaTotal = 0;
     int consumoLigacaoAguaTotal = 0;
 
@@ -41,7 +41,17 @@ public class EfetuarRateioConsumoHelper {
     
     private Vector idsAindaFaltamSerCalculador;    
     
-    public Vector getIdsAindaFaltamSerCalculador() {
+    
+    
+    public int getMatriculaMacro() {
+		return matriculaMacro;
+	}
+
+	public void setMatriculaMacro(int matriculaMacro) {
+		this.matriculaMacro = matriculaMacro;
+	}
+
+	public Vector getIdsAindaFaltamSerCalculador() {
         return idsAindaFaltamSerCalculador;
     }
 
