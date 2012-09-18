@@ -72,9 +72,13 @@ public class DbHelper extends SQLiteOpenHelper {
     	"id_consumo_a_cobrar_com_leitura INTEGER, id_leitura_faturar_sem_leitura INTEGER, id_leitura_faturar_com_leitura INTEGER, indc_uso INTEGER, numero_fator_sem_leitura INTEGER," +
     	"numero_fator_com_leitura INTEGER)";
     
-    private static final String DATABASE_CONSUMO_QUERY =
-        "CREATE TABLE consumo (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_medicao TEXT, consumo_medido_mes TEXT, consumo_cobrado_mes TEXT, consumo_cobrado_mes_imovel_micro TEXT, consumo_cobrado_mes_original TEXT, leitura_atual TEXT, tipo_consumo TEXT, " +
+    private static final String DATABASE_CONSUMO_AGUA_QUERY =
+        "CREATE TABLE consumo_agua (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, consumo_medido_mes TEXT, consumo_cobrado_mes TEXT, consumo_cobrado_mes_imovel_micro TEXT, consumo_cobrado_mes_original TEXT, leitura_atual TEXT, tipo_consumo TEXT, " +
         "dias_consumo TEXT, anormalidade_consumo TEXT, anormalidade_leitura_faturada TEXT)";
+    
+    private static final String DATABASE_CONSUMO_ESGOTO_QUERY =
+            "CREATE TABLE consumo_esgoto (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, consumo_medido_mes TEXT, consumo_cobrado_mes TEXT, consumo_cobrado_mes_imovel_micro TEXT, consumo_cobrado_mes_original TEXT, leitura_atual TEXT, tipo_consumo TEXT, " +
+            "dias_consumo TEXT, anormalidade_consumo TEXT, anormalidade_leitura_faturada TEXT)";
 
     private static final String DATABASE_SITUACAO_TIPO_QUERY =
     	"CREATE TABLE situacao_tipo (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_situacao_especial_feturamento TEXT, id_anormalidade_consumo_sem_leitura TEXT, id_anormalidade_consumo_com_leitura TEXT, id_anormalidade_leitura_sem_leitura TEXT, " +
@@ -82,7 +86,7 @@ public class DbHelper extends SQLiteOpenHelper {
     	" indc_valida_esgoto TEXT)";
     
     private static final String DATABASE_RATEIO_CONSUMO_HELPER_QUERY =
-        "CREATE TABLE rateio_consumo_helper (id INTEGER PRIMARY KEY autoincrement, matricula_macro INTEGER not null, matricula_ultimo_micro INTEGER, quantidade_economia_agua_total TEXT, consumo_ligacao_agua_total TEXT, quantidade_economia_esgoto_total TEXT, consumo_ligacao_esgoto_total TEXT, " +
+        "CREATE TABLE rateio_condominio (id INTEGER PRIMARY KEY autoincrement, matricula_macro INTEGER not null, matricula_ultimo_micro INTEGER, quantidade_economia_agua_total TEXT, consumo_ligacao_agua_total TEXT, quantidade_economia_esgoto_total TEXT, consumo_ligacao_esgoto_total TEXT, " +
         " consumo_minimo_total TEXT, consumo_para_rateio_agua TEXT, conta_para_rateio_agua TEXT, consumo_para_rateio_esgoto TEXT, conta_para_rateio_esgoto TEXT, reter_impressao_contas INTEGER, passos INTEGER)";
 
     private static final String DATABASE_CONSUMO_ANORMALIDADE_ACAO_QUERY =
@@ -123,7 +127,8 @@ public class DbHelper extends SQLiteOpenHelper {
      	db.execSQL(DATABASE_GERAL_QUERY);
      	db.execSQL(DATABASE_ANORMALIDADE_QUERY);
 
-     	db.execSQL(DATABASE_CONSUMO_QUERY);
+     	db.execSQL(DATABASE_CONSUMO_AGUA_QUERY);
+     	db.execSQL(DATABASE_CONSUMO_ESGOTO_QUERY);
      	db.execSQL(DATABASE_RATEIO_CONSUMO_HELPER_QUERY);
      	db.execSQL(DATABASE_CONSUMO_ANORMALIDADE_ACAO_QUERY);
      	db.execSQL(DATABASE_DADOS_FATURAMENTO_QUERY);
