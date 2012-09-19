@@ -90,7 +90,7 @@ import android.content.DialogInterface;
 
 public class BusinessConta {
 
-    private boolean leituraInvalida = false;
+    private static boolean leituraInvalida = false;
     private static final int ANORMALIDADE_CALCULO_MEDIA = 90;
     private static BusinessConta instancia;
     private static Context activityContext;
@@ -157,14 +157,32 @@ public class BusinessConta {
 	if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
 		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
 		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+
+		// Update DB - Medidor água
+		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
 	}
 	
 	if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
 		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
 		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+
+		// Update DB - Medidor poço
+		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
 	}
 	if (salvarImovel){
-		Repositorio.salvarObjeto(getImovelSelecionado());		
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+
+		if (getImovelSelecionado().getConsumoAgua() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+		}
+
+		if(getImovelSelecionado().getConsumoEsgoto() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		}
+		
+		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		}
 	}
 
 	return retorno;
@@ -198,14 +216,33 @@ public class BusinessConta {
 		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+
+			// Update DB - Medidor água
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
 		}
 		
 		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+		
+			// Update DB - Medidor poço
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+		
 		}
 		
-		Repositorio.salvarObjeto(getImovelSelecionado());		
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+		
+		if (getImovelSelecionado().getConsumoAgua() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+		}
+		
+		if(getImovelSelecionado().getConsumoEsgoto() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		}
+
+		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		}
 	    
 		consumoAguaRetorno = null;	
 		consumoEsgotoRetorno = null;
@@ -260,18 +297,39 @@ public class BusinessConta {
 		}
 		
 		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
+			
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+
+			// Update DB - Medidor água
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
 		}
 		
 		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
+		
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+
+			// Update DB - Medidor poço
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
 		}
+		
 		if (salvarImovel){
-			Repositorio.salvarObjeto(getImovelSelecionado());		
+			
+			ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+
+			if (getImovelSelecionado().getConsumoAgua() != null){
+				ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+			}
+			
+			if(getImovelSelecionado().getConsumoEsgoto() != null){
+				ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+			}
+			
+			if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+				ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+			}
 		}
-	
 		consumoAguaRetorno = null;	
 		consumoEsgotoRetorno = null;
 		consumos = null;
@@ -389,45 +447,32 @@ public class BusinessConta {
     }
 
     public static void mensagemConsumo(String mensagem, double valor) {
-//	Label mensagemConsumo = null;
-//	Label valorConsumo = null;
-//
-//	mensagemConsumo = new Label(mensagem);
-//	mensagemConsumo.getStyle().setMargin(0, 0, 0, 0);
-//	mensagemConsumo.getStyle().setPadding(0, 0, 0, 0);
-//
-//	valorConsumo = new Label("Valor: " + valor);
-//	valorConsumo.getStyle().setMargin(0, 0, 0, 0);
-//	valorConsumo.getStyle().setPadding(0, 0, 0, 0);
-//
-//	voltar = new Command("Voltar");
-//	confirmar = new Command("Confirmar");
-//
-//	dialogConsumo = new Dialog("Consumo");
-//	dialogConsumo.setCommandListener(BusinessConta.getInstancia());
-//	dialogConsumo.getTitleStyle().setBgTransparency(200);
-//	dialogConsumo.getDialogStyle().setBgTransparency(200);
-//	dialogConsumo.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-//	dialogConsumo.addComponent(mensagemConsumo);
-//	dialogConsumo.addComponent(valorConsumo);
-//	dialogConsumo.addCommand(voltar);
-//	dialogConsumo.addCommand(confirmar);
-//	dialogConsumo.show();
+
+		AlertDialog.Builder a = new AlertDialog.Builder(instancia.activityContext);
+		a.setTitle("Aviso");
+		a.setMessage( mensagem + "\n" + "Valor: " + valor );
+		
+		a.setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				
+				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+			    leituraInvalida = true;
+			}
+		});
+
+		a.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				
+			    leituraInvalida = false;
+
+			}
+		});
+
+		a.show();
+    	
     }
 
-//    public void actionPerformed(ActionEvent evt) {
-//
-//	if (evt.getCommand() == voltar) {
-//	    getImovelSelecionado().setIndcImovelCalculado(Constantes.NAO);
-//	    Repositorio.salvarObjeto(getImovelSelecionado());
-//	    dialogConsumo.setTimeout(1);
-//	    leituraInvalida = true;
-//	} else if (evt.getCommand() == confirmar) {
-//	    leituraInvalida = false;
-//	}
-//    }
-
-    private Imovel getImovelSelecionado(){
+    private static Imovel getImovelSelecionado(){
     	return ControladorImovel.getInstancia().getImovelSelecionado();
     }
 }

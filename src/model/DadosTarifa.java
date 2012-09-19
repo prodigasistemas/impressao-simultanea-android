@@ -77,6 +77,7 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import util.Util;
@@ -86,22 +87,23 @@ public class DadosTarifa {
     private Date inicioVigencia;
     private int codigoCategoria;
     private int codigoSubcategoria;
+    private int consumoMinimo;
+    private double tarifaMinima;
+    private List<DadosFaturamentoFaixa> faixas;
     
 	public DadosTarifa(){
 		super();
 	}
     
-    
     public int getCodigoSubcategoria() {
 		return codigoSubcategoria;
 	}
-
-	private int consumoMinimo;
-    private double tarifaMinima;
-    private Vector faixas;
     
-    public DadosTarifa(String inicioVigencia, String codigoCategoria, String
-            codigoSubcategoria, String consumoMinimo, String tarifaMinima) {
+    public DadosTarifa(String inicioVigencia, 
+    				   String codigoCategoria, 
+    				   String codigoSubcategoria, 
+    				   String consumoMinimo, 
+    				   String tarifaMinima) {
         
         this.inicioVigencia = Util.getData(inicioVigencia);
         this.codigoCategoria = Integer.valueOf(codigoCategoria).intValue();
@@ -112,20 +114,19 @@ public class DadosTarifa {
         this.faixas = new Vector();
     }
     
-    public DadosTarifa( TarifacaoMinima imovelReg9 ) {
+    public DadosTarifa( TarifacaoMinima tarifacaoMinima ) {
         
-        this.inicioVigencia = imovelReg9.getDataVigencia();
-        this.codigoCategoria = imovelReg9.getCodigoCategoria();
-        this.codigoSubcategoria = imovelReg9.getCodigoSubcategoria();
-        this.consumoMinimo = imovelReg9.getConsumoMinimoSubcategoria();
-        this.tarifaMinima = imovelReg9.getTarifaMinimaCategoria();
+        this.inicioVigencia = tarifacaoMinima.getDataVigencia();
+        this.codigoCategoria = tarifacaoMinima.getCodigoCategoria();
+        this.codigoSubcategoria = tarifacaoMinima.getCodigoSubcategoria();
+        this.consumoMinimo = tarifacaoMinima.getConsumoMinimoSubcategoria();
+        this.tarifaMinima = tarifacaoMinima.getTarifaMinimaCategoria();
         
         this.faixas = new Vector();
     }
     
-    
     public void adicionarFaixa(DadosFaturamentoFaixa faixa) {
-        this.faixas.addElement(faixa);
+        this.faixas.add(faixa);
     }
     
     public Date getInicioVigencia() {
@@ -144,7 +145,7 @@ public class DadosTarifa {
         return this.consumoMinimo;
     }
     
-    public Vector getFaixas() {
+    public List<DadosFaturamentoFaixa> getFaixas() {
         return this.faixas;
     }
     

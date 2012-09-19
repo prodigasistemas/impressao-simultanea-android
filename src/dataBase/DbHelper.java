@@ -58,7 +58,7 @@ public class DbHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_MEDIDOR_QUERY =
     	"CREATE TABLE medidor (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_medicao TEXT, numero_hidrometro TEXT, data_instalacao_hidrometro TEXT, num_digitos_leitura_hidrometro TEXT, leitura_anterior_faturamento TEXT, " +  
-    	"data_leitura_anterior_faturamento TEXT, codigo_situacao_leitura_anterior TEXT, leitura_esperada_inicial TEXT, leitura_esperada_final TEXT, consumo_medio TEXT, local_instalacao TEXT, leitura_anterior_informada TEXT,  TEXT," +
+    	"data_leitura_anterior_faturamento TEXT, codigo_situacao_leitura_anterior TEXT, leitura_esperada_inicial TEXT, leitura_esperada_final TEXT, consumo_medio TEXT, local_instalacao TEXT, leitura_anterior_informada TEXT, " +
 		"data_leitura_anterior_informada TEXT, data_ligacao_fornecimento TEXT, tipo_rateio TEXT, leitura_instalacao_hidrometro TEXT)";
 
     private static final String DATABASE_GERAL_QUERY =
