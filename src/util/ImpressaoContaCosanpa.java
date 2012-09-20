@@ -21,33 +21,34 @@ public class ImpressaoContaCosanpa {
     private static Imovel imovel = ControladorImovel.getInstancia().getImovelSelecionado();
     
     // Numero do Hidrometro
-    String numeroMedidor = "NÃO MEDIDO";
-    String dataInstalacao = Constantes.NULO_STRING;
-    String situacaoAgua = imovel
+    private String numeroMedidor = "NÃO MEDIDO";
+    private String dataInstalacao = Constantes.NULO_STRING;
+    private String situacaoAgua = imovel
     		.getDescricaoSitLigacaoAgua(new Integer(imovel.getSituacaoLigAgua()));
-    String situacaoEsgoto = imovel
+    private String situacaoEsgoto = imovel
     		.getDescricaoSitLigacaoEsgoto(new Integer(imovel.getSituacaoLigEsgoto()));
-    String leituraAnteriorInformada = Constantes.NULO_STRING;
-    String leituraAtualInformada = Constantes.NULO_STRING;
-    String leituraAnteriorFaturada = Constantes.NULO_STRING;
-    String leituraAtualFaturada = Constantes.NULO_STRING;
-    String consumo = Constantes.NULO_STRING;
-    String diasConsumo = Constantes.NULO_STRING;
-    Consumo consumoAgua = imovel.getConsumoAgua();
-    Consumo consumoEsgoto = imovel.getConsumoEsgoto();;
-    Medidor medidorAgua;
-    Medidor medidorPoco;
-    String dataLeituraAnteriorInformada = "";
-    String dataLeituraAtualInformada = "";
-    String dataLeituraAnteriorFaturada = "";
-    String dataLeituraAtualFaturada = "";
-    String media = "0";
-    int tipoConsumo = 0;
+    private String leituraAnteriorInformada = Constantes.NULO_STRING;
+    private  String leituraAtualInformada = Constantes.NULO_STRING;
+    private String leituraAnteriorFaturada = Constantes.NULO_STRING;
+    private String leituraAtualFaturada = Constantes.NULO_STRING;
+    private String consumo = Constantes.NULO_STRING;
+    private String diasConsumo = Constantes.NULO_STRING;
+    private Consumo consumoAgua = imovel.getConsumoAgua();
+    private Consumo consumoEsgoto = imovel.getConsumoEsgoto();;
+    private Medidor medidorAgua;
+    private Medidor medidorPoco;
+    private String dataLeituraAnteriorInformada = "";
+    private String dataLeituraAtualInformada = "";
+    private String dataLeituraAnteriorFaturada = "";
+    private String dataLeituraAtualFaturada = "";
+    private String media = "0";
+    private int tipoConsumo = 0;
+    private String economias = "";
     
     // Historico consumo
-    String anoMesReferencia;
-    String consumoHistorico;
-    String hcMensagem = "7 0 50 499 ULTIMOS CONSUMOS\n";
+    private String anoMesReferencia = "";
+    private String consumoHistorico = "";
+    private String hcMensagem = "7 0 50 499 ULTIMOS CONSUMOS\n";
 
     // Exigido Portaria 518/2004
     private int quantidadeCorExigidas;
@@ -75,22 +76,22 @@ public class ImpressaoContaCosanpa {
     
     private String anormalidadeConsumo = "";
     
-    private String tarifacaoAgua;
-    private String tarifacaoEsgoto;
-    private String rateioAguaEsgoto;
+    private String tarifacaoAgua = "";
+    private String tarifacaoEsgoto = "";
+    private String rateioAguaEsgoto = "";
     
     // Dados da conta
-    private String dataVencimentoConta;
-    private String valorConta;
-    private String opcaoDebitoAutomatico;
-    private String mensagens;
-    private String matricula;
-    private String referencia;
-    private String dataVencimento;
-    private String totalAPagar;
+    private String dataVencimentoConta = "";
+    private String valorConta = "";
+    private String opcaoDebitoAutomatico = "";
+    private String mensagens = "";
+    private String matricula = "";
+    private String referencia = "";
+    private String dataVencimento = "";
+    private String totalAPagar = "";
     private String representacaoNumericaCodigoBarras = "";
     private String representacaoCodigoBarrasSemDigitoVerificador = "";
-    private String grupoFaturamento;
+    private String grupoFaturamento = "";
     
     private String montarComando() {
     	String comando = "! 0 200 200 1720 1\n"+
@@ -118,8 +119,7 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 15 250 "+imovel.getInscricao()+"\n"+
         		"T 7 0 315 250 "+imovel.getCodigoRota()+"\n"+
         		"T 7 0 415 250 "+imovel.getSequencialRota()+"\n"+
-        		"T 0 0 470 254 RESIDENC\n"+
-        		"T 7 0 539 250 1\n"+
+        		economias +
         		"T 7 0 48 301 "+ numeroMedidor +"\n"+
         		"T 7 0 248 301 "+ dataInstalacao +"\n"+
         		"T 7 0 446 301 "+ situacaoAgua +"\n"+
@@ -142,20 +142,19 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 285 436 "+ dataLeituraAnteriorFaturada + "\n" +
         		"T 7 0 285 460 "+ dataLeituraAtualFaturada + "\n" +
         		"T 7 0 418 412 CONSUMO (m3)\n"+
-        		"T 7 0 511 436 1\n"+
+        		"T 7 0 511 436 "+ consumo + "\n" +
         		"T 7 0 745 412 DIAS\n"+
         		"T 7 0 760 436 "+ diasConsumo +"\n" +
         		"T 7 0 37 436 ANTERIOR\n"+
         		"T 7 0 37 460 ATUAL\n"+
         		"T "+ hcMensagem +
-        		"LINE 115 525 115 665 1\n"+
         		"T 0 2 44 522 "+ anoMesReferencia + "\n" +
         		consumoHistorico +
         		"T 7 0 75 672 MEDIA(m3):\n"+
-        		"T 7 0 195 672 4\n"+
+        		"T 7 0 195 672 "+ media + "\n" +
         		"T 7 0 448 496 QUALIDADE DA AGUA\n"+
         		"T 0 0 672 505 Ref: \n"+
-        		"T 0 0 705 505 Julho/2012\n"+
+        		"T 0 0 705 505 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n" +
         		"T 7 0 287 520 PARAMETROS\n"+
         		"T 7 0 428 520 PORT. 518\n"+
         		"T 7 0 540 520 ANALISADO\n"+
@@ -239,6 +238,15 @@ public class ImpressaoContaCosanpa {
     public void getDados() {
     	
     	imovel = ControladorImovel.getInstancia().getImovelSelecionado();
+    	
+    	List dc = imovel.getDadosCategoria();
+    	List quantidadeEconomias = categoriasEconomias(dc);
+	    
+	    for (int i = 0; i < quantidadeEconomias.size(); i++) {
+			Object[] dadosCategoria = (Object[]) quantidadeEconomias.get(i);
+			economias += formarLinha(0, 0, 470, 254, dadosCategoria[0] + "", i * 85, 0);
+			economias += formarLinha(7, 0, 539, 250, dadosCategoria[1] + "", i * 85, 0);
+	    }
     	
     	medidorAgua = imovel.getMedidor(Constantes.LIGACAO_AGUA);
     	medidorPoco = imovel.getMedidor(Constantes.LIGACAO_POCO);
@@ -356,6 +364,7 @@ public class ImpressaoContaCosanpa {
 	    List<HistoricoConsumo> historicosConsumo = imovel.getHistoricosConsumo();
 	    int k = 0;
 	    if (historicosConsumo.size() > 0) {
+	    	hcMensagem += "LINE 115 525 115 665 1\n"; 
 	    	for (HistoricoConsumo hc : historicosConsumo) {
 				anoMesReferencia = Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia());
 				
@@ -767,5 +776,67 @@ public class ImpressaoContaCosanpa {
 		}
 		return retorno;
     }
+    
+    private List categoriasEconomias(List regsTipo2) {
+    	List retorno = new ArrayList();
+    	int quantidadeEconomiasResidencial = 0;
+    	int quantidadeEconomiasComercial = 0;
+    	int quantidadeEconomiasIndustrial = 0;
+    	int quantidadeEconomiasPublico = 0;
+    	String descricaoResidencial = "";
+    	String descricaoComercial = "";
+    	String descricaoIndustrial = "";
+    	String descricaoPublico = "";
+    	for (int i = 0; i < regsTipo2.size(); i++) {
+    	    DadosCategoria reg2 = (DadosCategoria) regsTipo2.get(i);
+    	    String descricaoCategoria = reg2.getDescricaoCategoria();
+    	    if (descricaoCategoria.length() > 8) {
+    		descricaoCategoria = descricaoCategoria.substring(0, 8);
+    	    }
+    	    switch (reg2.getCodigoCategoria()) {
+    	    case DadosCategoria.RESIDENCIAL:
+    		quantidadeEconomiasResidencial += reg2.getQtdEconomiasSubcategoria();
+    		descricaoResidencial = descricaoCategoria;
+    		break;
+    	    case DadosCategoria.COMERCIAL:
+    		quantidadeEconomiasComercial += reg2.getQtdEconomiasSubcategoria();
+    		descricaoComercial = descricaoCategoria;
+    		break;
+    	    case DadosCategoria.INDUSTRIAL:
+    		quantidadeEconomiasIndustrial += reg2.getQtdEconomiasSubcategoria();
+    		descricaoIndustrial = descricaoCategoria;
+    		break;
+    	    case DadosCategoria.PUBLICO:
+    		quantidadeEconomiasPublico += reg2.getQtdEconomiasSubcategoria();
+    		descricaoPublico = descricaoCategoria;
+    		break;
+    	    }
+    	}
+    	if (quantidadeEconomiasResidencial > 0) {
+    	    Object[] dadosResidencial = new Object[2];
+    	    dadosResidencial[0] = descricaoResidencial;
+    	    dadosResidencial[1] = new Integer(quantidadeEconomiasResidencial);
+    	    retorno.add(dadosResidencial);
+    	}
+    	if (quantidadeEconomiasComercial > 0) {
+    	    Object[] dadosComercial = new Object[2];
+    	    dadosComercial[0] = descricaoComercial;
+    	    dadosComercial[1] = new Integer(quantidadeEconomiasComercial);
+    	    retorno.add(dadosComercial);
+    	}
+    	if (quantidadeEconomiasIndustrial > 0) {
+    	    Object[] dadosIndustrial = new Object[2];
+    	    dadosIndustrial[0] = descricaoIndustrial;
+    	    dadosIndustrial[1] = new Integer(quantidadeEconomiasIndustrial);
+    	    retorno.add(dadosIndustrial);
+    	}
+    	if (quantidadeEconomiasPublico > 0) {
+    	    Object[] dadosPublico = new Object[2];
+    	    dadosPublico[0] = descricaoPublico;
+    	    dadosPublico[1] = new Integer(quantidadeEconomiasPublico);
+    	    retorno.add(dadosPublico);
+    	}
+    	return retorno;
+        }
     
 }
