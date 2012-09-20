@@ -238,7 +238,7 @@ public class ListaRotas extends ListActivity {
 			
 			// change the row color based on selected state
 	        if(selectedPos == position){
-	        	rowView.setBackgroundColor(Color.GRAY);
+	        	rowView.setBackgroundColor(Color.argb(50, 80, 90, 150));
 	        }else{
 	        	rowView.setBackgroundColor(Color.TRANSPARENT);
 	        }

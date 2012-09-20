@@ -127,6 +127,15 @@ public class MedidorPocoTab extends Fragment {
 			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
 		
+        //Populate Leitura e Anormalidade
+        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura() != Constantes.NULO_INT){
+        	leitura.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura()));
+        }
+        
+        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade() > 0 ){
+        	codigoAnormalidade.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade()));
+        }
+
 		return view;
 	}
 	

@@ -1,5 +1,6 @@
 package dataBase;
 
+import java.util.Date;
 import java.util.Vector;
 
 import model.DadosFaturamento;
@@ -59,7 +60,9 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_MEDIDOR_QUERY =
     	"CREATE TABLE medidor (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, tipo_medicao TEXT, numero_hidrometro TEXT, data_instalacao_hidrometro TEXT, num_digitos_leitura_hidrometro TEXT, leitura_anterior_faturamento TEXT, " +  
     	"data_leitura_anterior_faturamento TEXT, codigo_situacao_leitura_anterior TEXT, leitura_esperada_inicial TEXT, leitura_esperada_final TEXT, consumo_medio TEXT, local_instalacao TEXT, leitura_anterior_informada TEXT, " +
-		"data_leitura_anterior_informada TEXT, data_ligacao_fornecimento TEXT, tipo_rateio TEXT, leitura_instalacao_hidrometro TEXT)";
+		"data_leitura_anterior_informada TEXT, data_ligacao_fornecimento TEXT, tipo_rateio TEXT, leitura_instalacao_hidrometro TEXT, " +
+		"data_leitura TEXT, leitura_anterior INTEGER, data_leitura_atual_faturamento TEXT, leitura INTEGER, anormalidade INTEGER, qtd_dias_ajustado INTEGER," +
+		"leitura_atual_faturamento INTEGER, leitura_relatorio INTEGER, anormalidade_relatorio TNTEGER)";
 
     private static final String DATABASE_GERAL_QUERY =
         "CREATE TABLE geral (id INTEGER PRIMARY KEY autoincrement, data_referencia_arrecadacao TEXT, ano_mes_faturamento TEXT, codigo_empresa_febraban TEXT, telefone0800 TEXT, " +

@@ -14,25 +14,26 @@ public class Medidor {
     private int numDigitosLeituraHidrometro;
     private int leituraAnteriorFaturamento;
     private Date dataLeituraAnteriorFaturado;
-    private Date dataLeituraAnteriorInformada;
-    private Date dataLigacaoFornecimento = null;
     private int codigoSituacaoLeituraAnterior;
     private int leituraEsperadaInicial;
     private int leituraEsperadaFinal;
     private String consumoMedio;
-    private int leitura = Constantes.NULO_INT;
-    private int anormalidade = Constantes.NULO_INT;
-    private Date dataLeitura;
     private String localInstalacao;
     private int leituraAnteriorInformada;
+    private Date dataLeituraAnteriorInformada;
+    private Date dataLigacaoFornecimento = null;
+    private short tipoRateio = Constantes.NULO_SHORT;
+    private int leituraInstalacaoHidrometro = Constantes.NULO_INT;
+    
+    private Date dataLeitura;
     private int leituraAnterior;
     private Date dataLeituraAtualFaturamento;
+    private int leitura = Constantes.NULO_INT;
+    private int anormalidade = Constantes.NULO_INT;
     private int qtdDiasAjustado = Constantes.NULO_INT;
     private int leituraAtualFaturamento = Constantes.NULO_INT;
     private int leituraRelatorio = Constantes.NULO_INT;
     private int anormalidadeRelatorio = Constantes.NULO_INT;
-    private short tipoRateio = Constantes.NULO_SHORT;
-    private int leituraInstalacaoHidrometro = Constantes.NULO_INT;
     
     // Tipos de Rateio
     public static final short TIPO_RATEIO_SEM_RATEIO = 0;
@@ -128,6 +129,10 @@ public class Medidor {
     	this.dataLeitura = dataLeitura;
     }
 
+    public void setDataLeitura(String dataLeitura) {
+    	this.dataLeitura = Util.getData(Util.verificarNuloString(dataLeitura));
+    }
+
     public Date getDataInstalacaoHidrometro() {
     	return dataInstalacaoHidrometro;
     }
@@ -218,76 +223,80 @@ public class Medidor {
     }
 
     public String getLocalInstalacao() {
-	return localInstalacao;
+    	return localInstalacao;
     }
 
     public void setLocalInstalacao(String localInstalacao) {
-	this.localInstalacao = Util.verificarNuloString(localInstalacao);
+    	this.localInstalacao = Util.verificarNuloString(localInstalacao);
     }
 
     public int getLeituraAnteriorInformada() {
-	return leituraAnteriorInformada;
+    	return leituraAnteriorInformada;
     }
 
     public void setLeituraAnteriorInformada(String leituraAnteriorInformada) {
-	this.leituraAnteriorInformada = Util
+    	this.leituraAnteriorInformada = Util
 		.verificarNuloInt(leituraAnteriorInformada);
     }
 
     public int getLeituraAnterior() {
-	return leituraAnterior;
+    	return leituraAnterior;
     }
 
     public void setLeituraAnterior(int leituraAnterior) {
-	this.leituraAnterior = leituraAnterior;
+    	this.leituraAnterior = leituraAnterior;
     }
 
     public Date getDataLeituraAtualFaturamento() {
-	return dataLeituraAtualFaturamento;
+    	return dataLeituraAtualFaturamento;
     }
 
     public void setDataLeituraAtualFaturamento(Date dataLeituraAtualFaturamento) {
-	this.dataLeituraAtualFaturamento = dataLeituraAtualFaturamento;
+    	this.dataLeituraAtualFaturamento = dataLeituraAtualFaturamento;
+    }
+
+    public void setDataLeituraAtualFaturamento(String dataLeituraAtualFaturamento) {
+    	this.dataLeituraAtualFaturamento = Util.getData(Util.verificarNuloString(dataLeituraAtualFaturamento));
     }
 
     public int getLeituraAtualFaturamento() {
-	return leituraAtualFaturamento;
+    	return leituraAtualFaturamento;
     }
 
     public void setLeituraAtualFaturamento(int leituraAtualFaturamento) {
-	this.leituraAtualFaturamento = leituraAtualFaturamento;
+    	this.leituraAtualFaturamento = leituraAtualFaturamento;
     }
 
     public int getLeituraRelatorio() {
-	return leituraRelatorio;
+    	return leituraRelatorio;
     }
 
     public void setLeituraRelatorio(int leituraRelatorio) {
-	this.leituraRelatorio = leituraRelatorio;
+    	this.leituraRelatorio = leituraRelatorio;
     }
 
     public int getAnormalidadeRelatorio() {
-	return anormalidadeRelatorio;
+    	return anormalidadeRelatorio;
     }
 
     public void setAnormalidadeRelatorio(int anormalidadeRelatorio) {
-	this.anormalidadeRelatorio = anormalidadeRelatorio;
+    	this.anormalidadeRelatorio = anormalidadeRelatorio;
     }
 
     public int getQtdDiasAjustado() {
-	return qtdDiasAjustado;
+    	return qtdDiasAjustado;
     }
 
     public void setQtdDiasAjustado(int qtdDiasAjustado) {
-	this.qtdDiasAjustado = qtdDiasAjustado;
+    	this.qtdDiasAjustado = qtdDiasAjustado;
     }
 
     public void setTipoRateio(String tipoRateio) {
-	this.tipoRateio = Util.verificarNuloShort(tipoRateio);
+    	this.tipoRateio = Util.verificarNuloShort(tipoRateio);
     }
 
     public short getTipoRateio() {
-	return tipoRateio;
+    	return tipoRateio;
     }
  
     public int getLeituraInstalacaoHidrometro() {
