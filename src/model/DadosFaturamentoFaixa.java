@@ -79,7 +79,8 @@ package model;
 import util.Util;
 
 public class DadosFaturamentoFaixa {
-	
+
+	private int idDadosFaturamento;
 	private int consumoFaturado;
 	private double valorFaturado;
 	private int limiteInicialConsumo;
@@ -120,6 +121,14 @@ public class DadosFaturamentoFaixa {
 		this.valorTarifa = Util.verificarNuloInt( valorTarifa );
 	}
 	
+	public int getIdDadosFaturamento() {
+		return idDadosFaturamento;
+	}
+
+	public void setIdDadosFaturamento(int idDadosFaturamento) {
+		this.idDadosFaturamento = idDadosFaturamento;
+	}
+
 	public int getConsumoFaturado() {
 		return consumoFaturado;
 	}

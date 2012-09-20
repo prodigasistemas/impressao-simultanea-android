@@ -22,6 +22,8 @@ public class Constantes {
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
     
+    public static final int LIMITE_SUPERIOR_FAIXA_FINAL = 999999;
+    
     /**
      * Medição Tipo
      */
@@ -91,13 +93,15 @@ public class Constantes {
     public static final String TABLE_GERAL = "geral";
     public static final String TABLE_CONSUMO_ANORMALIDADE_ACAO = "consumo_anormalidade_acao";
     public static final String TABLE_ANORMALIDADE = "anormalidade";
-    public static final String TABLE_FATURAMENTO_IMOVEL = "faturamento_imovel";
+    public static final String TABLE_DADOS_FATURAMENTO = "dados_faturamento";
+    public static final String TABLE_DADOS_FATURAMENTO_FAIXA = "dados_faturamento_faixa";
     public static final String TABLE_CONFIGURACAO = "configuracao";
     public static final String TABLE_ANORMALIDADE_IMOVEL = "anormalidade_imovel";
     public static final String TABLE_SITUACAO_TIPO = "situacao_tipo";
     public static final String TABLE_RATEIO_CONDOMINIO = "rateio_condominio";
     public static final String TABLE_CONSUMO_AGUA = "consumo_agua";
     public static final String TABLE_CONSUMO_ESGOTO = "consumo_esgoto";
+    public static final String TABLE_DADOS_QUALIDADE_AGUA = "dados_qualidade_agua";
     
     public static final String DATABASE_NAME = "ImpressaoSimultanea.db";
 	public static final String DATABASE_PATH = "/data/data/com.IS/databases/";
@@ -108,6 +112,14 @@ public class Constantes {
     public static final int IMOVEL_RETIDO = 3;
     public static final int IMOVEL_TRANSMITIDO = 4;
     public static final int IMOVEL_NAO_TRANSMITIDO = 5;
+    
+    /**
+     * Tipo faturamento
+     */
+    public static final int TIPO_FATURAMENTO_AGUA = 1;
+    public static final int TIPO_FATURAMENTO_ESGOTO = 2;
+    public static final int TIPO_FATURAMENTO_AGUA_PROPORCIONAL = 3;
+    public static final int TIPO_FATURAMENTO_ESGOTO_PROPORCIONAL = 3;
 
     /**
      * COD. FEBRABAN da COSANPA

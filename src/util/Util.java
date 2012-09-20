@@ -20,6 +20,7 @@ import business.ControladorRota;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 public class Util {
@@ -860,6 +861,8 @@ public class Util {
      */
 
     public static String retornaDescricaoAnoMes(String anoMes) {
+    	
+    	Log.i("ANoMes", anoMes);
 
 		int mes = Integer.parseInt(anoMes.substring(4, 6));
 		String ano = anoMes.substring(0, 4);
@@ -1220,4 +1223,94 @@ public class Util {
 	
 		 return sb.toString();
 	}
+    
+    /**
+     * Converte um valor double para uma string formatada
+     * 
+     * @param valor
+     *            valor a ser formatado
+     * @return String formatada
+     */
+    public static String formatarDoubleParaMoedaReal(double d) {
+	double valorArredondado = Util.arredondar(d, 2);
+	int inteiro = (int) valorArredondado;
+	double decimal = Util.arredondar(valorArredondado - (int) inteiro, 2);
+
+	String inteiroString = inteiro + "";
+	int contador = 0;
+	String comPontoInvertido = "";
+
+	// Agrupamos de 3 em 3
+	for (int i = inteiroString.length() - 1; i >= 0; i--) {
+	    contador++;
+	    comPontoInvertido += inteiroString.charAt(i);
+
+	    if (contador % 3 == 0 && i != 0) {
+		comPontoInvertido += ".";
+	    }
+	}
+
+	String comPonto = "";
+
+	// Invertemos
+	for (int i = comPontoInvertido.length() - 1; i >= 0; i--) {
+	    contador++;
+	    comPonto += comPontoInvertido.charAt(i);
+	}
+
+	String decimalString = decimal + "";
+	decimalString = decimalString.substring(2, decimalString.length());
+
+	// Colocamos a virgula
+	return comPonto + ',' + adicionarZerosDireitaNumero(2, decimalString);
+    }
+
+    public static String getAnoBarraMesReferencia(int valor) {
+    	if(valor != 0){
+        	return String.valueOf(valor).substring(0, 4) + "/" + String.valueOf(valor).substring(4, 6);
+
+    	}else{
+    		return "";
+    	}
+    }
+    
+    /**
+     * Retorna o valor de cnpjFormatado
+     * 
+     * @return O valor de cnpjFormatado
+     */
+    public static String formatarCnpj(String cnpj) {
+	String cnpjFormatado = cnpj;
+	String zeros = "";
+
+	if (cnpjFormatado != null) {
+
+	    for (int a = 0; a < (14 - cnpjFormatado.length()); a++) {
+		zeros = zeros.concat("0");
+	    }
+	    // concatena os zeros ao numero
+	    // caso o numero seja diferente de nulo
+	    cnpjFormatado = zeros.concat(cnpjFormatado);
+
+	    cnpjFormatado = cnpjFormatado.substring(0, 2) + "." + cnpjFormatado.substring(2, 5) + "." + cnpjFormatado.substring(5, 8) + "/" + cnpjFormatado.substring(8, 12) + "-" + cnpjFormatado.substring(12, 14);
+	}
+
+	return cnpjFormatado;
+    }
+    
+    public static String formatarAnoMesParaMesAno(String anoMes) {
+
+    	String anoMesFormatado = "";
+    	String anoMesRecebido = anoMes;
+    	if (anoMesRecebido.length() < 6) {
+    	    anoMesFormatado = anoMesRecebido;
+    	} else {
+    	    String mes = anoMesRecebido.substring(4, 6);
+    	    String ano = anoMesRecebido.substring(0, 4);
+    	    anoMesFormatado = mes + "/" + ano;
+    	}
+    	return anoMesFormatado;
+        }
+
+
 }

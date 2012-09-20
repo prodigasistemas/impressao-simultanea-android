@@ -3,6 +3,8 @@ package model;
 import util.Util;
 
 public class DadosCategoria {
+	
+	private int id;
     private int codigoCategoria;
     private String descricaoCategoria;
     private String codigoSubcategoria;
@@ -26,8 +28,18 @@ public class DadosCategoria {
     
 	public DadosCategoria(){
 	}
-    
-    public int getCodigoCategoria() {
+	
+    public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+	public int getCodigoCategoria() {
         return codigoCategoria;
     }
     
@@ -127,7 +139,7 @@ public class DadosCategoria {
     	
     	for ( int i = 0; i < this.faturamentoAgua.getFaixas().size(); i++ ){
     		
-    		DadosFaturamentoFaixa dadosFaturamento = ( DadosFaturamentoFaixa ) this.faturamentoAgua.getFaixas().elementAt( i );    		
+    		DadosFaturamentoFaixa dadosFaturamento = ( DadosFaturamentoFaixa ) this.faturamentoAgua.getFaixas().get( i );    		
     		
     		soma += 
     			( dadosFaturamento.getValorFaturado() * this.qtdEconomiasSubcategoria ); 
@@ -145,7 +157,7 @@ public class DadosCategoria {
     	
     	for ( int i = 0; i < this.faturamentoAgua.getFaixas().size(); i++ ){
     		
-    		DadosFaturamentoFaixa dadosFaturamento = ( DadosFaturamentoFaixa ) this.faturamentoAgua.getFaixas().elementAt( i );
+    		DadosFaturamentoFaixa dadosFaturamento = ( DadosFaturamentoFaixa ) this.faturamentoAgua.getFaixas().get( i );
     		
     		soma += 
     			( dadosFaturamento.getConsumoFaturado() * this.qtdEconomiasSubcategoria );

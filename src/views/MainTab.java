@@ -363,7 +363,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    }
 	    	
 	    	
-	    	// imprimirConta();
+//	    	 imprimirConta();
+	    	
+	    	Log.i("Comando", ImpressaoContaCosanpa.getInstancia().getComando());
 	        
 	    	return true;
 	    	
@@ -412,6 +414,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     		new ImpressaoThread(bluetoothAddress).start();
     			
     		progress.show();
+    		
     	}
 	}
 	
@@ -527,7 +530,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 					progress.show();
 					
-					conexao.write(ImpressaoContaCosanpa.comandoCPCL.getBytes());
+					conexao.write(ImpressaoContaCosanpa.getInstancia().getComando().getBytes());
 					conexao.close();
 					
 					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);

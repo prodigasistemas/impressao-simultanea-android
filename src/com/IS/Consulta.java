@@ -149,9 +149,10 @@ public class Consulta extends ListActivity {
 //					enderecos.add(imovel.getEndereco());
 //				}
 
-    	    	if(listImoveis != null && listImoveis.size() > 0){
+    	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
     	        	setListAdapter(enderecoList);
+    	        	ListaImoveis.tamanhoListaImoveis = listEnderecoImoveis.size();
     	    	}
     		}
     	}

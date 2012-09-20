@@ -89,7 +89,6 @@ public class DadosTarifa {
     private int codigoSubcategoria;
     private int consumoMinimo;
     private double tarifaMinima;
-    private List<DadosFaturamentoFaixa> faixas;
     
 	public DadosTarifa(){
 		super();
@@ -111,7 +110,6 @@ public class DadosTarifa {
         this.consumoMinimo = Integer.valueOf(consumoMinimo).intValue();
         this.tarifaMinima = Util.strToDouble(tarifaMinima);
         
-        this.faixas = new Vector();
     }
     
     public DadosTarifa( TarifacaoMinima tarifacaoMinima ) {
@@ -122,11 +120,6 @@ public class DadosTarifa {
         this.consumoMinimo = tarifacaoMinima.getConsumoMinimoSubcategoria();
         this.tarifaMinima = tarifacaoMinima.getTarifaMinimaCategoria();
         
-        this.faixas = new Vector();
-    }
-    
-    public void adicionarFaixa(DadosFaturamentoFaixa faixa) {
-        this.faixas.add(faixa);
     }
     
     public Date getInicioVigencia() {
@@ -143,10 +136,6 @@ public class DadosTarifa {
     
     public int getConsumoMinimo() {
         return this.consumoMinimo;
-    }
-    
-    public List<DadosFaturamentoFaixa> getFaixas() {
-        return this.faixas;
     }
     
     public void setValorTarifaMinima(int valorTarifaMinima) {

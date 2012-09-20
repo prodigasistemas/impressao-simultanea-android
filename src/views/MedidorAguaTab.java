@@ -63,10 +63,6 @@ public class MedidorAguaTab extends Fragment {
 	    else
 	    	view.setBackgroundResource(R.drawable.landscape_background);
 	    
-		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getMatricula());
-//		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getMedidorSelecionado().getNumeroHidrometro());
-//		Log.i("LOG>> ", ""+ControladorImovel.getInstancia().getMedidorSelecionado().getLocalInstalacao());
-		
 		endereco = (TextView) view.findViewById(R.id.endereco);
 		hidrometro = (TextView) view.findViewById(R.id.hidrometro);
 		locInstalacao = (TextView) view.findViewById(R.id.locInstalacao);

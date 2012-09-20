@@ -12,7 +12,10 @@ import model.Consumo;
 import model.Conta;
 import model.Credito;
 import model.DadosCategoria;
+import model.DadosFaturamento;
+import model.DadosFaturamentoFaixa;
 import model.DadosGerais;
+import model.DadosQualidadeAgua;
 import model.Debito;
 import model.HistoricoConsumo;
 import model.Imovel;
@@ -91,9 +94,8 @@ public class DataManipulator {
 				x = x + 1;
 			} while (cursor.moveToNext());
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -121,9 +123,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -148,9 +148,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -222,9 +220,8 @@ public class DataManipulator {
 			list.add(naoRetidos);
 
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+	
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -285,9 +282,8 @@ public class DataManipulator {
 
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
+		
 	}
 	
 	public Imovel selectImovel(String condition){
@@ -464,9 +460,7 @@ public class DataManipulator {
           	imovel.setIndcGeracao(Integer.parseInt(cursor.getString(81)));
 		}
 		
-		 if (cursor != null && !cursor.isClosed()) {
-	           cursor.close();
-	     }
+		fecharCursor(cursor);
 		 
 		 selectDependenciasImovel(imovel);
 		 
@@ -477,6 +471,7 @@ public class DataManipulator {
 		
 		if (imovel != null){
 			
+			selectDadosQualidadeAgua();
 			selectDadosCategoria(imovel);
 			selectHistoricosConsumo(imovel);
 			selectDebitos(imovel);
@@ -499,7 +494,8 @@ public class DataManipulator {
 																				 "quantidade_econominas_subcategoria", 
 																				 "descricao_abreviada_categoria",
 																				 "descricao_abreviada_subcategoria", 
-																				 "fator_economia_categoria"}, 
+																				 "fator_economia_categoria",
+																				 "id"}, 
 																				 "matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
@@ -516,16 +512,161 @@ public class DataManipulator {
 				dc.setDescricaoAbreviadaCategoria(cursor.getString(5));
 				dc.setDescricaoAbreviadaSubcategoria(cursor.getString(6));
 				dc.setFatorEconomiaCategoria(cursor.getString(7));
+				dc.setId(cursor.getInt(8));
+				
+				dc.setFaturamentoAgua(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_AGUA));
+				dc.setFaturamentoEsgoto(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_ESGOTO));
+				dc.setFaturamentoAguaProporcional(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_AGUA_PROPORCIONAL));
+				dc.setFaturamentoEsgotoProporcional(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_ESGOTO_PROPORCIONAL));
 				
 				imovel.getDadosCategoria().add(dc);
 				
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-	           cursor.close();
-	    }
+		fecharCursor(cursor);
+		
 		return imovel;
+	}
+	
+	public DadosFaturamento selectDadosFaturamento(int idDadosCategoria, int tipoFaturamento) {
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_FATURAMENTO, new String[] {"valor_faturado",
+																					"consumo_faturado", "valor_tarifa_minima",
+																					"consumo_minimo", "id"}, "id_dados_categoria = ? AND tipo_faturamento = ?", 
+																					new String[] {String.valueOf(idDadosCategoria), 
+																					String.valueOf(tipoFaturamento)}, 
+																					null, null, null);
+		DadosFaturamento dadosFaturamento = null;
+		
+		if (cursor.moveToFirst()) {
+			dadosFaturamento = new DadosFaturamento();
+			
+			dadosFaturamento.setIdDadosCategoria(idDadosCategoria);
+			dadosFaturamento.setValorFaturado(cursor.getDouble(0));
+			dadosFaturamento.setConsumoFaturado(cursor.getInt(1));
+			dadosFaturamento.setValorTarifaMinima(cursor.getDouble(2));
+			dadosFaturamento.setConsumoMinimo(cursor.getInt(3));
+			dadosFaturamento.setId(cursor.getInt(4));
+			
+			dadosFaturamento.setFaixas(selectDadosFaturamentoFaixa(dadosFaturamento.getId(), tipoFaturamento));
+		}
+		
+		fecharCursor(cursor);
+		
+		return dadosFaturamento;
+	}
+	
+	public List selectDadosFaturamentoFaixa(int idDadosFaturamento, int idTipoFaturamento) {
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, new String[] {"consumo_faturado", "valor_faturado",
+																						"limite_inicial_consumo", "limite_final_consumo",
+																						"valor_tarifa"
+																						}, "id_dados_faturamento = ? AND tipo_faturamento_faixa = ?", 
+																						new String[] {String.valueOf(idDadosFaturamento),
+																						String.valueOf(idTipoFaturamento)}, 
+																						null, null, "id asc");
+		List dffs = new ArrayList();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				DadosFaturamentoFaixa dff = new DadosFaturamentoFaixa();
+				
+				dff.setConsumoFaturado(cursor.getInt(0));
+				dff.setValorFaturado(cursor.getDouble(1));
+				dff.setLimiteInicialConsumo(cursor.getInt(2));
+				dff.setLimiteFinalConsumo(cursor.getInt(3));
+				dff.setValorTarifa(cursor.getDouble(4));
+				
+				dffs.add(dff);
+			} while(cursor.moveToNext());
+		}
+		
+		fecharCursor(cursor);
+		
+		return dffs;
+	}
+	
+	public void selectDadosQualidadeAgua() {
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_QUALIDADE_AGUA, new String[] {
+																		"turbidez_padrao", 
+																		"ph_padrao", "cor_padrao", 
+																		"cloro_padrao", "fluor_padrao", 
+																		"ferro_padrao", "coliformes_totais_padrao", 
+																		"coliformes_fecais_padrao", "nitrato_padrao", 
+																		"coliformes_termo_tolerantes_padrao", "am_referencia_qualidade_agua", 
+																		"numero_cloro_residual", "numero_turbidez", 
+																		"numero_ph", "numero_cor", 
+																		"numero_fluor", "numero_ferro", 
+																		"numero_coliformes_totais", "numero_coliformes_fecais", 
+																		"numero_nitrato", "numero_coliformes_termo_tolerantes", 
+																		"descricao_fonte_capacitacao", "quantidade_turbidez_exigidas", 
+																		"quantidade_cor_exigidas", "quantidade_cloro_exigidas", 
+																		"quantidade_fluor_exigidas", "quantidade_coliformes_totais_exigidas", 
+																		"quantidade_coliformes_fecais_exigidas", "quantidade_coliformes_termo_tolerantes_exigidas", 
+																		"quantidade_turbidez_analisadas", "quantidade_cor_analisadas", 
+																		"quantidade_cloro_analisadas", "quantidade_fluor_analisadas", 
+																		"quantidade_coliformes_totais_analisadas", "quantidade_coliformes_fecais_analisadas", 
+																		"quantidade_coliformes_termo_tolerantes_analisadas", "quantidade_turbidez_conforme", 
+																		"quantidade_cor_conforme", "quantidade_cloro_conforme", 
+																		"quantidade_fluor_conforme", "quantidade_coliformes_totais_conforme", 
+																		"quantidade_coliformes_fecais_conforme", "quantidade_coliformes_termo_tolerantes_conforme"}, 
+																		null, null, null, null, null);
+		
+		if (cursor.moveToFirst()) {
+			DadosQualidadeAgua.getInstancia().setTurbidezPadrao(cursor.getString(0));
+			DadosQualidadeAgua.getInstancia().setPhPadrao(cursor.getString(1));
+			DadosQualidadeAgua.getInstancia().setCorPadrao(cursor.getString(2));
+			DadosQualidadeAgua.getInstancia().setCloroPadrao(cursor.getString(3));
+			DadosQualidadeAgua.getInstancia().setFluorPadrao(cursor.getString(4));
+			
+			DadosQualidadeAgua.getInstancia().setFerroPadrao(cursor.getString(5));
+			DadosQualidadeAgua.getInstancia().setColiformesTotaisPadrao(cursor.getString(6));
+			DadosQualidadeAgua.getInstancia().setColiformesFecaisPadrao(cursor.getString(7));
+			DadosQualidadeAgua.getInstancia().setNitratoPadrao(cursor.getString(8));
+			DadosQualidadeAgua.getInstancia().setColiformesTermoTolerantesPadrao(cursor.getString(9));
+			
+			DadosQualidadeAgua.getInstancia().setAmReferenciaQualidadeAgua(cursor.getString(10));
+			DadosQualidadeAgua.getInstancia().setNumeroCloroResidual(cursor.getString(11));
+			DadosQualidadeAgua.getInstancia().setNumeroTurbidez(cursor.getString(12));
+			DadosQualidadeAgua.getInstancia().setNumeroPh(cursor.getString(13));
+			DadosQualidadeAgua.getInstancia().setNumeroCor(cursor.getString(14));
+			
+			DadosQualidadeAgua.getInstancia().setNumeroFluor(cursor.getString(15));
+			DadosQualidadeAgua.getInstancia().setNumeroFerro(cursor.getString(16));
+			DadosQualidadeAgua.getInstancia().setNumeroColiformesTotais(cursor.getString(17));
+			DadosQualidadeAgua.getInstancia().setNumeroColiformesFecais(cursor.getString(18));
+			DadosQualidadeAgua.getInstancia().setNumeroNitrato(cursor.getString(19));
+			
+			DadosQualidadeAgua.getInstancia().setNumeroColiformesTermoTolerantes(cursor.getString(20));
+			DadosQualidadeAgua.getInstancia().setDescricaoFonteCapacitacao(cursor.getString(21));
+			DadosQualidadeAgua.getInstancia().setQuantidadeTurbidezExigidas(cursor.getString(22));
+			DadosQualidadeAgua.getInstancia().setQuantidadeCorExigidas(cursor.getString(23));
+			DadosQualidadeAgua.getInstancia().setQuantidadeCloroExigidas(cursor.getString(24));
+			
+			DadosQualidadeAgua.getInstancia().setQuantidadeFluorExigidas(cursor.getString(25));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesTotaisExigidas(cursor.getString(26));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesFecaisExigidas(cursor.getString(27));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesTermoTolerantesExigidas(cursor.getString(28));
+			DadosQualidadeAgua.getInstancia().setQuantidadeTurbidezAnalisadas(cursor.getString(29));
+			
+			DadosQualidadeAgua.getInstancia().setQuantidadeCorAnalisadas(cursor.getString(30));
+			DadosQualidadeAgua.getInstancia().setQuantidadeCloroAnalisadas(cursor.getString(31));
+			DadosQualidadeAgua.getInstancia().setQuantidadeFluorAnalisadas(cursor.getString(32));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesTotaisAnalisadas(cursor.getString(33));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesFecaisAnalisadas(cursor.getString(34));
+			
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesTermoTolerantesAnalisadas(cursor.getString(35));
+			DadosQualidadeAgua.getInstancia().setQuantidadeTurbidezConforme(cursor.getString(36));
+			DadosQualidadeAgua.getInstancia().setQuantidadeCorConforme(cursor.getString(37));
+			DadosQualidadeAgua.getInstancia().setQuantidadeCloroConforme(cursor.getString(38));
+			DadosQualidadeAgua.getInstancia().setQuantidadeFluorConforme(cursor.getString(39));
+			
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesTotaisConforme(cursor.getString(40));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesFecaisConforme(cursor.getString(41));
+			DadosQualidadeAgua.getInstancia().setQuantidadeColiformesTermoTolerantesConforme(cursor.getString(42));
+		}
+		
+		fecharCursor(cursor);
+		
 	}
 	
 	public Imovel selectHistoricosConsumo(Imovel imovel){
@@ -552,9 +693,8 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
+		
 		return imovel;
 	}
 	
@@ -579,9 +719,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return imovel;
 	}
@@ -608,9 +746,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -637,9 +773,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -668,9 +802,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -746,9 +878,7 @@ public class DataManipulator {
 
 		imovel.getMedidores().add(medidor);
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -779,9 +909,8 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
+		
 		return imovel;
 	}
 
@@ -819,9 +948,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return imovel;
 	}
@@ -837,9 +964,7 @@ public class DataManipulator {
 			elementValue = cursor.getString(0);
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return elementValue;
 	}
@@ -865,9 +990,7 @@ public class DataManipulator {
 			list.add(cursor.getString(1));
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -903,9 +1026,8 @@ public class DataManipulator {
 
 			} while (cursor.moveToNext());
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
 
 		return anormalidade;
 	}
@@ -928,9 +1050,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -964,9 +1084,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return consumo;
 	}
@@ -999,9 +1117,7 @@ public class DataManipulator {
 			retorno = db.insert(Constantes.TABLE_RATEIO_CONDOMINIO, null, values);
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 	}
@@ -1028,9 +1144,8 @@ public class DataManipulator {
 				
 			} while (cursor.moveToNext());
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
 
 		return helper;
 	}
@@ -1050,9 +1165,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return quantidadeImoveisCondominio;
 	}
@@ -1075,9 +1188,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 	}
 
@@ -1093,9 +1204,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -1110,9 +1219,9 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			codigo = cursor.getString(0);
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
+		
 		return codigo;
 	}
 
@@ -1126,9 +1235,9 @@ public class DataManipulator {
 			if (cursor.moveToFirst()) {
 				descricao = cursor.getString(0);
 			}
-			if (cursor != null && !cursor.isClosed()) {
-				cursor.close();
-			}
+			
+			fecharCursor(cursor);
+			
 			return descricao;
 
 		} else {
@@ -1176,6 +1285,7 @@ public class DataManipulator {
 		parser.obterDadoParser(2);
 		ContentValues initialValues = new ContentValues();
 		SituacaoTipo situacaoTipo = SituacaoTipo.getInstancia();
+		DadosQualidadeAgua qualidadeAgua = DadosQualidadeAgua.getInstancia();
 		
 		int matricula = Integer.parseInt(parser.obterDadoParser(9));
 		
@@ -1242,58 +1352,63 @@ public class DataManipulator {
 
 		initialValues.put("mensagem_conta2", parser.obterDadoParser(100));
 		initialValues.put("mensagem_conta3", parser.obterDadoParser(100));
-		initialValues.put("turbidez_padrao", parser.obterDadoParser(20));
-		initialValues.put("ph_padrao", parser.obterDadoParser(20));
-		initialValues.put("cor_padrao", parser.obterDadoParser(20));
 		
-		initialValues.put("cloro_padrao", parser.obterDadoParser(20));
-		initialValues.put("fluor_padrao", parser.obterDadoParser(20));
-		initialValues.put("ferro_padrao", parser.obterDadoParser(20));
-		initialValues.put("coliformes_totais_padrao", parser.obterDadoParser(20));
-		initialValues.put("coliformes_fecais_padrao", parser.obterDadoParser(20));
+		//==========================================================================
+		qualidadeAgua.setTurbidezPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setPhPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setCorPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setCloroPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setFluorPadrao(parser.obterDadoParser(20));
 		
-		initialValues.put("nitrato_padrao", parser.obterDadoParser(20));
-		initialValues.put("coliformes_termo_tolerantes_padrao",	parser.obterDadoParser(20));
-		initialValues.put("am_referencia_qualidade_agua", parser.obterDadoParser(6));
-		initialValues.put("numero_cloro_residual", parser.obterDadoParser(5));
+		qualidadeAgua.setFerroPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setColiformesTotaisPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setColiformesFecaisPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setNitratoPadrao(parser.obterDadoParser(20));
+		qualidadeAgua.setColiformesTermoTolerantesPadrao(parser.obterDadoParser(20));
 		
-		initialValues.put("numero_turbidez", parser.obterDadoParser(5));
-		initialValues.put("numero_ph", parser.obterDadoParser(5));
-		initialValues.put("numero_cor", parser.obterDadoParser(5));
-		initialValues.put("numero_fluor", parser.obterDadoParser(5));
-		initialValues.put("numero_ferro", parser.obterDadoParser(5));
+		qualidadeAgua.setAmReferenciaQualidadeAgua(parser.obterDadoParser(6));
+		qualidadeAgua.setNumeroCloroResidual(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroTurbidez(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroPh(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroCor(parser.obterDadoParser(5));
 		
-		initialValues.put("numero_coliformes_totais", parser.obterDadoParser(5));
-		initialValues.put("numero_coliformes_fecais", parser.obterDadoParser(5));
-		initialValues.put("numero_nitrato", parser.obterDadoParser(5));
-		initialValues.put("numero_coliformes_termo_tolerantes",	parser.obterDadoParser(5));
-		initialValues.put("descricao_fonte_capacitacao", parser.obterDadoParser(30));
+		qualidadeAgua.setNumeroFluor(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroFerro(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroColiformesTotais(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroColiformesFecais(parser.obterDadoParser(5));
+		qualidadeAgua.setNumeroNitrato(parser.obterDadoParser(5));
 		
-		initialValues.put("quantidade_turbidez_exigidas",parser.obterDadoParser(6));
-		initialValues.put("quantidade_cor_exigidas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_cloro_exigidas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_fluor_exigidas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_coliformes_totais_exigidas", parser.obterDadoParser(6));
+		qualidadeAgua.setNumeroColiformesTermoTolerantes(parser.obterDadoParser(5));
+		qualidadeAgua.setDescricaoFonteCapacitacao(parser.obterDadoParser(30));
+		qualidadeAgua.setQuantidadeTurbidezExigidas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeCorExigidas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeCloroExigidas(parser.obterDadoParser(6));
 		
-		initialValues.put("quantidade_coliformes_fecais_exigidas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_coliformes_termo_tolerantes_exigidas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_turbidez_analisadas",	parser.obterDadoParser(6));
-
-		initialValues.put("quantidade_cor_analisadas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_cloro_analisadas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_fluor_analisadas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_coliformes_totais_analisadas", parser.obterDadoParser(6));
-		initialValues.put("quantidade_coliformes_fecais_analisadas", parser.obterDadoParser(6));
-
-		initialValues.put("quantidade_coliformes_termo_tolerantes_analisadas",	parser.obterDadoParser(6));
-		initialValues.put("quantidade_turbidez_conforme", parser.obterDadoParser(6));
-		initialValues.put("quantidade_cor_conforme", parser.obterDadoParser(6));
-		initialValues.put("quantidade_cloro_conforme", parser.obterDadoParser(6));
-		initialValues.put("quantidade_fluor_conforme", parser.obterDadoParser(6));
-
-		initialValues.put("quantidade_coliformes_totais_conforme",	parser.obterDadoParser(6));
-		initialValues.put("quantidade_coliformes_fecais_conforme",	parser.obterDadoParser(6));
-		initialValues.put("quantidade_coliformes_termo_tolerantes_conforme", parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeFluorExigidas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesTotaisExigidas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesFecaisExigidas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesTermoTolerantesExigidas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeTurbidezAnalisadas(parser.obterDadoParser(6));
+		
+		qualidadeAgua.setQuantidadeCorAnalisadas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeCloroAnalisadas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeFluorAnalisadas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesTotaisAnalisadas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesFecaisAnalisadas(parser.obterDadoParser(6));
+		
+		qualidadeAgua.setQuantidadeColiformesTermoTolerantesAnalisadas(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeTurbidezConforme(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeCorConforme(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeCloroConforme(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeFluorConforme(parser.obterDadoParser(6));
+		
+		qualidadeAgua.setQuantidadeColiformesTotaisConforme(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesFecaisConforme(parser.obterDadoParser(6));
+		qualidadeAgua.setQuantidadeColiformesTermoTolerantesConforme(parser.obterDadoParser(6));
+		
+		
+		//=============================================================================================
+		
 		initialValues.put("consumo_minimo_imovel", parser.obterDadoParser(6));
 		initialValues.put("consumo_minimo_imovel_nao_medido", parser.obterDadoParser(6));
 		
@@ -1368,6 +1483,70 @@ public class DataManipulator {
 		
 		return db.insert(Constantes.TABLE_SITUACAO_TIPO, null, initialValues);
 
+	}
+	
+	public long insertDadosQualidadeAgua(DadosQualidadeAgua qualidadeAgua) {
+		
+		if (DatabaseUtils.queryNumEntries(db, Constantes.TABLE_DADOS_QUALIDADE_AGUA) > 0) {
+			return -1;
+		}
+		
+		ContentValues initialValues = new ContentValues();
+		
+		initialValues.put("turbidez_padrao", qualidadeAgua.getTurbidezPadrao());
+		initialValues.put("ph_padrao", qualidadeAgua.getPhPadrao());
+		initialValues.put("cor_padrao", qualidadeAgua.getCorPadrao());
+		initialValues.put("cloro_padrao", qualidadeAgua.getCloroPadrao());
+		initialValues.put("fluor_padrao", qualidadeAgua.getFluorPadrao());
+		
+		initialValues.put("ferro_padrao", qualidadeAgua.getFerroPadrao());
+		initialValues.put("coliformes_totais_padrao", qualidadeAgua.getColiformesTotaisPadrao());
+		initialValues.put("coliformes_fecais_padrao", qualidadeAgua.getColiformesFecaisPadrao());
+		initialValues.put("nitrato_padrao", qualidadeAgua.getNitratoPadrao());
+		initialValues.put("coliformes_termo_tolerantes_padrao",	qualidadeAgua.getColiformesTermoTolerantesPadrao());
+		
+		initialValues.put("am_referencia_qualidade_agua", qualidadeAgua.getAmReferenciaQualidadeAgua());
+		initialValues.put("numero_cloro_residual", qualidadeAgua.getNumeroCloroResidual());
+		initialValues.put("numero_turbidez", qualidadeAgua.getNumeroTurbidez());
+		initialValues.put("numero_ph", qualidadeAgua.getNumeroPh());
+		initialValues.put("numero_cor", qualidadeAgua.getNumeroCor());
+		
+		initialValues.put("numero_fluor", qualidadeAgua.getNumeroFluor());
+		initialValues.put("numero_ferro", qualidadeAgua.getNumeroFerro());
+		initialValues.put("numero_coliformes_totais", qualidadeAgua.getNumeroColiformesTotais());
+		initialValues.put("numero_coliformes_fecais", qualidadeAgua.getNumeroColiformesFecais());
+		initialValues.put("numero_nitrato", qualidadeAgua.getNumeroNitrato());
+		
+		initialValues.put("numero_coliformes_termo_tolerantes", qualidadeAgua.getNumeroColiformesTermoTolerantes());
+		initialValues.put("descricao_fonte_capacitacao", qualidadeAgua.getDescricaoFonteCapacitacao());
+		initialValues.put("quantidade_turbidez_exigidas",qualidadeAgua.getQuantidadeTurbidezExigidas());
+		initialValues.put("quantidade_cor_exigidas", qualidadeAgua.getQuantidadeCorExigidas());
+		initialValues.put("quantidade_cloro_exigidas", qualidadeAgua.getQuantidadeCloroExigidas());
+
+		initialValues.put("quantidade_fluor_exigidas", qualidadeAgua.getQuantidadeFluorExigidas());
+		initialValues.put("quantidade_coliformes_totais_exigidas", qualidadeAgua.getQuantidadeColiformesTotaisExigidas());
+		initialValues.put("quantidade_coliformes_fecais_exigidas", qualidadeAgua.getQuantidadeColiformesFecaisExigidas());
+		initialValues.put("quantidade_coliformes_termo_tolerantes_exigidas", qualidadeAgua.getQuantidadeColiformesTermoTolerantesExigidas());
+		initialValues.put("quantidade_turbidez_analisadas",	qualidadeAgua.getQuantidadeTurbidezAnalisadas());
+
+		initialValues.put("quantidade_cor_analisadas", qualidadeAgua.getQuantidadeCorAnalisadas());
+		initialValues.put("quantidade_cloro_analisadas", qualidadeAgua.getQuantidadeCloroAnalisadas());
+		initialValues.put("quantidade_fluor_analisadas", qualidadeAgua.getQuantidadeFluorAnalisadas());
+		initialValues.put("quantidade_coliformes_totais_analisadas", qualidadeAgua.getQuantidadeColiformesTotaisAnalisadas());
+		initialValues.put("quantidade_coliformes_fecais_analisadas", qualidadeAgua.getQuantidadeColiformesFecaisAnalisadas());
+
+		initialValues.put("quantidade_coliformes_termo_tolerantes_analisadas",	qualidadeAgua.getQuantidadeColiformesTermoTolerantesAnalisadas());
+		initialValues.put("quantidade_turbidez_conforme", qualidadeAgua.getQuantidadeTurbidezConforme());
+		initialValues.put("quantidade_cor_conforme", qualidadeAgua.getQuantidadeCorConforme());
+		initialValues.put("quantidade_cloro_conforme", qualidadeAgua.getQuantidadeCloroConforme());
+		initialValues.put("quantidade_fluor_conforme", qualidadeAgua.getQuantidadeFluorConforme());
+
+		initialValues.put("quantidade_coliformes_totais_conforme",	qualidadeAgua.getQuantidadeColiformesTotaisConforme());
+		initialValues.put("quantidade_coliformes_fecais_conforme",	qualidadeAgua.getQuantidadeColiformesFecaisConforme());
+		initialValues.put("quantidade_coliformes_termo_tolerantes_conforme", qualidadeAgua.getQuantidadeColiformesTermoTolerantesConforme());
+		
+		return db.insert(Constantes.TABLE_DADOS_QUALIDADE_AGUA, null, initialValues);
+		
 	}
 
 	public long insertAnormalidade(String linhaArquivo) {
@@ -1514,9 +1693,7 @@ public class DataManipulator {
 			retorno = db.update(Constantes.TABLE_MEDIDOR, values, "matricula = ?", new String[] {String.valueOf(matricula)});
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 	}
@@ -1656,9 +1833,7 @@ public class DataManipulator {
 			retorno = db.insert(Constantes.TABLE_CONSUMO_AGUA, null, values);
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 		
@@ -1689,9 +1864,7 @@ public class DataManipulator {
 			retorno = db.insert(Constantes.TABLE_CONSUMO_ESGOTO, null, values);
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 		
@@ -1765,5 +1938,34 @@ public class DataManipulator {
 		initialValues.put("indc_geracao", String.valueOf(imovel.getIndcGeracao()));
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
+	}
+	
+	public long insertDadosFaturamento(DadosFaturamento df) {
+		ContentValues initialValues = new ContentValues();
+		
+		 initialValues.put("valor_faturado", df.getValorFaturado());
+		 initialValues.put("consumo_faturado", df.getConsumoFaturado());
+		 initialValues.put("valor_tarifa_minima", df.getValorTarifaMinima());
+		 initialValues.put("consumo_minimo", df.getConsumoMinimo());
+		 
+		 return db.insert(Constantes.TABLE_DADOS_FATURAMENTO, null, initialValues);
+	}
+	
+	public long insertDadosFaturamentoFaixa(DadosFaturamentoFaixa dff) {
+		ContentValues initialValues = new ContentValues();
+		
+		initialValues.put("consumo_faturado", dff.getConsumoFaturado());
+		initialValues.put("valor_faturado", dff.getValorFaturado());
+		initialValues.put("limite_inicial_consumo", dff.getLimiteInicialConsumo());
+		initialValues.put("limite_final_consumo", dff.getLimiteFinalConsumo());
+		initialValues.put("valor_tarifa", dff.getValorTarifa());
+		
+		return db.insert(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, null, initialValues);
+	}
+	
+	public void fecharCursor(Cursor cursor) {
+		if (cursor != null && !cursor.isClosed()) {
+	           cursor.close();
+	    }
 	}
 }

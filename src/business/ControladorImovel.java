@@ -875,7 +875,7 @@ public class ControladorImovel {
 	
 			for (int k = 0; k < dadosFaturamento.getFaixas().size(); k++) {
 			    DadosFaturamentoFaixa faixa = (DadosFaturamentoFaixa) dadosFaturamento
-				    .getFaixas().elementAt(k);
+				    .getFaixas().get(k);
 			    DadosFaturamentoFaixa faixaProporcional = null;
 	
 			    if (dadosFaturamentoProporcional.getFaixas() == null
@@ -886,7 +886,7 @@ public class ControladorImovel {
 				faixaProporcional.setValorTarifa(0d);
 			    } else {
 				faixaProporcional = (DadosFaturamentoFaixa) dadosFaturamentoProporcional
-					.getFaixas().elementAt(k);
+					.getFaixas().get(k);
 			    }
 	
 			    double valorFaturadoPorFatorNaFaixa = faixaProporcional
