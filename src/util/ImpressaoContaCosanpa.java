@@ -321,9 +321,6 @@ public class ImpressaoContaCosanpa {
 			    	leituraAtualFaturada = String.valueOf(medidorPoco.getLeituraAtualFaturamento());
 			    	dataLeituraAtualFaturada = Util.dateToString(medidorPoco.getDataLeituraAtualFaturamento());
 
-//				    if (imovel.getIdImovelCondominio() != Constantes.NULO_INT ) {
-//				    	consumo = (consumoEsgoto.getConsumoCobradoMes() - consumoEsgoto.getConsumoRateio()) + "";
-//				    }else{
 				    	consumo = consumoEsgoto.getConsumoCobradoMes() + "";				    	
 //				    }
 					diasConsumo = Long.toString(medidorPoco.getQtdDiasAjustado());
@@ -621,7 +618,7 @@ public class ImpressaoContaCosanpa {
 			    for (int j = 0; j < dadosEconomiasSubcategorias.getFaturamentoAgua().getFaixas().size(); j++) {
 				qtdLinhas++;
 				// 3.5.1.2.5
-				DadosFaturamentoFaixa faixa = (DadosFaturamentoFaixa) dadosEconomiasSubcategorias.getFaturamentoAgua().getFaixas().elementAt(j);
+				DadosFaturamentoFaixa faixa = (DadosFaturamentoFaixa) dadosEconomiasSubcategorias.getFaturamentoAgua().getFaixas().get(j);
 				// 3.5.1.2.5.1
 				if (faixa.getLimiteFinalConsumo() == Constantes.LIMITE_SUPERIOR_FAIXA_FINAL) {
 				    // 3.5.1.2.5.1.2.1, 3.5.1.2.5.1.2.2,

@@ -220,18 +220,12 @@ public class Configuracao {
     	this.contadorVisitadosSemAnormalidade = contadorVisitadosSemAnormalidade;
     }
 
-    public String getRecordStoreName() {
-    	return "Configuracao";
-    }
-
     public static Configuracao getInstancia() {
 
 	    if (Configuracao.instancia == null) {
+	    	
+	    	instancia = new Configuracao();
 	    	ControladorRota.getInstancia().getDataManipulator().selectConfiguracao();
-	
-		    if (instancia == null) {
-		    	instancia = new Configuracao();
-		    }
 		}
 	
 		return Configuracao.instancia;

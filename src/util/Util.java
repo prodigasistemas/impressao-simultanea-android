@@ -1261,7 +1261,7 @@ public class Util {
 	// Colocamos a virgula
 	return comPonto + ',' + adicionarZerosDireitaNumero(2, decimalString);
     }
-    
+
     public static String getAnoBarraMesReferencia(int valor) {
     	if(valor != 0){
         	return String.valueOf(valor).substring(0, 4) + "/" + String.valueOf(valor).substring(4, 6);
@@ -1269,20 +1269,6 @@ public class Util {
     	}else{
     		return "";
     	}
-    }
-    
-    public static String formatarAnoMesParaMesAno(String anoMes) {
-
-	String anoMesFormatado = "";
-	String anoMesRecebido = anoMes;
-	if (anoMesRecebido.length() < 6) {
-	    anoMesFormatado = anoMesRecebido;
-	} else {
-	    String mes = anoMesRecebido.substring(4, 6);
-	    String ano = anoMesRecebido.substring(0, 4);
-	    anoMesFormatado = mes + "/" + ano;
-	}
-	return anoMesFormatado;
     }
     
     /**
@@ -1308,4 +1294,20 @@ public class Util {
 
 	return cnpjFormatado;
     }
+    
+    public static String formatarAnoMesParaMesAno(String anoMes) {
+
+    	String anoMesFormatado = "";
+    	String anoMesRecebido = anoMes;
+    	if (anoMesRecebido.length() < 6) {
+    	    anoMesFormatado = anoMesRecebido;
+    	} else {
+    	    String mes = anoMesRecebido.substring(4, 6);
+    	    String ano = anoMesRecebido.substring(0, 4);
+    	    anoMesFormatado = mes + "/" + ano;
+    	}
+    	return anoMesFormatado;
+        }
+
+
 }

@@ -76,22 +76,23 @@
 */   
 package model;
 
-import java.util.Vector;
+import java.util.List;
 
 public class DadosFaturamento {
 
+	private int id;
 	private int idDadosCategoria;
 	private double valorFaturado;
     private int consumoFaturado;    
     private double valorTarifaMinima;
     private int consumoMinimo;
-    private Vector faixas;
+    private List faixas;
     
 	public DadosFaturamento(){
 	}    
     
 	public DadosFaturamento(double valorFaturado, int consumoFaturado,
-			double valorTarifaMinima, int consumoMinimo, Vector faixas) {
+			double valorTarifaMinima, int consumoMinimo, List faixas) {
 		this.valorFaturado = valorFaturado;
 		this.consumoFaturado = consumoFaturado;
 		this.valorTarifaMinima = valorTarifaMinima;
@@ -100,6 +101,15 @@ public class DadosFaturamento {
 	}
 	
 	
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getIdDadosCategoria() {
 		return idDadosCategoria;
 	}
@@ -140,11 +150,11 @@ public class DadosFaturamento {
 		this.consumoMinimo = consumoMinimo;
 	}
 	
-	public Vector getFaixas() {
+	public List getFaixas() {
 		return faixas;
 	}
 	
-	public void setFaixas(Vector faixas) {
+	public void setFaixas(List faixas) {
 		this.faixas = faixas;
 	}
 }

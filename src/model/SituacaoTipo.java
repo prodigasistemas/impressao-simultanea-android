@@ -37,10 +37,8 @@ public class SituacaoTipo {
 		return tipoSituacaoEspecialFaturamento;
 	}
 
-	public void setTipoSituacaoEspecialFaturamento(
-			String tipoSituacaoEspecialFaturamento) {
-		this.tipoSituacaoEspecialFaturamento = Util
-				.verificarNuloInt(tipoSituacaoEspecialFaturamento);
+	public void setTipoSituacaoEspecialFaturamento(String tipoSituacaoEspecialFaturamento) {
+		this.tipoSituacaoEspecialFaturamento = Util.verificarNuloInt(tipoSituacaoEspecialFaturamento);
 		// Daniel
 		// System.out.println("TipoSituacaoEspecialFaturamento: " +
 		// this.tipoSituacaoEspecialFeturamento);
@@ -50,80 +48,64 @@ public class SituacaoTipo {
 		return idAnormalidadeConsumoSemLeitura;
 	}
 
-	public void setIdAnormalidadeConsumoSemLeitura(
-			String idAnormalidadeConsumoSemLeitura) {
-		this.idAnormalidadeConsumoSemLeitura = Util
-				.verificarNuloInt(idAnormalidadeConsumoSemLeitura);
+	public void setIdAnormalidadeConsumoSemLeitura(String idAnormalidadeConsumoSemLeitura) {
+		this.idAnormalidadeConsumoSemLeitura = Util.verificarNuloInt(idAnormalidadeConsumoSemLeitura);
 	}
 
 	public int getIdAnormalidadeConsumoComLeitura() {
 		return idAnormalidadeConsumoComLeitura;
 	}
 
-	public void setIdAnormalidadeConsumoComLeitura(
-			String idAnormalidadeConsumoComLeitura) {
-		this.idAnormalidadeConsumoComLeitura = Util
-				.verificarNuloInt(idAnormalidadeConsumoComLeitura);
+	public void setIdAnormalidadeConsumoComLeitura(String idAnormalidadeConsumoComLeitura) {
+		this.idAnormalidadeConsumoComLeitura = Util.verificarNuloInt(idAnormalidadeConsumoComLeitura);
 	}
 
 	public int getIdAnormalidadeLeituraSemLeitura() {
 		return idAnormalidadeLeituraSemLeitura;
 	}
 
-	public void setIdAnormalidadeLeituraSemLeitura(
-			String idAnormalidadeLeituraSemLeitura) {
-		this.idAnormalidadeLeituraSemLeitura = Util
-				.verificarNuloInt(idAnormalidadeLeituraSemLeitura);
+	public void setIdAnormalidadeLeituraSemLeitura(String idAnormalidadeLeituraSemLeitura) {
+		this.idAnormalidadeLeituraSemLeitura = Util.verificarNuloInt(idAnormalidadeLeituraSemLeitura);
 	}
 
 	public int getIdAnormalidadeLeituraComLeitura() {
 		return idAnormalidadeLeituraComLeitura;
 	}
 
-	public void setIdAnormalidadeLeituraComLeitura(
-			String idAnormalidadeLeituraComLeitura) {
-		this.idAnormalidadeLeituraComLeitura = Util
-				.verificarNuloInt(idAnormalidadeLeituraComLeitura);
+	public void setIdAnormalidadeLeituraComLeitura(String idAnormalidadeLeituraComLeitura) {
+		this.idAnormalidadeLeituraComLeitura = Util.verificarNuloInt(idAnormalidadeLeituraComLeitura);
 	}
 
 	public int getConsumoAguaMedidoHistoricoFaturamento() {
 		return consumoAguaMedidoHistoricoFaturamento;
 	}
 
-	public void setConsumoAguaMedidoHistoricoFaturamento(
-			String consumoAguaMedidoHistoricoFaturamento) {
-		this.consumoAguaMedidoHistoricoFaturamento = Util
-				.verificarNuloInt(consumoAguaMedidoHistoricoFaturamento);
+	public void setConsumoAguaMedidoHistoricoFaturamento(String consumoAguaMedidoHistoricoFaturamento) {
+		this.consumoAguaMedidoHistoricoFaturamento = Util.verificarNuloInt(consumoAguaMedidoHistoricoFaturamento);
 	}
 
 	public int getConsumoAguaNaoMedidoHistoricoFaturamento() {
 		return consumoAguaNaoMedidoHistoricoFaturamento;
 	}
 
-	public void setConsumoAguaNaoMedidoHistoricoFaturamento(
-			String consumoAguaNaoMedidoHistoricoFaturamento) {
-		this.consumoAguaNaoMedidoHistoricoFaturamento = Util
-				.verificarNuloInt(consumoAguaNaoMedidoHistoricoFaturamento);
+	public void setConsumoAguaNaoMedidoHistoricoFaturamento(String consumoAguaNaoMedidoHistoricoFaturamento) {
+		this.consumoAguaNaoMedidoHistoricoFaturamento = Util.verificarNuloInt(consumoAguaNaoMedidoHistoricoFaturamento);
 	}
 
 	public int getVolumeEsgotoNaoMedidoHistoricoFaturamento() {
 		return volumeEsgotoNaoMedidoHistoricoFaturamento;
 	}
 
-	public void setVolumeEsgotoNaoMedidoHistoricoFaturamento(
-			String volumeEsgotoNaoMedidoHistoricoFaturamento) {
-		this.volumeEsgotoNaoMedidoHistoricoFaturamento = Util
-				.verificarNuloInt(volumeEsgotoNaoMedidoHistoricoFaturamento);
+	public void setVolumeEsgotoNaoMedidoHistoricoFaturamento(String volumeEsgotoNaoMedidoHistoricoFaturamento) {
+		this.volumeEsgotoNaoMedidoHistoricoFaturamento = Util.verificarNuloInt(volumeEsgotoNaoMedidoHistoricoFaturamento);
 	}
 
 	public int getVolumeEsgotoMedidoHistoricoFaturamento() {
 		return volumeEsgotoMedidoHistoricoFaturamento;
 	}
 
-	public void setVolumeEsgotoMedidoHistoricoFaturamento(
-			String volumeEsgotoMedidoHistoricoFaturamento) {
-		this.volumeEsgotoMedidoHistoricoFaturamento = Util
-				.verificarNuloInt(volumeEsgotoMedidoHistoricoFaturamento);
+	public void setVolumeEsgotoMedidoHistoricoFaturamento(String volumeEsgotoMedidoHistoricoFaturamento) {
+		this.volumeEsgotoMedidoHistoricoFaturamento = Util.verificarNuloInt(volumeEsgotoMedidoHistoricoFaturamento);
 	}
 
 	public int getIndcValidaAgua() {

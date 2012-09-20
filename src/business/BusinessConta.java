@@ -59,6 +59,7 @@
  * Thiago Augusto Souza do Nascimento
  * Tiago Moreno Rodrigues
  * Vivianne Barbosa Sousa
+ * Daniel Canova Zaccarias
  *
  * Este programa é software livre; você pode redistribuí-lo e/ou
  * modificá-lo sob os termos de Licença Pública Geral GNU, conforme
@@ -89,10 +90,7 @@ import android.content.DialogInterface;
 
 public class BusinessConta {
 
-//    private static Command voltar = null;
-//    private static Command confirmar = null;
-//    private static Dialog dialogConsumo;
-    private boolean leituraInvalida = false;
+    private static boolean leituraInvalida = false;
     private static final int ANORMALIDADE_CALCULO_MEDIA = 90;
     private static BusinessConta instancia;
     private static Context activityContext;
@@ -104,24 +102,24 @@ public class BusinessConta {
      */
     public Consumo chamarCalculoConsumo(boolean salvarImovel) {
 
-//	if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setLeitura(AbaHidrometroAgua.getInstancia().getLeitura());
-//	    Anormalidade anormalidade = (Anormalidade) AbaHidrometroAgua.getInstancia().getAnormalidadeCampo().getSelectedItem();
-////	    Daniel
-//	    if(anormalidade != null){
-//	    	getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
-//	    }
-//	}
-//
-//	if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setLeitura(AbaHidrometroPoco.getInstancia().getLeitura());
-//	    Anormalidade anormalidade = (Anormalidade) AbaHidrometroPoco.getInstancia().getAnormalidadeCampo().getSelectedItem();
-////	    Daniel
-//	    if(anormalidade != null){
-//	    	getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
-//	    }
-//	}
-//
+	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
+	    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
+
+	    if(anormalidade != null){
+	    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
+	    }
+	}
+
+	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
+		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeitura(MedidorPocoTab.getLeitura());
+	    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
+//	    Daniel
+	    if(anormalidade != null){
+	    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
+	    }
+	}
+
 //	if (AbaAnormalidade.getInstancia().getAnormalidade() != null) {
 //	    if (AbaAnormalidade.getInstancia().getAnormalidade().getSelectedIndex() != -1) {
 //	    	Anormalidade anormalidade = (Anormalidade) AbaAnormalidade.getInstancia().getAnormalidade().getSelectedItem();
@@ -132,47 +130,62 @@ public class BusinessConta {
 //	    }
 //	}
 //
-//	Consumo[] consumos = Fachada.getInstancia().calcularContaConsumo();
-//	Consumo consumoAguaRetorno = consumos[0];
-//	Consumo consumoEsgotoRetorno = consumos[1];
-//	Consumo retorno = null;
-//
-//	getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
-//	getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
-//
-//	if (consumoAguaRetorno != null) {
-//		getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
-//	    retorno = getImovelSelecionado().getConsumoAgua();
-//	}
-//
-//	if (consumoEsgotoRetorno != null) {
-//		getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
-//	    if (consumoAguaRetorno == null) {
-//		retorno = getImovelSelecionado().getConsumoEsgoto();
-//	    }
-//	}
-//
-//	consumoAguaRetorno = null;	
-//	consumoEsgotoRetorno = null;
-//	consumos = null;	
-//
-//	if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null){
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getLeitura());
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getAnormalidade());
-//	}
-//	
-//	if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null){
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getLeitura());
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getAnormalidade());
-//	}
-//	if (salvarImovel){
-//		Repositorio.salvarObjeto(getImovelSelecionado());		
-//	}
+	Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
+	Consumo consumoAguaRetorno = consumos[0];
+	Consumo consumoEsgotoRetorno = consumos[1];
+	Consumo retorno = null;
 
-//	System.gc();
+	getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
+	getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
 
-//	return retorno;
-	return null;
+	if (consumoAguaRetorno != null) {
+		getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
+	    retorno = getImovelSelecionado().getConsumoAgua();
+	}
+
+	if (consumoEsgotoRetorno != null) {
+		getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
+	    if (consumoAguaRetorno == null) {
+		retorno = getImovelSelecionado().getConsumoEsgoto();
+	    }
+	}
+
+	consumoAguaRetorno = null;	
+	consumoEsgotoRetorno = null;
+	consumos = null;	
+
+	if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
+		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
+		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+
+		// Update DB - Medidor água
+		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
+	}
+	
+	if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
+		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
+		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+
+		// Update DB - Medidor poço
+		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+	}
+	if (salvarImovel){
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+
+		if (getImovelSelecionado().getConsumoAgua() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+		}
+
+		if(getImovelSelecionado().getConsumoEsgoto() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		}
+		
+		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		}
+	}
+
+	return retorno;
 	}
 
     /**
@@ -180,44 +193,62 @@ public class BusinessConta {
      */
     public Consumo CalculoConsumoDescartaLeitura() {
    
-//		Consumo[] consumos = Fachada.getInstancia().calcularContaConsumo();
-//		Consumo consumoAguaRetorno = consumos[0];
-//		Consumo consumoEsgotoRetorno = consumos[1];
-//		Consumo retorno = null;
-//	
-//		getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
-//		getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
-//	
-//		if (consumoAguaRetorno != null) {
-//			getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
-//		    retorno = getImovelSelecionado().getConsumoAgua();
-//		}
-//	
-//		if (consumoEsgotoRetorno != null) {
-//			getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
-//		    if (consumoAguaRetorno == null) {
-//		    	retorno = getImovelSelecionado().getConsumoEsgoto();
-//		    }
-//		}
-//		
-//		if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null){
-//			getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getLeitura());
-//			getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getAnormalidade());
-//		}
-//		
-//		if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null){
-//			getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getLeitura());
-//			getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getAnormalidade());
-//		}
-//		
-//		Repositorio.salvarObjeto(getImovelSelecionado());		
-//	    
-//		consumoAguaRetorno = null;	
-//		consumoEsgotoRetorno = null;
-//		consumos = null;	
-//	
-//		return retorno;
-    	return null;
+    	Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
+		Consumo consumoAguaRetorno = consumos[0];
+		Consumo consumoEsgotoRetorno = consumos[1];
+		Consumo retorno = null;
+	
+		getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
+		getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
+	
+		if (consumoAguaRetorno != null) {
+			getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
+		    retorno = getImovelSelecionado().getConsumoAgua();
+		}
+	
+		if (consumoEsgotoRetorno != null) {
+			getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
+		    if (consumoAguaRetorno == null) {
+		    	retorno = getImovelSelecionado().getConsumoEsgoto();
+		    }
+		}
+		
+		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+
+			// Update DB - Medidor água
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
+		}
+		
+		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+		
+			// Update DB - Medidor poço
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+		
+		}
+		
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+		
+		if (getImovelSelecionado().getConsumoAgua() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+		}
+		
+		if(getImovelSelecionado().getConsumoEsgoto() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		}
+
+		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		}
+	    
+		consumoAguaRetorno = null;	
+		consumoEsgotoRetorno = null;
+		consumos = null;	
+	
+		return retorno;
     }
 
     /**
@@ -225,72 +256,84 @@ public class BusinessConta {
      */
     public Consumo chamarCalculoConsumoMedio(boolean salvarImovel) {
 
-//	if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null) {
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setLeitura(AbaHidrometroAgua.getInstancia().getLeitura());
-//	    Anormalidade anormalidade = null;
-//		try {
-//			anormalidade = (Anormalidade) FileManager.getAnormalidade(ANORMALIDADE_CALCULO_MEDIA);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-////	    Daniel
-//	    if(anormalidade != null){
-//	    	getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
-//	    }
-//	}
-//
-//	if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setLeitura(AbaHidrometroPoco.getInstancia().getLeitura());
-//	    Anormalidade anormalidade = null;
-//		try {
-//			anormalidade = (Anormalidade) FileManager.getAnormalidade(ANORMALIDADE_CALCULO_MEDIA);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-////	    Daniel
-//	    if(anormalidade != null){
-//	    	getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
-//	    }
-//	}
-//
-//	Consumo[] consumos = Fachada.getInstancia().calcularContaConsumo();
-//	Consumo consumoAguaRetorno = consumos[0];
-//	Consumo consumoEsgotoRetorno = consumos[1];
-//	Consumo retorno = null;
-//
-//	getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
-//	getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
-//
-//	if (consumoAguaRetorno != null) {
-//		getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
-//	    retorno = getImovelSelecionado().getConsumoAgua();
-//	}
-//
-//	if (consumoEsgotoRetorno != null) {
-//		getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
-//	    if (consumoAguaRetorno == null) {
-//		retorno = getImovelSelecionado().getConsumoEsgoto();
-//	    }
-//	}
-//	
-//	if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null){
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getLeitura());
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA).getAnormalidade());
-//	}
-//	
-//	if(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null){
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getLeitura());
-//		getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO).getAnormalidade());
-//	}
-//	if (salvarImovel){
-//		Repositorio.salvarObjeto(getImovelSelecionado());		
-//	}
-//
-//	consumoAguaRetorno = null;	
-//	consumoEsgotoRetorno = null;
-//	consumos = null;
-//	return retorno;
-    	return null;
+		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
+
+		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(String.valueOf(ANORMALIDADE_CALCULO_MEDIA), true);
+
+		    if(anormalidade != null){
+		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
+		    }
+		}
+	
+		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeitura(MedidorPocoTab.getLeitura());
+
+		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(String.valueOf(ANORMALIDADE_CALCULO_MEDIA), true);
+
+		    if(anormalidade != null){
+		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
+		    }
+		}
+	
+    	Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
+		Consumo consumoAguaRetorno = consumos[0];
+		Consumo consumoEsgotoRetorno = consumos[1];
+		Consumo retorno = null;
+	
+		getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
+		getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
+	
+		if (consumoAguaRetorno != null) {
+			getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
+		    retorno = getImovelSelecionado().getConsumoAgua();
+		}
+	
+		if (consumoEsgotoRetorno != null) {
+			getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
+		    if (consumoAguaRetorno == null) {
+			retorno = getImovelSelecionado().getConsumoEsgoto();
+		    }
+		}
+		
+		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
+			
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+
+			// Update DB - Medidor água
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
+		}
+		
+		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
+		
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+
+			// Update DB - Medidor poço
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+		}
+		
+		if (salvarImovel){
+			
+			ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+
+			if (getImovelSelecionado().getConsumoAgua() != null){
+				ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+			}
+			
+			if(getImovelSelecionado().getConsumoEsgoto() != null){
+				ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+			}
+			
+			if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+				ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+			}
+		}
+		consumoAguaRetorno = null;	
+		consumoEsgotoRetorno = null;
+		consumos = null;
+	return retorno;
     }
 
     /**
@@ -322,20 +365,20 @@ public class BusinessConta {
 			    	Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
 			    	leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTexto, anormalidade, Constantes.LIGACAO_AGUA );
 
-//				} else if (getImovelSelecionado().getRegistro8(Constantes.LIGACAO_AGUA) != null && 
-//							getImovelSelecionado().getRegistro8(Constantes.LIGACAO_POCO) != null) {
-//				    
-//					String leituraTextoAgua = AbaHidrometroAgua.getInstancia().getLeituraCampo().getText();
-//				    String leituraTextoPoco = AbaHidrometroPoco.getInstancia().getLeituraCampo().getText();
-//			
-//				    Vector anormalidades = FileManager.getAnormalidades(true);
-//				    Anormalidade anormalidadeAgua = (Anormalidade) anormalidades.elementAt(AbaHidrometroAgua.getInstancia().getAnormalidadeIndex());
-//				    Anormalidade anormalidadePoco = (Anormalidade) anormalidades.elementAt(AbaHidrometroPoco.getInstancia().getAnormalidadeIndex());
-//				    
-//				    leituraInvalida = vl.validarLeituraAnormalidade( leituraTextoAgua , anormalidadeAgua, Constantes.LIGACAO_AGUA);	    
-//				    if ( !leituraInvalida ){
-//					leituraInvalida = vl.validarLeituraAnormalidade( leituraTextoPoco , anormalidadePoco, Constantes.LIGACAO_POCO);
-//				    }
+				} else if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null && 
+						   getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
+				    
+					String leituraTextoAgua = MedidorAguaTab.getLeituraCampo();
+				    String leituraTextoPoco = MedidorPocoTab.getLeituraCampo();
+
+				    Anormalidade anormalidadeAgua = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
+			    	Anormalidade anormalidadePoco = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
+
+				    leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTextoAgua , anormalidadeAgua, Constantes.LIGACAO_AGUA);	    
+
+				    if ( !leituraInvalida ){
+				    	leituraInvalida = ValidacaoLeitura.getInstancia().validarLeituraAnormalidade( leituraTextoPoco , anormalidadePoco, Constantes.LIGACAO_POCO);
+				    }
 				}
 			}
 		}
@@ -404,45 +447,32 @@ public class BusinessConta {
     }
 
     public static void mensagemConsumo(String mensagem, double valor) {
-//	Label mensagemConsumo = null;
-//	Label valorConsumo = null;
-//
-//	mensagemConsumo = new Label(mensagem);
-//	mensagemConsumo.getStyle().setMargin(0, 0, 0, 0);
-//	mensagemConsumo.getStyle().setPadding(0, 0, 0, 0);
-//
-//	valorConsumo = new Label("Valor: " + valor);
-//	valorConsumo.getStyle().setMargin(0, 0, 0, 0);
-//	valorConsumo.getStyle().setPadding(0, 0, 0, 0);
-//
-//	voltar = new Command("Voltar");
-//	confirmar = new Command("Confirmar");
-//
-//	dialogConsumo = new Dialog("Consumo");
-//	dialogConsumo.setCommandListener(BusinessConta.getInstancia());
-//	dialogConsumo.getTitleStyle().setBgTransparency(200);
-//	dialogConsumo.getDialogStyle().setBgTransparency(200);
-//	dialogConsumo.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-//	dialogConsumo.addComponent(mensagemConsumo);
-//	dialogConsumo.addComponent(valorConsumo);
-//	dialogConsumo.addCommand(voltar);
-//	dialogConsumo.addCommand(confirmar);
-//	dialogConsumo.show();
+
+		AlertDialog.Builder a = new AlertDialog.Builder(instancia.activityContext);
+		a.setTitle("Aviso");
+		a.setMessage( mensagem + "\n" + "Valor: " + valor );
+		
+		a.setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				
+				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+			    leituraInvalida = true;
+			}
+		});
+
+		a.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				
+			    leituraInvalida = false;
+
+			}
+		});
+
+		a.show();
+    	
     }
 
-//    public void actionPerformed(ActionEvent evt) {
-//
-//	if (evt.getCommand() == voltar) {
-//	    getImovelSelecionado().setIndcImovelCalculado(Constantes.NAO);
-//	    Repositorio.salvarObjeto(getImovelSelecionado());
-//	    dialogConsumo.setTimeout(1);
-//	    leituraInvalida = true;
-//	} else if (evt.getCommand() == confirmar) {
-//	    leituraInvalida = false;
-//	}
-//    }
-
-    private Imovel getImovelSelecionado(){
+    private static Imovel getImovelSelecionado(){
     	return ControladorImovel.getInstancia().getImovelSelecionado();
     }
 }

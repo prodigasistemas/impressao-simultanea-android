@@ -79,20 +79,26 @@ package business;
 
 import helper.EfetuarRateioConsumoHelper;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import util.Constantes;
 import util.Util;
+import views.MedidorAguaTab;
 
+import model.Anormalidade;
 import model.Consumo;
 import model.ConsumoAnormalidadeAcao;
+import model.DadosCategoria;
 import model.DadosGerais;
 import model.Debito;
 import model.HistoricoConsumo;
 import model.Imovel;
 import model.Medidor;
+import model.SituacaoTipo;
 
 
 public class ControladorConta {
@@ -181,16 +187,939 @@ public class ControladorConta {
     }
 
     /**
+     * Calcular o valor da Conta e do Consumo
+     * 
+     * @param
+     * @return
+     */
+    public Consumo[] calcularContaConsumo() {
+
+		Consumo[] consumos = new Consumo[2];
+		ControladorConta.instancia.calcularConta();
+		consumos[0] = ControladorConta.instancia.getConsumoAgua();
+		consumos[1] = ControladorConta.instancia.getConsumoEsgoto();
+	
+		ControladorConta.instancia.setConsumoAgua(null);
+		ControladorConta.instancia.setConsumoEsgoto(null);
+	
+		return consumos;
+    }
+    
+    /**
      * [UC0740] Calcular Consumo no Dispositivo Móvel
      */
-    public void calcularConta() {}
+    public void calcularConta() {
+
+    	// [UC0740] 2.
+       	if ( (getImovelSelecionado().getIndcFaturamentoAgua() == SIM) ||
+       		 (getImovelSelecionado().getIndcFaturamentoAgua() == NAO && getImovelSelecionado().isImovelMicroCondominio()) ){
+
+    	    // [UC0740] 2.1.
+    	    if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_AGUA) != null) {
+    			this.calcularConsumo(LIGACAO_AGUA);
+    	
+    			// Caso o consumo a ser cobrado no mês seja menor que o consumo
+    			// mínimo de água
+    			if ((getImovelSelecionado().getConsumoMinAgua() != Constantes.NULO_INT)
+    				&& (consumoAgua.getConsumoCobradoMes() < getImovelSelecionado().getConsumoMinAgua())) {
+    			    // Seta o consumo histórico
+    				consumoAgua.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinAgua());
+    			    // Seta o consumo anormalidade
+    				consumoAgua.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+    			}
+    		// [UC0740] 2.2.
+    	    } else {
+    			int consumoMinimo = 0;
+    			int consumoTipo = 0;
+    			if (getImovelSelecionado().getConsumoMinAgua() != Constantes.NULO_INT) {
+    			    consumoMinimo = getImovelSelecionado().getConsumoMinAgua();
+    			    consumoTipo = CONSUMO_TIPO_MINIMO_FIX;
+    			} else {
+    			    consumoMinimo = getImovelSelecionado().getconsumoMinimoImovelNaoMedido();
+    			    consumoTipo = CONSUMO_TIPO_NAO_MEDIDO;
+    			}
+    	
+    			this.setConsumoAgua(new Consumo(Constantes.NULO_INT,
+    				consumoMinimo, Constantes.NULO_INT, consumoTipo,
+    				Constantes.NULO_INT, Constantes.NULO_INT));
+    	
+    			// verifica se existe situação tipo
+    			if (getImovelSelecionado().getSituacaoTipo() != null
+    				&& !getImovelSelecionado().getSituacaoTipo().equals("")) {
+    			    
+    			    if (getImovelSelecionado().getSituacaoTipo().getIndcValidaAgua() == Constantes.SIM) {
+    			    	dadosFaturamentoEspecialNaoMedido(consumoAgua,LIGACAO_AGUA);
+    			    }
+    			}
+    	    }
+    	} else {
+    	    this.consumoAgua = null;
+    	}
+
+    	// [UC0740] 4.
+    	int qtdEconomias = getImovelSelecionado().getQuantidadeEconomiasTotal();
+
+    	if (qtdEconomias > 1) {
+    	    // [SB0009]
+    	    if (consumoAgua != null
+    		    && consumoAgua.getConsumoCobradoMes() != Constantes.NULO_INT) {
+    	    	
+    	    	int leituraAnterior = Constantes.NULO_INT;
+
+    			if (getImovelSelecionado().getMedidor(LIGACAO_AGUA) != null) {
+    			    
+    				leituraAnterior = getImovelSelecionado().getMedidor(LIGACAO_AGUA).getLeituraAnterior();
+    			}
+    	
+    			consumoAgua.ajustar(qtdEconomias, leituraAnterior, LIGACAO_AGUA);
+    	    }
+    	}
+
+    	if (consumoAgua != null
+    		&& (consumoAgua.getTipoConsumo() != CONSUMO_TIPO_NAO_MEDIDO || consumoAgua.getTipoConsumo() != CONSUMO_TIPO_MINIMO_FIX)) {
+    		
+    		Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA);
+    	    
+    		if (medidor != null) {
+    	    	consumoAgua.setDiasConsumo(Util.obterModuloDiferencasDatasDias(medidor.getDataLeituraAnteriorFaturada(), Util.dataAtual()));
+    	    }
+    	}
+
+    	// Guardamos o consumo original
+    	if (consumoAgua != null) {
+    		consumoAgua.setConsumoCobradoMesOriginal(consumoAgua.getConsumoCobradoMes());
+    	}
+
+    	// [UC0740] 3.
+    	if (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM) {
+
+    	    // [UC0740] 3.1.
+    	    if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_POCO) != null) {
+    			this.calcularConsumo( LIGACAO_POCO);
+    	
+    			// Caso exista Consumo a Ser Cobrado no Mês da ligação de água,
+    			// o Consumo a Ser Cobrado no Mês de esgoto = (Cobrado no Mês da
+    			// ligação de água + Consumo a Ser Cobrado no Mês);
+    			// caso contrário, o Consumo a Ser Cobrado no Mês de esgoto =
+    			// Consumo a Ser Cobrado no Mês.
+    			if (consumoAgua != null && consumoAgua.getConsumoCobradoMes() != Constantes.NULO_INT) {
+    			    
+    				// Seta o consumo histórico
+    			    int consumoFaturadoMes = consumoAgua.getConsumoCobradoMes() + consumoEsgoto.getConsumoCobradoMes();
+    	
+    			    consumoEsgoto.setConsumoCobradoMes(consumoFaturadoMes);
+    			}
+
+    		// [UC0740] 3.2.
+    	    } else {
+
+    			int consumoMinnoEsgoto = 0;
+    			if (getImovelSelecionado().getConsumoMinEsgoto() != Constantes.NULO_INT) {
+    			    consumoMinnoEsgoto = getImovelSelecionado().getConsumoMinEsgoto();
+    			}
+    	
+    			this.setConsumoEsgoto(new Consumo(Constantes.NULO_INT,
+    								  			  consumoMinnoEsgoto, 
+    								  			  Constantes.NULO_INT,
+    								  			  CONSUMO_TIPO_NAO_MEDIDO, 
+    								  			  Constantes.NULO_INT,
+    								  			  Constantes.NULO_INT));
+    	
+    		   	if ( (getImovelSelecionado().getIndcFaturamentoAgua() == SIM) ||
+    		      	 (getImovelSelecionado().getIndcFaturamentoAgua() == NAO && getImovelSelecionado().isImovelMicroCondominio()) ){
+    				
+    		   		consumoEsgoto.setConsumoCobradoMes(consumoAgua.getConsumoCobradoMes());
+    			
+    		   	} else {
+    				consumoEsgoto.setConsumoCobradoMes(getImovelSelecionado().getconsumoMinimoImovelNaoMedido());
+    			}
+    	
+    			// Caso o consumo a ser cobrado mês seja inferior ao consumo mínimo
+    			if ((getImovelSelecionado().getConsumoMinEsgoto() != Constantes.NULO_INT)
+    				&& consumoEsgoto.getConsumoCobradoMes() < getImovelSelecionado().getConsumoMinEsgoto()) {
+    	
+    			    // O consumo a ser cobrado mês será o consumo mínimo da ligação de esgoto
+    				consumoEsgoto.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinEsgoto());
+    	
+    			    // A anormalidade de consumo será o consumo mínimo fixado de esgoto
+    				consumoEsgoto.setAnormalidadeConsumo(Consumo.CONSUMO_MINIMO_FIXADO);
+    	
+    			    /*
+    			     * Colocado por Raphael Rossiter em 17/03/2009 - Analista:
+    			     * Aryed Lins O TIPO do consumo será CONSUMO_MINIMO_FIXADO
+    			     */
+    				consumoEsgoto.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+    			}
+    	
+    			// verifica se existe situação tipo
+    			if (getImovelSelecionado().getSituacaoTipo() != null
+    				&& !getImovelSelecionado().getSituacaoTipo().equals("")) {
+    			    
+    				SituacaoTipo situacaoTipo = getImovelSelecionado().getSituacaoTipo();
+    			    
+    				if (situacaoTipo.getIndcValidaEsgoto() == Constantes.SIM) {
+    					dadosFaturamentoEspecialNaoMedido(consumoEsgoto, LIGACAO_POCO);
+    			    }
+    			}
+    	    }
+
+    	    // [UC0740] 3.3.
+    	    this.consumoEsgoto
+    		    .setConsumoCobradoMes(Util.arredondar(((consumoEsgoto
+    			    .getConsumoCobradoMes() * getImovelSelecionado()
+    			    .getPercentColetaEsgoto()) / 100)));
+    	}
+    	
+    	/*
+    	 * 4.Caso o imóvel não esteja mais cortado (Situação da Ligação de Agua <> 5 do registro tipo 1), 
+    	 * ou o consumo de água tenha sido real e maior que zero (Tipo de Consumo = 1 e o Consumo a ser 
+    	 * Cobrado no Mês maior que zero da tabela ),  excluir o  débito a cobrar referente a Tarifa de 
+    	 * Cortado Dec. 18.251/94 ( excluir registro do tipo 4 com Código do débito igual ao código do 
+    	 * débito 99).
+    	 */	
+    	Debito debito = getImovelSelecionado().getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
+    	
+    	// Caso o débito exista, reiniciamos para o estado inicial,
+    	// caso haja necessidade de recalculo. 
+    	if ( debito != null ){
+    	    debito.setIndcUso( (short)Constantes.SIM );
+    	    getImovelSelecionado().setIndcFaturamentoAgua( Constantes.SIM+"" );
+    	}
+    	
+    	if ( ( !getImovelSelecionado().getSituacaoLigAgua().equals( Constantes.CORTADO ) ) ||
+    	     ( consumoAgua != null && 
+    	       consumoAgua.getTipoConsumo() == CONSUMO_TIPO_REAL && 
+    	       consumoAgua.getConsumoCobradoMes() > 0 ) ){
+    	    
+    	    if ( debito != null ){
+    	    	debito.setIndcUso( (short) Constantes.NAO );
+    	    }
+    	}
+
+    	if (qtdEconomias > 1) {
+    	    if (consumoEsgoto != null
+    		    && consumoEsgoto.getConsumoCobradoMes() != Constantes.NULO_INT) {
+    			int leituraAnterior = Constantes.NULO_INT;
+    			
+    			if (getImovelSelecionado().getMedidor(LIGACAO_POCO) != null) {
+    			    leituraAnterior = getImovelSelecionado().getMedidor(LIGACAO_POCO).getLeituraAnterior();
+    			}
+    			consumoEsgoto.ajustar(qtdEconomias, leituraAnterior, LIGACAO_POCO);
+    	    }
+    	}
+
+    	if (consumoEsgoto != null && 
+    			(consumoEsgoto.getTipoConsumo() != CONSUMO_TIPO_NAO_MEDIDO || 
+    			 consumoEsgoto.getTipoConsumo() != CONSUMO_TIPO_MINIMO_FIX)) {
+    	    
+    			Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO);
+    			if (medidor != null) {
+    				consumoEsgoto.setDiasConsumo(Util.obterModuloDiferencasDatasDias(medidor
+    						.getDataLeituraAnteriorFaturada(), Util.dataAtual()));
+    			}
+    	}
+
+    	if (consumoEsgoto != null) {
+    		consumoEsgoto.setConsumoCobradoMesOriginal(consumoEsgoto
+    		    .getConsumoCobradoMes());
+    	}
+
+    	// Caso nao seja calculado o consumo de agua nem o de poco, porem o
+    	// imovel possua débito, diminuimos ele dos não lidos
+    	if (consumoAgua == null && consumoEsgoto == null
+    		&& getImovelSelecionado().getValorDebitos() >= 0) {
+
+    	    if (getImovelSelecionado().isImovelCondominio()) {
+
+    	    	EfetuarRateioConsumoHelper helper = null;
+    			Imovel macro = null;
+    	
+    			if (getImovelSelecionado().getIdImovelCondominio() != Constantes.NULO_INT) {
+    			    
+    				macro =  ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getIdImovelCondominio());
+    			    helper = macro.getEfetuarRateioConsumoHelper();
+    			
+    			} else if (getImovelSelecionado().getIndcCondominio() == Constantes.SIM) {
+    			    helper = getImovelSelecionado().getEfetuarRateioConsumoHelper();
+    			}
+    	
+//    			helper.getIdsAindaFaltamSerCalculador().removeElement(
+//    				new Integer(getImovelSelecionado().getId()));
+//    	
+//    			if (macro != null) {
+//    			    macro.setEfetuarRateioConsumoHelper(helper);
+//    			    Repositorio.salvarObjeto(macro);
+//    			} else {
+//    			    getImovelSelecionado()
+//    				    .setEfetuarRateioConsumoHelper(helper);
+//    			}
+    	    }
+
+//    	    Integer id = new Integer(getImovelSelecionado().getId());
+//    	    int quadra = getImovelSelecionado().getQuadra();
+//    	    String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
+//    		    .valueOf(quadra));
+//
+//    	    DadosRelatorio.getInstancia().idsNaoLidosRelatorio.removeElement(id);
+//
+//    	    if (!DadosRelatorio.getInstancia().idsLidosRelatorio.contains(id)) {
+//    	    	DadosRelatorio.getInstancia().idsLidosRelatorio.addElement(id);
+//
+//    		Util.inserirValoresStringRelatorio("(" + stringQuadra + ")",
+//    			false, true);
+//
+//    	    }
+    	    
+    	}
+    	
+    	/*
+    	 * É possivel que mesmo que imóvel
+    	 * não possua consumo de agua e/ou de esgoto
+    	 * ele tenha hidrometro. Sendo assim a leitura
+    	 * precisa ser enviada para o gsa, sendo assim
+    	 * guardada no historico.
+    	 * 
+    	 * Ex: (CAERN)
+    	 *   Imovel cortado de agua e com hidrometro
+    	 *   Imovel ligado de esgoto e sem hidrometro de poço
+    	 *   
+    	 *   Mes não tento consumo de agua, a leitura
+    	 *   é enviada ao GSAN.
+    	 * 
+    	 */
+    	if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_AGUA) != null) {
+    	    Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_AGUA);
+        	medidor.setDataLeitura(Util.dataAtual());
+			// Update DB - Medidor água
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
+
+    	}
+        	 
+    	if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_POCO) != null) {
+    		Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_POCO);
+    	    medidor.setDataLeitura(Util.dataAtual());
+			// Update DB - Medidor poço
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+    	}	
+    	
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+//		ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+
+    	// Verifica se o imóvel tem um percentual de esgoto alternativo
+    	if (consumoEsgoto != null) {
+    	    getImovelSelecionado().verificarPercentualEsgotoAlternativo(consumoEsgoto
+    		    .getConsumoCobradoMes());
+    	}
+
+    	// [UC0740] 5. - Calcular Valores de Água/Esgoto
+    	if (!getImovelSelecionado().isImovelCondominio()) {
+    	    this.calcularValores();
+    	}
+    }
 
     /**
      * [SB0000] - Calcular Consumo
      */
-    private void calcularConsumo(int tipoMedicao) {}
+    private void calcularConsumo(int tipoMedicao) {
 
-    public void calcularValores() {}
+    	// Apagamos as mensagens, caso tenha sido colocadas anteriormente
+    	// de Alto, Baixo, ou de Estouro de consumo
+    	getImovelSelecionado().setMensagemEstouroConsumo1(null);
+    	getImovelSelecionado().setMensagemEstouroConsumo2(null);
+    	getImovelSelecionado().setMensagemEstouroConsumo3(null);
+
+    	Medidor medidor = getImovelSelecionado().getMedidor(tipoMedicao);
+
+    	int cMedio;
+    	// Verificamos se o consumo médio veio do registro tipo 8 ou do imóvel
+    	if (medidor != null) {
+    	    cMedio = medidor.getConsumoMedio();
+    	} else {
+    	    cMedio = getImovelSelecionado().getConsumoMedio();
+    	}
+
+    	medidor.setDataLeitura(Util.dataAtual());
+
+    	// leitura atual informada
+    	int leitura = medidor.getLeitura();
+
+    	Consumo consumo = null;
+
+    	if (tipoMedicao == LIGACAO_AGUA) {
+    	    this.consumoAgua = new Consumo();
+    	    consumo = this.consumoAgua;
+    	} else {
+    	    this.consumoEsgoto = new Consumo();
+    	    consumo = this.consumoEsgoto;
+    	}
+    	
+    	consumo.setAnormalidadeConsumo(Constantes.NULO_INT);
+          
+    	// seta a anormalidade informada na anormalidade de leitura faturada
+    	if (medidor.getAnormalidade() > 0) {
+    	    consumo.setAnormalidadeLeituraFaturada(medidor.getAnormalidade());
+    	}
+
+    	int leituraAnterior = this.obterLeituraAnterior(medidor);
+    	medidor.setLeituraAnterior(leituraAnterior);
+
+        if (isImovelHidrometroSubstituido(tipoMedicao)) {
+
+        	// Daniel - verifica se a leitura informada é maior que a leitura do hidrometro no momento da substituiçao
+        	if(leitura > medidor.getLeituraInstalacaoHidrometro()){
+        		
+        		consumo.setConsumoMedidoMes(leitura - medidor.getLeituraInstalacaoHidrometro());
+        		consumo.setConsumoCobradoMes(leitura - medidor.getLeituraInstalacaoHidrometro());
+        		consumo.setLeituraAtual(leitura);
+        	
+        	// Daniel - Se for menor, faz o calculo pela média.
+        	}else{
+        		consumo.setConsumoMedidoMes(Constantes.NULO_INT);
+        		consumo.setConsumoCobradoMes(cMedio);
+        		consumo.setLeituraAtual(medidor.getLeituraInstalacaoHidrometro() + cMedio);
+                consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+        		
+        	}
+
+//    		Faz ajuste de consumo.
+    		chamaAjusteConsumo(tipoMedicao);		
+    		
+       		consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO);
+       		
+       		leituraAnterior = medidor.getLeituraInstalacaoHidrometro();
+       		medidor.setLeituraAnterior(leituraAnterior);
+
+       		// se houve leitura
+       		if (leitura != Constantes.NULO_INT){
+       			
+       			// se a leitura for maior que a informada na substituiçao do hidrometro. Caso contrario já foi definido tipo = Consumo Médio acima.
+       			if(leitura > medidor.getLeituraInstalacaoHidrometro()){
+       				
+    	   			int sitAnt = medidor.getSituacaoLeituraAnterior();
+    	   			
+    	   			if (sitAnt == LEITURA_SITU_REALIZADA || sitAnt == LEITURA_SITU_CONFIRMADA) {
+    	   			    consumo.setTipoConsumo(CONSUMO_TIPO_REAL);
+
+    	   			} else {
+    	   			    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+    	   			
+    	   			}
+       			}
+      		}
+        }
+
+    	// [SB0000] 1. Caso a leitura tenha sido coletada:
+    	if (leitura != Constantes.NULO_INT && consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO) {
+
+    	    // [SB0000] 1.1. Caso a leitura atual informada seja maior que a
+    	    // leitura anterior
+    	    if (leitura > leituraAnterior) {
+
+    		int sitAnt = medidor.getSituacaoLeituraAnterior();
+    		if (sitAnt == LEITURA_SITU_REALIZADA || sitAnt == LEITURA_SITU_CONFIRMADA) {
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_REAL);
+    		} else {
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+    		}
+
+    		consumo.setConsumoCobradoMes(leitura - leituraAnterior);
+    		consumo.setConsumoMedidoMes(leitura - leituraAnterior);
+    		consumo.setLeituraAtual(leitura);
+
+//    		Faz ajuste de consumo.
+    		chamaAjusteConsumo(tipoMedicao);					
+    		
+    		if (isForaDeFaixa(medidor)) {
+    			consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_FORA_DE_FAIXA);
+    		
+    		} else {
+    		    consumo.setAnormalidadeConsumo(Constantes.NULO_INT);
+    		}
+
+    		// [SB0000] 1.2. Caso a leitura atual informada seja igual à
+    		// leitura anterior
+    	    } else if (leitura == leituraAnterior) {
+
+    		// [SB0002] - Dados para Faturamento para leitura Igual à
+    		// Anterior
+
+    		// [SB0002] 1.
+    		consumo.setConsumoMedidoMes(0);
+    		consumo.setConsumoCobradoMes(0);
+    		consumo.setLeituraAtual(leitura);
+
+//    		Faz ajuste de consumo.
+    		chamaAjusteConsumo(tipoMedicao);		
+    		
+    		int sitAnt = medidor.getSituacaoLeituraAnterior();
+    		if (sitAnt == LEITURA_SITU_REALIZADA || sitAnt == LEITURA_SITU_CONFIRMADA) {
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_REAL);
+    		} else {
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+    		}
+
+    		consumo.setAnormalidadeConsumo(Constantes.NULO_INT);
+
+    		// [SB0002] 2.
+    		if (leitura > 1 && medidor.getAnormalidade() == 0) {
+
+    		    if (getImovelSelecionado().getIndicadorAbastecimentoAgua() == Constantes.SIM
+    			    && getImovelSelecionado().getIndicadorImovelSazonal() == Constantes.NAO) {
+
+    			// 2.1
+    			if (tipoMedicao == LIGACAO_AGUA) {
+    			    boolean primeiraCondicao = false;
+    			    boolean hidrometroParado = false;
+
+    			    // Não exista ligação de esgoto
+    			    /*
+    			     * if (getImovelSelecionado().getIndcFaturamentoEsgoto() != SIM) {
+    			     * primeiraCondicao = true; }
+    			     */
+    			    // Caso exista, o valor do consumo mínimo fixado de
+    			    // esgoto seja igual a nulo
+    			    if (getImovelSelecionado().getConsumoMinEsgoto() == Constantes.NULO_INT) {
+
+    			    	primeiraCondicao = true;
+    			    }
+
+    			    // Não exista poço no imóvel
+    			    if (primeiraCondicao
+    				    && (getImovelSelecionado().getTipoPoco() == Constantes.NULO_INT)) {
+
+    			    	hidrometroParado = true;
+    			    }
+
+    // Daniel - Imovel condominio em situação cortado (é pre-faturado) nao deve gerar anormalidade de leitura = Hidrometro Parado.
+    			    if (hidrometroParado && 
+    			    	(!getImovelSelecionado().isImovelMicroCondominio() ||
+    			    	(!getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)))) {
+
+    				/*
+    				 * O sistema gera a Anormalidade de Leitura de
+    				 * Faturamento com o valor correspondente a
+    				 * hidrômetro parado
+    				 */
+    				consumo
+    					.setAnormalidadeLeituraFaturada(ANORM_HIDROMETRO_PARADO);
+
+    			    } else {
+
+    					// 2.1.1
+    					if (getImovelSelecionado().getTipoPoco() != Constantes.NULO_INT
+    						|| getImovelSelecionado().getConsumoMinEsgoto() != Constantes.NULO_INT) {
+    					    
+    							consumo.setAnormalidadeLeituraFaturada(ANORM_HIDR_SEM_CONSUMO);
+    					}
+    			    }
+    			}
+
+    			else if (tipoMedicao == LIGACAO_POCO) {
+    			    // 2.2.1
+    			    if ((getImovelSelecionado().getMedidor(LIGACAO_AGUA) != null && (consumoAgua != null && 
+    			    	consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_BAIXO_CONSUMO))) {
+    				
+    			    	consumo.setAnormalidadeLeituraFaturada(ANORM_HIDROMETRO_PARADO);
+    				// 2.2.2
+    			    } else {
+    			    	consumo.setAnormalidadeLeituraFaturada(ANORM_HIDR_SEM_CONSUMO);
+    			    }
+    			}
+    		    }
+    		}
+
+    		// [SB0000] 1.3.
+    	    } else {
+    			boolean voltarFluxoPrincipal = false;
+    	
+    			// [SB0003] 1.1.
+    			// Verifica se foi virada de hidrometro.
+    			if (!voltarFluxoPrincipal) {
+    			    int n = medidor.getNumDigitosLeitura();
+    			    int _10n = Util.pow(10, n);
+    			    int consumoCalculado = (medidor.getLeitura() + _10n)
+    				    - medidor.getLeituraAnterior();
+    	
+    			    // [SB0003] 1.2.
+    			    if (((consumoCalculado <= 200) || (consumoCalculado <= 2 * cMedio))
+    				    && (consumoCalculado > 0)) {
+    	
+    				// [SB0003] 1.2.1.
+    				consumo.setConsumoMedidoMes(consumoCalculado);
+    				consumo.setConsumoCobradoMes(consumoCalculado);
+    				consumo.setLeituraAtual(leitura);
+    	
+//    				Faz ajuste de consumo.
+    				chamaAjusteConsumo(tipoMedicao);		
+
+    				int sitAnt = medidor.getSituacaoLeituraAnterior();
+    				if (sitAnt == LEITURA_SITU_REALIZADA
+    					|| sitAnt == LEITURA_SITU_CONFIRMADA) {
+    				    consumo.setTipoConsumo(CONSUMO_TIPO_REAL);
+    				} else {
+    				    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+    				}
+
+    // Daniel - verificar se o ajuste de consumo desfez a virada de hidrometro.
+    				
+    				if(medidor.getLeituraAtualFaturamento() != Constantes.NULO_INT && 
+    						medidor.getLeituraAtualFaturamento() < leituraAnterior){
+    					
+    					consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_VIRADA_HIDROMETRO);
+
+    				}
+
+    				if (medidor.getLeituraEsperadaInicial() > medidor.getLeituraEsperadaFinal()){
+    					
+    					//	Daniel - Verifica se está fora de faixa
+    					if (isForaDeFaixa(medidor)) {
+
+    						consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_FORA_DE_FAIXA);
+    					}
+    				}
+    				
+    				// [SB0003] 1.2.2.
+    				voltarFluxoPrincipal = true;
+    			    }
+    			}
+    		
+    			// [SB0003] 3.
+    			if (!voltarFluxoPrincipal) {
+    			    consumo.setConsumoMedidoMes(Constantes.NULO_INT);
+    			    consumo.setConsumoCobradoMes(cMedio);
+    			    consumo.setLeituraAtual(leituraAnterior + cMedio);
+    			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+    			    if (medidor.getSituacaoLeituraAnterior() == LEITURA_SITU_CONFIRMADA
+    				    || medidor.getSituacaoLeituraAnterior() == LEITURA_SITU_REALIZADA) {
+    				consumo
+    					.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_LEIT_MENOR_ANTE);
+    			    } else {
+    				consumo
+    					.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_LEIT_MENOR_PROJ);
+    			    }
+    	
+//    				Faz ajuste de consumo.
+    				chamaAjusteConsumo(tipoMedicao);		
+
+    			}
+    			
+    	    }
+    	} else {
+    	    // [SB0000] 3.
+    	    if (leitura == Constantes.NULO_INT
+    		    && consumo.getAnormalidadeLeituraFaturada() == Constantes.NULO_INT) {
+    		// [SB0005]
+    		// [SB0005] 1.
+    		consumo.setConsumoMedidoMes(Constantes.NULO_INT);
+    		consumo.setConsumoCobradoMes(cMedio);
+    		consumo.setLeituraAtual(leituraAnterior + cMedio);
+    		consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+
+    		//		Daniel - se já tiver identificado Hidrometro substituido, nao redefinir anormalidade de consumo.
+    		if(consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO){
+    			consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_LEITURA_N_INFO);
+    		}
+    		consumo.setAnormalidadeLeituraFaturada(Constantes.NULO_INT);
+    		
+//    		Faz ajuste de consumo.
+    		chamaAjusteConsumo(tipoMedicao);		
+
+    	    }
+    	}
+
+    	// [SB0000] 2. Caso a anormalidade de leitura tenha sido informada
+    	if (consumo.getAnormalidadeLeituraFaturada() > 0) {
+
+    	    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(String.valueOf(consumo.getAnormalidadeLeituraFaturada()), true);
+
+    	    // [SB0004] - Dados para Faturamento com Anormalidade de leitura
+    	    // 1. leitura Atual Informada não coletada
+    	    if (leitura == Constantes.NULO_INT) {
+    			// 1.1
+    			consumo.setConsumoMedidoMes(Constantes.NULO_INT);
+
+//    			Daniel - se já tiver identificado Hidrometro substituido, nao redefinir anormalidade de consumo.
+    			if(consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO){
+    				consumo.setAnormalidadeConsumo(Consumo.ANORMALIDADE_LEITURA);
+    			}
+    	
+    	
+    			// 1.2
+    			// 1.2.1
+    			if (anormalidade.getIdConsumoACobrarSemLeitura() == NAO_OCORRE) {
+    			    consumo.setConsumoCobradoMes(cMedio);
+    			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+    			}
+    			// 1.2.2
+    			else if (anormalidade.getIdConsumoACobrarSemLeitura() == MINIMO) {
+    			    consumo.setConsumoCobradoMes(getImovelSelecionado()
+    				    .getConsumoMinimoImovel());
+    			    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+    			}
+    			// 1.2.3
+    			else if (anormalidade.getIdConsumoACobrarSemLeitura() == MEDIA) {
+    			    consumo.setConsumoCobradoMes(cMedio);
+    			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+    			}
+    	
+    			// 1.3
+    			// 1.3.1
+    			if (anormalidade.getIdLeituraFaturarSemLeitura() == ANTERIOR_MAIS_A_MEDIA) {
+    			    consumo.setLeituraAtual(leituraAnterior + cMedio);
+    			}
+    			// 1.3.2
+    			else if (anormalidade.getIdLeituraFaturarSemLeitura() == ANTERIOR) {
+    			    consumo.setLeituraAtual(leituraAnterior + cMedio);
+    			}
+    			// 1.3.3
+    			else if (anormalidade.getIdLeituraFaturarSemLeitura() == ANTERIOR_MAIS_O_CONSUMO) {
+    			    consumo.setLeituraAtual(leituraAnterior + consumo.getConsumoCobradoMes());
+    			}
+    	
+    			// 1.1.4. O sistema deverá aplicar o fator definido sem leitura
+    			// no sistema ao consumo apurado
+    			// de acordo com o definido na anormalidade especificada
+    			// (LTAN_NNFATORSEMLEITURA da tabela LEITURA_ANORMALIDADE
+    			// com LTAN_ID = anormalidade informada).
+    			if (consumo.getConsumoCobradoMes() != Constantes.NULO_INT
+    				&& anormalidade.getNumeroFatorSemLeitura() != Constantes.NULO_DOUBLE) {
+    	
+    			    double consumoFaturadoMesSemLeitura = consumo
+    				    .getConsumoCobradoMes();
+    	
+    			    consumoFaturadoMesSemLeitura = anormalidade
+    				    .getNumeroFatorSemLeitura()
+    				    * consumoFaturadoMesSemLeitura;
+    	
+    			    consumo
+    				    .setConsumoCobradoMes((int) consumoFaturadoMesSemLeitura);
+    	
+    			}
+    	
+//    			Faz ajuste de consumo.
+    			chamaAjusteConsumo(tipoMedicao);		
+    	    }
+    	    // 2.Leitura Atual Informada
+    	    else {
+    		// 2.2
+    		// 2.2.1
+    		if (anormalidade.getIdConsumoACobrarComLeitura() == NAO_OCORRE) {
+    		    consumo.setConsumoCobradoMes(cMedio);
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+    		}
+    		// 2.2.2
+    		else if (anormalidade.getIdConsumoACobrarComLeitura() == MINIMO) {
+    		    consumo.setConsumoCobradoMes(0);
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+    		}
+    		// 2.2.3
+    		else if (anormalidade.getIdConsumoACobrarComLeitura() == MEDIA) {
+    		    consumo.setConsumoCobradoMes(cMedio);
+    		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+
+    		}
+    		// 2.2.4
+    		else if (anormalidade.getIdConsumoACobrarComLeitura() == NORMAL) {
+    		    // Fazer nada já calculado
+    		}
+    		// 2.2.5
+    		else if (anormalidade.getIdConsumoACobrarComLeitura() == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
+    		    if (cMedio > consumo.getConsumoCobradoMes()) {
+    			consumo.setConsumoCobradoMes(cMedio);
+    			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+    		    }
+    		}
+    		// 2.2.6
+    		else if (anormalidade.getIdConsumoACobrarComLeitura() == MENOR_ENTRE_O_CONSUMO_MEDIO) {
+    		    if (cMedio < consumo.getConsumoCobradoMes()) {
+    			consumo.setConsumoCobradoMes(cMedio);
+    			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+    		    }
+
+    		}
+    		// 2.3.1
+    		if (anormalidade.getIdLeituraFaturarComLeitura() == ANTERIOR_MAIS_A_MEDIA) {
+    		    consumo.setLeituraAtual(leituraAnterior + cMedio);
+    		}
+    		// 2.3.2
+    		else if (anormalidade.getIdLeituraFaturarComLeitura() == ANTERIOR) {
+    		    consumo.setLeituraAtual(leituraAnterior + cMedio);
+    		}
+    		// 2.3.3
+    		else if (anormalidade.getIdLeituraFaturarComLeitura() == ANTERIOR_MAIS_O_CONSUMO) {
+    		    consumo.setLeituraAtual(leituraAnterior + consumo.getConsumoCobradoMes());
+    		}
+    		// 2.3.4
+    		else if (anormalidade.getIdLeituraFaturarComLeitura() == INFORMADO) {
+    		    // Fazer nada Já calculado anteriormente
+    		}
+
+    		// 1.2.3. O sistema deverá aplicar o fator definido com leitura
+    		// no sistema ao consumo apurado de acordo com o
+    		// definido na anormalidade especificada (LTAN_NNFATORCOMLEITURA
+    		// da tabela LEITURA_ANORMALIDADE
+    		// com LTAN_ID = anormalidade informada).
+    		if (consumo.getConsumoCobradoMes() != Constantes.NULO_INT
+    			&& anormalidade.getNumeroFatorComLeitura() != Constantes.NULO_DOUBLE) {
+
+    		    double consumoFaturadoMesComLeitura = consumo
+    			    .getConsumoCobradoMes();
+
+    		    consumoFaturadoMesComLeitura = anormalidade
+    			    .getNumeroFatorComLeitura()
+    			    * consumoFaturadoMesComLeitura;
+
+    		    consumo
+    			    .setConsumoCobradoMes((int) consumoFaturadoMesComLeitura);
+
+    		}
+
+    	    }
+
+    	}
+
+    // - Somente fazer verificaçoes se nao for hidrometro substituido e não for leitura menor que anterior.
+    	if (consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO &&
+    			consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_LEIT_MENOR_ANTE  &&
+    			consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_LEIT_MENOR_PROJ){
+    		// [SB0000] 4.
+    		// [SB0006] - Verificar Estouro de Consumo
+    		// [SB0006] 1.
+
+    		if (!verificarEstouroConsumo(consumo, medidor)) {
+    		    // [SB0000] 5. Caso não tenha estouro de consumo
+    		    // [SB0007] - Verificar Alto Consumo
+    		    verificarAltoConsumo(consumo, medidor);
+    		}
+    		// [SB0000] 6. Caso o tipo de poço corresponda à sem poço (valor zero),
+    		// a leitura tenha sido coletada, e a anormalidade não tenha sido
+    		// informada
+    		int sitLigAgua = Util.verificarNuloInt(getImovelSelecionado().getSituacaoLigAgua());
+    	
+    		if (sitLigAgua != Imovel.CORTADO
+    			&& getImovelSelecionado().getTipoPoco() == Constantes.NULO_INT
+    			&& leitura != Constantes.NULO_INT
+    			&& consumo.getAnormalidadeLeituraFaturada() <= 0) {
+
+    			verificarBaixoConsumo( consumo, medidor);
+    		}
+    			
+    		//Verificar se leitura faturada é maior que o permitido pelo hidrometro
+
+    		// Obtém 10 elevado ao numeroDigitosHidrometro
+    		int dezElevadoNumeroDigitos = (int) Util.pow(10,
+    				this.obterNumeroDigitosHidrometro(tipoMedicao));
+
+    		// Caso a leitura faturada maior que dez elevado ao número de dígitos menos um
+    		if (consumo.getLeituraAtual() > (dezElevadoNumeroDigitos - 1) ) {
+
+    			medidor.setLeituraAtualFaturamento(consumo.getLeituraAtual() - (dezElevadoNumeroDigitos-1));
+    			consumo.setLeituraAtual(consumo.getLeituraAtual() - (dezElevadoNumeroDigitos-1));
+    				
+    		}
+    	}
+    	// verifica se existe situação tipo
+    	if (getImovelSelecionado().getSituacaoTipo() != null
+    		&& !getImovelSelecionado().getSituacaoTipo().equals("")) {
+    	    // se existe e o tipo de ligação é agua,
+    	    // determina o consumo para água
+    	    if (tipoMedicao == LIGACAO_AGUA) {
+    			if (getImovelSelecionado().getSituacaoTipo().getIndcValidaAgua() == Constantes.SIM) {
+    			    dadosFaturamentoEspecialMedido(consumo, tipoMedicao);
+    			}
+    	    } else {
+    			// determina o consumo para esgoto
+    			if (tipoMedicao == LIGACAO_POCO) {
+    			    if (getImovelSelecionado().getSituacaoTipo().getIndcValidaEsgoto() == Constantes.SIM) {
+    				dadosFaturamentoEspecialMedido(consumo,
+    					tipoMedicao);
+    			    }
+    			}
+    	    }
+    	}
+
+    	System.out.println("********** " + getImovelSelecionado().getMatricula() + "********** ");
+    	System.out.println("Consumo Agua: " + (consumoAgua != null ? consumoAgua.getConsumoCobradoMes() + "" : "Nulo"));
+    	System.out.println("Consumo Esgoto: " + (consumoEsgoto != null ? consumoEsgoto.getConsumoCobradoMes() + "" : "Nulo"));
+    	System.out.println("*************************** ");	
+    }
+
+    public void calcularValores() {
+
+//    	ControladorImoveis controladorImoveis = ControladorImoveis.getInstancia();
+    	
+    	boolean imovelComDebitoTipoCortado = false;
+    	
+    	Debito debito = getImovelSelecionado().getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
+    	
+    	if ( debito != null && debito.getIndcUso() == Constantes.SIM ){
+    	    imovelComDebitoTipoCortado = true;
+    	}
+
+    	// [UC0743] 2.
+    	if ( (getImovelSelecionado().getIndcFaturamentoAgua() == SIM)&& 
+    	     getImovelSelecionado().getIndicadorParalizarFaturamentoAgua() == NAO && !imovelComDebitoTipoCortado ) {
+    		
+    		ControladorImovel.getInstancia().calcularValores(getImovelSelecionado(), 
+    														 consumoAgua,
+    														 ControladorConta.LIGACAO_AGUA);
+    	} else {	    
+    	    // Agora o indicador de faturamento
+    	    // pode ser alterado dinamicamente.
+    	    // Sendo assim, zeramos os valores calculados
+    	    // de agua e de esgoto caso seja necessário
+    		List<DadosCategoria> categoriasSubcategorias = getImovelSelecionado().getDadosCategoria();
+    	    
+    	    for ( int i = 0; i < categoriasSubcategorias.size(); i++ ){		
+    			(categoriasSubcategorias.get(i)).setFaturamentoAgua( null );		
+    	    }
+    	}
+
+    	// [UC0743] 3.
+    	if ( (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM)
+    		&& getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == NAO) {
+    		
+    		ControladorImovel.getInstancia().calcularValores(getImovelSelecionado(), 
+    														 consumoEsgoto,
+    														 ControladorConta.LIGACAO_POCO);
+    	}
+    	
+    	// Salvamos que o imovel ja foi calculado
+    	// getImovelSelecionado().setIndcImovelCalculado( Constantes.SIM );
+
+    	// Se o imóvel estiver com a situação referente a nitrato
+    	if (getImovelSelecionado().getSituacaoTipo() != null && !getImovelSelecionado().getSituacaoTipo().equals("")) {
+    	    
+    		if (getImovelSelecionado().getSituacaoTipo().getTipoSituacaoEspecialFaturamento() == SituacaoTipo.NITRATO) {
+	    		// calcula 50% do valor da água
+	    		double valorCreditoNitrato = getImovelSelecionado().getValorAgua() / 2;
+	    		// atualiza o crédito referente a Nitrato com o valor
+	    		// calculado do crédito
+	    		getImovelSelecionado().setValorCreditosNitrato(valorCreditoNitrato);
+    	    }
+    	}
+
+    	// Verifica se o valor de creditos é maior que o valor da conta
+    	double valorCreditos = getImovelSelecionado().getValorCreditos();
+
+    	if (valorCreditos != 0d) {
+    	    double valorContaSemCreditos = getImovelSelecionado().getValorContaSemCreditos();
+
+    	    if (valorContaSemCreditos < valorCreditos) {
+	    		double valorResidual = valorCreditos - valorContaSemCreditos;
+	    		getImovelSelecionado().setValorResidualCredito(valorResidual);
+    	    }
+
+    	}
+
+    	// Salvamos o objeto
+    	
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+    }
 
     public void calcularValoresCondominio(Imovel imovelMicro) {}
 
@@ -244,7 +1173,7 @@ public class ControladorConta {
     private double calcularContaAguaParaRateado(Imovel imovelMacro) {
 
     	EfetuarRateioConsumoHelper helper = imovelMacro
-    		.getEfetuarRateioConsumoDispositivoMovelHelper();
+    		.getEfetuarRateioConsumoHelper();
 
     	boolean imovelComDebitoTipoCortado = false;
     	
@@ -269,7 +1198,7 @@ public class ControladorConta {
     private double calcularContaEsgotoParaRateado(Imovel imovelMacro) {
 
     	EfetuarRateioConsumoHelper helper = imovelMacro
-    		.getEfetuarRateioConsumoDispositivoMovelHelper();
+    		.getEfetuarRateioConsumoHelper();
 
     	if ( (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM) && getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == NAO) {
     		
@@ -284,14 +1213,14 @@ public class ControladorConta {
 	}
 
     public boolean verificarEstouroConsumo(Consumo consumo,
-	    Medidor reg8) {
+	    Medidor medidor) {
 
 	int cMedio;
 
 	// Verificamos se o consumo médio veio do
 	// registro tipo 8 ou do imóvel
-	if (reg8 != null) {
-	    cMedio = reg8.getConsumoMedio();
+	if (medidor != null) {
+	    cMedio = medidor.getConsumoMedio();
 	} else {
 	    cMedio = getImovelSelecionado().getConsumoMedio();
 	}
@@ -305,694 +1234,663 @@ public class ControladorConta {
 
 	if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getConsumoEstouro()
 		&& consumo.getConsumoCobradoMes() > resultado) {
+	
+		    int anormConsumo = Consumo.CONSUMO_ANORM_ESTOURO;
+	
+		    int idImovelPerfil = Util.verificarNuloInt(ControladorImovel.getInstancia().getImovelSelecionado().getCodigoPerfil());
+	
+		    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
+	
+		    ConsumoAnormalidadeAcao consumoAnormalidadeAcao = ConsumoAnormalidadeAcao.getInstancia()
+			    .getRegistro12(anormConsumo, categoriaPrincipal,
+				    idImovelPerfil);
+	
+		    if (consumoAnormalidadeAcao != null) {
+	
+				int idLeituraAnormalidadeConsumo = Constantes.NULO_INT;
+				double numerofatorConsumo = Constantes.NULO_DOUBLE;
+				String mensagemContaPrimeiroMes = consumoAnormalidadeAcao.getMensagemContaPrimeiroMes();
+				String mensagemContaSegundoMes = consumoAnormalidadeAcao.getMensagemContaSegundoMes();
+				String mensagemContaTerceiroMes = consumoAnormalidadeAcao.getMensagemContaTerceiroMes();
+		
+				// [SB0006] 1.1.
+				/*
+				 * Calendar c = Calendar.getInstance();
+				 * c.setTime(reg8.getDataLeitura());
+				 */
+		
+				/*
+				 * int anoLeitura = c.get(Calendar.YEAR); int mesLeitura =
+				 * c.get(Calendar.MONTH); int dia = c.get( Calendar.DAY_OF_MONTH
+				 * );
+				 */
+		
+				int anoMes = Util.subtrairMesDoAnoMes(Util
+					.verificarNuloInt(ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento()), 1);
+				// int anoMes =
+				// Util.subtrairMesDoAnoMes(Util.getAnoMes(c.getTime()), 1);
+		
+				HistoricoConsumo historicoConsumoPrimeiroMesAnterior = getImovelSelecionado().getHistoricoConsumo(anoMes,anormConsumo);
+		
+				if (historicoConsumoPrimeiroMesAnterior == null || historicoConsumoPrimeiroMesAnterior.equals("")) {
+				    
+					idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao.getIdLeituraAnormalidadeConsumoPrimeiroMes();
+				    numerofatorConsumo = consumoAnormalidadeAcao.getFatorConsumoPrimeiroMes();
+		
+				    if (mensagemContaPrimeiroMes != null) {
+		
+						String[] mensagem = Util.dividirString(mensagemContaPrimeiroMes, 40);
+			
+						switch (mensagem.length) {
+						case 3:
+						    getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+						case 2:
+						    getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+						case 1:
+						    getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+						    break;
+					}
+		
+						ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+						ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+						ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+				    }
+		
+				} else {
+				    anoMes = Util.subtrairMesDoAnoMes(Util
+					    .verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 2);
+		
+				    HistoricoConsumo historicoConsumoSegundoMesAnterior = getImovelSelecionado().getHistoricoConsumo(anoMes, anormConsumo);
+		
+				    if (historicoConsumoSegundoMesAnterior == null || historicoConsumoSegundoMesAnterior.equals("")) {
+				    	
+				    	idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao.getIdLeituraAnormalidadeConsumoSegundoMes();
+				    	numerofatorConsumo = consumoAnormalidadeAcao.getFatorConsumoSegundoMes();
+		
+						if (mensagemContaSegundoMes != null) {
+			
+						    String[] mensagem = Util.dividirString(mensagemContaSegundoMes, 40);
+			
+						    switch (mensagem.length) {
+						    case 3:
+							getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+						    case 2:
+							getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+						    case 1:
+							getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+							break;
+						    }
+			
+							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+						}
+		
+				    } else {
+						idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao.getIdLeituraAnormalidadeConsumoTerceiroMes();
+			
+						numerofatorConsumo = consumoAnormalidadeAcao.getFatorConsumoTerceiroMes();
+			
+						if (mensagemContaTerceiroMes != null) {
+			
+						    String[] mensagem = Util.dividirString(mensagemContaTerceiroMes, 40);
+			
+						    switch (mensagem.length) {
+						    case 3:
+							getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+						    case 2:
+							getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+						    case 1:
+							getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+							break;
+						    }
+			
+							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+						}
+		
+				    }
+				}
+		
+				// 3.1.1.1. O sistema gera a Anormalidade de Consumo com o valor
+				// correspondente a estouro de consumo da tabela
+				// CONSUMO_ANORMALIDADE
+				consumo.setAnormalidadeConsumo(anormConsumo);
+		
+				if (idLeituraAnormalidadeConsumo == NAO_OCORRE) {
+		
+				    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMedio());
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+		
+				} else if (idLeituraAnormalidadeConsumo == MINIMO) {
+		
+				    // O Consumo a Ser Cobrado no Mês será o valor retornado
+				    // por [UC0105 – Obter Consumo Mínimo da Ligação
+				    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+				    // Seta o tipo de consumo
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+		
+				} else if (idLeituraAnormalidadeConsumo == MEDIA) {
+		
+				    // Consumo a ser cobrado no mês será o consumo médio do
+				    // hidrômetro
+				    consumo.setConsumoCobradoMes(cMedio);
+		            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+		            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+		
+				} else if (idLeituraAnormalidadeConsumo == NORMAL) {
+		
+				    // Fazer nada já calculado
+		
+				} else if (idLeituraAnormalidadeConsumo == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
+		
+				    if (cMedio > consumo.getConsumoCobradoMes()) {
+						consumo.setConsumoCobradoMes(cMedio);
+			            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+			            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+						consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    }
+		
+				} else if (idLeituraAnormalidadeConsumo == MENOR_ENTRE_O_CONSUMO_MEDIO) {
+		
+					if (cMedio < consumo.getConsumoCobradoMes()) {
+						consumo.setConsumoCobradoMes(cMedio);
+			            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+			            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+						consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    }
+		
+				}
+		
+				// 3.1.4. O consumo a Ser Cobrado no Mês será igual
+				// ao Consumo a Ser Cobrado no Mês multiplicado pelo
+				// fator de multiplicação da quantidade de vezes a média
+				// (CSAA_NNFATORCONSUMOMES(1,2 ou 3), dependendo do mês
+				// calculado anteriormente
+				if (numerofatorConsumo != Constantes.NULO_DOUBLE) {
+				    double consumofaturadoMes = consumo.getConsumoCobradoMes();
+				    consumofaturadoMes = consumofaturadoMes * numerofatorConsumo;
+				    int consumofaturadoMesInt = Util.arredondar(consumofaturadoMes);
+				    consumo.setConsumoCobradoMes(consumofaturadoMesInt);
+				}
+	
+		    } else {
+		        // [SB0006] 1.1.
+		        //Calendar c = Calendar.getInstance();
+		        //c.setTime( getImovelSelecionado().getdata );
+	
+		        int anoMes = Util.subtrairMesDoAnoMes( Integer.parseInt( ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento() ) , 1);
+		        HistoricoConsumo historicoConsumo = getImovelSelecionado().getHistoricoFaturamento(anoMes);
+	
+	
+				int anormConsumoAnterior = Constantes.NULO_INT;
+				if (historicoConsumo != null) {
+				    anormConsumoAnterior = historicoConsumo.getAnormalidadeConsumo();
+				}
+	
+		        boolean cond1 = anormConsumoAnterior != Constantes.NULO_INT
+		            && anormConsumoAnterior != Consumo.CONSUMO_ANORM_ESTOURO
+		            && anormConsumoAnterior != Consumo.CONSUMO_ANORM_ESTOURO_MEDIA;
+	
+		        // [SB0006] 1.1. (continuação)
+		        if (cond1 || 
+		            consumo.getConsumoCobradoMes() > getImovelSelecionado().getConsumoMaximo() || 
+		            anormConsumoAnterior == Constantes.NULO_INT) {
+		            // [SB0006] 1.1.1.
+		            consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_ESTOURO_MEDIA);
+	
+		            // [SB0006] 1.1.2.
+		            consumo.setConsumoCobradoMes(cMedio);
+	
+		            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+		            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+	
+		            // [SB0006] 1.1.3.
+		            consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+	
+		            // [SB0006] 1.2.
+		        } else {
+		            consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_ESTOURO);
+		        }
+	
+		    }
+		    estouro = true;
+		}
 
-	    int anormConsumo = Consumo.CONSUMO_ANORM_ESTOURO;
+		return estouro;
+    }
 
-	    int idImovelPerfil = Util
-		    .verificarNuloInt(ControladorImovel.getInstancia().getImovelSelecionado().getCodigoPerfil());
+    public void verificarAltoConsumo(Consumo consumo, Medidor medidor) {
+	
+		int cMedio;
+	
+		// Verificamos se o consumo médio veio do medidor ou do imóvel
+		if (medidor != null) {
+		    cMedio = medidor.getConsumoMedio();
 
-	    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
+		} else {
+		    cMedio = getImovelSelecionado().getConsumoMedio();
+		}
+	
+		// [SB0007] - Verificar Alto Consumo
+		int resultado = Util.arredondar(getImovelSelecionado().getFatorMultMediaAltoConsumo() * cMedio);
+	
+		if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getAltoConsumo()
+			&& consumo.getConsumoCobradoMes() > resultado) {
+	
+		    int anormConsumo = Consumo.CONSUMO_ANORM_ALTO_CONSUMO;
+	
+		    int idImovelPerfil = Util.verificarNuloInt(getImovelSelecionado().getCodigoPerfil());
+	
+		    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
+	
+		    ConsumoAnormalidadeAcao consumoAnormalidadeAcao = ConsumoAnormalidadeAcao.getInstancia()
+			    .getRegistro12(anormConsumo, categoriaPrincipal,idImovelPerfil);
+	
+		    if (consumoAnormalidadeAcao != null) {
+		
+				String mensagemContaPrimeiroMes = consumoAnormalidadeAcao.getMensagemContaPrimeiroMes();
+				String mensagemContaSegundoMes = consumoAnormalidadeAcao.getMensagemContaSegundoMes();
+				String mensagemContaTerceiroMes = consumoAnormalidadeAcao.getMensagemContaTerceiroMes();
+		
+				int idLeituraAnormalidadeConsumo = Constantes.NULO_INT;
+				double numerofatorConsumo = Constantes.NULO_DOUBLE;
+		
+				/*
+				 * Calendar c = Calendar.getInstance();
+				 * c.setTime(reg8.getDataLeitura());
+				 */
+		
+				int anoMes = Util.subtrairMesDoAnoMes(Util
+					.verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 1);
+				// int anoMes =
+				// Util.subtrairMesDoAnoMes(Util.getAnoMes(c.getTime()), 1);
+		
+				HistoricoConsumo historicoConsumoMesAnterior = getImovelSelecionado().getHistoricoConsumo(anoMes,
+					anormConsumo);
+		
+				if (historicoConsumoMesAnterior == null || historicoConsumoMesAnterior.equals("")) {
+				    idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao.getIdLeituraAnormalidadeConsumoPrimeiroMes();
+		
+				    numerofatorConsumo = consumoAnormalidadeAcao.getFatorConsumoPrimeiroMes();
+		
+				    if (mensagemContaPrimeiroMes != null) {
+		
+						String[] mensagem = Util.dividirString(mensagemContaPrimeiroMes, 40);
+			
+						switch (mensagem.length) {
+						case 3:
+						    getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+						case 2:
+						    getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+						case 1:
+						    getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+						    break;
+						}
+						
+						ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+						ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+						ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+				    }
+		
+				} else {
+		
+				    anoMes = Util.subtrairMesDoAnoMes(Util.verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 2);
+				    HistoricoConsumo reg3SegundoMesAnterior = getImovelSelecionado().getHistoricoConsumo(anoMes, anormConsumo);
+		
+				    if (reg3SegundoMesAnterior == null || reg3SegundoMesAnterior.equals("")) {
+				    	idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao.getIdLeituraAnormalidadeConsumoSegundoMes();
+		
+				    	numerofatorConsumo = consumoAnormalidadeAcao.getFatorConsumoSegundoMes();
+		
+						if (mensagemContaSegundoMes != null) {
+			
+						    String[] mensagem = Util.dividirString(mensagemContaSegundoMes, 40);
+			
+						    switch (mensagem.length) {
+						    case 3:
+							getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+						    case 2:
+							getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+						    case 1:
+							getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+							break;
+						    }
+			
+							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+						}
+		
+				    } else {
+						idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao.getIdLeituraAnormalidadeConsumoTerceiroMes();
+			
+						numerofatorConsumo = consumoAnormalidadeAcao.getFatorConsumoTerceiroMes();
+			
+						if (mensagemContaTerceiroMes != null) {
+			
+						    String[] mensagem = Util.dividirString(mensagemContaTerceiroMes, 40);
+			
+						    switch (mensagem.length) {
+						    case 3:
+							getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+						    case 2:
+							getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+						    case 1:
+							getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+							break;
+						    }
+			
+							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+						}
+			
+				    }
+				}
+		
+				// 3.1.1.1. O sistema gera a Anormalidade de Consumo com o valor
+				// correspondente a estouro de consumo da tabela
+				// CONSUMO_ANORMALIDADE
+				consumo.setAnormalidadeConsumo(anormConsumo);
+		
+				if (idLeituraAnormalidadeConsumo == NAO_OCORRE) {
+		
+				    consumo.setConsumoCobradoMes(cMedio);
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+		
+				} else if (idLeituraAnormalidadeConsumo == MINIMO) {
+		
+				    // O Consumo a Ser Cobrado no Mês será o valor retornado
+				    // por [UC0105 – Obter Consumo Mínimo da Ligação
+				    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+				    // Seta o tipo de consumo
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+		
+				} else if (idLeituraAnormalidadeConsumo == MEDIA) {
+		
+				    // Consumo a ser cobrado no mês será o consumo médio do
+				    // hidrômetro
+				    consumo.setConsumoCobradoMes(cMedio);
+		            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+		            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+		
+				} else if (idLeituraAnormalidadeConsumo == NORMAL) {
+		
+				    // Fazer nada já calculado
+		
+				} else if (idLeituraAnormalidadeConsumo == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
+		
+				    if (cMedio > consumo.getConsumoCobradoMes()) {
+						consumo.setConsumoCobradoMes(cMedio);
+			            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+			            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+						consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    }
+		
+				} else if (idLeituraAnormalidadeConsumo == MENOR_ENTRE_O_CONSUMO_MEDIO) {
+		
+					if (cMedio < consumo.getConsumoCobradoMes()) {
+						consumo.setConsumoCobradoMes(cMedio);
+			            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+			            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+						consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    }
+		
+				}
+		
+				// 3.1.4. O consumo a Ser Cobrado no Mês será igual
+				// ao Consumo a Ser Cobrado no Mês multiplicado pelo
+				// fator de multiplicação da quantidade de vezes a média
+				// (CSAA_NNFATORCONSUMOMES(1,2 ou 3), dependendo do mês
+				// calculado anteriormente
+				if (numerofatorConsumo != Constantes.NULO_DOUBLE) {
+				    
+					double consumofaturadoMes = consumo.getConsumoCobradoMes();
+				    consumofaturadoMes = consumofaturadoMes * numerofatorConsumo;
+				    int consumofaturadoMesInt = Util.arredondar(consumofaturadoMes);
+				    consumo.setConsumoCobradoMes(consumofaturadoMesInt);
+				}
+		
+		    } else {
+		    	consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_ALTO_CONSUMO);
+		    }
+	
+		}
+	
+	}
 
-	    ConsumoAnormalidadeAcao consumoAnormalidadeAcao = ConsumoAnormalidadeAcao.getInstancia()
-		    .getRegistro12(anormConsumo, categoriaPrincipal,
-			    idImovelPerfil);
-
-	    if (consumoAnormalidadeAcao != null) {
-
-		int idLeituraAnormalidadeConsumo = Constantes.NULO_INT;
-		double numerofatorConsumo = Constantes.NULO_DOUBLE;
-		String mensagemContaPrimeiroMes = consumoAnormalidadeAcao
-			.getMensagemContaPrimeiroMes();
-		String mensagemContaSegundoMes = consumoAnormalidadeAcao
-			.getMensagemContaSegundoMes();
-		String mensagemContaTerceiroMes = consumoAnormalidadeAcao
-			.getMensagemContaTerceiroMes();
-
-		// [SB0006] 1.1.
-		/*
-		 * Calendar c = Calendar.getInstance();
-		 * c.setTime(reg8.getDataLeitura());
-		 */
-
-		/*
-		 * int anoLeitura = c.get(Calendar.YEAR); int mesLeitura =
-		 * c.get(Calendar.MONTH); int dia = c.get( Calendar.DAY_OF_MONTH
-		 * );
-		 */
-
-		int anoMes = Util.subtrairMesDoAnoMes(Util
-			.verificarNuloInt(DadosGerais.getInstancia().getAnoMesFaturamento()), 1);
-		// int anoMes =
-		// Util.subtrairMesDoAnoMes(Util.getAnoMes(c.getTime()), 1);
-
-		HistoricoConsumo reg3MesAnterior = getImovelSelecionado().getRegistro3(anoMes,
-			anormConsumo);
-
-		if (reg3MesAnterior == null || reg3MesAnterior.equals("")) {
-		    idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-			    .getIdLeituraAnormalidadeConsumoPrimeiroMes();
-
-		    numerofatorConsumo = consumoAnormalidadeAcao
-			    .getFatorConsumoPrimeiroMes();
-
-		    if (mensagemContaPrimeiroMes != null) {
-
-			String[] mensagem = Util.dividirString(
-				mensagemContaPrimeiroMes, 40);
-
-			switch (mensagem.length) {
-			case 3:
-			    getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			case 2:
-			    getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			case 1:
-			    getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-			    break;
-			}
-
+	public void verificarBaixoConsumo(Consumo consumo,Medidor medidor) {
+	
+		int cMedio;
+	
+		// Verificamos se o consumo médio veio do
+		// registro tipo 8 ou do imóvel
+		if (medidor != null) {
+		    cMedio = medidor.getConsumoMedio();
+		} else {
+		    cMedio = getImovelSelecionado().getConsumoMedio();
+		}
+	
+		// [SB0008] - Verificar Baixo Consumo
+		double percentual = getImovelSelecionado().getPercentBaixoConsumo() / 100;
+		double consumoMedioPercent = cMedio * percentual;
+	
+		if (cMedio > getImovelSelecionado().getBaixoConsumo()
+			&& consumo.getConsumoCobradoMes() < consumoMedioPercent) {
+	
+		    int anormConsumo = Consumo.CONSUMO_ANORM_BAIXO_CONSUMO;
+	
+		    int idImovelPerfil = Util.verificarNuloInt(getImovelSelecionado().getCodigoPerfil());
+	
+		    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
+	
+		    ConsumoAnormalidadeAcao consumoAnormalidadeAcao = ConsumoAnormalidadeAcao.getInstancia()
+			    .getRegistro12(anormConsumo, categoriaPrincipal,
+				    idImovelPerfil);
+	
+		    if (consumoAnormalidadeAcao != null) {
+	
+			int idLeituraAnormalidadeConsumo = Constantes.NULO_INT;
+			double numerofatorConsumo = Constantes.NULO_DOUBLE;
+	
 			/*
-			 * getImovelSelecionado().setMensagemConta1(mensagemContaPrimeiroMes
-			 * .substring(0, 40));
-			 * getImovelSelecionado().setMensagemConta2(mensagemContaPrimeiroMes
-			 * .substring(40, 80));5
-			 * getImovelSelecionado().setMensagemConta3(mensagemContaPrimeiroMes
-			 * .substring(80, mensagemContaPrimeiroMes .length()));
+			 * Calendar c = Calendar.getInstance();
+			 * c.setTime(reg8.getDataLeitura());
 			 */
-//			Repositorio.salvarObjeto(getImovelSelecionado());
-		    }
-
-		} else {
-		    anoMes = Util.subtrairMesDoAnoMes(Util
-			    .verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 2);
-
-		    HistoricoConsumo reg3SegundoMesAnterior = getImovelSelecionado().getRegistro3(
-			    anoMes, anormConsumo);
-
-		    if (reg3SegundoMesAnterior == null
-			    || reg3SegundoMesAnterior.equals("")) {
-			idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-				.getIdLeituraAnormalidadeConsumoSegundoMes();
-
-			numerofatorConsumo = consumoAnormalidadeAcao
-				.getFatorConsumoSegundoMes();
-
-			if (mensagemContaSegundoMes != null) {
-
-			    String[] mensagem = Util.dividirString(
-				    mensagemContaSegundoMes, 40);
-
-			    switch (mensagem.length) {
-			    case 3:
-				getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			    case 2:
-				getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			    case 1:
-				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-				break;
+	
+			int anoMes = Util.subtrairMesDoAnoMes(Util
+				.verificarNuloInt(ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento()), 1);
+			// int anoMes =
+			// Util.subtrairMesDoAnoMes(Util.getAnoMes(c.getTime()), 1);
+			HistoricoConsumo reg3MesAnterior = getImovelSelecionado().getHistoricoConsumo(anoMes,
+				anormConsumo);
+	
+			String mensagemContaPrimeiroMes = consumoAnormalidadeAcao
+				.getMensagemContaPrimeiroMes();
+			String mensagemContaSegundoMes = consumoAnormalidadeAcao
+				.getMensagemContaSegundoMes();
+			String mensagemContaTerceiroMes = consumoAnormalidadeAcao
+				.getMensagemContaTerceiroMes();
+	
+			if (reg3MesAnterior == null || reg3MesAnterior.equals("")) {
+			    idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
+				    .getIdLeituraAnormalidadeConsumoPrimeiroMes();
+	
+			    numerofatorConsumo = consumoAnormalidadeAcao
+				    .getFatorConsumoPrimeiroMes();
+	
+			    if (mensagemContaPrimeiroMes != null) {
+	
+				String[] mensagem = Util.dividirString(
+					mensagemContaPrimeiroMes, 40);
+	
+				switch (mensagem.length) {
+				case 3:
+				    getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+				case 2:
+				    getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+				case 1:
+				    getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+				    break;
+				}
+	
+				/*
+				 * getImovelSelecionado().setMensagemConta1(mensagemContaPrimeiroMes
+				 * .substring(0, 40));
+				 * getImovelSelecionado().setMensagemConta2(mensagemContaPrimeiroMes
+				 * .substring(40, 80));
+				 * getImovelSelecionado().setMensagemConta3(mensagemContaPrimeiroMes
+				 * .substring(80, mensagemContaPrimeiroMes .length()));
+				 */
+	
+				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+				ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+				ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+	
 			    }
-
-//			    Repositorio.salvarObjeto(getImovelSelecionado());
+	
+			} else {
+	
+			    anoMes = Util.subtrairMesDoAnoMes(Util
+				    .verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 2);
+			    HistoricoConsumo reg3SegundoMesAnterior = getImovelSelecionado().getHistoricoConsumo(
+				    anoMes, anormConsumo);
+	
+			    if (reg3SegundoMesAnterior == null
+				    || reg3SegundoMesAnterior.equals("")) {
+				idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
+					.getIdLeituraAnormalidadeConsumoSegundoMes();
+	
+				numerofatorConsumo = consumoAnormalidadeAcao
+					.getFatorConsumoSegundoMes();
+	
+				if (mensagemContaSegundoMes != null) {
+	
+				    String[] mensagem = Util.dividirString(
+					    mensagemContaSegundoMes, 40);
+	
+				    switch (mensagem.length) {
+				    case 3:
+					getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+				    case 2:
+					getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+				    case 1:
+					getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+					break;
+				    }
+					ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+					ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+					ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+				}
+	
+			    } else {
+				idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
+					.getIdLeituraAnormalidadeConsumoTerceiroMes();
+	
+				numerofatorConsumo = consumoAnormalidadeAcao
+					.getFatorConsumoTerceiroMes();
+	
+				if (mensagemContaTerceiroMes != null) {
+	
+				    String[] mensagem = Util.dividirString(
+					    mensagemContaTerceiroMes, 40);
+	
+				    switch (mensagem.length) {
+				    case 3:
+					getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
+				    case 2:
+					getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
+				    case 1:
+					getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
+					break;
+				    }
+					ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+					ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+					ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+				}
+			    }
 			}
-
+	
+			// 3.1.1.1. O sistema gera a Anormalidade de Consumo com o valor
+			// correspondente a estouro de consumo da tabela
+			// CONSUMO_ANORMALIDADE
+			consumo.setAnormalidadeConsumo(anormConsumo);
+	
+			if (idLeituraAnormalidadeConsumo == NAO_OCORRE) {
+	
+			    consumo.setConsumoCobradoMes(cMedio);
+	            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+	            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+	
+			} else if (idLeituraAnormalidadeConsumo == MINIMO) {
+	
+			    // O Consumo a Ser Cobrado no Mês será o valor retornado
+			    // por [UC0105 – Obter Consumo Mínimo da Ligação
+			    consumo.setConsumoCobradoMes(getImovelSelecionado()
+				    .getConsumoMinimoImovel());
+			    // Seta o tipo de consumo
+			    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
+	
+			} else if (idLeituraAnormalidadeConsumo == MEDIA) {
+	
+			    // Consumo a ser cobrado no mês será o consumo médio do
+			    // hidrômetro
+			    consumo.setConsumoCobradoMes(cMedio);
+	            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+	            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+	
+			} else if (idLeituraAnormalidadeConsumo == NORMAL) {
+	
+			    // Fazer nada já calculado
+	
+			} else if (idLeituraAnormalidadeConsumo == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
+	
+			    if (cMedio > consumo.getConsumoCobradoMes()) {
+				consumo.setConsumoCobradoMes(cMedio);
+	            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+	            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+				consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+			    }
+	
+			} else if (idLeituraAnormalidadeConsumo == MENOR_ENTRE_O_CONSUMO_MEDIO) {
+			    if (cMedio < consumo.getConsumoCobradoMes()) {
+				consumo.setConsumoCobradoMes(cMedio);
+	            consumo.setLeituraAtual(medidor.getLeituraAnterior() + cMedio);
+	            medidor.setLeituraAtualFaturamento(medidor.getLeituraAnterior() + cMedio);
+				consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+			    }
+	
+			}
+	
+			// 3.1.4. O consumo a Ser Cobrado no Mês será igual
+			// ao Consumo a Ser Cobrado no Mês multiplicado pelo
+			// fator de multiplicação da quantidade de vezes a média
+			// (CSAA_NNFATORCONSUMOMES(1,2 ou 3), dependendo do mês
+			// calculado anteriormente
+			if (numerofatorConsumo != Constantes.NULO_DOUBLE) {
+			    double consumofaturadoMes = consumo.getConsumoCobradoMes();
+			    consumofaturadoMes = consumofaturadoMes
+				    * numerofatorConsumo;
+			    int consumofaturadoMesInt = Util
+				    .arredondar(consumofaturadoMes);
+			    consumo.setConsumoCobradoMes(consumofaturadoMesInt);
+			}
+	
 		    } else {
-			idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-				.getIdLeituraAnormalidadeConsumoTerceiroMes();
-
-			numerofatorConsumo = consumoAnormalidadeAcao
-				.getFatorConsumoTerceiroMes();
-
-			if (mensagemContaTerceiroMes != null) {
-
-			    String[] mensagem = Util.dividirString(
-				    mensagemContaTerceiroMes, 40);
-
-			    switch (mensagem.length) {
-			    case 3:
-				getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			    case 2:
-				getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			    case 1:
-				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-				break;
-			    }
-
-//			    Repositorio.salvarObjeto(getImovelSelecionado());
-			}
-
+	   
+				consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_BAIXO_CONSUMO);
+	
 		    }
+	
 		}
-
-		// 3.1.1.1. O sistema gera a Anormalidade de Consumo com o valor
-		// correspondente a estouro de consumo da tabela
-		// CONSUMO_ANORMALIDADE
-		consumo.setAnormalidadeConsumo(anormConsumo);
-
-		if (idLeituraAnormalidadeConsumo == NAO_OCORRE) {
-
-		    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMedio());
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-		} else if (idLeituraAnormalidadeConsumo == MINIMO) {
-
-		    // O Consumo a Ser Cobrado no Mês será o valor retornado
-		    // por [UC0105 – Obter Consumo Mínimo da Ligação
-		    consumo.setConsumoCobradoMes(getImovelSelecionado()
-			    .getConsumoMinimoImovel());
-		    // Seta o tipo de consumo
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
-
-		} else if (idLeituraAnormalidadeConsumo == MEDIA) {
-
-		    // Consumo a ser cobrado no mês será o consumo médio do
-		    // hidrômetro
-		    consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-		} else if (idLeituraAnormalidadeConsumo == NORMAL) {
-
-		    // Fazer nada já calculado
-
-		} else if (idLeituraAnormalidadeConsumo == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
-
-		    if (cMedio > consumo.getConsumoCobradoMes()) {
-			consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    }
-
-		} else if (idLeituraAnormalidadeConsumo == MENOR_ENTRE_O_CONSUMO_MEDIO) {
-		    if (cMedio < consumo.getConsumoCobradoMes()) {
-			consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    }
-
-		}
-
-		// 3.1.4. O consumo a Ser Cobrado no Mês será igual
-		// ao Consumo a Ser Cobrado no Mês multiplicado pelo
-		// fator de multiplicação da quantidade de vezes a média
-		// (CSAA_NNFATORCONSUMOMES(1,2 ou 3), dependendo do mês
-		// calculado anteriormente
-		if (numerofatorConsumo != Constantes.NULO_DOUBLE) {
-		    double consumofaturadoMes = consumo.getConsumoCobradoMes();
-		    consumofaturadoMes = consumofaturadoMes
-			    * numerofatorConsumo;
-		    int consumofaturadoMesInt = Util
-			    .arredondar(consumofaturadoMes);
-		    consumo.setConsumoCobradoMes(consumofaturadoMesInt);
-		}
-
-	    } else {
-	        // [SB0006] 1.1.
-	        //Calendar c = Calendar.getInstance();
-	        //c.setTime( getImovelSelecionado().getdata );
-
-	        int anoMes = Util.subtrairMesDoAnoMes( Integer.parseInt( DadosGerais.getInstancia().getAnoMesFaturamento() ) , 1);
-	        HistoricoConsumo reg3 = getImovelSelecionado().getHistoricoFaturamento(anoMes);
-
-
-		int anormConsumoAnterior = Constantes.NULO_INT;
-		if (reg3 != null) {
-		    anormConsumoAnterior = reg3.getAnormalidadeConsumo();
-		}
-
-	        boolean cond1 = anormConsumoAnterior != Constantes.NULO_INT
-	            && anormConsumoAnterior != Consumo.CONSUMO_ANORM_ESTOURO
-	            && anormConsumoAnterior != Consumo.CONSUMO_ANORM_ESTOURO_MEDIA;
-
-	        // [SB0006] 1.1. (continuação)
-	        if (cond1 || 
-	            consumo.getConsumoCobradoMes() > getImovelSelecionado().getConsumoMaximo() || 
-	            anormConsumoAnterior == Constantes.NULO_INT) {
-	            // [SB0006] 1.1.1.
-	            consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_ESTOURO_MEDIA);
-
-	            // [SB0006] 1.1.2.
-	            consumo.setConsumoCobradoMes(cMedio);
-
-	            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-	            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-
-	            // [SB0006] 1.1.3.
-	            consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-	            // [SB0006] 1.2.
-	        } else {
-	            consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_ESTOURO);
-	        }
-
-
-	    }
-	    estouro = true;
+	
 	}
-
-	return estouro;
-    }
-
-    public void verificarAltoConsumo(Consumo consumo,
-	    Medidor reg8) {
-
-	int cMedio;
-
-	// Verificamos se o consumo médio veio do
-	// registro tipo 8 ou do imóvel
-	if (reg8 != null) {
-	    cMedio = reg8.getConsumoMedio();
-	} else {
-	    cMedio = getImovelSelecionado().getConsumoMedio();
-	}
-
-	// [SB0007] - Verificar Alto Consumo
-	int resultado = Util.arredondar(getImovelSelecionado().getFatorMultMediaAltoConsumo()
-		* cMedio);
-
-	if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getAltoConsumo()
-		&& consumo.getConsumoCobradoMes() > resultado) {
-
-	    int anormConsumo = Consumo.CONSUMO_ANORM_ALTO_CONSUMO;
-
-	    int idImovelPerfil = Util
-		    .verificarNuloInt(getImovelSelecionado().getCodigoPerfil());
-
-	    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
-
-	    ConsumoAnormalidadeAcao consumoAnormalidadeAcao = ConsumoAnormalidadeAcao.getInstancia()
-		    .getRegistro12(anormConsumo, categoriaPrincipal,
-			    idImovelPerfil);
-
-	    if (consumoAnormalidadeAcao != null) {
-
-		String mensagemContaPrimeiroMes = consumoAnormalidadeAcao
-			.getMensagemContaPrimeiroMes();
-		String mensagemContaSegundoMes = consumoAnormalidadeAcao
-			.getMensagemContaSegundoMes();
-		String mensagemContaTerceiroMes = consumoAnormalidadeAcao
-			.getMensagemContaTerceiroMes();
-
-		int idLeituraAnormalidadeConsumo = Constantes.NULO_INT;
-		double numerofatorConsumo = Constantes.NULO_DOUBLE;
-
-		/*
-		 * Calendar c = Calendar.getInstance();
-		 * c.setTime(reg8.getDataLeitura());
-		 */
-
-		int anoMes = Util.subtrairMesDoAnoMes(Util
-			.verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 1);
-		// int anoMes =
-		// Util.subtrairMesDoAnoMes(Util.getAnoMes(c.getTime()), 1);
-
-		HistoricoConsumo reg3MesAnterior = getImovelSelecionado().getRegistro3(anoMes,
-			anormConsumo);
-
-		if (reg3MesAnterior == null || reg3MesAnterior.equals("")) {
-		    idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-			    .getIdLeituraAnormalidadeConsumoPrimeiroMes();
-
-		    numerofatorConsumo = consumoAnormalidadeAcao
-			    .getFatorConsumoPrimeiroMes();
-
-		    if (mensagemContaPrimeiroMes != null) {
-
-			String[] mensagem = Util.dividirString(
-				mensagemContaPrimeiroMes, 40);
-
-			switch (mensagem.length) {
-			case 3:
-			    getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			case 2:
-			    getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			case 1:
-			    getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-			    break;
-			}
-
-//			Repositorio.salvarObjeto(getImovelSelecionado());
-		    }
-
-		} else {
-
-		    anoMes = Util.subtrairMesDoAnoMes(Util
-			    .verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 2);
-		    HistoricoConsumo reg3SegundoMesAnterior = getImovelSelecionado().getRegistro3(
-			    anoMes, anormConsumo);
-
-		    if (reg3SegundoMesAnterior == null
-			    || reg3SegundoMesAnterior.equals("")) {
-			idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-				.getIdLeituraAnormalidadeConsumoSegundoMes();
-
-			numerofatorConsumo = consumoAnormalidadeAcao
-				.getFatorConsumoSegundoMes();
-
-			if (mensagemContaSegundoMes != null) {
-
-			    String[] mensagem = Util.dividirString(
-				    mensagemContaSegundoMes, 40);
-
-			    switch (mensagem.length) {
-			    case 3:
-				getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			    case 2:
-				getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			    case 1:
-				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-				break;
-			    }
-
-//			    Repositorio.salvarObjeto(getImovelSelecionado());
-			}
-
-		    } else {
-			idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-				.getIdLeituraAnormalidadeConsumoTerceiroMes();
-
-			numerofatorConsumo = consumoAnormalidadeAcao
-				.getFatorConsumoTerceiroMes();
-
-			if (mensagemContaTerceiroMes != null) {
-
-			    String[] mensagem = Util.dividirString(
-				    mensagemContaTerceiroMes, 40);
-
-			    switch (mensagem.length) {
-			    case 3:
-				getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			    case 2:
-				getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			    case 1:
-				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-				break;
-			    }
-
-//			    Repositorio.salvarObjeto(getImovelSelecionado());
-			}
-
-		    }
-		}
-
-		// 3.1.1.1. O sistema gera a Anormalidade de Consumo com o valor
-		// correspondente a estouro de consumo da tabela
-		// CONSUMO_ANORMALIDADE
-		consumo.setAnormalidadeConsumo(anormConsumo);
-
-		if (idLeituraAnormalidadeConsumo == NAO_OCORRE) {
-
-		    consumo.setConsumoCobradoMes(cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-		} else if (idLeituraAnormalidadeConsumo == MINIMO) {
-
-		    // O Consumo a Ser Cobrado no Mês será o valor retornado
-		    // por [UC0105 – Obter Consumo Mínimo da Ligação
-		    consumo.setConsumoCobradoMes(getImovelSelecionado()
-			    .getConsumoMinimoImovel());
-		    // Seta o tipo de consumo
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
-
-		} else if (idLeituraAnormalidadeConsumo == MEDIA) {
-
-		    // Consumo a ser cobrado no mês será o consumo médio do
-		    // hidrômetro
-		    consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-		} else if (idLeituraAnormalidadeConsumo == NORMAL) {
-
-		    // Fazer nada já calculado
-
-		} else if (idLeituraAnormalidadeConsumo == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
-
-		    if (cMedio > consumo.getConsumoCobradoMes()) {
-			consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    }
-
-		} else if (idLeituraAnormalidadeConsumo == MENOR_ENTRE_O_CONSUMO_MEDIO) {
-		    if (cMedio < consumo.getConsumoCobradoMes()) {
-			consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    }
-
-		}
-
-		// 3.1.4. O consumo a Ser Cobrado no Mês será igual
-		// ao Consumo a Ser Cobrado no Mês multiplicado pelo
-		// fator de multiplicação da quantidade de vezes a média
-		// (CSAA_NNFATORCONSUMOMES(1,2 ou 3), dependendo do mês
-		// calculado anteriormente
-		if (numerofatorConsumo != Constantes.NULO_DOUBLE) {
-		    double consumofaturadoMes = consumo.getConsumoCobradoMes();
-		    consumofaturadoMes = consumofaturadoMes
-			    * numerofatorConsumo;
-		    int consumofaturadoMesInt = Util
-			    .arredondar(consumofaturadoMes);
-		    consumo.setConsumoCobradoMes(consumofaturadoMesInt);
-		}
-
-	    } else {
-	    	consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_ALTO_CONSUMO);
-	    }
-
-	}
-
-    }
-
-    public void verificarBaixoConsumo(Consumo consumo,
-	    Medidor reg8) {
-
-	int cMedio;
-
-	// Verificamos se o consumo médio veio do
-	// registro tipo 8 ou do imóvel
-	if (reg8 != null) {
-	    cMedio = reg8.getConsumoMedio();
-	} else {
-	    cMedio = getImovelSelecionado().getConsumoMedio();
-	}
-
-	// [SB0008] - Verificar Baixo Consumo
-	double percentual = getImovelSelecionado().getPercentBaixoConsumo() / 100;
-	double consumoMedioPercent = cMedio * percentual;
-
-	if (cMedio > getImovelSelecionado().getBaixoConsumo()
-		&& consumo.getConsumoCobradoMes() < consumoMedioPercent) {
-
-	    int anormConsumo = Consumo.CONSUMO_ANORM_BAIXO_CONSUMO;
-
-	    int idImovelPerfil = Util
-		    .verificarNuloInt(getImovelSelecionado().getCodigoPerfil());
-
-	    int categoriaPrincipal = getImovelSelecionado().pesquisarPrincipalCategoria();
-
-	    ConsumoAnormalidadeAcao consumoAnormalidadeAcao = ConsumoAnormalidadeAcao.getInstancia()
-		    .getRegistro12(anormConsumo, categoriaPrincipal,
-			    idImovelPerfil);
-
-	    if (consumoAnormalidadeAcao != null) {
-
-		int idLeituraAnormalidadeConsumo = Constantes.NULO_INT;
-		double numerofatorConsumo = Constantes.NULO_DOUBLE;
-
-		/*
-		 * Calendar c = Calendar.getInstance();
-		 * c.setTime(reg8.getDataLeitura());
-		 */
-
-		int anoMes = Util.subtrairMesDoAnoMes(Util
-			.verificarNuloInt(DadosGerais.getInstancia().getAnoMesFaturamento()), 1);
-		// int anoMes =
-		// Util.subtrairMesDoAnoMes(Util.getAnoMes(c.getTime()), 1);
-		HistoricoConsumo reg3MesAnterior = getImovelSelecionado().getRegistro3(anoMes,
-			anormConsumo);
-
-		String mensagemContaPrimeiroMes = consumoAnormalidadeAcao
-			.getMensagemContaPrimeiroMes();
-		String mensagemContaSegundoMes = consumoAnormalidadeAcao
-			.getMensagemContaSegundoMes();
-		String mensagemContaTerceiroMes = consumoAnormalidadeAcao
-			.getMensagemContaTerceiroMes();
-
-		if (reg3MesAnterior == null || reg3MesAnterior.equals("")) {
-		    idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-			    .getIdLeituraAnormalidadeConsumoPrimeiroMes();
-
-		    numerofatorConsumo = consumoAnormalidadeAcao
-			    .getFatorConsumoPrimeiroMes();
-
-		    if (mensagemContaPrimeiroMes != null) {
-
-			String[] mensagem = Util.dividirString(
-				mensagemContaPrimeiroMes, 40);
-
-			switch (mensagem.length) {
-			case 3:
-			    getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			case 2:
-			    getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			case 1:
-			    getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-			    break;
-			}
-
-			/*
-			 * getImovelSelecionado().setMensagemConta1(mensagemContaPrimeiroMes
-			 * .substring(0, 40));
-			 * getImovelSelecionado().setMensagemConta2(mensagemContaPrimeiroMes
-			 * .substring(40, 80));
-			 * getImovelSelecionado().setMensagemConta3(mensagemContaPrimeiroMes
-			 * .substring(80, mensagemContaPrimeiroMes .length()));
-			 */
-
-//			Repositorio.salvarObjeto(getImovelSelecionado());
-
-		    }
-
-		} else {
-
-		    anoMes = Util.subtrairMesDoAnoMes(Util
-			    .verificarNuloInt(getImovelSelecionado().getAnoMesConta()), 2);
-		    HistoricoConsumo reg3SegundoMesAnterior = getImovelSelecionado().getRegistro3(
-			    anoMes, anormConsumo);
-
-		    if (reg3SegundoMesAnterior == null
-			    || reg3SegundoMesAnterior.equals("")) {
-			idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-				.getIdLeituraAnormalidadeConsumoSegundoMes();
-
-			numerofatorConsumo = consumoAnormalidadeAcao
-				.getFatorConsumoSegundoMes();
-
-			if (mensagemContaSegundoMes != null) {
-
-			    String[] mensagem = Util.dividirString(
-				    mensagemContaSegundoMes, 40);
-
-			    switch (mensagem.length) {
-			    case 3:
-				getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			    case 2:
-				getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			    case 1:
-				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-				break;
-			    }
-//			    Repositorio.salvarObjeto(getImovelSelecionado());
-			}
-
-		    } else {
-			idLeituraAnormalidadeConsumo = consumoAnormalidadeAcao
-				.getIdLeituraAnormalidadeConsumoTerceiroMes();
-
-			numerofatorConsumo = consumoAnormalidadeAcao
-				.getFatorConsumoTerceiroMes();
-
-			if (mensagemContaTerceiroMes != null) {
-
-			    String[] mensagem = Util.dividirString(
-				    mensagemContaTerceiroMes, 40);
-
-			    switch (mensagem.length) {
-			    case 3:
-				getImovelSelecionado().setMensagemEstouroConsumo3(mensagem[2]);
-			    case 2:
-				getImovelSelecionado().setMensagemEstouroConsumo2(mensagem[1]);
-			    case 1:
-				getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
-				break;
-			    }
-//			    Repositorio.salvarObjeto(getImovelSelecionado());
-			}
-		    }
-		}
-
-		// 3.1.1.1. O sistema gera a Anormalidade de Consumo com o valor
-		// correspondente a estouro de consumo da tabela
-		// CONSUMO_ANORMALIDADE
-		consumo.setAnormalidadeConsumo(anormConsumo);
-
-		if (idLeituraAnormalidadeConsumo == NAO_OCORRE) {
-
-		    consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-		} else if (idLeituraAnormalidadeConsumo == MINIMO) {
-
-		    // O Consumo a Ser Cobrado no Mês será o valor retornado
-		    // por [UC0105 – Obter Consumo Mínimo da Ligação
-		    consumo.setConsumoCobradoMes(getImovelSelecionado()
-			    .getConsumoMinimoImovel());
-		    // Seta o tipo de consumo
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MINIMO_FIX);
-
-		} else if (idLeituraAnormalidadeConsumo == MEDIA) {
-
-		    // Consumo a ser cobrado no mês será o consumo médio do
-		    // hidrômetro
-		    consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-
-		} else if (idLeituraAnormalidadeConsumo == NORMAL) {
-
-		    // Fazer nada já calculado
-
-		} else if (idLeituraAnormalidadeConsumo == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
-
-		    if (cMedio > consumo.getConsumoCobradoMes()) {
-			consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    }
-
-		} else if (idLeituraAnormalidadeConsumo == MENOR_ENTRE_O_CONSUMO_MEDIO) {
-		    if (cMedio < consumo.getConsumoCobradoMes()) {
-			consumo.setConsumoCobradoMes(cMedio);
-            consumo.setLeituraAtual(reg8.getLeituraAnterior() + cMedio);
-            reg8.setLeituraAtualFaturamento(reg8.getLeituraAnterior() + cMedio);
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    }
-
-		}
-
-		// 3.1.4. O consumo a Ser Cobrado no Mês será igual
-		// ao Consumo a Ser Cobrado no Mês multiplicado pelo
-		// fator de multiplicação da quantidade de vezes a média
-		// (CSAA_NNFATORCONSUMOMES(1,2 ou 3), dependendo do mês
-		// calculado anteriormente
-		if (numerofatorConsumo != Constantes.NULO_DOUBLE) {
-		    double consumofaturadoMes = consumo.getConsumoCobradoMes();
-		    consumofaturadoMes = consumofaturadoMes
-			    * numerofatorConsumo;
-		    int consumofaturadoMesInt = Util
-			    .arredondar(consumofaturadoMes);
-		    consumo.setConsumoCobradoMes(consumofaturadoMesInt);
-		}
-
-	    } else {
-   
-			consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_BAIXO_CONSUMO);
-
-	    }
-
-	}
-
-    }
 
     /**
      * [UC0101] - Consistir Leituras e Calcular Consumos [SF0012] - Obter
@@ -1000,325 +1898,317 @@ public class ControladorConta {
      * 
      * @author: Breno Santos
      */
-    protected int obterLeituraAnterior(Medidor reg8) {
-	int retorno = 0;
+    protected int obterLeituraAnterior(Medidor medidor) {
+		int retorno = 0;
+	
+		if (medidor != null) {
+	
+		    if (medidor.getLeituraAnteriorInformada() != Constantes.NULO_INT
+			    && medidor.getLeitura() != Constantes.NULO_INT) {
+	
+			if (medidor.getLeituraAnteriorInformada() == medidor.getLeitura()) {
+			    retorno = medidor.getLeituraAnteriorInformada();
+			} else {
+			    retorno = medidor.getLeituraAnteriorFaturamento();
+			}
+	
+		    } else {
+	
+			retorno = medidor.getLeituraAnteriorFaturamento();
+		    }
+	
+		}
+		return retorno;
+    }
 
-	if (reg8 != null) {
-
-	    if (reg8.getLeituraAnteriorInformada() != Constantes.NULO_INT
-		    && reg8.getLeitura() != Constantes.NULO_INT) {
-
-		if (reg8.getLeituraAnteriorInformada() == reg8.getLeitura()) {
-		    retorno = reg8.getLeituraAnteriorInformada();
+	private void dadosFaturamentoEspecialNaoMedido(Consumo consumo, int ligacaoTipo) {
+	
+		Medidor medidor = getImovelSelecionado().getMedidor(ligacaoTipo);
+	
+		int cMedio;
+	
+		// Verificamos se o consumo médio veio do
+		// registro tipo 8 ou do imóvel
+		if (medidor != null) {
+		    cMedio = medidor.getConsumoMedio();
 		} else {
-		    retorno = reg8.getLeituraAnteriorFaturamento();
+		    cMedio = getImovelSelecionado().getConsumoMedio();
 		}
-
-	    } else {
-
-		retorno = reg8.getLeituraAnteriorFaturamento();
-	    }
-
-	}
-	return retorno;
-    }
-
-    private void dadosFaturamentoEspecialNaoMedido(Consumo consumo, int ligacaoTipo) {
-
-	Medidor reg8 = getImovelSelecionado().getMedidor(ligacaoTipo);
-
-	int cMedio;
-
-	// Verificamos se o consumo médio veio do
-	// registro tipo 8 ou do imóvel
-	if (reg8 != null) {
-	    cMedio = reg8.getConsumoMedio();
-	} else {
-	    cMedio = getImovelSelecionado().getConsumoMedio();
-	}
-
-	if (getImovelSelecionado().getSituacaoTipo() != null) {
-	    if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
-		consumo.setConsumoCobradoMes(cMedio);
-		consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_IMOV);
-	    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MINIMO) {
-	    	consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
-		consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-	    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MEDIA) {
-		consumo.setConsumoCobradoMes(cMedio);
-		consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-// Daniel - Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
-	    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == FIXO) {
-			consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-
-			if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
-			    if (getImovelSelecionado().getSituacaoTipo().getConsumoAguaNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-				    consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getConsumoAguaNaoMedidoHistoricoFaturamento());
-			    }
-			} else if (getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-				consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoNaoMedidoHistoricoFaturamento());
-			}
-
-	    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == FIXO) {
-		consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-
-		if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
-
-		    if (getImovelSelecionado().getSituacaoTipo()
-			    .getConsumoAguaNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-
-			/*
-			 * Caso o consumo calculado seja MENOR que o consumo
-			 * fixo, colocar o consumo calculado; caso contrário,
-			 * colocar o consumo fixo.
-			 */
-			if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
-				.getConsumoAguaNaoMedidoHistoricoFaturamento()) {
-
-			    consumo
-				    .setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
-					    .getConsumoAguaNaoMedidoHistoricoFaturamento());
-			}
-		    }
-
-		} else if (getImovelSelecionado().getSituacaoTipo()
-			.getVolumeEsgotoNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-		    /*
-		     * Caso o volume calculado seja MENOR que o volume fixo,
-		     * colocar o volume calculado; caso contrário, colocar o
-		     * volume fixo.
-		     */
-		    if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
-			    .getVolumeEsgotoNaoMedidoHistoricoFaturamento()) {
-
-			consumo
-				.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
-					.getVolumeEsgotoNaoMedidoHistoricoFaturamento());
-		    }
-		}
-
-	    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == NAO_MEDIDO) {
-		// Seta o tipo de consumo
-		consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
-
-		consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
-	    }
-	}
-    }
-
-    private void dadosFaturamentoEspecialMedido(Consumo consumo, int ligacaoTipo) {
-
-	Medidor imReg8 = getImovelSelecionado().getMedidor(ligacaoTipo);
-
-	int cMedio;
-
-	// Verificamos se o consumo médio veio do
-	// registro tipo 8 ou do imóvel
-	if (imReg8 != null) {
-	    cMedio = imReg8.getConsumoMedio();
-	} else {
-	    cMedio = getImovelSelecionado().getConsumoMedio();
-	}
-
-	int leituraAnterior = obterLeituraAnterior(imReg8);
-
-	if (getImovelSelecionado().getSituacaoTipo() != null) {
-	    if (imReg8 != null && imReg8.getLeitura() == Constantes.NULO_INT) {
-
-		if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
-		    consumo.setConsumoCobradoMes(cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_IMOV);
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MINIMO) {
-			consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
-			consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MEDIA) {
-		    consumo.setConsumoCobradoMes(cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		 // Daniel - Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
-	    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == FIXO) {
-			consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-
-			if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
-			    if (getImovelSelecionado().getSituacaoTipo().getConsumoAguaMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-					consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getConsumoAguaMedidoHistoricoFaturamento());
-			    }
-			} else if (getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-			    consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoMedidoHistoricoFaturamento());
-			}
-
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == FIXO) {
-		    consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-
-		    if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
-
-			if (getImovelSelecionado().getSituacaoTipo()
-				.getConsumoAguaMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-
-			    /*
-			     * Caso o consumo calculado seja MENOR que o consumo
-			     * fixo, colocar o consumo calculado; caso
-			     * contrário, colocar o consumo fixo.
-			     */
-			    if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
-				    .getConsumoAguaMedidoHistoricoFaturamento()) {
-
-				consumo
-					.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
-						.getConsumoAguaMedidoHistoricoFaturamento());
-			    }
-			}
-
-		    } else if (getImovelSelecionado().getSituacaoTipo()
-			    .getVolumeEsgotoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-			/*
-			 * Caso o volume calculado seja MENOR que o volume fixo,
-			 * colocar o volume calculado; caso contrário, colocar o
-			 * volume fixo.
-			 */
-			if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
-				.getVolumeEsgotoMedidoHistoricoFaturamento()) {
-
-			    consumo
-				    .setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
-					    .getVolumeEsgotoMedidoHistoricoFaturamento());
-			}
-		    }
-
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == NAO_MEDIDO) {
-		    // Seta o tipo de consumo
-		    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
-
-		    consumo.setConsumoCobradoMes(getImovelSelecionado()
-			    .getConsumoMinimoImovel());
-		}
-
-		// Caso leitura atual informada diferente de zero
-	    } else if (imReg8 != null
-		    && imReg8.getLeitura() != Constantes.NULO_INT) {
-		// Caso a leitura anormalidade leitura com leitura seja igual a
-		// leitura anormalidade consumo não ocorre
-		if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == NAO_OCORRE) {
-		    // O consumo a ser cobrado no mes será o consumo médio do
-		    // hidrômetro
-		    consumo.setConsumoCobradoMes(cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		}
-		// Caso a leitura anormalidade leitura com leitura seja igual a
-		// leitura anormalidade consumo mínimo
-		else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MINIMO) {
-
-		    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
-		    consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MEDIA) {
-		    // O consumo a ser cobrado no mes será o consumo médio do
-		    // hidrômetro
-		    consumo.setConsumoCobradoMes(cMedio);
-		    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    // Caso a leitura anormalidade leitura com leitura seja
-		    // igual a
-		    // leitura anormalidade consumo medido
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
-		    // Caso o consumo médio hidrômetro seja maior que o consumo
-		    // medido
-		    if (cMedio > consumo.getConsumoCobradoMes()) {
-			// Consumo a ser cobrado no mês será o já calculado
+	
+		if (getImovelSelecionado().getSituacaoTipo() != null) {
+		    if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
 			consumo.setConsumoCobradoMes(cMedio);
-			// Seta o tipo de consumo
-			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    } else {
-			consumo.setConsumoCobradoMes(consumo
-				.getConsumoCobradoMes());
-		    }
-
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MENOR_ENTRE_O_CONSUMO_MEDIO) {
-		    // Caso o consumo médio hidrômetro seja maior que o consumo
-		    // medido
-		    if (cMedio < consumo.getConsumoCobradoMes()) {
-			// Consumo a ser cobrado no mês será o já calculado
+			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_IMOV);
+		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MINIMO) {
+		    	consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+			consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MEDIA) {
 			consumo.setConsumoCobradoMes(cMedio);
-			// Seta o tipo de consumo
 			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-		    } else {
-			consumo.setConsumoCobradoMes(consumo
-				.getConsumoCobradoMes());
+	// Daniel - Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
+		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == FIXO) {
+				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+	
+				if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
+				    if (getImovelSelecionado().getSituacaoTipo().getConsumoAguaNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+					    consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getConsumoAguaNaoMedidoHistoricoFaturamento());
+				    }
+				} else if (getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+					consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoNaoMedidoHistoricoFaturamento());
+				}
+	
+		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == FIXO) {
+				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+		
+				if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
+		
+				    if (getImovelSelecionado().getSituacaoTipo()
+					    .getConsumoAguaNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+		
+					/*
+					 * Caso o consumo calculado seja MENOR que o consumo
+					 * fixo, colocar o consumo calculado; caso contrário,
+					 * colocar o consumo fixo.
+					 */
+					if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
+						.getConsumoAguaNaoMedidoHistoricoFaturamento()) {
+		
+					    consumo
+						    .setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
+							    .getConsumoAguaNaoMedidoHistoricoFaturamento());
+					}
+				    }
+		
+				} else if (getImovelSelecionado().getSituacaoTipo()
+					.getVolumeEsgotoNaoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+				    /*
+				     * Caso o volume calculado seja MENOR que o volume fixo,
+				     * colocar o volume calculado; caso contrário, colocar o
+				     * volume fixo.
+				     */
+				    if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
+					    .getVolumeEsgotoNaoMedidoHistoricoFaturamento()) {
+		
+					consumo
+						.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
+							.getVolumeEsgotoNaoMedidoHistoricoFaturamento());
+				    }
+				}
+	
+		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == NAO_MEDIDO) {
+				// Seta o tipo de consumo
+				consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+		
+				consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
 		    }
-
 		}
-
-		/*
-		 * Colocado por Raphael Rossiter em 12/08/2008 - Analista:
-		 * Rosana Carvalho OBJ: Verificar a situação especial de
-		 * faturamento quando o consumo de água e/ou volume de esgoto
-		 * está fixo.
-		 */
-		else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == FIXO) {
-
-		    // Seta o tipo de consumo
-		    consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
-
-		    // Consumo a ser cobrado no mês será o consumo fixado no
-		    // histórico da situação especial
-		    if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
-
-			if (getImovelSelecionado().getSituacaoTipo()
-				.getConsumoAguaMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-
-			    consumo
-				    .setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
-					    .getConsumoAguaMedidoHistoricoFaturamento());
-
-			}
-
-		    } else if (getImovelSelecionado().getSituacaoTipo()
-			    .getVolumeEsgotoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
-
-			consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
-				.getVolumeEsgotoMedidoHistoricoFaturamento());
-
-		    }
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == NAO_MEDIDO) {
-
-		    // Seta o tipo de consumo
-		    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
-
-		    consumo.setConsumoCobradoMes(getImovelSelecionado()
-			    .getConsumoMinimoImovel());
-
-		}
-
-		// Caso a leitura anormalidade leitura com leitura
-		// seja igual a leitura anormaliade leitura ->
-		// <<anterior mais média>>
-		if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == ANTERIOR_MAIS_A_MEDIA) {
-		    // Seta a leitura atual de faturamento
-		    consumo.setLeituraAtual(leituraAnterior + cMedio);
-            imReg8.setLeituraAtualFaturamento(leituraAnterior + cMedio);
-		    // <<anterior>>
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == ANTERIOR) {
-		    // Seta a leitura atual de faturamento
-		    consumo.setLeituraAtual(leituraAnterior);
-            imReg8.setLeituraAtualFaturamento(leituraAnterior);
-		    // <<anterior mais consumo>>
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == ANTERIOR_MAIS_O_CONSUMO) {
-		    // Seta a leitura atual de faturamento
-		    consumo.setLeituraAtual(leituraAnterior + consumo.getConsumoCobradoMes());
-            imReg8.setLeituraAtualFaturamento(leituraAnterior + consumo.getConsumoCobradoMes());
-		    // <<leitura informada>>
-		} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == INFORMADO) {
-		    consumo.setLeituraAtual(consumo.getLeituraAtual());
-            imReg8.setLeituraAtualFaturamento(consumo.getLeituraAtual());
-		}
-	    }
 	}
-    }
+
+	private void dadosFaturamentoEspecialMedido(Consumo consumo, int ligacaoTipo) {
+	
+		Medidor medidor = getImovelSelecionado().getMedidor(ligacaoTipo);
+	
+		int cMedio;
+	
+		// Verificamos se o consumo médio veio do
+		// registro tipo 8 ou do imóvel
+		if (medidor != null) {
+		    cMedio = medidor.getConsumoMedio();
+		} else {
+		    cMedio = getImovelSelecionado().getConsumoMedio();
+		}
+	
+		int leituraAnterior = obterLeituraAnterior(medidor);
+	
+		if (getImovelSelecionado().getSituacaoTipo() != null) {
+		    if (medidor != null && medidor.getLeitura() == Constantes.NULO_INT) {
+	
+			if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
+			    consumo.setConsumoCobradoMes(cMedio);
+			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_IMOV);
+			} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MINIMO) {
+				consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+			} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MEDIA) {
+			    consumo.setConsumoCobradoMes(cMedio);
+			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+			 // Daniel - Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
+		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == FIXO) {
+				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+	
+				if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
+				    if (getImovelSelecionado().getSituacaoTipo().getConsumoAguaMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+						consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getConsumoAguaMedidoHistoricoFaturamento());
+				    }
+				} else if (getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+				    consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoMedidoHistoricoFaturamento());
+				}
+	
+			} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == FIXO) {
+			    consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+	
+			    if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
+	
+				if (getImovelSelecionado().getSituacaoTipo()
+					.getConsumoAguaMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+	
+				    /*
+				     * Caso o consumo calculado seja MENOR que o consumo
+				     * fixo, colocar o consumo calculado; caso
+				     * contrário, colocar o consumo fixo.
+				     */
+				    if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
+					    .getConsumoAguaMedidoHistoricoFaturamento()) {
+	
+					consumo
+						.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
+							.getConsumoAguaMedidoHistoricoFaturamento());
+				    }
+				}
+	
+			    } else if (getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+					
+			    	/*
+					 * Caso o volume calculado seja MENOR que o volume fixo,
+					 * colocar o volume calculado; caso contrário, colocar o
+					 * volume fixo.
+					 */
+					if (consumo.getConsumoCobradoMes() > getImovelSelecionado().getSituacaoTipo()
+						.getVolumeEsgotoMedidoHistoricoFaturamento()) {
+		
+					    consumo
+						    .setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
+							    .getVolumeEsgotoMedidoHistoricoFaturamento());
+					}
+			    }
+	
+			} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraSemLeitura() == NAO_MEDIDO) {
+			    // Seta o tipo de consumo
+			    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+	
+			    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+			}
+	
+			// Caso leitura atual informada diferente de zero
+		    } else if (medidor != null && medidor.getLeitura() != Constantes.NULO_INT) {
+				// Caso a leitura anormalidade leitura com leitura seja igual a
+				// leitura anormalidade consumo não ocorre
+				if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == NAO_OCORRE) {
+				    // O consumo a ser cobrado no mes será o consumo médio do
+				    // hidrômetro
+				    consumo.setConsumoCobradoMes(cMedio);
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				}
+				// Caso a leitura anormalidade leitura com leitura seja igual a
+				// leitura anormalidade consumo mínimo
+				else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MINIMO) {
+		
+				    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+				    consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+		
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MEDIA) {
+				    // O consumo a ser cobrado no mes será o consumo médio do
+				    // hidrômetro
+				    consumo.setConsumoCobradoMes(cMedio);
+				    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    // Caso a leitura anormalidade leitura com leitura seja
+				    // igual a
+				    // leitura anormalidade consumo medido
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MAIOR_ENTRE_O_CONSUMO_MEDIO) {
+				    // Caso o consumo médio hidrômetro seja maior que o consumo
+				    // medido
+				    if (cMedio > consumo.getConsumoCobradoMes()) {
+						// Consumo a ser cobrado no mês será o já calculado
+						consumo.setConsumoCobradoMes(cMedio);
+						// Seta o tipo de consumo
+						consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    } else {
+				    	consumo.setConsumoCobradoMes(consumo.getConsumoCobradoMes());
+				    }
+		
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == MENOR_ENTRE_O_CONSUMO_MEDIO) {
+				    // Caso o consumo médio hidrômetro seja maior que o consumo
+				    // medido
+				    if (cMedio < consumo.getConsumoCobradoMes()) {
+						// Consumo a ser cobrado no mês será o já calculado
+						consumo.setConsumoCobradoMes(cMedio);
+						// Seta o tipo de consumo
+						consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
+				    } else {
+				    	consumo.setConsumoCobradoMes(consumo.getConsumoCobradoMes());
+				    }
+		
+				}
+		
+				/*
+				 * Colocado por Raphael Rossiter em 12/08/2008 - Analista:
+				 * Rosana Carvalho OBJ: Verificar a situação especial de
+				 * faturamento quando o consumo de água e/ou volume de esgoto
+				 * está fixo.
+				 */
+				else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == FIXO) {
+		
+				    // Seta o tipo de consumo
+				    consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+		
+				    // Consumo a ser cobrado no mês será o consumo fixado no
+				    // histórico da situação especial
+				    if (ligacaoTipo == Constantes.LIGACAO_AGUA) {
+		
+						if (getImovelSelecionado().getSituacaoTipo()
+							.getConsumoAguaMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+			
+						    consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
+								    .getConsumoAguaMedidoHistoricoFaturamento());
+			
+						}
+		
+				    } else if (getImovelSelecionado().getSituacaoTipo().getVolumeEsgotoMedidoHistoricoFaturamento() != Constantes.NULO_INT) {
+		
+				    	consumo.setConsumoCobradoMes(getImovelSelecionado().getSituacaoTipo()
+						.getVolumeEsgotoMedidoHistoricoFaturamento());
+		
+				    }
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoComLeitura() == NAO_MEDIDO) {
+		
+				    // Seta o tipo de consumo
+				    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
+		
+				    consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
+		
+				}
+		
+				// Caso a leitura anormalidade leitura com leitura
+				// seja igual a leitura anormaliade leitura ->
+				// <<anterior mais média>>
+				if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == ANTERIOR_MAIS_A_MEDIA) {
+				    // Seta a leitura atual de faturamento
+				    consumo.setLeituraAtual(leituraAnterior + cMedio);
+		            medidor.setLeituraAtualFaturamento(leituraAnterior + cMedio);
+				    // <<anterior>>
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == ANTERIOR) {
+				    // Seta a leitura atual de faturamento
+				    consumo.setLeituraAtual(leituraAnterior);
+		            medidor.setLeituraAtualFaturamento(leituraAnterior);
+				    // <<anterior mais consumo>>
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == ANTERIOR_MAIS_O_CONSUMO) {
+				    // Seta a leitura atual de faturamento
+				    consumo.setLeituraAtual(leituraAnterior + consumo.getConsumoCobradoMes());
+		            medidor.setLeituraAtualFaturamento(leituraAnterior + consumo.getConsumoCobradoMes());
+				    // <<leitura informada>>
+				} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeLeituraComLeitura() == INFORMADO) {
+				    consumo.setLeituraAtual(consumo.getLeituraAtual());
+		            medidor.setLeituraAtualFaturamento(consumo.getLeituraAtual());
+				}
+		    }
+		}
+	}
 
 
     /**
      * Consistir Leituras
      */
-    protected void ajusteLeitura( Medidor reg8,
-	    int tipoMedicao, Consumo consumo, DadosGerais reg11) {
+    protected void ajusteLeitura( Medidor medidor,int tipoMedicao, Consumo consumo, DadosGerais reg11) {
     	
     }
     
@@ -1326,20 +2216,18 @@ public class ControladorConta {
      * [UC0101] - Consistir Leituras e Calcular Consumos [SF0017] - Ajuste
      * Mensal de Consumo
      */
-    protected void ajusteMensalConsumo( Medidor reg8,
+    protected void ajusteMensalConsumo( Medidor medidor,
 	    int tipoMedicao, Consumo consumo) {
 
 	Date dataLeituraAnteriorFaturamento = null;
 	Date dataLeituraLeituraAtualFaturamento = null;
-	int leituraAjustada = reg8.getLeitura();
+	int leituraAjustada = medidor.getLeitura();
 	
-	dataLeituraAnteriorFaturamento = reg8.getDataLeituraAnteriorFaturada();
-	dataLeituraLeituraAtualFaturamento = reg8.getDataLeitura();
+	dataLeituraAnteriorFaturamento = medidor.getDataLeituraAnteriorFaturada();
+	dataLeituraLeituraAtualFaturamento = medidor.getDataLeitura();
 
-	System.out.println("Leitura Anterior Faturamento: "
-		+ dataLeituraAnteriorFaturamento);
-	System.out.println("Leitura Atual Faturamento: "
-		+ dataLeituraLeituraAtualFaturamento);
+	System.out.println("Leitura Anterior Faturamento: "+ dataLeituraAnteriorFaturamento);
+	System.out.println("Leitura Atual Faturamento: "+ dataLeituraLeituraAtualFaturamento);
 	
 	int quantidadeDiasConsumoAjustado = 0;
 
@@ -1350,7 +2238,7 @@ public class ControladorConta {
 	if (isImovelFixoComHidrometroInstalado(tipoMedicao)){
 
 		quantidadeDiasConsumo = (int) Util.obterModuloDiferencasDatasDias(
-				getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), reg8.getDataLeitura());
+				getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), medidor.getDataLeitura());
 
 	}else{
 		quantidadeDiasConsumo = (int) Util.obterModuloDiferencasDatasDias(
@@ -1368,29 +2256,29 @@ public class ControladorConta {
 	if (quantidadeDiasConsumo > 0) {
 
 		Date dataLeituraNaoMedidoAtual;
-		int diasConsumoLido  = (int) Util.obterModuloDiferencasDatasDias(reg8.getDataLeitura(), reg8.getDataInstalacao());
+		int diasConsumoLido  = (int) Util.obterModuloDiferencasDatasDias(medidor.getDataLeitura(), medidor.getDataInstalacao());
 		
 //	    Daniel - Imovel com nova instalacao de fornecimento hidrometrado.
 		if (isImovelNovaInstalacaoHidrometro(tipoMedicao)){
 
 			// Obtém a quantidade de dias de consumo ajustado
-			if(DadosGerais.getInstancia().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
+			if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
 				// Seta a data com a data de referencia da rota/grupo atual
-			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)DadosGerais.getInstancia().getQtdDiasAjusteConsumo());
+			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
 
 			}else{
 			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)30);
 			}
 
 			// Numero de dias ajustado é diferença entre a data de referencia nao-medido do mes atual e a data da instalaçao do hidrometro  		    
-			quantidadeDiasConsumoAjustado = (int) Util.obterModuloDiferencasDatasDias(reg8.getDataInstalacao(), dataLeituraNaoMedidoAtual);
+			quantidadeDiasConsumoAjustado = (int) Util.obterModuloDiferencasDatasDias(medidor.getDataInstalacao(), dataLeituraNaoMedidoAtual);
 		
 		
 //	    Daniel - Imovel antes fixo e agora hidrometrado.
 		}else if (isImovelFixoComHidrometroInstalado(tipoMedicao)){
 
-			if(DadosGerais.getInstancia().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
-			    quantidadeDiasConsumoAjustado = (int) DadosGerais.getInstancia().getQtdDiasAjusteConsumo();			
+			if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
+			    quantidadeDiasConsumoAjustado = (int) ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo();			
 
 			}else{
 			    quantidadeDiasConsumoAjustado = 30;			
@@ -1398,17 +2286,17 @@ public class ControladorConta {
 			}
     	
 	    }// Verifica se a data do ajuste é não nula
-		else if (DadosGerais.getInstancia().getDataAjusteLeitura() != null) {
+		else if (ControladorRota.getInstancia().getDadosGerais().getDataAjusteLeitura() != null) {
 		// Obtém a quantidade de dias de consumo ajustado
 			quantidadeDiasConsumoAjustado = (int) Util
 				.obterModuloDiferencasDatasDias(
-					dataLeituraAnteriorFaturamento, DadosGerais.getInstancia().getDataAjusteLeitura());
+					dataLeituraAnteriorFaturamento, ControladorRota.getInstancia().getDadosGerais().getDataAjusteLeitura());
 
 	    } else {
 
 			// Obtém a quantidade de dias de consumo ajustado
-			if(DadosGerais.getInstancia().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
-			    quantidadeDiasConsumoAjustado = DadosGerais.getInstancia().getQtdDiasAjusteConsumo();
+			if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
+			    quantidadeDiasConsumoAjustado = ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo();
 
 			}else{
 				// Cria objeto
@@ -1425,7 +2313,7 @@ public class ControladorConta {
 		
 	    }
 
-	    reg8.setQtdDiasAjustado(quantidadeDiasConsumoAjustado);
+	    medidor.setQtdDiasAjustado(quantidadeDiasConsumoAjustado);
 
 	    // Obtém os dias de ajuste
 	    int diasAjuste = quantidadeDiasConsumoAjustado
@@ -1439,57 +2327,57 @@ public class ControladorConta {
 
 	    	double consumoDiario = 0;
 	    	//Daniel - Hidrometro substituido.
-			if (reg8.getLeitura() != Constantes.NULO_INT && 
+			if (medidor.getLeitura() != Constantes.NULO_INT && 
 				isImovelHidrometroSubstituido( tipoMedicao) &&
 				consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
 
 				if (diasConsumoLido != 0){
-					consumoDiario = Util.arredondar(((double) (reg8.getLeitura() - reg8.getLeituraInstalacaoHidrometro() )/ (double) diasConsumoLido), 3);
+					consumoDiario = Util.arredondar(((double) (medidor.getLeitura() - medidor.getLeituraInstalacaoHidrometro() )/ (double) diasConsumoLido), 3);
 				}
 				
 				Date dataLeituraReferenciaAtual;
 				
-				if(DadosGerais.getInstancia().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
+				if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
 					// Seta a data com a data de referencia da rota/grupo atual
-				    dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(reg8.getDataLeituraAnteriorFaturada(), (long)DadosGerais.getInstancia().getQtdDiasAjusteConsumo());
+				    dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(medidor.getDataLeituraAnteriorFaturada(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
 				}else{
-				    dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(reg8.getDataLeituraAnteriorFaturada(), (long)30);
+				    dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(medidor.getDataLeituraAnteriorFaturada(), (long)30);
 				}
 				
-				int diasConsumoLidoAjustado = (int) Util.obterModuloDiferencasDatasDias( dataLeituraReferenciaAtual, reg8.getDataInstalacao() );
+				int diasConsumoLidoAjustado = (int) Util.obterModuloDiferencasDatasDias( dataLeituraReferenciaAtual, medidor.getDataInstalacao() );
 					
-				leituraAjustada = reg8.getLeituraInstalacaoHidrometro() + (int) Util.arredondar((consumoDiario * diasConsumoLidoAjustado), 0);
+				leituraAjustada = medidor.getLeituraInstalacaoHidrometro() + (int) Util.arredondar((consumoDiario * diasConsumoLidoAjustado), 0);
 			
 //		    Daniel - Imovel antes fixo e agora hidrometrado.
-			}else if(reg8.getLeitura() != Constantes.NULO_INT &&
+			}else if(medidor.getLeitura() != Constantes.NULO_INT &&
 					isImovelFixoComHidrometroInstalado(tipoMedicao) &&
 					consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
 			    	
 				if (diasConsumoLido != 0){
-					consumoDiario = Util.arredondar(((double) (reg8.getLeitura() - this.obterLeituraAnterior(reg8) )/ (double) diasConsumoLido), 3);
+					consumoDiario = Util.arredondar(((double) (medidor.getLeitura() - this.obterLeituraAnterior(medidor) )/ (double) diasConsumoLido), 3);
 				}
 
 				// Seta a data com a data de referencia da rota/grupo atual
-			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)DadosGerais.getInstancia().getQtdDiasAjusteConsumo());
+			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
 	
-				int diasConsumoLidoAjustado = (int) Util.obterModuloDiferencasDatasDias( dataLeituraNaoMedidoAtual, reg8.getDataInstalacao() );
+				int diasConsumoLidoAjustado = (int) Util.obterModuloDiferencasDatasDias( dataLeituraNaoMedidoAtual, medidor.getDataInstalacao() );
 					
-				leituraAjustada = this.obterLeituraAnterior(reg8) + (int) Util.arredondar((consumoDiario * diasConsumoLidoAjustado), 0);
+				leituraAjustada = this.obterLeituraAnterior(medidor) + (int) Util.arredondar((consumoDiario * diasConsumoLidoAjustado), 0);
 			
-			}else if (reg8.getLeitura() != Constantes.NULO_INT &&	consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
+			}else if (medidor.getLeitura() != Constantes.NULO_INT &&	consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
 
-		    	leituraAjustada = reg8.getLeitura()
+		    	leituraAjustada = medidor.getLeitura()
 					+ Util.divideDepoisMultiplica(consumo
 							.getConsumoCobradoMes(), quantidadeDiasConsumo,	diasAjuste);
 		    
 		    }else if ((consumo.getTipoConsumo() == CONSUMO_TIPO_MEDIA_HIDR) ||
-		    		(reg8.getLeitura() == Constantes.NULO_INT && consumo.getAnormalidadeLeituraFaturada() > 0)){
+		    		(medidor.getLeitura() == Constantes.NULO_INT && consumo.getAnormalidadeLeituraFaturada() > 0)){
 		    	
 		    	leituraAjustada = consumo.getLeituraAtual();
 		    
 		    }else{
 		    
-		    	leituraAjustada = reg8.getLeitura();
+		    	leituraAjustada = medidor.getLeitura();
 		    }
 		    
 	
@@ -1499,10 +2387,10 @@ public class ControladorConta {
 			// Obtém o consumo a ser cobrado mês
 			
 			if ((leituraAjustada != Constantes.NULO_INT && 
-				 reg8.getLeitura() != Constantes.NULO_INT && 
+				 medidor.getLeitura() != Constantes.NULO_INT && 
 				 consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR) &&
-				(isImovelHidrometroSubstituido(reg8.getTipoMedicao()) || 
-				 isImovelFixoComHidrometroInstalado(reg8.getTipoMedicao()))){
+				(isImovelHidrometroSubstituido(medidor.getTipoMedicao()) || 
+				 isImovelFixoComHidrometroInstalado(medidor.getTipoMedicao()))){
 				
 				if (diasConsumoLido > 9) {
 				    consumo.setConsumoCobradoMes((int) Util.arredondar((consumoDiario * quantidadeDiasConsumoAjustado), 0));
@@ -1513,7 +2401,7 @@ public class ControladorConta {
 				}
 
 			}else if (leituraAjustada != Constantes.NULO_INT && 
-					  reg8.getLeitura() != Constantes.NULO_INT && 
+					  medidor.getLeitura() != Constantes.NULO_INT && 
 					  consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
 				
 				int consumoASerCobradoMes = Util.divideDepoisMultiplica(consumo
@@ -1524,10 +2412,10 @@ public class ControladorConta {
 				consumo.setConsumoCobradoMes(consumoASerCobradoMes);
 			}
 			// Adiciona ou subtrai de acordo com os dias de ajuste
-			Date dataLeituraAtualFaturamento = Util.adicionarNumeroDiasDeUmaData(reg8.getDataLeitura(),	diasAjuste);
+			Date dataLeituraAtualFaturamento = Util.adicionarNumeroDiasDeUmaData(medidor.getDataLeitura(),	diasAjuste);
 				
 			// Seta a data da leitura atual de faturamento
-			reg8.setDataLeituraAtualFaturamento(dataLeituraAtualFaturamento);
+			medidor.setDataLeituraAtualFaturamento(dataLeituraAtualFaturamento);
 			
 			if (consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR &&
 				consumo.getTipoConsumo() != CONSUMO_TIPO_MINIMO_FIX &&
@@ -1538,12 +2426,12 @@ public class ControladorConta {
 				
 			}
 	    }else{
-			reg8.setDataLeituraAtualFaturamento(reg8.getDataLeitura());
+			medidor.setDataLeituraAtualFaturamento(medidor.getDataLeitura());
 
 	    	// Se nao foi necessario reajuste de leitura, mantem a leitura informada.
-	    	if(reg8.getLeitura() != Constantes.NULO_INT){
-		    	reg8.setLeituraAtualFaturamento(reg8.getLeitura());
-			    consumo.setLeituraAtual(reg8.getLeituraAtualFaturamento());
+	    	if(medidor.getLeitura() != Constantes.NULO_INT){
+		    	medidor.setLeituraAtualFaturamento(medidor.getLeitura());
+			    consumo.setLeituraAtual(medidor.getLeituraAtualFaturamento());
 	    	}
 	    }
 	}
@@ -1558,7 +2446,7 @@ public class ControladorConta {
 
 		if ( consumo.getLeituraAtual() > (dezElevadoNumeroDigitos - 1) ) {
 
-			reg8.setLeituraAtualFaturamento(consumo.getLeituraAtual() - (dezElevadoNumeroDigitos-1));
+			medidor.setLeituraAtualFaturamento(consumo.getLeituraAtual() - (dezElevadoNumeroDigitos-1));
 			leituraAjustada = leituraAjustada - (dezElevadoNumeroDigitos-1);
 				
 			// Daniel - caso devido ao valor da leitura ajustada ocasione em virada de hidrometro e nao houver nenhuma outra anormalidade já configurada.
@@ -1569,18 +2457,18 @@ public class ControladorConta {
 			}
 				
 		}else{
-			reg8.setLeituraAtualFaturamento(consumo.getLeituraAtual());
+			medidor.setLeituraAtualFaturamento(consumo.getLeituraAtual());
 			
 		}
 		    
 	}else if (leituraAjustada < 0) {
 			
-		reg8.setLeituraAtualFaturamento(leituraAjustada + dezElevadoNumeroDigitos);
+		medidor.setLeituraAtualFaturamento(leituraAjustada + dezElevadoNumeroDigitos);
 
 		// Caso a leitura ajustada maior que dez elevado ao número de dígitos menos um
 	} else if (leituraAjustada > (dezElevadoNumeroDigitos - 1) ) {
 
-		reg8.setLeituraAtualFaturamento(leituraAjustada - (dezElevadoNumeroDigitos-1));
+		medidor.setLeituraAtualFaturamento(leituraAjustada - (dezElevadoNumeroDigitos-1));
 		leituraAjustada = leituraAjustada - (dezElevadoNumeroDigitos-1);
 			
 		// Daniel - caso devido ao valor da leitura ajustada ocasione em virada de hidrometro e nao houver nenhuma outra anormalidade já configurada.
@@ -1592,13 +2480,13 @@ public class ControladorConta {
 			
 	    // Caso demais casos
 	} else {
-	    reg8.setLeituraAtualFaturamento(leituraAjustada);
+	    medidor.setLeituraAtualFaturamento(leituraAjustada);
 	}
 		
-    consumo.setLeituraAtual(reg8.getLeituraAtualFaturamento());
+    consumo.setLeituraAtual(medidor.getLeituraAtualFaturamento());
 
 	System.out.println("Data Leitura Atual Faturada!!!!!!!!: "
-			+ reg8.getDataLeituraAtualFaturamento());
+			+ medidor.getDataLeituraAtualFaturamento());
 	System.out.println("leituraAjustada!!!!!!!!: " + leituraAjustada);
 	
     }
@@ -1706,19 +2594,19 @@ public class ControladorConta {
     	}
     	
     	if(!resultado){
-	    	List<HistoricoConsumo> regsTipo3 = getImovelSelecionado().getHistoricosConsumo();
-		    if (regsTipo3 != null) {
+	    	List<HistoricoConsumo> listaHistoricosConsumo = getImovelSelecionado().getHistoricosConsumo();
+		    if (listaHistoricosConsumo != null) {
 		    	
 		    	// Obtem o registro do mes anterior.
-		    	HistoricoConsumo reg3 = (HistoricoConsumo)regsTipo3.get(0);
+		    	HistoricoConsumo historricoConsumoMesAnterior = (HistoricoConsumo)listaHistoricosConsumo.get(0);
 		    	
-		    	if (reg3.getAnormalidadeLeitura() != Constantes.NULO_INT &&
-		    			reg3.getAnormalidadeLeitura() != 0){
+		    	if (historricoConsumoMesAnterior.getAnormalidadeLeitura() != Constantes.NULO_INT &&
+		    			historricoConsumoMesAnterior.getAnormalidadeLeitura() != 0){
 		    		resultado = true;
 		    	}
 		    }
-		    if(regsTipo3 != null){
-			    regsTipo3 = null;	    	
+		    if(listaHistoricosConsumo != null){
+			    listaHistoricosConsumo = null;	    	
 		    }
     	}
     	return resultado;
@@ -1727,14 +2615,16 @@ public class ControladorConta {
     public void chamaAjusteConsumo(int tipoMedicao){
 
     	// Caso esteja indicado o ajuste mensal do consumo
-    	if (DadosGerais.getInstancia().getIndicadorAjusteConsumo() != Constantes.NULO_INT
-    		&& DadosGerais.getInstancia().getIndicadorAjusteConsumo() == Constantes.SIM) {
+    	if (ControladorRota.getInstancia().getDadosGerais().getIndicadorAjusteConsumo() != Constantes.NULO_INT
+    		&& ControladorRota.getInstancia().getDadosGerais().getIndicadorAjusteConsumo() == Constantes.SIM) {
     	    // [SF0017] - Ajuste Mensal do Consumo
-    	    if (tipoMedicao == LIGACAO_AGUA) {
-    		ajusteMensalConsumo(getImovelSelecionado().getMedidor(tipoMedicao), tipoMedicao, consumoAgua);
+    	    
+    		if (tipoMedicao == LIGACAO_AGUA) {
+    	    	ajusteMensalConsumo(getImovelSelecionado().getMedidor(tipoMedicao), tipoMedicao, consumoAgua);
     	    }
-    	    if (tipoMedicao == LIGACAO_POCO) {
-    		ajusteMensalConsumo(getImovelSelecionado().getMedidor(tipoMedicao), tipoMedicao, consumoEsgoto);
+    	    
+    		if (tipoMedicao == LIGACAO_POCO) {
+    	    	ajusteMensalConsumo(getImovelSelecionado().getMedidor(tipoMedicao), tipoMedicao, consumoEsgoto);
     	    }
     	}
     	

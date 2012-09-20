@@ -12,6 +12,8 @@ import model.Consumo;
 import model.Conta;
 import model.Credito;
 import model.DadosCategoria;
+import model.DadosFaturamento;
+import model.DadosFaturamentoFaixa;
 import model.DadosGerais;
 import model.Debito;
 import model.HistoricoConsumo;
@@ -91,9 +93,8 @@ public class DataManipulator {
 				x = x + 1;
 			} while (cursor.moveToNext());
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -121,9 +122,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -148,9 +147,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -222,9 +219,8 @@ public class DataManipulator {
 			list.add(naoRetidos);
 
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+	
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -285,9 +281,8 @@ public class DataManipulator {
 
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
+		
 	}
 	
 	public Imovel selectImovel(String condition){
@@ -464,9 +459,7 @@ public class DataManipulator {
           	imovel.setIndcGeracao(Integer.parseInt(cursor.getString(81)));
 		}
 		
-		 if (cursor != null && !cursor.isClosed()) {
-	           cursor.close();
-	     }
+		fecharCursor(cursor);
 		 
 		 selectDependenciasImovel(imovel);
 		 
@@ -499,7 +492,8 @@ public class DataManipulator {
 																				 "quantidade_econominas_subcategoria", 
 																				 "descricao_abreviada_categoria",
 																				 "descricao_abreviada_subcategoria", 
-																				 "fator_economia_categoria"}, 
+																				 "fator_economia_categoria",
+																				 "id"}, 
 																				 "matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
@@ -516,16 +510,77 @@ public class DataManipulator {
 				dc.setDescricaoAbreviadaCategoria(cursor.getString(5));
 				dc.setDescricaoAbreviadaSubcategoria(cursor.getString(6));
 				dc.setFatorEconomiaCategoria(cursor.getString(7));
+				dc.setId(cursor.getInt(8));
+				
+				dc.setFaturamentoAgua(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_AGUA));
+				dc.setFaturamentoEsgoto(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_ESGOTO));
+				dc.setFaturamentoAguaProporcional(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_AGUA_PROPORCIONAL));
+				dc.setFaturamentoEsgotoProporcional(selectDadosFaturamento(dc.getId(), Constantes.TIPO_FATURAMENTO_ESGOTO_PROPORCIONAL));
 				
 				imovel.getDadosCategoria().add(dc);
 				
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-	           cursor.close();
-	    }
+		fecharCursor(cursor);
+		
 		return imovel;
+	}
+	
+	public DadosFaturamento selectDadosFaturamento(int idDadosCategoria, int tipoFaturamento) {
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_FATURAMENTO, new String[] {"valor_faturado",
+																					"consumo_faturado", "valor_tarifa_minima",
+																					"consumo_minimo", "id"}, "id_dados_categoria = ? AND tipo_faturamento = ?", 
+																					new String[] {String.valueOf(idDadosCategoria), 
+																					String.valueOf(tipoFaturamento)}, 
+																					null, null, null);
+		DadosFaturamento dadosFaturamento = null;
+		
+		if (cursor.moveToFirst()) {
+			dadosFaturamento = new DadosFaturamento();
+			
+			dadosFaturamento.setIdDadosCategoria(idDadosCategoria);
+			dadosFaturamento.setValorFaturado(cursor.getDouble(0));
+			dadosFaturamento.setConsumoFaturado(cursor.getInt(1));
+			dadosFaturamento.setValorTarifaMinima(cursor.getDouble(2));
+			dadosFaturamento.setConsumoMinimo(cursor.getInt(3));
+			dadosFaturamento.setId(cursor.getInt(4));
+			
+			dadosFaturamento.setFaixas(selectDadosFaturamentoFaixa(dadosFaturamento.getId(), tipoFaturamento));
+		}
+		
+		fecharCursor(cursor);
+		
+		return dadosFaturamento;
+	}
+	
+	public List selectDadosFaturamentoFaixa(int idDadosFaturamento, int idTipoFaturamento) {
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, new String[] {"consumo_faturado", "valor_faturado",
+																						"limite_inicial_consumo", "limite_final_consumo",
+																						"valor_tarifa"
+																						}, "id_dados_faturamento = ? AND tipo_faturamento_faixa = ?", 
+																						new String[] {String.valueOf(idDadosFaturamento),
+																						String.valueOf(idTipoFaturamento)}, 
+																						null, null, "id asc");
+		List dffs = new ArrayList();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				DadosFaturamentoFaixa dff = new DadosFaturamentoFaixa();
+				
+				dff.setConsumoFaturado(cursor.getInt(0));
+				dff.setValorFaturado(cursor.getDouble(1));
+				dff.setLimiteInicialConsumo(cursor.getInt(2));
+				dff.setLimiteFinalConsumo(cursor.getInt(3));
+				dff.setValorTarifa(cursor.getDouble(4));
+				
+				dffs.add(dff);
+			} while(cursor.moveToNext());
+		}
+		
+		fecharCursor(cursor);
+		
+		return dffs;
 	}
 	
 	public Imovel selectHistoricosConsumo(Imovel imovel){
@@ -552,9 +607,8 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
+		
 		return imovel;
 	}
 	
@@ -579,9 +633,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return imovel;
 	}
@@ -608,9 +660,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -637,9 +687,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -668,9 +716,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -728,9 +774,7 @@ public class DataManipulator {
 
 		imovel.getMedidores().add(medidor);
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return imovel;
 	}
@@ -761,9 +805,8 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
+		
 		return imovel;
 	}
 
@@ -801,9 +844,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return imovel;
 	}
@@ -819,9 +860,7 @@ public class DataManipulator {
 			elementValue = cursor.getString(0);
 		}
 
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return elementValue;
 	}
@@ -847,9 +886,7 @@ public class DataManipulator {
 			list.add(cursor.getString(1));
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -885,9 +922,8 @@ public class DataManipulator {
 
 			} while (cursor.moveToNext());
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
 
 		return anormalidade;
 	}
@@ -910,9 +946,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -946,9 +980,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return consumo;
 	}
@@ -981,9 +1013,7 @@ public class DataManipulator {
 			retorno = db.insert(Constantes.TABLE_RATEIO_CONDOMINIO, null, values);
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 	}
@@ -1010,9 +1040,8 @@ public class DataManipulator {
 				
 			} while (cursor.moveToNext());
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
 
 		return helper;
 	}
@@ -1032,9 +1061,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return quantidadeImoveisCondominio;
 	}
@@ -1057,9 +1084,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 	}
 
@@ -1075,9 +1100,7 @@ public class DataManipulator {
 			} while (cursor.moveToNext());
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 
 		return list;
 	}
@@ -1092,9 +1115,9 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			codigo = cursor.getString(0);
 		}
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		
+		fecharCursor(cursor);
+		
 		return codigo;
 	}
 
@@ -1108,9 +1131,9 @@ public class DataManipulator {
 			if (cursor.moveToFirst()) {
 				descricao = cursor.getString(0);
 			}
-			if (cursor != null && !cursor.isClosed()) {
-				cursor.close();
-			}
+			
+			fecharCursor(cursor);
+			
 			return descricao;
 
 		} else {
@@ -1479,9 +1502,7 @@ public class DataManipulator {
 			retorno = db.update(Constantes.TABLE_MEDIDOR, values, "matricula = ?", new String[] {String.valueOf(matricula)});
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 	}
@@ -1621,9 +1642,7 @@ public class DataManipulator {
 			retorno = db.insert(Constantes.TABLE_CONSUMO_AGUA, null, values);
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 		
@@ -1654,9 +1673,7 @@ public class DataManipulator {
 			retorno = db.insert(Constantes.TABLE_CONSUMO_ESGOTO, null, values);
 		}
 		
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.close();
-		}
+		fecharCursor(cursor);
 		
 		return retorno;
 		
@@ -1730,5 +1747,34 @@ public class DataManipulator {
 		initialValues.put("indc_geracao", String.valueOf(imovel.getIndcGeracao()));
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
+	}
+	
+	public long insertDadosFaturamento(DadosFaturamento df) {
+		ContentValues initialValues = new ContentValues();
+		
+		 initialValues.put("valor_faturado", df.getValorFaturado());
+		 initialValues.put("consumo_faturado", df.getConsumoFaturado());
+		 initialValues.put("valor_tarifa_minima", df.getValorTarifaMinima());
+		 initialValues.put("consumo_minimo", df.getConsumoMinimo());
+		 
+		 return db.insert(Constantes.TABLE_DADOS_FATURAMENTO, null, initialValues);
+	}
+	
+	public long insertDadosFaturamentoFaixa(DadosFaturamentoFaixa dff) {
+		ContentValues initialValues = new ContentValues();
+		
+		initialValues.put("consumo_faturado", dff.getConsumoFaturado());
+		initialValues.put("valor_faturado", dff.getValorFaturado());
+		initialValues.put("limite_inicial_consumo", dff.getLimiteInicialConsumo());
+		initialValues.put("limite_final_consumo", dff.getLimiteFinalConsumo());
+		initialValues.put("valor_tarifa", dff.getValorTarifa());
+		
+		return db.insert(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, null, initialValues);
+	}
+	
+	public void fecharCursor(Cursor cursor) {
+		if (cursor != null && !cursor.isClosed()) {
+	           cursor.close();
+	    }
 	}
 }

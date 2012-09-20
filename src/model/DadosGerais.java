@@ -52,24 +52,24 @@ public class DadosGerais {
 
 	private int id;
 	
-    private static DadosGerais instancia;
+//    private static DadosGerais instancia;
 
     public DadosGerais() {}
     
-    public void adicionaDadosGerais(DadosGerais dadosGerais) {
-    	DadosGerais.instancia = dadosGerais;
+//    public void adicionaDadosGerais(DadosGerais dadosGerais) {
+//    	DadosGerais.instancia = dadosGerais;
+//
+//    }
 
-    }
-
-    public DadosGerais getDadosGerais() {
-    	return DadosGerais.instancia;
-
-    }
-
-    public static DadosGerais getInstancia() {
-
-    	return DadosGerais.instancia;
-    }
+//    public DadosGerais getDadosGerais() {
+//    	return DadosGerais.instancia;
+//
+//    }
+//
+//    public static DadosGerais getInstancia() {
+//
+//    	return DadosGerais.instancia;
+//    }
 
 
 	public short getIndcBloquearReemissaoConta() {
@@ -77,8 +77,7 @@ public class DadosGerais {
 	}
 
 	public void setIndcBloquearReemissaoConta(String indcBloquearReemissaoConta) {
-		this.indcBloquearReemissaoConta = Util
-				.verificarNuloShort(indcBloquearReemissaoConta);
+		this.indcBloquearReemissaoConta = Util.verificarNuloShort(indcBloquearReemissaoConta);
 	}
 
 	public String getTipoRegistro() {
@@ -142,8 +141,7 @@ public class DadosGerais {
 	}
 
 	public void setValorMinimEmissaoConta(String valorMinimEmissaoConta) {
-		this.valorMinimEmissaoConta = Util
-				.verificarNuloDouble(valorMinimEmissaoConta);
+		this.valorMinimEmissaoConta = Util.verificarNuloDouble(valorMinimEmissaoConta);
 	}
 
 	public double getPercentToleranciaRateio() {
@@ -151,28 +149,23 @@ public class DadosGerais {
 	}
 
 	public void setPercentToleranciaRateio(String percentToleranciaRateio) {
-		this.percentToleranciaRateio = Util
-				.verificarNuloDouble(percentToleranciaRateio);
+		this.percentToleranciaRateio = Util.verificarNuloDouble(percentToleranciaRateio);
 	}
 
 	public int getDecrementoMaximoConsumoEconomia() {
 		return decrementoMaximoConsumoEconomia;
 	}
 
-	public void setDecrementoMaximoConsumoEconomia(
-			String decrementoMaximoConsumoEconomia) {
-		this.decrementoMaximoConsumoEconomia = Util
-				.verificarNuloInt(decrementoMaximoConsumoEconomia);
+	public void setDecrementoMaximoConsumoEconomia(String decrementoMaximoConsumoEconomia) {
+		this.decrementoMaximoConsumoEconomia = Util.verificarNuloInt(decrementoMaximoConsumoEconomia);
 	}
 
 	public int getIncrementoMaximoConsumoEconomia() {
 		return incrementoMaximoConsumoEconomia;
 	}
 
-	public void setIncrementoMaximoConsumoEconomia(
-			String incrementoMaximoConsumoEconomia) {
-		this.incrementoMaximoConsumoEconomia = Util
-				.verificarNuloInt(incrementoMaximoConsumoEconomia);
+	public void setIncrementoMaximoConsumoEconomia(String incrementoMaximoConsumoEconomia) {
+		this.incrementoMaximoConsumoEconomia = Util.verificarNuloInt(incrementoMaximoConsumoEconomia);
 	}
 
 	public short getIndcTarifaCatgoria() {
@@ -215,8 +208,7 @@ public class DadosGerais {
 	}
 
 	public void setDataAjusteLeitura(String dataAjusteLeitura) {
-		this.dataAjusteLeitura = Util.getData(Util
-				.verificarNuloString(dataAjusteLeitura));
+		this.dataAjusteLeitura = Util.getData(Util.verificarNuloString(dataAjusteLeitura));
 	}
 
 	public int getIndicadorAjusteConsumo() {
@@ -224,18 +216,15 @@ public class DadosGerais {
 	}
 
 	public void setIndicadorAjusteConsumo(String indicadorAjusteConsumo) {
-		this.indicadorAjusteConsumo = Util
-				.verificarNuloInt(indicadorAjusteConsumo);
+		this.indicadorAjusteConsumo = Util.verificarNuloInt(indicadorAjusteConsumo);
 	}
 
 	public int getIndicadorTransmissaoOffline() {
 		return indicadorTransmissaoOffline;
 	}
 
-	public void setIndicadorTransmissaoOffline(
-			String indicadorTransmissaoOffline) {
-		this.indicadorTransmissaoOffline = Util
-				.verificarNuloInt(indicadorTransmissaoOffline);
+	public void setIndicadorTransmissaoOffline(String indicadorTransmissaoOffline) {
+		this.indicadorTransmissaoOffline = Util.verificarNuloInt(indicadorTransmissaoOffline);
 	}
 
 	public String getVersaoCelular() {
@@ -246,10 +235,8 @@ public class DadosGerais {
 		this.versaoCelular = Util.verificarNuloString(versaoCelular);
 	}
 
-	public void setIndcAtualizarSequencialRota(
-			String indcAtualizarSequencialRota) {
-		this.indcAtualizarSequencialRota = Util
-				.verificarNuloShort(indcAtualizarSequencialRota);
+	public void setIndcAtualizarSequencialRota(String indcAtualizarSequencialRota) {
+		this.indcAtualizarSequencialRota = Util.verificarNuloShort(indcAtualizarSequencialRota);
 	}
 
 	public short getIndcAtualizarSequencialRota() {
@@ -271,8 +258,7 @@ public class DadosGerais {
 
 	// Daniel - set indicador Rota Dividida
 	public void setIndicadorRotaDividida(String indicadorRotaDividida) {
-		this.indicadorRotaDividida = Util
-				.verificarNuloInt(indicadorRotaDividida);
+		this.indicadorRotaDividida = Util.verificarNuloInt(indicadorRotaDividida);
 	}
 
 	// Daniel - get Id de Rota
@@ -292,18 +278,15 @@ public class DadosGerais {
 
 	// Daniel - set Indicador de calculo de consumo pela média do Hidrometro.
 	public void setIdCalculoMedia(String indicadorCalculoPelaMedia) {
-		this.indicadorCalculoPelaMedia = Util
-				.verificarNuloInt(indicadorCalculoPelaMedia);
+		this.indicadorCalculoPelaMedia = Util.verificarNuloInt(indicadorCalculoPelaMedia);
 	}
 
 	public int getModuloVerificadorCodigoBarras() {
 		return moduloVerificadorCodigoBarras;
 	}
 
-	public void setModuloVerificadorCodigoBarras(
-			String moduloVerificadorCodigoBarras) {
-		this.moduloVerificadorCodigoBarras = Util
-				.verificarNuloInt(moduloVerificadorCodigoBarras);
+	public void setModuloVerificadorCodigoBarras(String moduloVerificadorCodigoBarras) {
+		this.moduloVerificadorCodigoBarras = Util.verificarNuloInt(moduloVerificadorCodigoBarras);
 	}
 
 	public Date getDataInicio() {

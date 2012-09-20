@@ -95,10 +95,10 @@ public class DbHelper extends SQLiteOpenHelper {
     	"indc_geracao_conta_terceiro_mes, mensagem_conta_primeiro_mes TEXT, mensagem_conta_segundo_mes TEXT, mensagem_conta_terceiro_mes TEXT)";
         
     private static final String DATABASE_DADOS_FATURAMENTO_QUERY =
-            "CREATE TABLE dados_faturamento (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+            "CREATE TABLE dados_faturamento (id INTEGER PRIMARY KEY autoincrement, id_dados_categoria INTEGER, tipo_faturamento INTEGER, valor_faturado TEXT, consumo_faturado TEXT, valor_tarifa_minima TEXT, consumo_minimo TEXT)";
         
     private static final String DATABASE_DADOS_FATURAMENTO_FAIXA_QUERY =
-        "CREATE TABLE dados_faturamento_faixa (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";
+        "CREATE TABLE dados_faturamento_faixa (id INTEGER PRIMARY KEY autoincrement, id_dados_faturamento INTEGER, tipo_faturamento_faixa INTEGER, consumo_faturado TEXT, valor_faturado TEXT, limite_inicial_consumo TEXT, limite_final_consumo TEXT, valor_tarifa TEXT)";
     
     private static final String DATABASE_DADOS_RELATORIO_QUERY =
         "CREATE TABLE dados_relatorio (id INTEGER PRIMARY KEY autoincrement, id_imovel INTEGER)";

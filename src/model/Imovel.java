@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import business.ControladorConta;
 import business.ControladorImovel;
+import business.ControladorRota;
 import android.util.Log;
 
 import ui.FileManager;
@@ -193,7 +194,7 @@ public class Imovel {
     private Consumo consumoEsgoto;
     private Consumo consumoAgua;
     private SituacaoTipo situacaoTipo;
-    private EfetuarRateioConsumoHelper efetuarRateioConsumoDispositivoMovelHelper;
+    private EfetuarRateioConsumoHelper efetuarRateioConsumoHelper;
     private int indcImovelCalculado = Constantes.NAO;
     private int anormalidadeSemHidrometro = Constantes.NULO_INT;
     private int indcImoveldo = Constantes.NAO;
@@ -275,12 +276,11 @@ public class Imovel {
     	}
     }
 
-    public void setEfetuarRateioConsumoDispositivoMovelHelper(
-	    EfetuarRateioConsumoHelper efetuarRateioConsumoDispositivoMovelHelper) {
-	this.efetuarRateioConsumoDispositivoMovelHelper = efetuarRateioConsumoDispositivoMovelHelper;
+    public void setEfetuarRateioConsumoHelper(EfetuarRateioConsumoHelper efetuarRateioConsumoHelper) {
+    	this.efetuarRateioConsumoHelper = efetuarRateioConsumoHelper;
     }
 
-    public EfetuarRateioConsumoHelper getEfetuarRateioConsumoDispositivoMovelHelper() {
+    public EfetuarRateioConsumoHelper getEfetuarRateioConsumoHelper() {
 
 	if (this.indcCondominio == Constantes.SIM || this.idImovelCondominio != Constantes.NULO_INT) {
 
@@ -302,7 +302,7 @@ public class Imovel {
 //	    }
 	}
 
-	return efetuarRateioConsumoDispositivoMovelHelper;
+	return efetuarRateioConsumoHelper;
     }
 
     public int getIndcImovelEnviado() {
@@ -524,8 +524,7 @@ public class Imovel {
 				    + stringQuadra + ")", true, false);
 
 			} else {
-			    Util.inserirValoresStringRelatorio("("
-				    + stringQuadra + ")", false, true);
+			    Util.inserirValoresStringRelatorio("("+ stringQuadra + ")", false, true);
 			}
 
 		    } else {
@@ -1594,7 +1593,7 @@ public class Imovel {
 		return retorno;
     }
 
-    public HistoricoConsumo getRegistro3(int anoMes, int idAnormalidadeConsumo) {
+    public HistoricoConsumo getHistoricoConsumo(int anoMes, int idAnormalidadeConsumo) {
 		int tamanho = 0;
 		
 		if (this.historicoConsumo != null && !this.historicoConsumo.isEmpty()) {
@@ -2427,7 +2426,7 @@ public class Imovel {
 //	    Repositorio.carregarObjeto(hidrometroMacro, this.idImovelCondominio);
 
 	    EfetuarRateioConsumoHelper helper = hidrometroMacro
-		    .getEfetuarRateioConsumoDispositivoMovelHelper();
+		    .getEfetuarRateioConsumoHelper();
 
 	    // Apenas adicionamos a quantidade de economias,
 	    // se ela não houver sido adicionada anteriormente
@@ -2560,14 +2559,14 @@ public class Imovel {
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO ){
 
-				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(Constantes.SIM);
+				this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
 			}
 	
 			//Daniel - Veifica se houve anormalidade de leitura para reter conta.
 			if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
 				consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
 				
-				this.getEfetuarRateioConsumoDispositivoMovelHelper().setReterImpressaoConta(Constantes.SIM);
+				this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
 			}
 	    }
 //	    Repositorio.salvarObjeto(this);
@@ -2601,9 +2600,9 @@ public class Imovel {
 	if (this.getIdImovelCondominio() != Constantes.NULO_INT) {
 	    macro = new Imovel();
 //	    Repositorio.carregarObjeto(macro, this.getIdImovelCondominio());
-	    helper = macro.getEfetuarRateioConsumoDispositivoMovelHelper();
+	    helper = macro.getEfetuarRateioConsumoHelper();
 	} else if (this.indcCondominio == Constantes.SIM) {
-	    helper = this.getEfetuarRateioConsumoDispositivoMovelHelper();
+	    helper = this.getEfetuarRateioConsumoHelper();
 	}
 
 	boolean removido = false;
@@ -2631,10 +2630,10 @@ public class Imovel {
 
 	if (removido || adicionado) {
 	    if (macro != null) {
-		macro.setEfetuarRateioConsumoDispositivoMovelHelper(helper);
+		macro.setEfetuarRateioConsumoHelper(helper);
 //		Repositorio.salvarObjeto(macro);
 	    } else {
-		this.setEfetuarRateioConsumoDispositivoMovelHelper(helper);
+		this.setEfetuarRateioConsumoHelper(helper);
 //		Repositorio.salvarObjeto(this);
 	    }
 	}
@@ -2652,7 +2651,7 @@ public class Imovel {
     public boolean podeAlterarLeituraAnormalidade() {
 		boolean habilitar = true;
 	
-		if (DadosGerais.getInstancia().getIndcBloquearReemissaoConta() == Constantes.SIM) {
+		if (ControladorRota.getInstancia().getDadosGerais().getIndcBloquearReemissaoConta() == Constantes.SIM) {
 		    
 			if (this.isImovelCondominio()) {
 	
@@ -2761,7 +2760,7 @@ public class Imovel {
 		boolean enviarContaValorMenorPermitido = true;
 	
 		double valorConta = this.getValorConta();
-		double valorMinimoEmissaoConta = DadosGerais.getInstancia().getValorMinimEmissaoConta();
+		double valorMinimoEmissaoConta = ControladorRota.getInstancia().getDadosGerais().getValorMinimEmissaoConta();
 
 		if (valorConta < valorMinimoEmissaoConta) {
 		
@@ -2786,18 +2785,18 @@ public class Imovel {
 		    
 			for (int i = 0; i < this.creditos.size(); i++) {
 	
-			Credito registroDescricaoValor = ((Credito) (this.creditos.get(i)));
-	
-			String descricaoCredito = registroDescricaoValor.getDescricao();
-	
-			if (descricaoCredito != null && !descricaoCredito.equals("")) {
-	
-			    if (descricaoCredito.substring(0, 16).equals(Credito.DESCRICAO_CERDITO_NITRATO)) {
-	
-			    	registroDescricaoValor.setValor("" + valorCreditoNitrato);
-			    }
-			}
-	
+				Credito registroDescricaoValor = ((Credito) (this.creditos.get(i)));
+		
+				String descricaoCredito = registroDescricaoValor.getDescricao();
+		
+				if (descricaoCredito != null && !descricaoCredito.equals("")) {
+		
+				    if (descricaoCredito.substring(0, 16).equals(Credito.DESCRICAO_CERDITO_NITRATO)) {
+		
+				    	registroDescricaoValor.setValor("" + valorCreditoNitrato);
+				    }
+				}
+		
 		    }
 		}
     }

@@ -363,7 +363,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    }
 	    	
 	    	
-	    	 imprimirConta();
+//	    	 imprimirConta();
 	        
 	    	return true;
 	    	
@@ -413,11 +413,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     			
     		progress.show();
     		
-    		Log.i("Usuario", ControladorImovel.getInstancia().getImovelSelecionado().getNomeUsuario());
-    		Log.i("Endereco", ControladorImovel.getInstancia().getImovelSelecionado().getEndereco());
-    		Log.i("Inscricao", ControladorImovel.getInstancia().getImovelSelecionado().getInscricao());
-    		Log.i("Rota", ""+ControladorImovel.getInstancia().getImovelSelecionado().getCodigoRota());
-    		Log.i("Sequencial rota", ""+ControladorImovel.getInstancia().getImovelSelecionado().getSequencialRota());
     	}
 	}
 	

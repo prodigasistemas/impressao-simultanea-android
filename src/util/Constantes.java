@@ -111,6 +111,14 @@ public class Constantes {
     public static final int IMOVEL_RETIDO = 3;
     public static final int IMOVEL_TRANSMITIDO = 4;
     public static final int IMOVEL_NAO_TRANSMITIDO = 5;
+    
+    /**
+     * Tipo faturamento
+     */
+    public static final int TIPO_FATURAMENTO_AGUA = 1;
+    public static final int TIPO_FATURAMENTO_ESGOTO = 2;
+    public static final int TIPO_FATURAMENTO_AGUA_PROPORCIONAL = 3;
+    public static final int TIPO_FATURAMENTO_ESGOTO_PROPORCIONAL = 3;
 
     /**
      * COD. FEBRABAN da COSANPA
