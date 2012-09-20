@@ -80,6 +80,7 @@ import java.util.Vector;
 
 public class DadosFaturamento {
 
+	private int idDadosCategoria;
 	private double valorFaturado;
     private int consumoFaturado;    
     private double valorTarifaMinima;
@@ -98,6 +99,15 @@ public class DadosFaturamento {
 		this.faixas = faixas;
 	}
 	
+	
+	public int getIdDadosCategoria() {
+		return idDadosCategoria;
+	}
+
+	public void setIdDadosCategoria(int idDadosCategoria) {
+		this.idDadosCategoria = idDadosCategoria;
+	}
+
 	public double getValorFaturado() {
 		return valorFaturado;
 	}

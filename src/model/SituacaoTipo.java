@@ -7,7 +7,7 @@ public class SituacaoTipo {
     private static SituacaoTipo instancia;
     private int id;
     private int matricula;
-	private int tipoSituacaoEspecialFeturamento;
+	private int tipoSituacaoEspecialFaturamento;
 	private int idAnormalidadeConsumoSemLeitura;
 	private int idAnormalidadeConsumoComLeitura;
 	private int idAnormalidadeLeituraSemLeitura;
@@ -33,14 +33,14 @@ public class SituacaoTipo {
 		this.matricula = matricula;
 	}
 
-	public int getTipoSituacaoEspecialFeturamento() {
-		return tipoSituacaoEspecialFeturamento;
+	public int getTipoSituacaoEspecialFaturamento() {
+		return tipoSituacaoEspecialFaturamento;
 	}
 
-	public void setTipoSituacaoEspecialFeturamento(
-			String tipoSituacaoEspecialFeturamento) {
-		this.tipoSituacaoEspecialFeturamento = Util
-				.verificarNuloInt(tipoSituacaoEspecialFeturamento);
+	public void setTipoSituacaoEspecialFaturamento(
+			String tipoSituacaoEspecialFaturamento) {
+		this.tipoSituacaoEspecialFaturamento = Util
+				.verificarNuloInt(tipoSituacaoEspecialFaturamento);
 		// Daniel
 		// System.out.println("TipoSituacaoEspecialFaturamento: " +
 		// this.tipoSituacaoEspecialFeturamento);

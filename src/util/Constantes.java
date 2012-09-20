@@ -22,6 +22,8 @@ public class Constantes {
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
     
+    public static final int LIMITE_SUPERIOR_FAIXA_FINAL = 999999;
+    
     /**
      * Medição Tipo
      */
@@ -91,7 +93,8 @@ public class Constantes {
     public static final String TABLE_GERAL = "geral";
     public static final String TABLE_CONSUMO_ANORMALIDADE_ACAO = "consumo_anormalidade_acao";
     public static final String TABLE_ANORMALIDADE = "anormalidade";
-    public static final String TABLE_FATURAMENTO_IMOVEL = "faturamento_imovel";
+    public static final String TABLE_DADOS_FATURAMENTO = "dados_faturamento";
+    public static final String TABLE_DADOS_FATURAMENTO_FAIXA = "dados_faturamento_faixa";
     public static final String TABLE_CONFIGURACAO = "configuracao";
     public static final String TABLE_ANORMALIDADE_IMOVEL = "anormalidade_imovel";
     public static final String TABLE_SITUACAO_TIPO = "situacao_tipo";

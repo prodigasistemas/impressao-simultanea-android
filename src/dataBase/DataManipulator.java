@@ -23,6 +23,7 @@ import model.TarifacaoComplementar;
 import model.TarifacaoMinima;
 import util.Constantes;
 import util.ParserUtil;
+import util.Util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -37,7 +38,7 @@ public class DataManipulator {
 	private static Context context;
 	private DbHelper openHelper;
 	static SQLiteDatabase db;
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
 	public DataManipulator(Context context) {
 		DataManipulator.context = context;
@@ -64,14 +65,6 @@ public class DataManipulator {
 	public List<DadosCategoria> getDadosCategoria() {
 		return ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria();
 	}
-
-//	public Medidor getMedidorSelecionado() {
-//		return ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().get(0);
-//	}
-
-//	public Conta getContaSelecionado() {
-//		return ControladorImovel.getInstancia().getImovelSelecionado().getContas().get(0);
-//	}
 
 	public void deleteTable(String tableName) {
 		db.delete(tableName, null, null);
@@ -497,11 +490,17 @@ public class DataManipulator {
 		
 		return imovel;
 	}
-
+	
 	public Imovel selectDadosCategoria(Imovel imovel) {
-		Cursor cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"quantidade_econominas_subcategoria", 
-																				"descricao_categoria"}, 
-																				"matricula = " + imovel.getMatricula(), null, null, null, null);
+		Cursor cursor = db.query(Constantes.TABLE_DADOS_CATEGORIA, new String[] {"codigo_categoria",
+																				 "descricao_categoria",
+																				 "codigo_subcategoria", 
+																				 "descricao_subcategoria",
+																				 "quantidade_econominas_subcategoria", 
+																				 "descricao_abreviada_categoria",
+																				 "descricao_abreviada_subcategoria", 
+																				 "fator_economia_categoria"}, 
+																				 "matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
 			
@@ -509,8 +508,14 @@ public class DataManipulator {
 			do {
 				
 				DadosCategoria dc = new DadosCategoria();
-				dc.setQtdEconomiasSubcategoria(cursor.getString(0));
+				dc.setCodigoCategoria(cursor.getString(0));
 				dc.setDescricaoCategoria(cursor.getString(1));
+				dc.setCodigoSubcategoria(cursor.getString(2));
+				dc.setDescricaoSubcategoria(cursor.getString(3));
+				dc.setQtdEconomiasSubcategoria(cursor.getString(4));
+				dc.setDescricaoAbreviadaCategoria(cursor.getString(5));
+				dc.setDescricaoAbreviadaSubcategoria(cursor.getString(6));
+				dc.setFatorEconomiaCategoria(cursor.getString(7));
 				
 				imovel.getDadosCategoria().add(dc);
 				
@@ -927,15 +932,16 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			do {
 				consumo = new Consumo();
-				consumo.setConsumoMedidoMes(Integer.getInteger(cursor.getString(3)));
-				consumo.setConsumoCobradoMes(Integer.getInteger(cursor.getString(4)));
-				consumo.setConsumoCobradoMesImoveisMicro(Integer.getInteger(cursor.getString(5)));
-				consumo.setConsumoCobradoMesOriginal(Integer.getInteger(cursor.getString(6)));
-				consumo.setLeituraAtual(Integer.getInteger(cursor.getString(7)));
-				consumo.setTipoConsumo(Integer.getInteger(cursor.getString(8)));
-				consumo.setDiasConsumo(Integer.getInteger(cursor.getString(9)));
-				consumo.setAnormalidadeConsumo(Integer.getInteger(cursor.getString(10)));
-				consumo.setAnormalidadeLeituraFaturada(Integer.getInteger(cursor.getString(11)));
+				consumo.setMatricula(cursor.getInt(1));
+				consumo.setConsumoMedidoMes(cursor.getInt(2));
+				consumo.setConsumoCobradoMes(cursor.getInt(3));
+				consumo.setConsumoCobradoMesImoveisMicro(cursor.getInt(4));
+				consumo.setConsumoCobradoMesOriginal(cursor.getInt(5));
+				consumo.setLeituraAtual(cursor.getInt(6));
+				consumo.setTipoConsumo(cursor.getInt(7));
+				consumo.setDiasConsumo(cursor.getInt(8));
+				consumo.setAnormalidadeConsumo(cursor.getInt(9));
+				consumo.setAnormalidadeLeituraFaturada(cursor.getInt(10));
 
 			} while (cursor.moveToNext());
 		}
@@ -947,7 +953,7 @@ public class DataManipulator {
 		return consumo;
 	}
 	
-	public long saveRateioCondominio(EfetuarRateioConsumoHelper rateio) {
+	public long salvarRateioCondominio(EfetuarRateioConsumoHelper rateio) {
 		
 		Cursor cursor = db.query(Constantes.TABLE_RATEIO_CONDOMINIO, null , 
 				"matricula_macro = ? ", new String []{String.valueOf(rateio.getMatriculaMacro())}, null, null, null);
@@ -1278,7 +1284,7 @@ public class DataManipulator {
 		initialValues.put("cpf_cnpj_cliente", parser.obterDadoParser(18));
 		
 		situacaoTipo.setMatricula(matricula);
-		situacaoTipo.setTipoSituacaoEspecialFeturamento(parser.obterDadoParser(2));
+		situacaoTipo.setTipoSituacaoEspecialFaturamento(parser.obterDadoParser(2));
 		situacaoTipo.setIdAnormalidadeConsumoSemLeitura(parser.obterDadoParser(2));
 		situacaoTipo.setIdAnormalidadeConsumoComLeitura(parser.obterDadoParser(2));
 		situacaoTipo.setIdAnormalidadeLeituraSemLeitura(parser.obterDadoParser(2));
@@ -1330,7 +1336,7 @@ public class DataManipulator {
 		ContentValues initialValues = new ContentValues();
 		
 		initialValues.put("matricula", situacaoTipo.getMatricula());
-		initialValues.put("tipo_situacao_especial_feturamento", situacaoTipo.getTipoSituacaoEspecialFeturamento());
+		initialValues.put("tipo_situacao_especial_feturamento", situacaoTipo.getTipoSituacaoEspecialFaturamento());
 		initialValues.put("id_anormalidade_consumo_sem_leitura", situacaoTipo.getIdAnormalidadeConsumoSemLeitura());
 		initialValues.put("id_anormalidade_consumo_com_leitura", situacaoTipo.getIdAnormalidadeConsumoComLeitura());
 		initialValues.put("id_anormalidade_leitura_sem_leitura", situacaoTipo.getIdAnormalidadeLeituraSemLeitura());
@@ -1442,7 +1448,7 @@ public class DataManipulator {
 		return db.insert(Constantes.TABLE_MEDIDOR, null, initialValues);
 	}
 	
-	public long updateMedidor(int matricula, Medidor novo) {
+	public long updateMedidor(int matricula, Medidor medidor) {
 
 		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, null,
 				 "matricula = " + matricula, null, null, null, null);
@@ -1452,23 +1458,23 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			values = new ContentValues();
 			
-			values.put("matricula", novo.getMatricula());
-			values.put("tipo_medicao", novo.getTipoMedicao());
-			values.put("numero_hidrometro", novo.getNumeroHidrometro());
-			values.put("data_instalacao_hidrometro", ""+novo.getDataInstalacaoHidrometro());
-			values.put("num_digitos_leitura_hidrometro", novo.getNumDigitosLeituraHidrometro());
-			values.put("leitura_anterior_faturamento", novo.getLeituraAnteriorFaturamento());
-			values.put("data_leitura_anterior_faturamento", ""+novo.getDataLeituraAnteriorFaturada());
-			values.put("codigo_situacao_leitura_anterior", novo.getCodigoSituacaoLeituraAnterior());
-			values.put("leitura_esperada_inicial", novo.getLeituraEsperadaInicial());
-			values.put("leitura_esperada_final", novo.getLeituraEsperadaFinal());
-			values.put("consumo_medio", novo.getConsumoMedio());
-			values.put("local_instalacao", novo.getLocalInstalacao());
-			values.put("leitura_anterior_informada", ""+novo.getLeituraAnteriorInformada());
-			values.put("data_leitura_anterior_informada", ""+novo.getDataLeituraAnteriorInformada());
-			values.put("data_ligacao_fornecimento", ""+novo.getDataLigacaoFornecimento());
-			values.put("tipo_rateio", novo.getTipoRateio());
-			values.put("leitura_instalacao_hidrometro", novo.getLeituraInstalacaoHidrometro());
+			values.put("matricula", medidor.getMatricula());
+			values.put("tipo_medicao", medidor.getTipoMedicao());
+			values.put("numero_hidrometro", medidor.getNumeroHidrometro());
+			values.put("data_instalacao_hidrometro", Util.dateToAnoMesDiaString(medidor.getDataInstalacaoHidrometro()));
+			values.put("num_digitos_leitura_hidrometro", medidor.getNumDigitosLeituraHidrometro());
+			values.put("leitura_anterior_faturamento", medidor.getLeituraAnteriorFaturamento());
+			values.put("data_leitura_anterior_faturamento", Util.dateToAnoMesDiaString(medidor.getDataLeituraAnteriorFaturada()));
+			values.put("codigo_situacao_leitura_anterior", medidor.getCodigoSituacaoLeituraAnterior());
+			values.put("leitura_esperada_inicial", medidor.getLeituraEsperadaInicial());
+			values.put("leitura_esperada_final", medidor.getLeituraEsperadaFinal());
+			values.put("consumo_medio", medidor.getConsumoMedio());
+			values.put("local_instalacao", medidor.getLocalInstalacao());
+			values.put("leitura_anterior_informada", ""+medidor.getLeituraAnteriorInformada());
+			values.put("data_leitura_anterior_informada", Util.dateToAnoMesDiaString(medidor.getDataLeituraAnteriorInformada()));
+			values.put("data_ligacao_fornecimento", Util.dateToAnoMesDiaString(medidor.getDataLigacaoFornecimento()));
+			values.put("tipo_rateio", medidor.getTipoRateio());
+			values.put("leitura_instalacao_hidrometro", medidor.getLeituraInstalacaoHidrometro());
 			
 			retorno = db.update(Constantes.TABLE_MEDIDOR, values, "matricula = ?", new String[] {String.valueOf(matricula)});
 		}
@@ -1589,14 +1595,16 @@ public class DataManipulator {
 		return db.insert(Constantes.TABLE_CONSUMO_ANORMALIDADE_ACAO, null, initialValues);
 	}
 	
-	public long saveConsumoAgua(Consumo consumo) {
+	public long salvarConsumoAgua(Consumo consumo, int matricula) {
 		
 		Cursor cursor = db.query(Constantes.TABLE_CONSUMO_AGUA, null,
-				 "matricula = " + consumo.getMatricula(), null, null, null, null);
+				 "matricula = " + matricula, null, null, null, null);
 		
 		long retorno = -1;
 		
 		ContentValues values = new ContentValues();
+		
+		values.put("matricula", matricula);
 		values.put("consumo_medido_mes", consumo.getConsumoMedidoMes());
 		values.put("consumo_cobrado_mes", consumo.getConsumoCobradoMes());
 		values.put("consumo_cobrado_mes_imovel_micro", consumo.getConsumoCobradoMesImoveisMicro());
@@ -1608,7 +1616,7 @@ public class DataManipulator {
 		values.put("anormalidade_leitura_faturada", consumo.getAnormalidadeLeituraFaturada());
 		
 		if (cursor.moveToFirst()) {
-			retorno = db.update(Constantes.TABLE_CONSUMO_AGUA, values, "matricula = ?", new String[] {String.valueOf(consumo.getMatricula())});
+			retorno = db.update(Constantes.TABLE_CONSUMO_AGUA, values, "matricula = ?", new String[] {String.valueOf(matricula)});
 		} else {
 			retorno = db.insert(Constantes.TABLE_CONSUMO_AGUA, null, values);
 		}
@@ -1621,14 +1629,15 @@ public class DataManipulator {
 		
 	}
 	
-	public long saveConsumoEsgoto(Consumo consumo) {
+	public long salvarConsumoEsgoto(Consumo consumo, int matricula) {
 		
 		Cursor cursor = db.query(Constantes.TABLE_CONSUMO_ESGOTO, null,
-				 "matricula = " + consumo.getMatricula(), null, null, null, null);
+				 "matricula = " + matricula, null, null, null, null);
 		
 		long retorno = -1;
 		
 		ContentValues values = new ContentValues();
+		values.put("matricula", matricula);
 		values.put("consumo_medido_mes", consumo.getConsumoMedidoMes());
 		values.put("consumo_cobrado_mes", consumo.getConsumoCobradoMes());
 		values.put("consumo_cobrado_mes_imovel_micro", consumo.getConsumoCobradoMesImoveisMicro());
@@ -1640,7 +1649,7 @@ public class DataManipulator {
 		values.put("anormalidade_leitura_faturada", consumo.getAnormalidadeLeituraFaturada());
 		
 		if (cursor.moveToFirst()) {
-			retorno = db.update(Constantes.TABLE_CONSUMO_ESGOTO, values, "matricula = ?", new String[] {String.valueOf(consumo.getMatricula())});
+			retorno = db.update(Constantes.TABLE_CONSUMO_ESGOTO, values, "matricula = ?", new String[] {String.valueOf(matricula)});
 		} else {
 			retorno = db.insert(Constantes.TABLE_CONSUMO_ESGOTO, null, values);
 		}
