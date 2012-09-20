@@ -19,12 +19,7 @@ public class DbHelper extends SQLiteOpenHelper {
 			"endereco TEXT, ano_mes_conta TEXT, digito_verificador_conta TEXT, codigo_responsavel TEXT, nome_responsavel TEXT, endereco_entrega TEXT, situacao_lig_agua TEXT, situacao_lig_esgoto TEXT, descricao_banco TEXT, codigo_agencia TEXT, matricula_condominio TEXT, indc_condominio TEXT, " +
 			"codigo_perfil TEXT, consumo_medio TEXT, indc_faturamento_agua TEXT, indc_faturamento_esgoto TEXT, indc_emissao_conta TEXT, consumo_min_agua TEXT, consumo_min_esgoto TEXT, percent_coleta_esgoto TEXT, percent_cobranca_esgoto TEXT, tipo_poco TEXT, codigo_tarifa TEXT, consumo_estouro TEXT, " +
 			"alto_consumo TEXT, baixo_consumo TEXT, fator_mult_estouro TEXT, fator_mult_media_alto_consumo TEXT, percent_baixo_consumo TEXT, consumo_maximo TEXT, grupo_faturamento TEXT, codigo_rota TEXT, numero_conta TEXT, tipo_calculo_tarifa TEXT, endereco_atendimento TEXT, telefone_localidade_ddd TEXT," +
-			" sequencial_rota TEXT, mensagem_conta1 TEXT, mensagem_conta2 TEXT, mensagem_conta3 TEXT, turbidez_padrao TEXT, ph_padrao TEXT, cor_padrao TEXT, cloro_padrao TEXT, fluor_padrao TEXT, ferro_padrao TEXT, coliformes_totais_padrao TEXT, coliformes_fecais_padrao TEXT, nitrato_padrao TEXT, " +
-			"coliformes_termo_tolerantes_padrao TEXT, am_referencia_qualidade_agua TEXT, numero_cloro_residual TEXT, numero_turbidez TEXT, numero_ph TEXT, numero_cor TEXT, numero_fluor TEXT, numero_ferro TEXT, numero_coliformes_totais TEXT, numero_coliformes_fecais TEXT, numero_nitrato TEXT, " +
-			"numero_coliformes_termo_tolerantes TEXT, descricao_fonte_capacitacao TEXT, quantidade_turbidez_exigidas TEXT, quantidade_cor_exigidas TEXT, quantidade_cloro_exigidas TEXT, quantidade_fluor_exigidas TEXT, quantidade_coliformes_totais_exigidas TEXT, quantidade_coliformes_fecais_exigidas TEXT, " +
-			"quantidade_coliformes_termo_tolerantes_exigidas TEXT, quantidade_turbidez_analisadas TEXT, quantidade_cor_analisadas TEXT, quantidade_cloro_analisadas TEXT, quantidade_fluor_analisadas TEXT, quantidade_coliformes_totais_analisadas TEXT, quantidade_coliformes_fecais_analisadas TEXT, " +
-			"quantidade_coliformes_termo_tolerantes_analisadas TEXT, quantidade_turbidez_conforme TEXT, quantidade_cor_conforme TEXT, quantidade_cloro_conforme TEXT, quantidade_fluor_conforme TEXT, quantidade_coliformes_totais_conforme TEXT, quantidade_coliformes_fecais_conforme TEXT, " +
-			"quantidade_coliformes_termo_tolerantes_conforme TEXT, consumo_minimo_imovel TEXT, consumo_minimo_imovel_nao_medido TEXT, numero_documento_notificacao_debito TEXT, numero_codigo_barra_notificacao_debito TEXT, cpf_cnpj_cliente TEXT, data_leitura_anterior_nao_medido DATE, indicador_abastecimento_agua TEXT," +
+			" sequencial_rota TEXT, mensagem_conta1 TEXT, mensagem_conta2 TEXT, mensagem_conta3 TEXT, consumo_minimo_imovel TEXT, consumo_minimo_imovel_nao_medido TEXT, numero_documento_notificacao_debito TEXT, numero_codigo_barra_notificacao_debito TEXT, cpf_cnpj_cliente TEXT, data_leitura_anterior_nao_medido DATE, indicador_abastecimento_agua TEXT," +
 			" indicador_imovel_sazonal TEXT, indicador_paralizar_faturamento_agua TEXT, indicador_paralizar_faturamento_esgoto TEXT, opcao_debito_automatico TEXT, percentual_alternativo_esgoto TEXT, consumo_percentual_alternativo_esgoto TEXT, data_emissao_documento DATE, quantidade_contas_impressas TEXT, contagem_validacao_agua TEXT," +
 			" contagem_validacao_poco TEXT, leitura_gravada_anterior TEXT, anormalidade_gravada_anterior TEXT, data_impressao_nao_medido DATE, valor_residual_credito TEXT, quantidade_imoveis_condominio TEXT, indc_adicionou_dados_iniciais_helper_rateio TEXT, valor_rateio_agua TEXT, valor_rateio_esgoto TEXT, consumo_rateio_agua TEXT, " +
 			"consumo_rateio_esgoto TEXT, mensagem_estouro_consumo_1 TEXT, mensagem_estouro_consumo_2 TEXT, mensagem_estouro_consumo_3 TEXT, imovel_status TEXT, imovel_enviado TEXT, indc_imovel_impresso TEXT, indc_geracao TEXT)";
@@ -106,6 +101,14 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CONFIGURACAO_QUERY =
     	"CREATE TABLE configuracao (id INTEGER PRIMARY KEY autoincrement, nome_arquivo_imoveis TEXT, bluetooth_address TEXT, id_imovel_selecionado INTEGER, indice_imovel_condominio INTEGER, sucesso_carregamento INTEGER, " +
     	"quantidade_imoveis INTEGER, nome_arquivo_retorno TEXT)";
+    
+    private static final String DATABASE_DADOS_QUALIDADE_AGUA_QUERY =
+        	"CREATE TABLE dados_qualidade_agua (id INTEGER PRIMARY KEY autoincrement, turbidez_padrao TEXT, ph_padrao TEXT, cor_padrao TEXT, cloro_padrao TEXT, fluor_padrao TEXT, ferro_padrao TEXT, coliformes_totais_padrao TEXT, coliformes_fecais_padrao TEXT, nitrato_padrao TEXT, " +
+			"coliformes_termo_tolerantes_padrao TEXT, am_referencia_qualidade_agua TEXT, numero_cloro_residual TEXT, numero_turbidez TEXT, numero_ph TEXT, numero_cor TEXT, numero_fluor TEXT, numero_ferro TEXT, numero_coliformes_totais TEXT, numero_coliformes_fecais TEXT, numero_nitrato TEXT, " +
+			"numero_coliformes_termo_tolerantes TEXT, descricao_fonte_capacitacao TEXT, quantidade_turbidez_exigidas TEXT, quantidade_cor_exigidas TEXT, quantidade_cloro_exigidas TEXT, quantidade_fluor_exigidas TEXT, quantidade_coliformes_totais_exigidas TEXT, quantidade_coliformes_fecais_exigidas TEXT, " +
+			"quantidade_coliformes_termo_tolerantes_exigidas TEXT, quantidade_turbidez_analisadas TEXT, quantidade_cor_analisadas TEXT, quantidade_cloro_analisadas TEXT, quantidade_fluor_analisadas TEXT, quantidade_coliformes_totais_analisadas TEXT, quantidade_coliformes_fecais_analisadas TEXT, " +
+			"quantidade_coliformes_termo_tolerantes_analisadas TEXT, quantidade_turbidez_conforme TEXT, quantidade_cor_conforme TEXT, quantidade_cloro_conforme TEXT, quantidade_fluor_conforme TEXT, quantidade_coliformes_totais_conforme TEXT, quantidade_coliformes_fecais_conforme TEXT, " +
+			"quantidade_coliformes_termo_tolerantes_conforme TEXT)";
 
     public DbHelper(Context context) {
 		super(context, Constantes.DATABASE_NAME, null, DATABASE_VERSION);
@@ -136,6 +139,7 @@ public class DbHelper extends SQLiteOpenHelper {
      	db.execSQL(DATABASE_DADOS_RELATORIO_QUERY);
      	db.execSQL(DATABASE_SITUACAO_TIPO_QUERY);
      	db.execSQL(DATABASE_CONFIGURACAO_QUERY);
+     	db.execSQL(DATABASE_DADOS_QUALIDADE_AGUA_QUERY);
     }
 
 	// Method is called during an upgrade of the database, e.g. if you increase the database version

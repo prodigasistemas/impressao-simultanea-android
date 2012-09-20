@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import model.DadosGerais;
+import model.DadosQualidadeAgua;
 import model.SituacaoTipo;
 import util.Constantes;
 import android.content.Context;
@@ -111,6 +112,7 @@ public class ControladorRota {
 						case REGISTRO_TIPO_IMOVEL:
 							dataManipulator.insertImovel(line);
 					    	dataManipulator.insertSituacaoTipo(SituacaoTipo.getInstancia());
+					    	dataManipulator.insertDadosQualidadeAgua(DadosQualidadeAgua.getInstancia());
 							break;
 							
 						case REGISTRO_TIPO_DADOS_CATEGORIA:

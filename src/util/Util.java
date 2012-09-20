@@ -20,6 +20,7 @@ import business.ControladorRota;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 public class Util {
@@ -860,6 +861,8 @@ public class Util {
      */
 
     public static String retornaDescricaoAnoMes(String anoMes) {
+    	
+    	Log.i("ANoMes", anoMes);
 
 		int mes = Integer.parseInt(anoMes.substring(4, 6));
 		String ano = anoMes.substring(0, 4);

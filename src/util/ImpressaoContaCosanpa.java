@@ -7,6 +7,7 @@ import model.Consumo;
 import model.DadosCategoria;
 import model.DadosFaturamentoFaixa;
 import model.HistoricoConsumo;
+import model.DadosQualidadeAgua;
 import model.Imovel;
 import model.Medidor;
 import android.util.Log;
@@ -373,63 +374,63 @@ public class ImpressaoContaCosanpa {
 	    }
 	    
 	    // Exigido Portaria 518/2004
-	    if (imovel.getQuantidadeCorExigidas() != Constantes.NULO_INT){
-	    	quantidadeCorExigidas = imovel.getQuantidadeCorExigidas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorExigidas() != Constantes.NULO_INT){
+	    	quantidadeCorExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeCorExigidas();
 	    }
-	    if (imovel.getQuantidadeTurbidezExigidas() != Constantes.NULO_INT){
-		    quantidadeTurbidezExigidas = imovel.getQuantidadeTurbidezExigidas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezExigidas() != Constantes.NULO_INT){
+		    quantidadeTurbidezExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezExigidas();
 	    }
-	    if (imovel.getQuantidadeCloroExigidas() != Constantes.NULO_INT){
-	    	quantidadeCloroExigidas = imovel.getQuantidadeCloroExigidas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroExigidas() != Constantes.NULO_INT){
+	    	quantidadeCloroExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeCloroExigidas();
 	    }
-	    if (imovel.getQuantidadeFluorExigidas() != Constantes.NULO_INT){
-		    quantidadeFluorExigidas = imovel.getQuantidadeFluorExigidas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorExigidas() != Constantes.NULO_INT){
+		    quantidadeFluorExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeFluorExigidas();
 	    }
-	    if (imovel.getQuantidadeColiformesTotaisExigidas() != Constantes.NULO_INT){
-		    quantidadeColiformesTotaisExigidas = imovel.getQuantidadeColiformesTotaisExigidas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisExigidas() != Constantes.NULO_INT){
+		    quantidadeColiformesTotaisExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisExigidas();
 	    }
-	    if (imovel.getQuantidadeColiformesTermoTolerantesExigidas() != Constantes.NULO_INT){
-		    quantidadeColiformesTermoTolerantesExigidas = imovel.getQuantidadeColiformesTermoTolerantesExigidas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesExigidas() != Constantes.NULO_INT){
+		    quantidadeColiformesTermoTolerantesExigidas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesExigidas();
 	    }
 	    
 	    // Analisado
-	    if (imovel.getQuantidadeCorAnalisadas() != Constantes.NULO_INT){
-		    quantidadeCorAnalisadas = imovel.getQuantidadeCorAnalisadas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorAnalisadas() != Constantes.NULO_INT){
+		    quantidadeCorAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeCorAnalisadas();
 	    }
-	    if (imovel.getQuantidadeTurbidezAnalisadas() != Constantes.NULO_INT){
-		    quantidadeTurbidezAnalisadas = imovel.getQuantidadeTurbidezAnalisadas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezAnalisadas() != Constantes.NULO_INT){
+		    quantidadeTurbidezAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezAnalisadas();
 	    }
-	    if (imovel.getQuantidadeCloroAnalisadas() != Constantes.NULO_INT){
-		    quantidadeCloroAnalisadas = imovel.getQuantidadeCloroAnalisadas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroAnalisadas() != Constantes.NULO_INT){
+		    quantidadeCloroAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeCloroAnalisadas();
 	    }
-	    if (imovel.getQuantidadeFluorAnalisadas() != Constantes.NULO_INT){
-		    quantidadeFluorAnalisadas = imovel.getQuantidadeFluorAnalisadas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorAnalisadas() != Constantes.NULO_INT){
+		    quantidadeFluorAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeFluorAnalisadas();
 	    }
-	    if (imovel.getQuantidadeColiformesTotaisAnalisadas() != Constantes.NULO_INT){
-		    quantidadeColiformesTotaisAnalisadas = imovel.getQuantidadeColiformesTotaisAnalisadas();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisAnalisadas() != Constantes.NULO_INT){
+		    quantidadeColiformesTotaisAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisAnalisadas();
 	    }
-	    if (imovel.getQuantidadeColiformesTermoTolerantesAnalisadas() != Constantes.NULO_INT){
-		    quantidadeColiformesTermoTolerantesAnalisadas = imovel.getQuantidadeColiformesTermoTolerantesAnalisadas();	    	
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesAnalisadas() != Constantes.NULO_INT){
+		    quantidadeColiformesTermoTolerantesAnalisadas = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesAnalisadas();	    	
 	    }
 	    
 	    //  Conforme
-	    if (imovel.getQuantidadeCorConforme() != Constantes.NULO_INT){
-		    quantidadeCorConforme = imovel.getQuantidadeCorConforme();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCorConforme() != Constantes.NULO_INT){
+		    quantidadeCorConforme = DadosQualidadeAgua.getInstancia().getQuantidadeCorConforme();
 	    }
-	    if (imovel.getQuantidadeTurbidezConforme() != Constantes.NULO_INT){
-		    quantidadeTurbidezConforme = imovel.getQuantidadeTurbidezConforme();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezConforme() != Constantes.NULO_INT){
+		    quantidadeTurbidezConforme = DadosQualidadeAgua.getInstancia().getQuantidadeTurbidezConforme();
 	    }
-	    if (imovel.getQuantidadeCloroConforme() != Constantes.NULO_INT){
-		    quantidadeCloroConforme = imovel.getQuantidadeCloroConforme();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeCloroConforme() != Constantes.NULO_INT){
+		    quantidadeCloroConforme = DadosQualidadeAgua.getInstancia().getQuantidadeCloroConforme();
 	    }
-	    if (imovel.getQuantidadeFluorConforme() != Constantes.NULO_INT){
-		    quantidadeFluorConforme = imovel.getQuantidadeFluorConforme();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeFluorConforme() != Constantes.NULO_INT){
+		    quantidadeFluorConforme = DadosQualidadeAgua.getInstancia().getQuantidadeFluorConforme();
 	    }
-	    if (imovel.getQuantidadeColiformesTotaisConforme() != Constantes.NULO_INT){
-		    quantidadeColiformesTotaisConforme = imovel.getQuantidadeColiformesTotaisConforme();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisConforme() != Constantes.NULO_INT){
+		    quantidadeColiformesTotaisConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTotaisConforme();
 	    }
-	    if (imovel.getQuantidadeColiformesTermoTolerantesConforme() != Constantes.NULO_INT){
-		    quantidadeColiformesTermoTolerantesConforme = imovel.getQuantidadeColiformesTermoTolerantesConforme();
+	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme() != Constantes.NULO_INT){
+		    quantidadeColiformesTermoTolerantesConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme();
 	    }
 	    
 	    int ultimaLinhaAgua = 0;

@@ -101,6 +101,7 @@ public class Constantes {
     public static final String TABLE_RATEIO_CONDOMINIO = "rateio_condominio";
     public static final String TABLE_CONSUMO_AGUA = "consumo_agua";
     public static final String TABLE_CONSUMO_ESGOTO = "consumo_esgoto";
+    public static final String TABLE_DADOS_QUALIDADE_AGUA = "dados_qualidade_agua";
     
     public static final String DATABASE_NAME = "ImpressaoSimultanea.db";
 	public static final String DATABASE_PATH = "/data/data/com.IS/databases/";
