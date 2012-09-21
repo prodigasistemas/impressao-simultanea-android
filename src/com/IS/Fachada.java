@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -35,6 +36,7 @@ public class Fachada extends Activity {
 
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.welcome);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     	
 	    // get IMEI
     	ControladorAcessoOnline.getInstancia().setIMEI(((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());

@@ -826,7 +826,16 @@ public class DataManipulator {
 																		 "data_leitura_anterior_informada", 
 																		 "data_ligacao_fornecimento",
 																		 "tipo_rateio", 
-																		 "leitura_instalacao_hidrometro", 
+																		 "leitura_instalacao_hidrometro",
+																		 "data_leitura",
+																		 "leitura_anterior",
+																		 "data_leitura_atual_faturamento",
+																		 "leitura",
+																		 "anormalidade",
+																		 "qtd_dias_ajustado",
+																		 "leitura_atual_faturamento",
+																		 "leitura_relatorio",
+																		 "anormalidade_relatorio",
 																		 "matricula" }, "matricula = " + imovel.getMatricula(), null, null, null, "id asc");
 		
 		Medidor medidor = new Medidor();
@@ -851,7 +860,16 @@ public class DataManipulator {
 			medidor.setDataLigacaoFornecimento(cursor.getString(13));
 			medidor.setTipoRateio(cursor.getString(14));
 			medidor.setLeituraInstalacaoHidrometro(cursor.getString(15));
-			medidor.setMatricula(Integer.parseInt(cursor.getString(16)));
+			medidor.setDataLeitura(cursor.getString(16));
+			medidor.setLeituraAnterior(cursor.getInt(17));
+			medidor.setDataLeituraAtualFaturamento(cursor.getString(18));
+			medidor.setLeitura(cursor.getInt(19));
+			medidor.setAnormalidade(cursor.getInt(20));
+			medidor.setQtdDiasAjustado(cursor.getInt(21));
+			medidor.setLeituraAtualFaturamento(cursor.getInt(22));
+			medidor.setLeituraRelatorio(cursor.getInt(23));
+			medidor.setAnormalidadeRelatorio(cursor.getInt(24));
+			medidor.setMatricula(Integer.parseInt(cursor.getString(25)));
 
 		} else {
 			medidor.setNumeroHidrometro("");
@@ -1622,7 +1640,15 @@ public class DataManipulator {
 		initialValues.put("data_ligacao_fornecimento", parser.obterDadoParser(8));
 		initialValues.put("tipo_rateio", parser.obterDadoParser(1));
 		initialValues.put("leitura_instalacao_hidrometro", parser.obterDadoParser(7));
-		
+		initialValues.put("data_leitura", Constantes.NULO_STRING);
+		initialValues.put("leitura_anterior", Constantes.NULO_INT);
+		initialValues.put("data_leitura_atual_faturamento", Constantes.NULO_STRING);
+		initialValues.put("leitura", Constantes.NULO_INT);
+		initialValues.put("anormalidade", Constantes.NULO_INT);
+		initialValues.put("qtd_dias_ajustado", Constantes.NULO_INT);
+		initialValues.put("leitura_atual_faturamento", Constantes.NULO_INT);
+		initialValues.put("leitura_relatorio", Constantes.NULO_INT);
+		initialValues.put("anormalidade_relatorio", Constantes.NULO_INT);
 
 		return db.insert(Constantes.TABLE_MEDIDOR, null, initialValues);
 	}
@@ -1654,6 +1680,15 @@ public class DataManipulator {
 			values.put("data_ligacao_fornecimento", Util.dateToAnoMesDiaString(medidor.getDataLigacaoFornecimento()));
 			values.put("tipo_rateio", medidor.getTipoRateio());
 			values.put("leitura_instalacao_hidrometro", medidor.getLeituraInstalacaoHidrometro());
+			values.put("data_leitura", Util.dateToAnoMesDiaString(medidor.getDataLeitura()));
+			values.put("leitura_anterior", medidor.getLeituraAnterior());
+			values.put("data_leitura_atual_faturamento", Util.dateToAnoMesDiaString(medidor.getDataLeituraAtualFaturamento()));
+			values.put("leitura", medidor.getLeitura());
+			values.put("anormalidade", medidor.getAnormalidade());
+			values.put("qtd_dias_ajustado", medidor.getQtdDiasAjustado());
+			values.put("leitura_atual_faturamento", medidor.getLeituraAtualFaturamento());
+			values.put("leitura_relatorio", medidor.getLeituraRelatorio());
+			values.put("anormalidade_relatorio", medidor.getAnormalidadeRelatorio());
 			
 			retorno = db.update(Constantes.TABLE_MEDIDOR, values, "matricula = ?", new String[] {String.valueOf(matricula)});
 		}
