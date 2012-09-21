@@ -89,8 +89,8 @@ public class ImpressaoContaCosanpa {
     private String referencia = "";
     private String dataVencimento = "";
     private String totalAPagar = "";
-    private String representacaoNumericaCodBarra = "";
-    private String representacaoCodigoBarrasSemDigitoVerificador = "";
+    private String repNumericaCodBarra = "";
+    private String repCodigoBarrasSemDigitoVerificador = "";
     private String grupoFaturamento = "";
     
     private String montarComando() {
@@ -200,8 +200,8 @@ public class ImpressaoContaCosanpa {
         		"T 0 2 443 1456 "+ referencia + "\n" +
         		"T 0 2 558 1456 "+ dataVencimento + "\n" +
         		"T 0 2 694 1456 "+ totalAPagar + "\n" +
-        		"T 5 0 66 1515 "+ representacaoNumericaCodBarra + "\n" +
-        		"B I2OF5 1 2 90 35 1538 "+ representacaoCodigoBarrasSemDigitoVerificador + "\n" +
+        		"T 5 0 66 1515 "+ repNumericaCodBarra +
+        		"B I2OF5 1 2 90 35 1538 "+ repCodigoBarrasSemDigitoVerificador + "\n" +
         		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
         		"T 5 0 352 1661 4\n"+
         		"FORM\n"+
@@ -518,16 +518,17 @@ public class ImpressaoContaCosanpa {
 	    if (imovel.getCodigoAgencia() == null || imovel.getCodigoAgencia().equals("")) {
 			System.out.println("##COD AGENCIA DO IF: " + imovel.getCodigoAgencia());
 			
-			representacaoNumericaCodBarra = Util.obterRepresentacaoNumericaCodigoBarra(new Integer(3), imovel.getValorConta(), new Integer(Integer.parseInt(imovel.getInscricao().substring(0, 3))), new Integer(imovel.getMatricula()),
-				Util.formatarAnoMesParaMesAnoSemBarra(imovel.getAnoMesConta()), new Integer(imovel.getDigitoVerificadorConta()), null, null, null, null, null, null);
-			String representacaoNumericaCodBarraFormatada = representacaoNumericaCodBarra.substring(0, 11).trim() + "-" + representacaoNumericaCodBarra.substring(11, 12).trim() + " " + representacaoNumericaCodBarra.substring(12, 23).trim() + "-"
-				+ representacaoNumericaCodBarra.substring(23, 24).trim() + " " + representacaoNumericaCodBarra.substring(24, 35).trim() + "-" + representacaoNumericaCodBarra.substring(35, 36).trim() + " " + representacaoNumericaCodBarra.substring(36, 47).trim() + "-"
-				+ representacaoNumericaCodBarra.substring(47, 48);
-			representacaoNumericaCodBarra = representacaoNumericaCodBarraFormatada;
-			representacaoCodigoBarrasSemDigitoVerificador = representacaoNumericaCodBarra.substring(0, 11) + representacaoNumericaCodBarra.substring(12, 23) + representacaoNumericaCodBarra.substring(24, 35) + representacaoNumericaCodBarra.substring(36, 47);
+			String representacaoNumericaCodBarra = Util.obterRepresentacaoNumericaCodigoBarra(new Integer(3), imovel.getValorConta(), new Integer(Integer.parseInt(imovel.getInscricao().substring(0, 3))), new Integer(imovel.getMatricula()),
+					Util.formatarAnoMesParaMesAnoSemBarra(imovel.getAnoMesConta()), new Integer(imovel.getDigitoVerificadorConta()), null, null, null, null, null, null);
+				String representacaoNumericaCodBarraFormatada = representacaoNumericaCodBarra.substring(0, 11).trim() + "-" + representacaoNumericaCodBarra.substring(11, 12).trim() + " " + representacaoNumericaCodBarra.substring(12, 23).trim() + "-"
+					+ representacaoNumericaCodBarra.substring(23, 24).trim() + " " + representacaoNumericaCodBarra.substring(24, 35).trim() + "-" + representacaoNumericaCodBarra.substring(35, 36).trim() + " " + representacaoNumericaCodBarra.substring(36, 47).trim() + "-"
+					+ representacaoNumericaCodBarra.substring(47, 48);
+				repNumericaCodBarra += formarLinha(5, 0, 66, 1515, representacaoNumericaCodBarraFormatada, 0, 0);
+				String representacaoCodigoBarrasSemDigitoVerificador = representacaoNumericaCodBarra.substring(0, 11) + representacaoNumericaCodBarra.substring(12, 23) + representacaoNumericaCodBarra.substring(24, 35) + representacaoNumericaCodBarra.substring(36, 47);
+				repCodigoBarrasSemDigitoVerificador += representacaoCodigoBarrasSemDigitoVerificador;
 
 	    } else {
-			representacaoCodigoBarrasSemDigitoVerificador = formarLinha(4, 0, 182, 1538, "DÉBITO AUTOMÁTICO", 0, 0);
+			repCodigoBarrasSemDigitoVerificador = formarLinha(4, 0, 182, 1538, "DÉBITO AUTOMÁTICO", 0, 0);
 	    }
 	    
 	    grupoFaturamento = ""+imovel.getGrupoFaturamento();
