@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import model.Consumo;
+import model.DadosGerais;
 import model.DadosRelatorio;
 
 import ui.ArquivoRetorno;
@@ -1312,5 +1313,392 @@ public class Util {
     	return anoMesFormatado;
         }
 
+    public static String formatarAnoMesParaMesAnoSemBarra(String anoMes) {
 
+    	String anoMesFormatado = "";
+    	String anoMesRecebido = anoMes;
+    	if (anoMesRecebido.length() < 6) {
+    	    anoMesFormatado = anoMesRecebido;
+    	} else {
+    	    String mes = anoMesRecebido.substring(4, 6);
+    	    String ano = anoMesRecebido.substring(0, 4);
+    	    anoMesFormatado = mes + ano;
+    	}
+    	return anoMesFormatado;
+        }
+    
+    public static String obterRepresentacaoNumericaCodigoBarra(
+    	    Integer tipoPagamento, 
+    	    double valorCodigoBarra, 
+    	    Integer idLocalidade, 
+    	    Integer matriculaImovel, 
+    	    String mesAnoReferenciaConta, 
+    	    Integer digitoVerificadorRefContaModulo10, 
+    	    Integer idTipoDebito, 
+    	    String anoEmissaoGuiaPagamento,
+    	    String sequencialDocumentoCobranca, 
+    	    Integer idTipoDocumento, 
+    	    Integer idCliente, 
+    	    Integer seqFaturaClienteResponsavel) {
+
+    	// [FS0001] Verificar compatibilidade dos campos informados com o tipo
+    	// de pagamento
+    	if (tipoPagamento == null) {
+    	    return "atencao.parametros.incompletos.codigobarra";
+    	} else {
+    	    // Caso o tipo de pagamento seja referente a conta
+    	    if (tipoPagamento.intValue() == 3) {
+
+    		// Caso o código da localidade ou a matrícula do imóvel ou o
+    		// mês/ano da referência da conta ou o dígito verificador da
+    		// referência da conta no módulo 10
+    		// não forem informados levanta uma exceção para o usuário
+    		// indicando que os parâmetros para geração do código de barras
+    		// está incompleto.
+    		if (idLocalidade == null || matriculaImovel == null || mesAnoReferenciaConta == null || digitoVerificadorRefContaModulo10 == null) {
+    		    return "atencao.parametros.incompletos.codigobarra";
+    		}
+
+    		// Caso o tipo de pagamento seja referente a guia de pagamento
+    	    } else if (tipoPagamento.intValue() == 4) {
+
+    		// Caso o código da localidade ou a matrícula do imóvel ou o
+    		// tipo de débito ou o ano da emissão da guia de pagamento
+    		// não forem informados levanta uma exceção para o usuário
+    		// indicando que os parâmetros para geração do código de barras
+    		// está incompleto.
+    		if (idLocalidade == null || matriculaImovel == null || idTipoDebito == null || anoEmissaoGuiaPagamento == null) {
+    		    return "atencao.parametros.incompletos.codigobarra";
+    		}
+
+    		// Caso a tipo de pagamento seja referente a documento de
+    		// cobrança
+    	    } else if (tipoPagamento.intValue() == 5) {
+
+    		// Caso o código da localidade ou a matrícula do imóvel ou o
+    		// sequencial do documento de cobrança ou o tipo de documento
+    		// não forem informados levanta uma exceção para o usuário
+    		// indicando que os parâmetros para geração do código de barras
+    		// está incompleto.
+    		if (idLocalidade == null || matriculaImovel == null || sequencialDocumentoCobranca == null || idTipoDocumento == null) {
+    		    return "atencao.parametros.incompletos.codigobarra";
+    		}
+
+    		// Caso o tipo de pagamento seja referente a fatura do cliente
+    		// responsável
+    	    } else if (tipoPagamento.intValue() == 7) {
+    		// Caso o código do cliente ou o mês/ano da referência da conta
+    		// ou o sequencial da fatura do cliente responsável
+    		// não forem informados levanta uma exceção para o usuário
+    		// indicando que os parâmetros para geração do código de barras
+    		// está incompleto.
+    		if (idCliente == null || mesAnoReferenciaConta == null || seqFaturaClienteResponsavel == null) {
+    		    return "atencao.parametros.incompletos.codigobarra";
+    		}
+
+    		// Caso a tipo de pagamento seja referente a guia de pagamento
+    	    } else if (tipoPagamento.intValue() == 6) {
+    		// Caso o código da localidade ou id do cliente ou o
+    		// tipo de débito ou o ano da emissão da guia de pagamento
+    		// não forem informados levanta uma exceção para o usuário
+    		// indicando que os parâmetros para geração do código de barras
+    		// está incompleto.
+    		if (idLocalidade == null || idCliente == null || idTipoDebito == null || anoEmissaoGuiaPagamento == null) {
+    		    return "atencao.parametros.incompletos.codigobarra";
+    		}
+    	    } else if (tipoPagamento.intValue() == 8) {
+
+    		// Caso o código do cliente ou o
+    		// sequencial do documento de cobrança ou o tipo de documento
+    		// não forem informados levanta uma exceção para o usuário
+    		// indicando que os parâmetros para geração do código de barras
+    		// está incompleto.
+    		if (idCliente == null || sequencialDocumentoCobranca == null || idTipoDocumento == null) {
+    		    return "atencao.parametros.incompletos.codigobarra";
+    		}
+    	    }
+    	}
+
+    	// Cria a variável que vai armazenar a representação númerica do código
+    	// de barras
+    	String representacaoNumericaCodigoBarra = "";
+
+    	// G.05.1 - Identificação do produto
+    	String identificacaoProduto = "8";
+    	representacaoNumericaCodigoBarra = representacaoNumericaCodigoBarra + identificacaoProduto;
+
+    	// G.05.2 - Identificação do segmento
+    	String identificacaoSegmento = "2";
+    	representacaoNumericaCodigoBarra = representacaoNumericaCodigoBarra + identificacaoSegmento;
+
+    	// G.05.3 - Identificação dovalor real ou referência
+
+    	// MODULO 11
+    	// String identificacaoValorRealOuReferencia = "8";
+
+    	// MODULO 10
+    	String identificacaoValorRealOuReferencia = "6";
+
+    	representacaoNumericaCodigoBarra = representacaoNumericaCodigoBarra + identificacaoValorRealOuReferencia;
+
+    	String valorContaString = Util.formatarDoubleParaMoedaReal(valorCodigoBarra);
+
+    	valorContaString = replaceAll(valorContaString, ".", "");
+    	valorContaString = replaceAll(valorContaString, ",", "");
+
+    	// G.05.5 - Valor do código de barras
+    	String valorCodigoBarraFormatado = Util.adicionarZerosEsquerdaNumero(11, valorContaString);
+    	representacaoNumericaCodigoBarra = representacaoNumericaCodigoBarra + valorCodigoBarraFormatado;
+
+    	// G.05.6 - Identificação da empresa
+    	// Fixo por enquanto
+    	String identificacaoEmpresa = ControladorRota.getInstancia().getDadosGerais().getCodigoEmpresaFebraban();
+    	identificacaoEmpresa = Util.adicionarZerosEsquerdaNumero(4, identificacaoEmpresa);
+    	representacaoNumericaCodigoBarra = representacaoNumericaCodigoBarra + identificacaoEmpresa;
+
+    	// G.05.7 Identificação do pagamento
+    	// [SB0001] Obter Identificação do Pagamento
+    	String identificacaoPagamento = obterIdentificacaoPagamento(tipoPagamento, idLocalidade, matriculaImovel, mesAnoReferenciaConta, digitoVerificadorRefContaModulo10, idTipoDebito, anoEmissaoGuiaPagamento, sequencialDocumentoCobranca, idTipoDocumento, idCliente, seqFaturaClienteResponsavel);
+
+    	representacaoNumericaCodigoBarra = representacaoNumericaCodigoBarra + identificacaoPagamento + tipoPagamento.toString();
+
+    	// G.05.4 - Dígito verificador geral
+    	// [SB0002] Obter Dígito verificador geral
+    	String digitoVerificadorGeral = (Util.obterDigitoVerificadorGeral(representacaoNumericaCodigoBarra)).toString();
+
+    	// Monta a representaçaõ númerica com todos os campos informados
+    	representacaoNumericaCodigoBarra = identificacaoProduto + identificacaoSegmento + identificacaoValorRealOuReferencia + digitoVerificadorGeral + valorCodigoBarraFormatado + identificacaoEmpresa + identificacaoPagamento + tipoPagamento.toString();
+
+    	// Cria as variáveis que vão armazenar o código de barra separado por
+    	// campos
+    	// e seus respectivos dígitos verificadores se existirem
+    	String codigoBarraCampo1 = null;
+    	String codigoBarraDigitoVerificadorCampo1 = null;
+    	String codigoBarraCampo2 = null;
+    	String codigoBarraDigitoVerificadorCampo2 = null;
+    	String codigoBarraCampo3 = null;
+    	String codigoBarraDigitoVerificadorCampo3 = null;
+    	String codigoBarraCampo4 = null;
+    	String codigoBarraDigitoVerificadorCampo4 = null;
+
+    	// Separa as 44 posições do código de barras em 4 grupos de onze
+    	// posições
+    	// e para cada um dos grupos calcula o dígito verificador do módulo 11
+    	codigoBarraCampo1 = representacaoNumericaCodigoBarra.substring(0, 11);
+    	// codigoBarraDigitoVerificadorCampo1 =
+    	// (obterDigitoVerificadorModulo11(new Long(
+    	// codigoBarraCampo1))).toString();
+    	codigoBarraDigitoVerificadorCampo1 = (Util.obterDigitoVerificadorModulo10(new Long(Long.parseLong(codigoBarraCampo1)))).toString();
+    	codigoBarraCampo2 = representacaoNumericaCodigoBarra.substring(11, 22);
+    	/*
+    	 * codigoBarraDigitoVerificadorCampo2 =
+    	 * (obterDigitoVerificadorModulo11(new Long(
+    	 * codigoBarraCampo2))).toString();
+    	 */
+    	codigoBarraDigitoVerificadorCampo2 = (Util.obterDigitoVerificadorModulo10(new Long(Long.parseLong(codigoBarraCampo2)))).toString();
+    	codigoBarraCampo3 = representacaoNumericaCodigoBarra.substring(22, 33);
+    	/*
+    	 * codigoBarraDigitoVerificadorCampo3 =
+    	 * (obterDigitoVerificadorModulo11(new Long(
+    	 * codigoBarraCampo3))).toString();
+    	 */
+    	codigoBarraDigitoVerificadorCampo3 = (Util.obterDigitoVerificadorModulo10(new Long(Long.parseLong(codigoBarraCampo3)))).toString();
+    	codigoBarraCampo4 = representacaoNumericaCodigoBarra.substring(33, 44);
+    	/*
+    	 * codigoBarraDigitoVerificadorCampo4 =
+    	 * (obterDigitoVerificadorModulo11(new Long(
+    	 * codigoBarraCampo4))).toString();
+    	 */
+    	codigoBarraDigitoVerificadorCampo4 = (Util.obterDigitoVerificadorModulo10(new Long(Long.parseLong(codigoBarraCampo4)))).toString();
+
+    	// Monta a representação númerica do código de barras com os dígitos
+    	// verificadores
+    	representacaoNumericaCodigoBarra = codigoBarraCampo1 + codigoBarraDigitoVerificadorCampo1 + codigoBarraCampo2 + codigoBarraDigitoVerificadorCampo2 + codigoBarraCampo3 + codigoBarraDigitoVerificadorCampo3 + codigoBarraCampo4 + codigoBarraDigitoVerificadorCampo4;
+
+    	// Retorna a representação númerica do código de barras
+    	return representacaoNumericaCodigoBarra;
+        }
+    
+    public static Integer obterDigitoVerificadorModulo10(Long numero) {
+
+    	long entrada = numero.longValue();
+
+    	String entradaString = String.valueOf(entrada);
+
+    	int sequencia = 2;
+    	int contEntrada, digito, contAuxiliar, produto, contProduto;
+    	String produtoString;
+    	int somaDigitosProduto = 0;
+
+    	contAuxiliar = 1;
+    	for (contEntrada = 0; contEntrada < entradaString.length(); contEntrada++) {
+
+    	    digito = Integer.parseInt(entradaString.substring(entradaString.length() - contAuxiliar, entradaString.length() - contEntrada));
+
+    	    produto = digito * sequencia;
+    	    produtoString = String.valueOf(produto);
+
+    	    for (contProduto = 0; contProduto < produtoString.length(); contProduto++) {
+    		somaDigitosProduto = somaDigitosProduto + Integer.parseInt(produtoString.substring(contProduto, contProduto + 1));
+    	    }
+
+    	    if (sequencia == 2) {
+    		sequencia = 1;
+    	    } else {
+    		sequencia = 2;
+    	    }
+
+    	    contAuxiliar++;
+    	}
+
+    	int resto = (somaDigitosProduto % 10);
+
+    	int dac;
+    	if (resto == 0) {
+    	    dac = 0;
+    	} else {
+    	    dac = 10 - resto;
+    	}
+
+    	return new Integer(dac);
+        }
+    
+    public static Integer obterDigitoVerificadorGeral(String codigoBarraCom43Posicoes) {
+    	// Recupera o dígito verificador do módulo 11 para o código de barra com
+    	// 43 posições
+    	// Passando uma string como parâmetro
+
+    	// MUDOU PARA O MODULO 10
+    	// Integer digitoVerificadorGeral =
+    	// obterDigitoVerificadorModulo11(codigoBarraCom43Posicoes);
+
+    	Integer digitoVerificadorGeral = obterDigitoVerificadorModulo10(codigoBarraCom43Posicoes);
+
+    	// Retorna o dígito verificador calculado
+    	return digitoVerificadorGeral;
+        }
+    
+    
+    public static Integer obterDigitoVerificadorModulo10(String numero) {
+
+    	String entradaString = numero;
+
+    	int sequencia = 2;
+    	int contEntrada, digito, contAuxiliar, produto, contProduto;
+    	String produtoString;
+    	int somaDigitosProduto = 0;
+
+    	contAuxiliar = 1;
+    	for (contEntrada = 0; contEntrada < entradaString.length(); contEntrada++) {
+
+    	    digito = Integer.parseInt(entradaString.substring(entradaString.length() - contAuxiliar, entradaString.length() - contEntrada));
+
+    	    produto = digito * sequencia;
+    	    produtoString = String.valueOf(produto);
+
+    	    for (contProduto = 0; contProduto < produtoString.length(); contProduto++) {
+    		somaDigitosProduto = somaDigitosProduto + Integer.parseInt(produtoString.substring(contProduto, contProduto + 1));
+    	    }
+
+    	    if (sequencia == 2) {
+    		sequencia = 1;
+    	    } else {
+    		sequencia = 2;
+    	    }
+
+    	    contAuxiliar++;
+    	}
+
+    	int resto = (somaDigitosProduto % 10);
+
+    	int dac;
+    	if (resto == 0) {
+    	    dac = 0;
+    	} else {
+    	    dac = 10 - resto;
+    	}
+
+    	return new Integer(dac);
+        }
+
+        public static String replaceAll(String text, String searchString, String replacementString) {
+
+    	StringBuffer sBuffer = new StringBuffer();
+    	int pos = 0;
+
+    	while ((pos = text.indexOf(searchString)) != -1) {
+    	    sBuffer.append(text.substring(0, pos) + replacementString);
+    	    text = text.substring(pos + searchString.length());
+    	}
+
+    	sBuffer.append(text);
+
+    	return sBuffer.toString();
+        }
+        
+        public static String obterIdentificacaoPagamento(Integer tipoPagamento, Integer idLocalidade, Integer matriculaImovel, String mesAnoReferenciaConta, Integer digitoVerificadorRefContaModulo10, Integer idTipoDebito, String anoEmissaoGuiaPagamento, String sequencialDocumentoCobranca,
+        	    Integer idTipoDocumento, Integer idCliente, Integer seqFaturaClienteResponsavel) {
+
+        	// Cria a variável que vai armazenar o identificador do pagamento
+        	// formatado
+        	String identificacaoPagamento = "";
+
+        	// Caso o tipo de pagamento seja referente a conta
+        	if (tipoPagamento.intValue() == 3) {
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(3, "" + idLocalidade);
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(8, "" + matriculaImovel);
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+        	    identificacaoPagamento = identificacaoPagamento + mesAnoReferenciaConta;
+        	    identificacaoPagamento = identificacaoPagamento + digitoVerificadorRefContaModulo10;
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+
+        	    // Caso o tipo de pagamento seja referente a guia de pagamento
+        	    // (Imóvel)
+        	} else if (tipoPagamento.intValue() == 4) {
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(3, "" + idLocalidade);
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(8, "" + matriculaImovel);
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(3, idTipoDebito.toString()));
+        	    identificacaoPagamento = identificacaoPagamento + anoEmissaoGuiaPagamento;
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+
+        	    // Caso a tipo de pagamento seja referente a documento de cobrança
+        	} else if (tipoPagamento.intValue() == 5) {
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(3, "" + idLocalidade);
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(8, "" + matriculaImovel);
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(9, sequencialDocumentoCobranca));
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(2, idTipoDocumento.toString()));
+        	    identificacaoPagamento = identificacaoPagamento + "00";
+
+        	    // Caso o tipo de pagamento seja referente a guia de pagamento
+        	    // (Cliente)
+        	} else if (tipoPagamento.intValue() == 6) {
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(3, "" + idLocalidade);
+        	    identificacaoPagamento = identificacaoPagamento + Util.adicionarZerosEsquerdaNumero(8, "" + idCliente);
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(3, idTipoDebito.toString()));
+        	    identificacaoPagamento = identificacaoPagamento + anoEmissaoGuiaPagamento;
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+
+        	    // Caso o tipo de pagamento seja referente a fatura do cliente
+        	    // responsável
+        	} else if (tipoPagamento.intValue() == 7) {
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(9, idCliente.toString()));
+        	    identificacaoPagamento = identificacaoPagamento + "00";
+        	    identificacaoPagamento = identificacaoPagamento + mesAnoReferenciaConta;
+        	    identificacaoPagamento = identificacaoPagamento + digitoVerificadorRefContaModulo10;
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(6, seqFaturaClienteResponsavel.toString()));
+        	    // Caso a tipo de pagamento seja referente a documento de cobrança
+        	    // cliente
+        	} else if (tipoPagamento.intValue() == 8) {
+        	    identificacaoPagamento = identificacaoPagamento + "000";
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(8, idCliente.toString()));
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(9, sequencialDocumentoCobranca));
+        	    identificacaoPagamento = identificacaoPagamento + (Util.adicionarZerosEsquerdaNumero(2, idTipoDocumento.toString()));
+        	    identificacaoPagamento = identificacaoPagamento + "00";
+        	}
+
+        	// Retorna o identificador do pagamento formatado
+        	return identificacaoPagamento;
+            }
 }
