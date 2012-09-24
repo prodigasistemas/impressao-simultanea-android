@@ -448,11 +448,11 @@ public class BusinessConta {
 
     public static void mensagemConsumo(String mensagem, double valor) {
 
-		AlertDialog.Builder a = new AlertDialog.Builder(instancia.activityContext);
-		a.setTitle("Aviso");
-		a.setMessage( mensagem + "\n" + "Valor: " + valor );
+		AlertDialog.Builder alert = new AlertDialog.Builder(instancia.activityContext);
+		alert.setTitle("Aviso");
+		alert.setMessage( mensagem + "\n" + "Valor: " + valor );
 		
-		a.setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
+		alert.setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				
 				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
@@ -460,7 +460,7 @@ public class BusinessConta {
 			}
 		});
 
-		a.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				
 			    leituraInvalida = false;
@@ -468,7 +468,7 @@ public class BusinessConta {
 			}
 		});
 
-		a.show();
+		alert.show();
     	
     }
 
