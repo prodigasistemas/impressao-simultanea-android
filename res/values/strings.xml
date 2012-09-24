@@ -44,11 +44,12 @@
 	</string-array>
 
 	<string name="options_imprimir">Imprimir</string>
-	<string name="options_localizar_pendente">Loc. Pendente</string>
+	<string name="options_imprimir_condominio">Imprimir Condomínio</string>
+	<string name="options_localizar_pendente">Localizar Pendente</string>
     <string name="options_menu_principal">Menu Principal</string>
     <string name="options_lista_cadastro">Lista de Imóveis</string>
-	<string name="options_proximo">Próximo</string>
-	<string name="options_anterior">Anterior</string>
+	<string name="options_proximo">Próximo Imóvel</string>
+	<string name="options_anterior">Imovel Anterior</string>
     
 
 </resources>

@@ -6,21 +6,25 @@
         android:title="@string/options_imprimir"/>
 
     <item
+        android:id="@+id/imprimirContasCondominio"
+        android:title="@string/options_imprimir_condominio"/>
+
+    <item
         android:id="@+id/localizarPendente"
         android:title="@string/options_localizar_pendente"/>
 
-    <!-- <item
+<!--     <item
         android:id="@+id/listCadastros"
-        android:title="@string/options_lista_cadastro"/> -->
-
+        android:title="@string/options_lista_cadastro"/>
+ -->
     <item
         android:id="@+id/imovelAnterior"
         android:icon="@drawable/anterior"
-        android:title="Imóvel Anterior" />
+        android:title="@string/options_anterior" />
 
     <item
         android:id="@+id/proximoImovel"
         android:icon="@drawable/proximo"
-        android:title="Próximo Imóvel" />
+        android:title="@string/options_proximo" />
 
 </menu>

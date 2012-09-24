@@ -933,4 +933,23 @@ public class ControladorImovel {
 		}
     }
 
+    public boolean isPrintingAllowed(){
+	    boolean habilitaOpcaoImpressao = true;
+	    
+	    // Se não for imovel condominial com leitura individualizada ou informativo
+	    if (getImovelSelecionado().isImovelCondominio() || getImovelSelecionado().isImovelInformativo()) {
+
+	    	habilitaOpcaoImpressao = false;
+	    }
+
+    	return habilitaOpcaoImpressao;
+    }
+    
+    public boolean isUltimoImovelCondominio(){
+	    boolean ultimoImovelCondominio = false;
+	    
+
+    	return ultimoImovelCondominio;
+    }
+
 }

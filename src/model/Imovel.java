@@ -175,6 +175,10 @@ public class Imovel {
 		this.imovelStatus = Util.verificarNuloInt(imovelStatus);
 	}
 	
+	public void setImovelStatus(int imovelStatus) {
+		this.imovelStatus = imovelStatus;
+	}
+	
 	public void setImovelEnviado(String imovelEnviado) {
 		this.imovelEnviado = Util.verificarNuloInt(imovelEnviado);
 	}
@@ -380,6 +384,14 @@ public class Imovel {
 	return consumoAgua;
     }
 
+    public void setConsumoAguaFromDB(Consumo consumoAgua) {
+    	this.consumoAgua = consumoAgua;
+    }
+    
+    public void setConsumoEsgotoFromDB(Consumo consumoEsgoto) {
+    	this.consumoEsgoto = consumoEsgoto;
+    }
+    
     public void setConsumoAgua(Consumo consumoAgua) {
 
 	DadosRelatorio dadosRelatorio = DadosRelatorio.getInstancia();

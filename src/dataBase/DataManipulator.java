@@ -462,15 +462,23 @@ public class DataManipulator {
 		
 		fecharCursor(cursor);
 		 
-		 selectDependenciasImovel(imovel);
+		selectDependenciasImovel(imovel);
 		 
-		 return imovel;
+		return imovel;
 	}
 	
 	public Imovel selectDependenciasImovel(Imovel imovel){
 		
 		if (imovel != null){
 			
+			if (selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_AGUA) != null){
+				imovel.setConsumoAguaFromDB(selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_AGUA));
+			}
+			
+			if (selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_POCO) != null){
+				imovel.setConsumoEsgotoFromDB(selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_POCO));
+			}
+		
 			selectDadosQualidadeAgua();
 			selectDadosCategoria(imovel);
 			selectHistoricosConsumo(imovel);
