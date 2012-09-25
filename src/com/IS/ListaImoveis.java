@@ -25,7 +25,7 @@ import business.ControladorRota;
 public class ListaImoveis extends ListActivity {
 	
 	MySimpleArrayAdapter enderecoList;
-	public static int tamanhoListaImoveis;
+	public static long tamanhoListaImoveis;
 	ArrayList<String> listStatusImoveis;
 
     /** Called when the activity is first created. */
@@ -121,10 +121,10 @@ public class ListaImoveis extends ListActivity {
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 			
 			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_CONCLUIDO ){
-				imageView.setImageResource(R.drawable.todo);
+				imageView.setImageResource(R.drawable.done);
 			
 			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_PENDENTE){
-				imageView.setImageResource(R.drawable.done);
+				imageView.setImageResource(R.drawable.todo);
 //			
 //			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO_COM_ANORMALIDADE ){
 //				imageView.setImageResource(R.drawable.done_anormal);

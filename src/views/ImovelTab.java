@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import model.DadosCategoria;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import business.ControladorImovel;
 
@@ -27,6 +30,7 @@ public class ImovelTab extends Fragment {
 	private TextView categoria;
 	ArrayList<String> economias;
 	private View view;
+	private TextView imovelInformativo;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -81,6 +85,7 @@ public class ImovelTab extends Fragment {
 		seqRota = (TextView) view.findViewById(R.id.seqRota);
 		economia = (TextView) view.findViewById(R.id.economias);
 		categoria = (TextView) view.findViewById(R.id.categoria);
+		imovelInformativo = (TextView) view.findViewById(R.id.imovelInformativo);
 		
 		nomeUsuario.setText(ControladorImovel.getInstancia().getImovelSelecionado().getNomeUsuario());
 		matricula.setText(""+ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
@@ -91,6 +96,15 @@ public class ImovelTab extends Fragment {
 		seqRota.setText(""+ControladorImovel.getInstancia().getImovelSelecionado().getSequencialRota());
 		economia.setText(economias);
 		categoria.setText(categorias);
+		
+		if (ControladorImovel.getInstancia().getImovelSelecionado().isImovelInformativo()) {
+			imovelInformativo.setText("Imóvel informativo");
+			imovelInformativo.setBackgroundResource(R.drawable.box_imovel_informativo);
+			imovelInformativo.setTextColor(Color.RED);
+			imovelInformativo.setTextSize(20);
+			imovelInformativo.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 50));
+		}
+			
 		
 		return view;
 	}

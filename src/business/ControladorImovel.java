@@ -952,4 +952,37 @@ public class ControladorImovel {
     	return ultimoImovelCondominio;
     }
 
+    /**
+     * 
+     * Verifica se o imóvel é do tipo informativo.
+     * 
+     * @author Daniel Zaccarias
+     * @date 03/07/2011
+     * 
+     * @param  
+     * @return
+     */
+    public boolean isImovelInformativo(int indcParalizarFaturamentoAgua, 
+    								   int indcParalizarFaturamentoEsgoto,
+    								   int numeroConta,
+    								   String situacaoLigacaoAgua){
+    	boolean informativo = true;
+    	boolean paralizarFaturamento = false;
+    	
+    	if (indcParalizarFaturamentoAgua == Constantes.SIM  || 
+    		indcParalizarFaturamentoEsgoto == Constantes.SIM){
+    		
+    		paralizarFaturamento = true;
+    	}
+    	
+    	if( (numeroConta != Constantes.NULO_INT) || 
+    		(numeroConta == Constantes.NULO_INT && paralizarFaturamento && situacaoLigacaoAgua.equals(Constantes.LIGADO)) ){
+  
+     		informativo = false;
+     	}
+     	
+    	return informativo;
+    }
+ 
+
 }

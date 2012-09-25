@@ -173,42 +173,24 @@ public class DataManipulator {
 																		 "imovel_enviado", 
 																		 "indc_imovel_impresso", 
 																		 "indc_geracao",
-																		 "indicador_paralizar_faturamento_agua",
-																		 "indicador_paralizar_faturamento_esgoto",
-																		 "numero_conta",
-																		 "situacao_lig_agua",
 																		 "matricula",
 																		 }, null, null, null, null, "inscricao asc");
 		
 		if (cursor.moveToFirst()) {
 
 			do {
-				boolean paralizarFaturamento = false;
-				boolean informativo = true;
-				boolean imovelHasMedidor = false;
-				
-				// Verifica se imovel é informativo
-				if (Integer.parseInt(cursor.getString(4)) == Constantes.SIM  || 
-		    		Integer.parseInt(cursor.getString(5)) == Constantes.SIM){
-		        		
-		        	paralizarFaturamento = true;
-		        }
-		        	
-		        if( (Util.verificarNuloInt(cursor.getString(6)) != Constantes.NULO_INT) || 
-		        	(Util.verificarNuloInt(cursor.getString(6)) == Constantes.NULO_INT && paralizarFaturamento && cursor.getString(7).equals(Constantes.LIGADO)) ){
-		      
-		       		informativo = false;
-		       	
-		        // Imóvel é INFORMATIVO!
-		        }else{
-		        	qtdeinformativos++;
-		       	}
 
+				boolean imovelHasMedidor = false;
+
+				// Imóvel é INFORMATIVO!
+				if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_INFORMTIVO) {
+		        	qtdeinformativos++;
+		       	
 		        // Considera apenas imóveis não-informativos na estatística. 
-		        if (!informativo){
-		        	
-					// Verifica se imovel é hidrometrado
-					if(imovelHasMedidor(Integer.parseInt(cursor.getString(8)))){
+		        }else{
+
+		        	// Verifica se imovel é hidrometrado
+					if(imovelHasMedidor(Integer.parseInt(cursor.getString(4)))){
 						imovelHasMedidor = true;
 						qtdeHidrometrados++;
 					
@@ -537,7 +519,7 @@ public class DataManipulator {
 			selectContas(imovel);
 			selectMedidores(imovel);
 			selectTarifacoesMinimas(imovel);
-			selectTarifacoesMinimas(imovel);
+			selectTarifacoesComplementares(imovel);
 		}
 		
 		return imovel;
@@ -989,6 +971,8 @@ public class DataManipulator {
 	}
 
 	public Imovel selectTarifacoesComplementares(Imovel imovel){
+		
+		Log.i("Imovel", ">>" + imovel.getMatricula());
 
 		Cursor cursor = db.query(Constantes.TABLE_TARIFACAO_COMPLEMENTAR, new String[] {"codigo", "data_inicio_vigencia", "codigo_categoria", 
 																						"codigo_subcategoria", "limite_inicial_faixa",
@@ -1011,7 +995,7 @@ public class DataManipulator {
 					tc.setCodigoSubcategoria(cursor.getInt(3));
 					tc.setLimiteInicialFaixa(cursor.getInt(4));
 					tc.setLimiteFinalFaixa(cursor.getInt(5));
-					tc.setValorM3Faixa(cursor.getInt(6));
+					tc.setValorM3Faixa(cursor.getDouble(6));
 					
 					imovel.getTarifacoesComplementares().add(tc);
 					
@@ -1151,7 +1135,7 @@ public class DataManipulator {
 				consumo.setConsumoCobradoMesOriginal(cursor.getInt(5));
 				consumo.setLeituraAtual(cursor.getInt(6));
 				consumo.setTipoConsumo(cursor.getInt(7));
-				consumo.setDiasConsumo(cursor.getInt(8));
+				consumo.setDiasConsumo(cursor.getLong(8));
 				consumo.setAnormalidadeConsumo(cursor.getInt(9));
 				consumo.setAnormalidadeLeituraFaturada(cursor.getInt(10));
 
@@ -1354,12 +1338,16 @@ public class DataManipulator {
 		return db.insert(Constantes.TABLE_GERAL, null, initialValues);
 	}
 
-		public long insertImovel(String linhaArquivo) {
+	public long insertImovel(String linhaArquivo) {
 		ParserUtil parser = new ParserUtil(linhaArquivo);
 		parser.obterDadoParser(2);
 		ContentValues initialValues = new ContentValues();
 		SituacaoTipo situacaoTipo = SituacaoTipo.getInstancia();
 		DadosQualidadeAgua qualidadeAgua = DadosQualidadeAgua.getInstancia();
+		String indcParalizarFaturamentoAgua; 
+		String indcParalizarFaturamentoEsgoto;
+		String numeroConta;
+		String situacaoLigacaoAgua;
 		
 		int matricula = Integer.parseInt(parser.obterDadoParser(9));
 		
@@ -1385,9 +1373,12 @@ public class DataManipulator {
 		initialValues.put("codigo_responsavel", parser.obterDadoParser(9));
 		initialValues.put("nome_responsavel", parser.obterDadoParser(25));
 		initialValues.put("endereco_entrega", parser.obterDadoParser(75));
-		initialValues.put("situacao_lig_agua", parser.obterDadoParser(1));
+		
+		//Situaçao de Ligação de Água
+		situacaoLigacaoAgua = parser.obterDadoParser(1);
+		initialValues.put("situacao_lig_agua", situacaoLigacaoAgua);
+		
 		initialValues.put("situacao_lig_esgoto", parser.obterDadoParser(1));
-
 		initialValues.put("descricao_banco", parser.obterDadoParser(15));
 		initialValues.put("codigo_agencia", parser.obterDadoParser(5));
 		initialValues.put("matricula_condominio", parser.obterDadoParser(9));
@@ -1416,17 +1407,21 @@ public class DataManipulator {
 		initialValues.put("consumo_maximo", parser.obterDadoParser(6));
 		initialValues.put("grupo_faturamento", parser.obterDadoParser(3));
 		initialValues.put("codigo_rota", parser.obterDadoParser(7));
-		initialValues.put("numero_conta", parser.obterDadoParser(9));
+		
+		// Número da Conta
+		numeroConta = parser.obterDadoParser(9);
+		initialValues.put("numero_conta", numeroConta);
 		
 		initialValues.put("tipo_calculo_tarifa", parser.obterDadoParser(2));
 		initialValues.put("endereco_atendimento", parser.obterDadoParser(70));
 		initialValues.put("telefone_localidade_ddd", parser.obterDadoParser(11));
 		initialValues.put("sequencial_rota", parser.obterDadoParser(9));
 		initialValues.put("mensagem_conta1", parser.obterDadoParser(100));
-
 		initialValues.put("mensagem_conta2", parser.obterDadoParser(100));
 		initialValues.put("mensagem_conta3", parser.obterDadoParser(100));
 		
+
+		// DADOS QUALIDADE DA ÁGUA
 		//==========================================================================
 		qualidadeAgua.setTurbidezPadrao(parser.obterDadoParser(20));
 		qualidadeAgua.setPhPadrao(parser.obterDadoParser(20));
@@ -1479,17 +1474,18 @@ public class DataManipulator {
 		qualidadeAgua.setQuantidadeColiformesTotaisConforme(parser.obterDadoParser(6));
 		qualidadeAgua.setQuantidadeColiformesFecaisConforme(parser.obterDadoParser(6));
 		qualidadeAgua.setQuantidadeColiformesTermoTolerantesConforme(parser.obterDadoParser(6));
-		
-		
 		//=============================================================================================
 		
+
 		initialValues.put("consumo_minimo_imovel", parser.obterDadoParser(6));
 		initialValues.put("consumo_minimo_imovel_nao_medido", parser.obterDadoParser(6));
-		
 		initialValues.put("numero_documento_notificacao_debito", parser.obterDadoParser(9));
 		initialValues.put("numero_codigo_barra_notificacao_debito",	parser.obterDadoParser(48));
 		initialValues.put("cpf_cnpj_cliente", parser.obterDadoParser(18));
 		
+		
+		// DADOS SITUACAO TIPO
+		//==========================================================================
 		situacaoTipo.setMatricula(matricula);
 		situacaoTipo.setTipoSituacaoEspecialFaturamento(parser.obterDadoParser(2));
 		situacaoTipo.setIdAnormalidadeConsumoSemLeitura(parser.obterDadoParser(2));
@@ -1502,12 +1498,20 @@ public class DataManipulator {
 		situacaoTipo.setVolumeEsgotoNaoMedidoHistoricoFaturamento(parser.obterDadoParser(6));
 		situacaoTipo.setIndcValidaAgua(parser.obterDadoParser(1));
 		situacaoTipo.setIndcValidaEsgoto(parser.obterDadoParser(1));
+		//=============================================================================================
+
 		
 		initialValues.put("data_leitura_anterior_nao_medido", parser.obterDadoParser(8));
 		initialValues.put("indicador_abastecimento_agua", parser.obterDadoParser(1));
 		initialValues.put("indicador_imovel_sazonal", parser.obterDadoParser(1));
-		initialValues.put("indicador_paralizar_faturamento_agua", parser.obterDadoParser(1));
-		initialValues.put("indicador_paralizar_faturamento_esgoto", parser.obterDadoParser(1));
+		
+		// Indicador Faparalizar Faturamento de Água
+		indcParalizarFaturamentoAgua = parser.obterDadoParser(1);
+		initialValues.put("indicador_paralizar_faturamento_agua", indcParalizarFaturamentoAgua);
+
+		// Indicador Faparalizar Faturamento de Esgoto
+		indcParalizarFaturamentoEsgoto = parser.obterDadoParser(1);
+		initialValues.put("indicador_paralizar_faturamento_esgoto", indcParalizarFaturamentoEsgoto);
 		
 		initialValues.put("opcao_debito_automatico", parser.obterDadoParser(9));
 		initialValues.put("percentual_alternativo_esgoto", parser.obterDadoParser(6));
@@ -1526,14 +1530,24 @@ public class DataManipulator {
 		initialValues.put("valor_rateio_esgoto", "0");
 		initialValues.put("consumo_rateio_agua", "0");
 		initialValues.put("consumo_rateio_esgoto", "0");
-
 		initialValues.put("mensagem_estouro_consumo_1", Constantes.NULO_STRING);
 		initialValues.put("mensagem_estouro_consumo_2", Constantes.NULO_STRING);
 		initialValues.put("mensagem_estouro_consumo_3", Constantes.NULO_STRING);
-		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_PENDENTE));
 		initialValues.put("imovel_enviado", String.valueOf(Constantes.NAO));
 		initialValues.put("indc_imovel_impresso", String.valueOf(Constantes.NAO));
 		initialValues.put("indc_geracao", String.valueOf(Constantes.SIM));
+
+    	// Verifica se o imóvel é informativo
+		boolean informativo = ControladorImovel.getInstancia().isImovelInformativo(Integer.parseInt(indcParalizarFaturamentoAgua), 
+																				   Integer.parseInt(indcParalizarFaturamentoEsgoto), 
+																				   Util.verificarNuloInt(numeroConta), 
+																				   situacaoLigacaoAgua);
+    	if (informativo){
+    		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_INFORMTIVO));
+    	}else{
+    		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_PENDENTE));
+    	}
+		
 
 		return db.insert(Constantes.TABLE_IMOVEL, null, initialValues);
 	}
@@ -2035,6 +2049,10 @@ public class DataManipulator {
 		initialValues.put("valor_tarifa", dff.getValorTarifa());
 		
 		return db.insert(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, null, initialValues);
+	}
+	
+	public long getNumeroDeImoveis() {
+		return DatabaseUtils.queryNumEntries(db, Constantes.TABLE_IMOVEL);
 	}
 	
 	public void fecharCursor(Cursor cursor) {

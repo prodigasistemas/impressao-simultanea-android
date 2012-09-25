@@ -18,8 +18,10 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -75,7 +77,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    tabHost.setOnTabChangedListener(this);
 	    
 	    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-	    
+
 	    // Define a imagem de fundo de acordo com a orientacao do dispositivo
 	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
 	    	tabHost.setBackgroundResource(R.drawable.fundocadastro);

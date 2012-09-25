@@ -2607,22 +2607,13 @@ public class Imovel {
      * @return
      */
     public boolean isImovelInformativo(){
-    	boolean informativo = true;
-    	boolean paralizarFaturamento = false;
     	
-    	if (getIndicadorParalizarFaturamentoAgua() == Constantes.SIM  || 
-    		getIndicadorParalizarFaturamentoEsgoto() == Constantes.SIM){
-    		
-    		paralizarFaturamento = true;
+    	if (imovelStatus == Constantes.IMOVEL_STATUS_INFORMTIVO){
+    		return true;
+    	
+    	}else{
+    		return false;
     	}
-    	
-    	if( (getNumeroConta() != Constantes.NULO_INT) || 
-    		(getNumeroConta() == Constantes.NULO_INT && paralizarFaturamento && getSituacaoLigAgua().equals(Constantes.LIGADO)) ){
-  
-     		informativo = false;
-     	}
-     	
-    	return informativo;
     }
  
     public void setSequencialRotaMarcacao(int sequencialRotaMarcacao) {
