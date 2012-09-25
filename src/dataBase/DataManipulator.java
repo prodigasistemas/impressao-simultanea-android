@@ -488,7 +488,7 @@ public class DataManipulator {
 			selectContas(imovel);
 			selectMedidores(imovel);
 			selectTarifacoesMinimas(imovel);
-			selectTarifacoesMinimas(imovel);
+			selectTarifacoesComplementares(imovel);
 		}
 		
 		return imovel;
@@ -923,6 +923,8 @@ public class DataManipulator {
 	}
 
 	public Imovel selectTarifacoesComplementares(Imovel imovel){
+		
+		Log.i("Imovel", ">>" + imovel.getMatricula());
 
 		Cursor cursor = db.query(Constantes.TABLE_TARIFACAO_COMPLEMENTAR, new String[] {"codigo", "data_inicio_vigencia", "codigo_categoria", 
 																						"codigo_subcategoria", "limite_inicial_faixa",
@@ -945,7 +947,7 @@ public class DataManipulator {
 					tc.setCodigoSubcategoria(cursor.getInt(3));
 					tc.setLimiteInicialFaixa(cursor.getInt(4));
 					tc.setLimiteFinalFaixa(cursor.getInt(5));
-					tc.setValorM3Faixa(cursor.getInt(6));
+					tc.setValorM3Faixa(cursor.getDouble(6));
 					
 					imovel.getTarifacoesComplementares().add(tc);
 					
@@ -1085,7 +1087,7 @@ public class DataManipulator {
 				consumo.setConsumoCobradoMesOriginal(cursor.getInt(5));
 				consumo.setLeituraAtual(cursor.getInt(6));
 				consumo.setTipoConsumo(cursor.getInt(7));
-				consumo.setDiasConsumo(cursor.getInt(8));
+				consumo.setDiasConsumo(cursor.getLong(8));
 				consumo.setAnormalidadeConsumo(cursor.getInt(9));
 				consumo.setAnormalidadeLeituraFaturada(cursor.getInt(10));
 
@@ -1969,6 +1971,10 @@ public class DataManipulator {
 		initialValues.put("valor_tarifa", dff.getValorTarifa());
 		
 		return db.insert(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, null, initialValues);
+	}
+	
+	public long getNumeroDeImoveis() {
+		return DatabaseUtils.queryNumEntries(db, Constantes.TABLE_IMOVEL);
 	}
 	
 	public void fecharCursor(Cursor cursor) {

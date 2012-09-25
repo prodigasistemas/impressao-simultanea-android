@@ -24,7 +24,7 @@ import business.ControladorRota;
 public class ListaImoveis extends ListActivity {
 	
 	MySimpleArrayAdapter enderecoList;
-	public static int tamanhoListaImoveis;
+	public static long tamanhoListaImoveis;
 //	ArrayList<String> listStatusImoveis;
 
     /** Called when the activity is first created. */

@@ -152,7 +152,7 @@ public class Consulta extends ListActivity {
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
     	        	setListAdapter(enderecoList);
-    	        	ListaImoveis.tamanhoListaImoveis = listEnderecoImoveis.size();
+    	        	ListaImoveis.tamanhoListaImoveis = ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis();
     	    	}
     		}
     	}
