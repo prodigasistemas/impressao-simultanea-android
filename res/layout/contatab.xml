@@ -1,281 +1,307 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/fundocadastro" >
+    android:background="@drawable/fundocadastro"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtLeituraFaturaAgua"
-            android:layout_width="wrap_content"
+    <LinearLayout android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Leitura faturada agua: "
-            android:textColor="@color/labelColor" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/leituraFaturadaAgua"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtLeituraFaturaAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Leitura faturada agua: "
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/leituraFaturadaAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtConsumoAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Consumo Água:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/consumoAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtConsumoTipoAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Consumo Tipo Água:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/consumoTipoAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtAnormalidadeConsumoAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Anormalidade Consumo Água:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/anormalidadeConsumoAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtValorDeAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Valor de Água(R$):"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/valorDeAgua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtLeituraFaturadaPoco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Leitura Faturada Poço:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/leituraFaturadaPoco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtConsumoEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Consumo Esgoto:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/consumoEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtConsumoTipoEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Consumo Tipo Esgoto:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/consumoTipoEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtAnormalidadeConsumoEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Anormalidade Consumo Esgoto:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/anormalidadeConsumoEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtValorDeEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Valor de Esgoto(R$):"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/valorDeEsgoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtDiasDeConsumo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Dias de Consumo:"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/diasDeConsumo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtValorDebitos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Valor Débitos(R$):"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/valorDebitos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtValorCreditos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Valor Créditos(R$):"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/valorCreditos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp" >
+
+            <TextView
+                android:id="@+id/txtValorTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Valor Total(R$):"
+                android:textColor="@color/labelColor" />
+
+            <TextView
+                android:id="@+id/valorTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textValueColor" />
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtConsumoAgua"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Hidrômetro:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/consumoAgua"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtConsumoTipoAgua"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Hidrômetro:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/consumoTipoAgua"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtAnormalidadeConsumo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Anormalidade Consumo:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/anormalidadeConsumo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtValorDeAgua"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Valor de Água(R$):"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/valorDeAgua"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtLeituraFaturadaPoco"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Leitura Faturada Poço:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/leituraFaturadaPoco"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtConsumoTipoEsgoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Consumo Tipo Esgoto:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/consumoTipoEsgoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtAnormalidadeConsumoEsgoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Anormalidade Consumo Esgoto:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/anormalidadeConsumoEsgoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtValorDeEsgoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Valor de Esgoto(R$):"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/valorDeEsgoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtDiasDeConsumo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Dias de Consumo:"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/diasDeConsumo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtValorDebitos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Valor Débitos(R$):"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/valorDebitos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtValorCreditos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Valor Créditos(R$):"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/valorCredito"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp" >
-
-        <TextView
-            android:id="@+id/txtValorTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="Valor Total(R$):"
-            android:textColor="@color/labelColor" />
-
-        <TextView
-            android:id="@+id/valorTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textValueColor" />
-    </LinearLayout>
-
-</LinearLayout>
+</ScrollView>
