@@ -153,72 +153,121 @@ public class DataManipulator {
 		return list;
 	}
 	
-	public List<Integer> selectNumeroTodosStatusImoveis() {
+	public List<Integer> selectEstatisticaImoveis() {
 
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		int visitados = 0;
-		int naoVisitados = 0;
-		int visitadosAnormalidade = 0;
-		int naoImpressos = 0;
+		int concluidos = 0;
+		int pendentes = 0;
+		int concluidosAnormalidadeLeitura = 0;
+		int concluidosAnormalidadeConsumo = 0;
 		int impressos = 0;
-		int naoRetidos = 0;
 		int retidos = 0;
 		int transmitidos = 0;
-		int naoTransmitidos = 0;
-
+		int hidrometradosConcluidos = 0;
+		int fixosConcluidos = 0;
+		int qtdeHidrometrados = 0;
+		int qtdeinformativos = 0;
+		int qtdeNaoMedidos = 0;
+		
 		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "imovel_status", 
 																		 "imovel_enviado", 
 																		 "indc_imovel_impresso", 
-																		 "indc_geracao" }, null, null, null, null, "inscricao asc");
+																		 "indc_geracao",
+																		 "indicador_paralizar_faturamento_agua",
+																		 "indicador_paralizar_faturamento_esgoto",
+																		 "numero_conta",
+																		 "situacao_lig_agua",
+																		 "matricula",
+																		 }, null, null, null, null, "inscricao asc");
 		
 		if (cursor.moveToFirst()) {
+
 			do {
-
-				// Verifica imovel_status
-				if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_PENDENTE) {
-					naoVisitados++;
-
-				} else if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_CONCLUIDO) {
-					visitados++;
-
-				} else if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_CONCLUIDO_COM_ANORMALIDADE) {
-					visitadosAnormalidade++;
-				}
-
-				// Verifica imovel_enviado
-				if (Integer.parseInt(cursor.getString(1)) == Constantes.SIM) {
-					transmitidos++;
-
-				} else if (Integer.parseInt(cursor.getString(1)) == Constantes.NAO) {
-					naoTransmitidos++;
-				}
-
-				// Contabiliza imoveis impressos
-				if (Integer.parseInt(cursor.getString(2)) == Constantes.SIM) {
-					impressos++;
-				}else{
-					naoImpressos++;
-				}
+				boolean paralizarFaturamento = false;
+				boolean informativo = true;
+				boolean imovelHasMedidor = false;
 				
-				// Contabiliza imoveis retidos
-				if (Integer.parseInt(cursor.getString(3)) == Constantes.NAO) {
-					retidos++;
-				}else{
-					naoRetidos++;
-				}
+				// Verifica se imovel é informativo
+				if (Integer.parseInt(cursor.getString(4)) == Constantes.SIM  || 
+		    		Integer.parseInt(cursor.getString(5)) == Constantes.SIM){
+		        		
+		        	paralizarFaturamento = true;
+		        }
+		        	
+		        if( (Util.verificarNuloInt(cursor.getString(6)) != Constantes.NULO_INT) || 
+		        	(Util.verificarNuloInt(cursor.getString(6)) == Constantes.NULO_INT && paralizarFaturamento && cursor.getString(7).equals(Constantes.LIGADO)) ){
+		      
+		       		informativo = false;
+		       	
+		        // Imóvel é INFORMATIVO!
+		        }else{
+		        	qtdeinformativos++;
+		       	}
+
+		        // Considera apenas imóveis não-informativos na estatística. 
+		        if (!informativo){
+		        	
+					// Verifica se imovel é hidrometrado
+					if(imovelHasMedidor(Integer.parseInt(cursor.getString(8)))){
+						imovelHasMedidor = true;
+						qtdeHidrometrados++;
+					
+					// Imovel Nao-medido
+					}else{
+						qtdeNaoMedidos++;
+					}
+		        	
+					// Verifica imovel_status
+					if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_PENDENTE) {
+						pendentes++;
+	
+					// Imovel esta concluído
+					} else if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_CONCLUIDO) {
+						concluidos++;
+
+						if (imovelHasMedidor){
+							hidrometradosConcluidos++;
+						}else{
+							fixosConcluidos++;
+						}
+	
+					} else if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_CONCLUIDO_COM_ANORMALIDADE_LEITURA) {
+						concluidosAnormalidadeLeitura++;
+	
+					} else if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_CONCLUIDO_COM_ANORMALIDADE_CONSUMO) {
+						concluidosAnormalidadeConsumo++;
+					}
+	
+					// Verifica imovel_enviado
+					if (Integer.parseInt(cursor.getString(1)) == Constantes.SIM) {
+						transmitidos++;
+					}
+	
+					// Contabiliza imoveis impressos
+					if (Integer.parseInt(cursor.getString(2)) == Constantes.SIM) {
+						impressos++;
+					}
+					
+					// Contabiliza imoveis retidos
+					if (Integer.parseInt(cursor.getString(3)) == Constantes.NAO) {
+						retidos++;
+					}
+		        }
 				
 			} while (cursor.moveToNext());
 
-			list.add(visitados);
-			list.add(naoVisitados);
-			list.add(visitadosAnormalidade);
+			list.add(concluidos);
+			list.add(pendentes);
+			list.add(concluidosAnormalidadeLeitura);
+			list.add(concluidosAnormalidadeConsumo);
 			list.add(transmitidos);
-			list.add(naoTransmitidos);
 			list.add(impressos);
-			list.add(naoImpressos);
 			list.add(retidos);
-			list.add(naoRetidos);
-
+			list.add(hidrometradosConcluidos);
+			list.add(fixosConcluidos);
+			list.add(qtdeHidrometrados);
+			list.add(qtdeNaoMedidos);
+			list.add(qtdeinformativos);
 		}
 	
 		fecharCursor(cursor);
@@ -457,7 +506,7 @@ public class DataManipulator {
           	imovel.setImovelStatus(cursor.getString(78));
           	imovel.setImovelEnviado(cursor.getString(79));
           	imovel.setIndcImovelImpresso(Integer.parseInt(cursor.getString(80)));
-          	imovel.setIndcGeracao(Integer.parseInt(cursor.getString(81)));
+          	imovel.setIndcGeracaoConta(Integer.parseInt(cursor.getString(81)));
 		}
 		
 		fecharCursor(cursor);
@@ -889,6 +938,23 @@ public class DataManipulator {
 		fecharCursor(cursor);
 
 		return imovel;
+	}
+
+	public boolean imovelHasMedidor(int matricula) {
+		
+		boolean result = false;
+		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"id", 
+																		 "matricula" }, "matricula = " + matricula, null, null, null, "id asc");
+		
+		Medidor medidor = new Medidor();
+		
+		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().clear();
+
+		if (cursor.moveToFirst()) {
+			result = true;
+		}
+
+		return result;
 	}
 
 	public Imovel selectTarifacoesMinimas(Imovel imovel){
@@ -1464,7 +1530,7 @@ public class DataManipulator {
 		initialValues.put("mensagem_estouro_consumo_1", Constantes.NULO_STRING);
 		initialValues.put("mensagem_estouro_consumo_2", Constantes.NULO_STRING);
 		initialValues.put("mensagem_estouro_consumo_3", Constantes.NULO_STRING);
-		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_PENDENTE));
+		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_PENDENTE));
 		initialValues.put("imovel_enviado", String.valueOf(Constantes.NAO));
 		initialValues.put("indc_imovel_impresso", String.valueOf(Constantes.NAO));
 		initialValues.put("indc_geracao", String.valueOf(Constantes.SIM));
@@ -1943,7 +2009,7 @@ public class DataManipulator {
 		initialValues.put("imovel_status", String.valueOf(imovel.getImovelStatus()));
 		initialValues.put("imovel_enviado", String.valueOf(imovel.getIndcImovelEnviado()));
 		initialValues.put("indc_imovel_impresso", String.valueOf(imovel.getIndcImovelImpresso()));
-		initialValues.put("indc_geracao", String.valueOf(imovel.getIndcGeracao()));
+		initialValues.put("indc_geracao", String.valueOf(imovel.getIndcGeracaoConta()));
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
 	}

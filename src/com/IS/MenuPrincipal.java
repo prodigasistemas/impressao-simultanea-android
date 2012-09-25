@@ -64,7 +64,7 @@ public class MenuPrincipal extends Activity {
 	
     //---the images to display---
     Integer[] imageIDs = {
-            R.drawable.menu_cadastros,
+            R.drawable.menu_lista_imoveis,
             R.drawable.menu_info,
             R.drawable.menu_consulta,
             R.drawable.menu_arquivo_completo,
@@ -151,7 +151,7 @@ public class MenuPrincipal extends Activity {
         	    	ArrayList<String> listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(null);
         	    	
         	    	for (int i=0; i < listStatusImoveis.size(); i++){
-        	    		if ( Integer.parseInt(listStatusImoveis.get(i)) == Constantes.IMOVEL_PENDENTE ){
+        	    		if ( Integer.parseInt(listStatusImoveis.get(i)) == Constantes.IMOVEL_STATUS_PENDENTE ){
         	    			statusOk = false;
         				}
         	    	}

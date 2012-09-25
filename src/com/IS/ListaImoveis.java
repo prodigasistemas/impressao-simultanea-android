@@ -2,6 +2,7 @@ package com.IS;
 
 import java.util.ArrayList;
 
+import util.Constantes;
 import views.MainTab;
 import android.app.Activity;
 import android.app.ListActivity;
@@ -25,7 +26,7 @@ public class ListaImoveis extends ListActivity {
 	
 	MySimpleArrayAdapter enderecoList;
 	public static int tamanhoListaImoveis;
-//	ArrayList<String> listStatusImoveis;
+	ArrayList<String> listStatusImoveis;
 
     /** Called when the activity is first created. */
     @Override
@@ -50,6 +51,7 @@ public class ListaImoveis extends ListActivity {
     	
 		if (ControladorRota.getInstancia().getDataManipulator() != null){
 			
+	    	listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(null);
 	    	ArrayList<String> listEnderecoImoveis = (ArrayList<String>) ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(null);
 	    	tamanhoListaImoveis = listEnderecoImoveis.size();
 	    	
@@ -118,15 +120,15 @@ public class ListaImoveis extends ListActivity {
 
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 			
-//			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_PENDENTE ){
+			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_CONCLUIDO ){
 				imageView.setImageResource(R.drawable.todo);
 			
-//			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO){
-//				imageView.setImageResource(R.drawable.done);
+			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_PENDENTE){
+				imageView.setImageResource(R.drawable.done);
 //			
 //			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO_COM_ANORMALIDADE ){
 //				imageView.setImageResource(R.drawable.done_anormal);
-//			}
+			}
 
 			return rowView;
 		}

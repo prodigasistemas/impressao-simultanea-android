@@ -228,7 +228,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    		boolean leituraInvalida = true;
 	    		
 	    		// Se o imovel já foi concluido e possui consumo de agua ou esgoto já calculado.
-	    		if ( (getImovelSelecionado().getImovelStatus() != Constantes.IMOVEL_PENDENTE) &&
+	    		if ( (getImovelSelecionado().getImovelStatus() != Constantes.IMOVEL_STATUS_PENDENTE) &&
 	    				(getImovelSelecionado().getConsumoAgua() != null || getImovelSelecionado().getConsumoEsgoto() != null) ) {
 	    			
 	    			// Nao será recalculado o consumo
@@ -240,7 +240,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    			leituraInvalida = BusinessConta.getInstancia(this).imprimirCalculo(true, false);
 	    		}
 	    		
-	    		getImovelSelecionado().setIndcGeracao(Constantes.SIM);
+	    		getImovelSelecionado().setIndcGeracaoConta(Constantes.SIM);
 	    		
 	    		// Caso o valor da conta seja menor que o valor permitido para ser impresso, não imprimir a conta.
 	    		boolean valorAcimaDoMinimo = true;
@@ -293,7 +293,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    			
 	    		} else if (!leituraInvalida && (valorContaMaiorPermitido || reterConta)){
 	    			
-	    			getImovelSelecionado().setIndcGeracao(Constantes.NAO);
+	    			getImovelSelecionado().setIndcGeracaoConta(Constantes.NAO);
 		    		showMessage("Conta retida, entrega posterior!");
 //	    			Toast.makeText(this, "Conta retida, entrega posterior!", Toast.LENGTH_LONG).show();
 	    			permiteImpressao = false;
@@ -311,7 +311,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    				(getImovelSelecionado().getIndicadorParalizarFaturamentoAgua() == Constantes.SIM || 
 	    				getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == Constantes.SIM)){
 	    			
-	    			getImovelSelecionado().setIndcGeracao(Constantes.NAO);
+	    			getImovelSelecionado().setIndcGeracaoConta(Constantes.NAO);
 		    		showMessage("Não é permitido a impressão de conta deste imóvel.");
 //	    			Toast.makeText(this, "Não é permitido a impressão de conta deste imóvel.", Toast.LENGTH_LONG).show();
 	    			permiteImpressao = false;
@@ -333,7 +333,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    			// Validar situacao do retorno do calculo
 	    			if (leituraInvalida == false) {
 	    				boolean erroImpressao = false;
-//	    					erroImpressao = Util.imprimirConta(Constantes.IMPRESSAO_NORMAL);
 	    				imprimirConta();
 	    				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 	    				
@@ -345,7 +344,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    		
 	    		if (!permiteImpressao){
 	    			// Daniel - lista de imoveis impressos
-	    			getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_CONCLUIDO);
+	    			getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 	    			ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 	    			callProximoImovel();
 	    		}
@@ -370,7 +369,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	public void localizarImovelPendente() {
 		
 		// Se nao encontrar imovel com status pendente
-		if (ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_PENDENTE) == null) {
+		if (ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE) == null) {
 			Toast.makeText(this, "Não existem imóveis pendentes", Toast.LENGTH_LONG).show();
 			return;
 		}
@@ -632,7 +631,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     	}
     	
 		// Imovel da lista de imoveis pendentes
-		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_CONCLUIDO);
+		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 
 		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 //		Repositorio.salvarObjeto(getImovelSelecionado());

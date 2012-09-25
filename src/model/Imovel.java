@@ -142,7 +142,7 @@ public class Imovel {
     private int imovelEnviado;
     private int indcImovelEnviado = Constantes.NAO;
     private int indcImovelImpresso = Constantes.NAO;
-    private int indcGeracao = Constantes.SIM;
+    private int indcGeracaoConta = Constantes.SIM;
 
     // ====================================================================================
 
@@ -363,12 +363,12 @@ public class Imovel {
 //		Repositorio.salvarObjeto( Configuracao.getInstancia() );	
     }
 
-    public int getIndcGeracao() {
-	return indcGeracao;
+    public int getIndcGeracaoConta() {
+    	return indcGeracaoConta;
     }
 
-    public void setIndcGeracao(int indcGeracao) {
-	this.indcGeracao = indcGeracao;
+    public void setIndcGeracaoConta(int indcGeracaoConta) {
+    	this.indcGeracaoConta = indcGeracaoConta;
     }
 
     public void setIndcImovelImpresso(int imovelImpressao) {
@@ -378,10 +378,9 @@ public class Imovel {
     public void setQuantidadeContasImpressas(int quantidadeImpressao) {
     	this.quantidadeContasImpressas = quantidadeImpressao;
     }
-
     
     public Consumo getConsumoAgua() {
-	return consumoAgua;
+    	return consumoAgua;
     }
 
     public void setConsumoAguaFromDB(Consumo consumoAgua) {
@@ -1822,7 +1821,7 @@ public class Imovel {
 		 **/
 		if ( this.indcImovelCalculado == Constantes.SIM && 
 			 this.indcImovelEnviado == Constantes.NAO && 
-			 (this.indcImovelImpresso == Constantes.SIM || this.indcGeracao == Constantes.NAO) && 
+			 (this.indcImovelImpresso == Constantes.SIM || this.indcGeracaoConta == Constantes.NAO) && 
 			 this.valorResidualCredito == 0d && 
 			 this.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 ) == null &&
 			 enviarContaValorMaiorPermitido) {

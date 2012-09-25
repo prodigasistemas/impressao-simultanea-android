@@ -27,19 +27,11 @@
 	    <Button android:id="@+id/buttonStart" android:layout_marginLeft="20dp" android:background="@drawable/btn_custom" android:gravity="right" android:layout_weight="0" android:layout_width="wrap_content" android:layout_height="wrap_content" />
 	</LinearLayout>
     
-    <TextView
-        android:id="@+id/versao"
-        android:layout_width="304dp"
-        android:layout_height="wrap_content"
-        android:text="Versão: 1.0"
-        android:textColor="@color/labelColor"
-        android:textSize="22dp" />
-
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="@android:color/transparent" />
-
-
+    <LinearLayout     android:orientation="horizontal" android:layout_width="304dp" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+	    <TextView  android:id="@+id/txtVersao" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text= "Versão: " android:textColor="@color/labelColor" android:textSize="22dp" />
+	    <TextView  android:id="@+id/versao" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text= "@string/app_versao" android:textColor="@color/labelColor" android:textSize="22dp" />
+	</LinearLayout>
+    
+    
+    
 </LinearLayout>

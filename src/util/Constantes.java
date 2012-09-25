@@ -58,15 +58,7 @@ public class Constantes {
    
     public static final int IMOVEL_PROPRIETARIO_RESIDENCIAL = 1;
     public static final int IMOVEL_PROPRIETARIO_COMERCIAL = 2;
-    
-    public static final int IMOVEL_RESPONSAVEL_RESIDENCIAL = 1;
-    public static final int IMOVEL_RESPONSAVEL_COMERCIAL = 2;
-    
-    public static final int FONTE_ABASTECIMENTO_COSANPA = 0;
-    public static final int FONTE_ABASTECIMENTO_PROPRIO = 1;
-    public static final int FONTE_ABASTECIMENTO_MISTO = 2;
-    public static final int FONTE_ABASTECIMENTO_OUTRO = 3;
-    
+        
     public static final int METODO_BUSCA_TODOS = 0;
     public static final int METODO_BUSCA_MATRICULA = 1;
     public static final int METODO_SEQUENCIAL_ROTA = 2;
@@ -106,12 +98,26 @@ public class Constantes {
     public static final String DATABASE_NAME = "ImpressaoSimultanea.db";
 	public static final String DATABASE_PATH = "/data/data/com.IS/databases/";
 	
+    public static final int IMOVEL_STATUS_CONCLUIDO = 0;
+    public static final int IMOVEL_STATUS_PENDENTE = 1;
+    public static final int IMOVEL_STATUS_CONCLUIDO_COM_ANORMALIDADE_LEITURA = 2;
+    public static final int IMOVEL_STATUS_CONCLUIDO_COM_ANORMALIDADE_CONSUMO = 3;
+    public static final int IMOVEL_STATUS_INFORMTIVO = 4;
+
+	// Dados Estatisticos
     public static final int IMOVEL_CONCLUIDO = 0;
     public static final int IMOVEL_PENDENTE = 1;
-    public static final int IMOVEL_CONCLUIDO_COM_ANORMALIDADE = 2;
-    public static final int IMOVEL_RETIDO = 3;
+    public static final int IMOVEL_CONCLUIDO_COM_ANORMALIDADE_LEITURA = 2;
+    public static final int IMOVEL_CONCLUIDO_COM_ANORMALIDADE_CONSUMO = 3;
     public static final int IMOVEL_TRANSMITIDO = 4;
-    public static final int IMOVEL_NAO_TRANSMITIDO = 5;
+    public static final int IMOVEL_IMPRESSO = 5;
+    public static final int IMOVEL_RETIDO = 6;
+    public static final int IMOVEL_HIDROMETRADO_CONCLUIDO = 7;
+    public static final int IMOVEL_NAO_MEDIDO_CONCLUIDO = 8;
+    public static final int NUMERO_HIDROMETRADO = 9;
+    public static final int NUMERO_NAO_MEDIDO = 10;
+    public static final int NUMERO_INFORMATIVO = 11;
+
     
     /**
      * Tipo faturamento
@@ -119,7 +125,7 @@ public class Constantes {
     public static final int TIPO_FATURAMENTO_AGUA = 1;
     public static final int TIPO_FATURAMENTO_ESGOTO = 2;
     public static final int TIPO_FATURAMENTO_AGUA_PROPORCIONAL = 3;
-    public static final int TIPO_FATURAMENTO_ESGOTO_PROPORCIONAL = 3;
+    public static final int TIPO_FATURAMENTO_ESGOTO_PROPORCIONAL = 4;
 
     /**
      * COD. FEBRABAN da COSANPA
