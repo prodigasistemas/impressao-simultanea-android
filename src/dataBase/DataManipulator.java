@@ -908,7 +908,7 @@ public class DataManipulator {
 			medidor.setLeituraAtualFaturamento(cursor.getInt(22));
 			medidor.setLeituraRelatorio(cursor.getInt(23));
 			medidor.setAnormalidadeRelatorio(cursor.getInt(24));
-			medidor.setMatricula(Integer.parseInt(cursor.getString(25)));
+			medidor.setMatricula(cursor.getInt(25));
 
 		} else {
 			medidor.setNumeroHidrometro("");
@@ -996,6 +996,9 @@ public class DataManipulator {
 					tc.setLimiteInicialFaixa(cursor.getInt(4));
 					tc.setLimiteFinalFaixa(cursor.getInt(5));
 					tc.setValorM3Faixa(cursor.getDouble(6));
+					
+					Log.i("inicial", ">>" + tc.getLimiteInicialFaixa());
+					Log.i("final", ">>" + tc.getLimiteFinalFaixa());
 					
 					imovel.getTarifacoesComplementares().add(tc);
 					
@@ -1135,7 +1138,7 @@ public class DataManipulator {
 				consumo.setConsumoCobradoMesOriginal(cursor.getInt(5));
 				consumo.setLeituraAtual(cursor.getInt(6));
 				consumo.setTipoConsumo(cursor.getInt(7));
-				consumo.setDiasConsumo(cursor.getLong(8));
+				consumo.setDiasConsumo(cursor.getInt(8));
 				consumo.setAnormalidadeConsumo(cursor.getInt(9));
 				consumo.setAnormalidadeLeituraFaturada(cursor.getInt(10));
 

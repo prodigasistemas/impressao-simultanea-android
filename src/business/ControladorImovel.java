@@ -42,25 +42,14 @@ public class ControladorImovel {
     public void setImovelSelecionado(Imovel imovelSelecionado){
     	ControladorImovel.imovelSelecionado = imovelSelecionado;
     }
-//    
-//    public void setAnormalidadeImovelSelecionado(AnormalidadeImovel anormalidadeImovelSelecionado){
-//    	Controlador.anormalidadeImovelSelecionado = anormalidadeImovelSelecionado;
-//    }
-//    
-//    
-//    public void setRamosAtividade(Registro ramosAtividade){
-//    	Controlador.ramosAtividade = ramosAtividade;
-//    }
      
     public void setImovelSelecionadoByListPosition(int listPosition){
-    	initImovelTabs();
     	setImovelListPosition(listPosition);
     	idImovelSelecionado = getIdImovelSelecionado(listPosition, null);
     	instancia.setImovelSelecionado(ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado));
     }
     
     public void setImovelSelecionadoByListPositionInConsulta(int listPositionInConsulta, String condition){
-    	initImovelTabs();
     	idImovelSelecionado = getIdImovelSelecionado(listPositionInConsulta, condition);
     	setImovelListPosition(getImovelListPositionById(idImovelSelecionado));
 
@@ -68,14 +57,9 @@ public class ControladorImovel {
     }
     
     public void setImovelSelecionado(long id){
-    	initImovelTabs();
     	idImovelSelecionado = id;
 
     	instancia.setImovelSelecionado(ControladorRota.getInstancia().dataManipulator.selectImovel("id = " + idImovelSelecionado));
-    }
-    
-    public void initImovelTabs(){
-        imovelSelecionado = new Imovel();
     }
     
     public int getIdImovelSelecionado(int listPosition, String condition){
