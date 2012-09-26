@@ -128,6 +128,25 @@ public class DataManipulator {
 		return list;
 	}
 
+	public int selectMatriculaMedidor(String condition) {
+		
+		int matricula = 0;
+		Cursor cursor;
+
+		if (condition == Constantes.NULO_STRING || condition == null) {
+			cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"matricula" }, null, null, null, null, "id asc");
+
+		} else {
+			cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"matricula" }, condition, null, null, null, "id asc");
+		}
+
+		if (cursor.moveToFirst()) {
+			matricula = cursor.getInt(0);
+		}
+
+		return matricula;
+	}
+
 	public List<String> selectStatusImoveis(String condition) {
 
 		ArrayList<String> list = new ArrayList<String>();
@@ -1713,7 +1732,7 @@ public class DataManipulator {
 
 		initialValues.put("matricula", parser.obterDadoParser(9));
 		initialValues.put("tipo_medicao", parser.obterDadoParser(1));
-		initialValues.put("numero_hidrometro", parser.obterDadoParser(11));
+		initialValues.put("numero_hidrometro", parser.obterDadoParser(11).trim());
 		initialValues.put("data_instalacao_hidrometro",	parser.obterDadoParser(8));
 		initialValues.put("num_digitos_leitura_hidrometro",	parser.obterDadoParser(1));
 		initialValues.put("leitura_anterior_faturamento", parser.obterDadoParser(7));
