@@ -3,14 +3,18 @@ package views;
 import java.util.ArrayList;
 
 import model.DadosCategoria;
+import com.IS.R.color;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import business.ControladorImovel;
@@ -31,6 +35,8 @@ public class ImovelTab extends Fragment {
 	ArrayList<String> economias;
 	private View view;
 	private TextView imovelInformativo;
+	private ImageView imovelInformativoImage;
+	private LinearLayout imovelInformativoLayout;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -86,6 +92,8 @@ public class ImovelTab extends Fragment {
 		economia = (TextView) view.findViewById(R.id.economias);
 		categoria = (TextView) view.findViewById(R.id.categoria);
 		imovelInformativo = (TextView) view.findViewById(R.id.imovelInformativo);
+		imovelInformativoImage = (ImageView) view.findViewById(R.id.imovelInformativoImage);
+		imovelInformativoLayout = (LinearLayout) view.findViewById(R.id.imovelInformativoLayout);
 		
 		nomeUsuario.setText(ControladorImovel.getInstancia().getImovelSelecionado().getNomeUsuario());
 		matricula.setText(""+ControladorImovel.getInstancia().getImovelSelecionado().getMatricula());
@@ -98,11 +106,13 @@ public class ImovelTab extends Fragment {
 		categoria.setText(categorias);
 		
 		if (ControladorImovel.getInstancia().getImovelSelecionado().isImovelInformativo()) {
-			imovelInformativo.setText("Imóvel informativo");
-			imovelInformativo.setBackgroundResource(R.drawable.box_imovel_informativo);
-			imovelInformativo.setTextColor(Color.RED);
+			imovelInformativoLayout.setBackgroundResource(R.drawable.box_imovel_informativo);
+			imovelInformativo.setText("  Imóvel informativo");
+			imovelInformativo.setTextColor(Color.parseColor("#2764D4"));
 			imovelInformativo.setTextSize(20);
-			imovelInformativo.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 50));
+			imovelInformativo.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40));
+			
+			imovelInformativoImage.setImageResource(R.drawable.informativo32x32);
 		}
 			
 		

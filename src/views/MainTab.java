@@ -18,10 +18,8 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -370,14 +368,15 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 	public void localizarImovelPendente() {
 		
+		Imovel imovelPendente = ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE);
+		
 		// Se nao encontrar imovel com status pendente
-		if (ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE) == null) {
+		if (imovelPendente == null) {
 			Toast.makeText(this, "Não existem imóveis pendentes", Toast.LENGTH_LONG).show();
 			return;
 		}
 		
-		ControladorImovel.getInstancia()
-				.setImovelListPosition(new Integer(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getId()))-1);
+		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(Long.valueOf(imovelPendente.getId()).intValue()-1);
 		
 	}
 	
