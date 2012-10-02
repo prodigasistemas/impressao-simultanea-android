@@ -35,10 +35,8 @@ public class Consulta extends ListActivity {
 	ArrayList<Imovel> listImoveis;
 	Spinner spinnerMetodoBusca;
 	Spinner spinnerFiltro;
-	String filterCondition = null;
 	String searchCondition = null;
-	static int metodoBusca = Constantes.METODO_BUSCA_TODOS;
-	static int filtroBusca = Constantes.FILTRO_BUSCA_TODOS;
+	static int metodoBusca = Constantes.METODO_BUSCA_NENHUM;
 
 
     /** Called when the activity is first created. */
@@ -47,8 +45,7 @@ public class Consulta extends ListActivity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.consulta);
  
-    	metodoBusca = 0;
-    	filtroBusca = 0;
+    	metodoBusca = Constantes.METODO_BUSCA_NENHUM;
     	
     	// Spinner Metodo Busca
     	spinnerMetodoBusca = (Spinner) findViewById(R.id.spinnerMetodoBusca);
@@ -57,13 +54,6 @@ public class Consulta extends ListActivity {
         spinnerMetodoBusca.setAdapter(adapter);
         metodoBuscaOnItemSelectedListener(spinnerMetodoBusca);
         
-        // Spinner Filtrar por.
-        spinnerFiltro = (Spinner) findViewById(R.id.spinnerFiltro);
-        adapter = ArrayAdapter.createFromResource(this, R.array.filtro, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFiltro.setAdapter(adapter);
-        filtroBuscaOnItemSelectedListener(spinnerFiltro);
-
         // Deixa o fundo da lista transparente quando feito o scroll
         this.getListView().setCacheColorHint(0);
         
@@ -89,65 +79,38 @@ public class Consulta extends ListActivity {
     	enderecoList = null;
     	setListAdapter(enderecoList);
 
-    		if (ControladorRota.getInstancia().getDataManipulator() != null){
+    		if (ControladorRota.getInstancia().getDataManipulator() != null &&
+    			metodoBusca != Constantes.METODO_BUSCA_NENHUM){
     			
-    			filterCondition = null;
-    			String filterPreCondition = null;
     			searchCondition = null;
 
-    			String valorBusca = "\"" + ((EditText)findViewById(R.id.consulta)).getText().toString().replaceAll("[-]", "").replaceAll("[.]", "").replaceAll("[/]", "") + "\"";
-    			
-    			//Verifica filtro de busca
-    			if (filtroBusca == Constantes.FILTRO_BUSCA_TODOS){
-    				searchCondition = "";
-    			
-    			}
+    			String valorBusca = "\"" + ((EditText)findViewById(R.id.consulta)).getText().toString() + "\"";
     			
     			// Verifica Método de Busca				
-	    		if (metodoBusca == Constantes.METODO_BUSCA_TODOS){
-    				filterCondition = searchCondition;	    				    			
+    			if (metodoBusca == Constantes.METODO_BUSCA_HIDROMETRO){
 	    			
-	    		} else if (metodoBusca == Constantes.METODO_BUSCA_MATRICULA){
+	    			// Busca a matricula do imovel pelo numero do hidrômetro.
+	    			valorBusca = String.valueOf(ControladorRota.getInstancia().getDataManipulator().selectMatriculaMedidor("numero_hidrometro = " + valorBusca + " COLLATE NOCASE"));
 	    			
-	    			if (searchCondition.length() > 0){
-	        			
-	    				filterCondition = searchCondition + " AND ";	    			
-	    				filterCondition += "(matricula = " + valorBusca + ")";
+	    			searchCondition = "(matricula = " + valorBusca + ")";	    				
 
-	    			}else{
-	    				filterCondition = "(matricula = " + valorBusca + ")";	    				
-	    			}	    			
+	    		} else if (metodoBusca == Constantes.METODO_BUSCA_MATRICULA){
+	    			searchCondition = "(matricula = " + valorBusca + ")";	    				
 
     			} else if (metodoBusca == Constantes.METODO_SEQUENCIAL_ROTA) {
     				Log.i("VALOR BUSCA", valorBusca);
-    				if (searchCondition.length() > 0) {
-    					filterCondition = String.format("%s AND (sequencial_rota = %s)", searchCondition, valorBusca);
-    				} else {
-    					filterCondition = String.format("(sequencial_rota = %s)", valorBusca);
-    				}
+    				searchCondition = String.format("(sequencial_rota = %s)", valorBusca);
+
+    			} else if (metodoBusca == Constantes.METODO_SEQUENCIAL) {
+    				searchCondition = String.format("(id = %s)", valorBusca);
+
     			} else if (metodoBusca == Constantes.METODO_QUADRA) {
-    				if (searchCondition.length() > 0) {
-    					filterCondition = String.format("%s AND (quadra = %s)", searchCondition, valorBusca);
-    				} else {
-    					filterCondition = String.format("(quadra = %s)", valorBusca);
-    				}
+    				searchCondition = String.format("(quadra = %s)", valorBusca);
     			}
 
-	    		Log.i("FILTRO", filterCondition);
+	    		Log.i("FILTRO", searchCondition);
 	    		
-    			// Aplica condicoes de filtro
-//    	    	listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(filterCondition);
-    	    	
-    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(filterCondition);
-
-//	    		listImoveis = (ArrayList<Imovel>) ControladorRota.getInstancia().getDataManipulator()
-//    	    			.selectImovelCondition(filterCondition);
-//    	    	
-//    	    	ArrayList<String> enderecos = new ArrayList<String>();
-//    	    	for (Imovel imovel : listImoveis) {
-//    	    		Log.i("IMOVEL", ""+imovel.getMatricula());
-//					enderecos.add(imovel.getEndereco());
-//				}
+    	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(searchCondition);
 
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
     	        	enderecoList = new MySimpleArrayAdapter(this, listEnderecoImoveis);
@@ -162,7 +125,7 @@ public class Consulta extends ListActivity {
 		// user clicked a list item, make it "selected"
 		enderecoList.setSelectedPosition(position);
 
-		ControladorImovel.getInstancia().setImovelSelecionadoByListPositionInConsulta(position, filterCondition);
+		ControladorImovel.getInstancia().setImovelSelecionadoByListPositionInConsulta(position, searchCondition);
 		Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
 		startActivityForResult(myIntent, 0);
 	}
@@ -232,18 +195,6 @@ public class Consulta extends ListActivity {
     		public void onItemSelected(AdapterView parent, View v, int position, long id){
         		metodoBusca = position;
         		
-        	}
-    		
-    		public void onNothingSelected(AdapterView<?> arg0) {}
-    	});
-	}	
-	
-	public void filtroBuscaOnItemSelectedListener (Spinner spinnerFiltro){
-
-		spinnerFiltro.setOnItemSelectedListener(new OnItemSelectedListener () {
-        	
-    		public void onItemSelected(AdapterView parent, View v, int position, long id){
-        		filtroBusca = position;
         	}
     		
     		public void onNothingSelected(AdapterView<?> arg0) {}

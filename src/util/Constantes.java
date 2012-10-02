@@ -59,10 +59,12 @@ public class Constantes {
     public static final int IMOVEL_PROPRIETARIO_RESIDENCIAL = 1;
     public static final int IMOVEL_PROPRIETARIO_COMERCIAL = 2;
         
-    public static final int METODO_BUSCA_TODOS = 0;
-    public static final int METODO_BUSCA_MATRICULA = 1;
-    public static final int METODO_SEQUENCIAL_ROTA = 2;
-    public static final int METODO_QUADRA = 3;
+    public static final int METODO_BUSCA_NENHUM = 0;
+    public static final int METODO_BUSCA_HIDROMETRO = 1;
+    public static final int METODO_BUSCA_MATRICULA = 2;
+    public static final int METODO_SEQUENCIAL_ROTA = 3;
+    public static final int METODO_SEQUENCIAL = 4;
+    public static final int METODO_QUADRA = 5;
     
     public static final int FILTRO_BUSCA_TODOS = 0;
     public static final int FILTRO_BUSCA_VISITADOS_SUCESSO = 1;

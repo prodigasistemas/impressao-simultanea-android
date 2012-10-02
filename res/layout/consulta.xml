@@ -12,11 +12,6 @@
 			<Spinner android:id="@+id/spinnerMetodoBusca" android:layout_height="wrap_content" android:drawSelectorOnTop="true" android:layout_width="fill_parent"></Spinner>
 		</LinearLayout>
 
-		<LinearLayout  android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayoutFiltro">
-			<TextView android:text="Filtrar:" android:id="@+id/txtUsuarioEProprietario" android:textColor="@color/textColorYellowBackground" android:textSize="15dp" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<Spinner android:id="@+id/spinnerFiltro" android:layout_height="wrap_content" android:drawSelectorOnTop="true" android:layout_width="fill_parent"></Spinner>
-		</LinearLayout>
-	
 		<EditText android:id="@+id/consulta" android:layout_margin="10dip" android:background="@drawable/edittext_rounded_corners" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="textCapCharacters"></EditText>
 	</LinearLayout>
 
