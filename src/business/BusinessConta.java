@@ -77,8 +77,12 @@
  */
 package business;
 
+import java.util.List;
+
 import model.Anormalidade;
 import model.Consumo;
+import model.DadosCategoria;
+import model.DadosFaturamentoFaixa;
 import model.Imovel;
 import util.Constantes;
 import util.Util;
@@ -100,7 +104,8 @@ public class BusinessConta {
     /**
      * Metodo responsavel por chamar o calculo do consumo
      */
-    public Consumo chamarCalculoConsumo(boolean salvarImovel) {
+    @SuppressWarnings("unchecked")
+	public Consumo chamarCalculoConsumo(boolean salvarImovel) {
 
 	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
 		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
@@ -169,6 +174,7 @@ public class BusinessConta {
 		// Update DB - Medidor poço
 		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
 	}
+	
 	if (salvarImovel){
 		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 
@@ -182,6 +188,28 @@ public class BusinessConta {
 		
 		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
 			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		}
+		if (getImovelSelecionado().getDadosCategoria().size() > 0) {
+			for (DadosCategoria dc : getImovelSelecionado().getDadosCategoria()) {
+				if (dc.getFaturamentoAgua() != null) {
+					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoAgua())).intValue());
+					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().indexOf(dc)).getFaturamentoAgua().getFaixas();
+					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
+						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
+						
+						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
+					}
+					
+				} else if (dc.getFaturamentoEsgoto() != null) {
+					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoEsgoto())).intValue());
+					
+					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(dc.getId()-1).getFaturamentoEsgoto().getFaixas();
+					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
+						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
+						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
+					}
+				}
+			}
 		}
 	}
 
@@ -317,6 +345,8 @@ public class BusinessConta {
 		if (salvarImovel){
 			
 			ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+			
+			Consumo agua = getImovelSelecionado().getConsumoAgua();
 
 			if (getImovelSelecionado().getConsumoAgua() != null){
 				ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());

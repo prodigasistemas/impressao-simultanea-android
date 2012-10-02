@@ -273,8 +273,11 @@ public class ControladorImovel {
     /**
      * [SB0001] - Cálculo Simples para uma Única Tarifa.
      */
-    private void calculoSimples(Imovel imovel, Consumo consumo,int tipoMedicao, Date dataInicioVigencia) {
-
+    @SuppressWarnings("unchecked")
+	private void calculoSimples(Imovel imovel, Consumo consumo,int tipoMedicao, Date dataInicioVigencia) {
+    	
+    	DadosFaturamentoFaixa faixaParaInclusao = null;
+    	
 		// 1. Verificamos se o tipo de calculo é por categoria ou por
 		// subcategoria
 		boolean tipoTarifaPorCategoria = ControladorImovel.getInstancia()
@@ -443,7 +446,7 @@ public class ControladorImovel {
 	
 		    }
 	
-		    Vector faixasParaInclusao = new Vector();
+		    List<DadosFaturamentoFaixa> faixasParaInclusao = new ArrayList<DadosFaturamentoFaixa>();
 	
 		    // 5.4
 		        if (consumoExcedente > 0) {
@@ -513,16 +516,20 @@ public class ControladorImovel {
 					    .getLimiteFinalFaixa()
 					    - limiteFaixaFimAnterior;
 	
-				    DadosFaturamentoFaixa faixaParaInclusao = new DadosFaturamentoFaixa(
+				     faixaParaInclusao = new DadosFaturamentoFaixa(
 					    consumoFaturadoFaixa, valorFaturadoFaixa,
 					    limiteInicialConsumoFaixa,
 					    limiteFinalConsumoFaixa, faixa
 						    .getValorM3Faixa());
+				    
+				    faixaParaInclusao.setTipoFaturamentoFaixa(tipoMedicao);
+				    
 	
-				    faixasParaInclusao.addElement(faixaParaInclusao);
+				    faixasParaInclusao.add(faixaParaInclusao);
 				    valorPorEconomia = valorFaturadoFaixa;
 				    consumoEconomiaCategoriaOuSubcategoria = consumoFaturadoFaixa;
 	
+				    
 				    break;
 				}
 			    }
@@ -569,12 +576,14 @@ public class ControladorImovel {
 				// 5.4.4.1.9
 				consumoExcedente -= consumoFaturadoFaixa;
 	
-				DadosFaturamentoFaixa faixaParaInclusao = new DadosFaturamentoFaixa(
+				faixaParaInclusao = new DadosFaturamentoFaixa(
 					consumoFaturadoFaixa, valorFaturadoFaixa,
 					limiteInicialConsumoFaixa,
 					limiteFinalConsumoFaixa, valorTarifaFaixa);
+				
+				faixaParaInclusao.setTipoFaturamentoFaixa(tipoMedicao);
 	
-				faixasParaInclusao.addElement(faixaParaInclusao);
+				faixasParaInclusao.add(faixaParaInclusao);
 				// Recupera a faixa final da faixa anterior
 				limiteFaixaFimAnterior = faixa
 					.getLimiteFinalFaixa();
@@ -611,7 +620,20 @@ public class ControladorImovel {
 		    DadosFaturamento faturamento = new DadosFaturamento(valorFaturado,
 			    consumoFaturadoCategoriaOuSubcategoria, valorTarifaMinima,
 			    consumoMinimo, faixasParaInclusao);
-	
+		    
+		 // =======================
+		    faturamento.setIdDadosCategoria(dadosEconomiasSubcategorias.getId());
+	    	faturamento.setTipoFaturamento(tipoMedicao);
+	    	
+	    	int posicao = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().indexOf(dadosEconomiasSubcategorias);
+	    	if (tipoMedicao == Constantes.TIPO_FATURAMENTO_AGUA) {
+	    		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(posicao).setFaturamentoAgua(faturamento);
+	    	} else if (tipoMedicao == Constantes.TIPO_FATURAMENTO_ESGOTO) {
+	    		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(posicao).setFaturamentoEsgoto(faturamento);
+	    	}
+		    
+	    	// ================
+		    
 		    if (tipoMedicao == ControladorConta.LIGACAO_AGUA) {
 			dadosEconomiasSubcategorias.setFaturamentoAgua(faturamento);
 		    } else {

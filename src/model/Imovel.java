@@ -1499,7 +1499,7 @@ public class Imovel {
 		return Util.arredondar(soma, 2);
     }
 
-    public double getValorContaSem() {
+    public double getValorContaSemImposto() {
 
 		double valorContaSem = (this.getValorAgua()
 								+ this.getValorEsgoto()
@@ -1521,7 +1521,7 @@ public class Imovel {
 		    
 			for (int i = 0; i < this.impostos.size(); i++) {
 				double percentualAlicota = ((Imposto) (this.impostos.get(i))).getPercentualAlicota();
-				double valor = this.getValorContaSem() * Util.arredondar((percentualAlicota / 100), 7);
+				double valor = this.getValorContaSemImposto() * Util.arredondar((percentualAlicota / 100), 7);
 				soma += valor;
 		    }
 		}
@@ -1531,7 +1531,7 @@ public class Imovel {
 
     public double getValorConta() {
 
-		double valorConta = this.getValorContaSem() - this.getValores();
+		double valorConta = this.getValorContaSemImposto() - this.getValores();
 		
 		if (valorConta < 0d) {
 		    valorConta = 0d;
@@ -2608,7 +2608,7 @@ public class Imovel {
      */
     public boolean isImovelInformativo(){
     	
-    	if (imovelStatus == Constantes.IMOVEL_STATUS_INFORMTIVO){
+    	if (imovelStatus == Constantes.IMOVEL_STATUS_INFORMATIVO){
     		return true;
     	
     	}else{

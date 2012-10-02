@@ -102,7 +102,7 @@ public class Constantes {
     public static final int IMOVEL_STATUS_PENDENTE = 1;
     public static final int IMOVEL_STATUS_CONCLUIDO_COM_ANORMALIDADE_LEITURA = 2;
     public static final int IMOVEL_STATUS_CONCLUIDO_COM_ANORMALIDADE_CONSUMO = 3;
-    public static final int IMOVEL_STATUS_INFORMTIVO = 4;
+    public static final int IMOVEL_STATUS_INFORMATIVO = 4;
 
 	// Dados Estatisticos
     public static final int IMOVEL_CONCLUIDO = 0;
@@ -117,6 +117,10 @@ public class Constantes {
     public static final int NUMERO_HIDROMETRADO = 9;
     public static final int NUMERO_NAO_MEDIDO = 10;
     public static final int NUMERO_INFORMATIVO = 11;
+    
+    // Tipos de situação de leitura
+    public static final int LEITURA_REALIZADA = 0;
+    public static final int LEITURA_CONFIRMADA = 1;
 
     
     /**
@@ -153,5 +157,8 @@ public class Constantes {
      * Valor constante padrão para a leitura inválida.
      */
     public static final int LEITURA_INVALIDA = -1;
-
+    
+    public static final int INDC_FINALIZAR_ROTEIRO = 2;
+    public static final int INDC_FINALIZAR_ROTEIRO_INCOMPLETO = 6;
+    public static final int INDC_FINALIZAR_ROTEIRO_TODOS_IMOVEIS = 7;
 }

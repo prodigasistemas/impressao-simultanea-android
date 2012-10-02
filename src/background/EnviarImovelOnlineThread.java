@@ -53,7 +53,7 @@ public class EnviarImovelOnlineThread extends Thread {
 //    	Util.enviarCadastroOnline(1);
 
     	// Obter dados do imóvel finalizado
-    	StringBuffer mensagem = ArquivoRetorno.gerarDadosImovelSelecionado();
+    	StringBuffer mensagem = ArquivoRetorno.getInstancia().gerarDadosImovelSelecionado();
     	
 		// Transmitir Cadastro ao servidor        			
 		try {
