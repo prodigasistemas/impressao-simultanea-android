@@ -88,7 +88,7 @@ public class ValidacaoLeitura {
     private static ValidacaoLeitura instancia;
     private int contagemValidacoesAgua = 0;
     private int contagemValidacoesPoco = 1;
-    private String returnMessage = null;
+    private String mensagemValidacaoLeitura = null;
 
     public static ValidacaoLeitura getInstancia() {
 
@@ -99,8 +99,8 @@ public class ValidacaoLeitura {
 		return ValidacaoLeitura.instancia;
     }
     
-    public String getReturnMessage(){
-    	return returnMessage;
+    public String getMensagemValidacaoLeitura(){
+    	return mensagemValidacaoLeitura;
     }
     
     /**
@@ -119,7 +119,7 @@ public class ValidacaoLeitura {
      */
     public boolean validarLeituraAnormalidade( String leituraDigitada, Anormalidade anormalidade, int tipoValidacao  ){
 		// Variavel de controle
-    	returnMessage = null;
+    	mensagemValidacaoLeitura = null;
     	boolean error = false;
 		boolean leituraInvalida = false;
 		String strTipoValidacao = "";
@@ -153,7 +153,7 @@ public class ValidacaoLeitura {
 		    if (leituraDigitada == null || leituraDigitada.equalsIgnoreCase("")) {
 				
 		    	if (anormalidade == null || anormalidadeValor == 0) {
-					returnMessage = "Leitura e anormalidade de " + strTipoValidacao + " em branco! ou código de anormalidade inválido!";
+					mensagemValidacaoLeitura = "Leitura e anormalidade de " + strTipoValidacao + " em branco! ou código de anormalidade inválido!";
 				    leituraInvalida = true;	
 				    error = true;
 				}
@@ -161,7 +161,7 @@ public class ValidacaoLeitura {
 				if (!error) {
 
 					if ((anormalidade != null && anormalidadeValor != 0) && anormalidade.getIndicadorLeitura() == Anormalidade.TER_LEITURA) {
-				    	returnMessage = "Informe a Leitura da Anormalidade de " + strTipoValidacao + "!";
+				    	mensagemValidacaoLeitura = "Informe a Leitura da Anormalidade de " + strTipoValidacao + "!";
 				    	leituraInvalida = true;
 				    	error = true;
 				    }
@@ -174,7 +174,7 @@ public class ValidacaoLeitura {
 		    	if (!leituraDigitada.equals("")) {
 				
 		    		if ( (anormalidade != null && anormalidadeValor != 0) && anormalidade.getIndicadorLeitura() == Anormalidade.NAO_TER_LEITURA) {
-				    	returnMessage = "Essa anormalidade de " + strTipoValidacao + " não pode ter leitura!";
+				    	mensagemValidacaoLeitura = "Essa anormalidade de " + strTipoValidacao + " não pode ter leitura!";
 				    	leituraInvalida = true;
 				    	error = true;
 				    }
@@ -196,7 +196,7 @@ public class ValidacaoLeitura {
 		 		int leituraMaximaPermitida = ((int) Util.pow(10,numeroDigitosHidrometro)) - 1;
 	
 			    if (intLeitura > leituraMaximaPermitida){
-			    	returnMessage = "Leitura informada maior que a leitura máxima permitida pelo hidrometro!";
+			    	mensagemValidacaoLeitura = "Leitura informada maior que a leitura máxima permitida pelo hidrometro!";
 			    	leituraInvalida = true;
 			    	error = true;
 			    }
@@ -266,7 +266,7 @@ public class ValidacaoLeitura {
 						    
 						    ControladorRota.getInstancia().getDataManipulator().salvarImovel( getImovelSelecionado() );			    
 			
-						    returnMessage = "Leitura de " + strTipoValidacao + " informada fora de faixa ou \"zero\"";
+						    mensagemValidacaoLeitura = "Leitura de " + strTipoValidacao + " informada fora de faixa ou \"zero\"";
 							leituraInvalida = true;
 							error = true;
 						}
@@ -276,7 +276,7 @@ public class ValidacaoLeitura {
 				// Valida se a leitura e negativa
 				//if ( intLeitura < 0 ) {
 			    	if (intLeitura < 0 && intLeitura != Constantes.NULO_INT) {
-			    		returnMessage = "Leitura de " + strTipoValidacao + " negativa!";
+			    		mensagemValidacaoLeitura = "Leitura de " + strTipoValidacao + " negativa!";
 					    leituraInvalida = true;
 					    error = true;
 				}		
