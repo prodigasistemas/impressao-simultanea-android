@@ -77,15 +77,10 @@
  */
 package business;
 
-import java.util.List;
-
 import model.Anormalidade;
 import model.Consumo;
-import model.DadosCategoria;
-import model.DadosFaturamentoFaixa;
 import model.Imovel;
 import util.Constantes;
-import util.Util;
 import views.MedidorAguaTab;
 import views.MedidorPocoTab;
 import android.app.AlertDialog;
@@ -99,89 +94,91 @@ public class BusinessConta {
     private static BusinessConta instancia;
     private static Context activityContext;
 	AlertDialog dialog;
+    private String mensagemPermiteImpressao = null;
 
-
+    public String getMensagemPermiteImpressao(){
+    	return mensagemPermiteImpressao;
+    }
+    
     /**
      * Metodo responsavel por chamar o calculo do consumo
      */
-    @SuppressWarnings("unchecked")
-	public Consumo chamarCalculoConsumo(boolean salvarImovel) {
+    public static Consumo chamarCalculoConsumo() {
 
-	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
-		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
-	    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
-
-	    if(anormalidade != null){
-	    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
-	    }
-	}
-
-	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
-		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeitura(MedidorPocoTab.getLeitura());
-	    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
-//	    Daniel
-	    if(anormalidade != null){
-	    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
-	    }
-	}
-
-//	if (AbaAnormalidade.getInstancia().getAnormalidade() != null) {
-//	    if (AbaAnormalidade.getInstancia().getAnormalidade().getSelectedIndex() != -1) {
-//	    	Anormalidade anormalidade = (Anormalidade) AbaAnormalidade.getInstancia().getAnormalidade().getSelectedItem();
-//	    	// Daniel
-//	    	if(anormalidade != null){
-//	    		getImovelSelecionado().setAnormalidadeSemHidrometro(anormalidade.getCodigo());
-//	    	}
-//	    }
-//	}
-//
-	Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
-	Consumo consumoAguaRetorno = consumos[0];
-	Consumo consumoEsgotoRetorno = consumos[1];
-	Consumo retorno = null;
-
-	getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
-	getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
-
-	if (consumoAguaRetorno != null) {
-		getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
-	    retorno = getImovelSelecionado().getConsumoAgua();
-	}
-
-	if (consumoEsgotoRetorno != null) {
-		getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
-	    if (consumoAguaRetorno == null) {
-		retorno = getImovelSelecionado().getConsumoEsgoto();
-	    }
-	}
-
-	consumoAguaRetorno = null;	
-	consumoEsgotoRetorno = null;
-	consumos = null;	
-
-	if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
-		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
-		getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
-
-		// Update DB - Medidor água
-		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
-	}
+		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
+		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
 	
-	if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
-		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
-		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
-
-		// Update DB - Medidor poço
-		ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
-	}
+		    if(anormalidade != null){
+		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
+		    }
+		}
 	
-	if (salvarImovel){
+		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeitura(MedidorPocoTab.getLeitura());
+		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
+	//	    Daniel
+		    if(anormalidade != null){
+		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
+		    }
+		}
+	
+	//	if (AbaAnormalidade.getInstancia().getAnormalidade() != null) {
+	//	    if (AbaAnormalidade.getInstancia().getAnormalidade().getSelectedIndex() != -1) {
+	//	    	Anormalidade anormalidade = (Anormalidade) AbaAnormalidade.getInstancia().getAnormalidade().getSelectedItem();
+	//	    	// Daniel
+	//	    	if(anormalidade != null){
+	//	    		getImovelSelecionado().setAnormalidadeSemHidrometro(anormalidade.getCodigo());
+	//	    	}
+	//	    }
+	//	}
+	//
+		Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
+		Consumo consumoAguaRetorno = consumos[0];
+		Consumo consumoEsgotoRetorno = consumos[1];
+		Consumo retorno = null;
+	
+		getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
+		getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
+	
+		if (consumoAguaRetorno != null) {
+			getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
+		    retorno = getImovelSelecionado().getConsumoAgua();
+		}
+	
+		if (consumoEsgotoRetorno != null) {
+			getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
+		    if (consumoAguaRetorno == null) {
+			retorno = getImovelSelecionado().getConsumoEsgoto();
+		    }
+		}
+	
+		consumoAguaRetorno = null;	
+		consumoEsgotoRetorno = null;
+		consumos = null;	
+	
+		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
+	
+			// Update DB - Medidor água
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
+		}
+		
+		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
+			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
+	
+			// Update DB - Medidor poço
+			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+		}
+	
 		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-
+		
 		if (getImovelSelecionado().getConsumoAgua() != null){
 			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
 		}
-
+		
 		if(getImovelSelecionado().getConsumoEsgoto() != null){
 			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 		}
@@ -189,37 +186,13 @@ public class BusinessConta {
 		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
 			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
 		}
-		if (getImovelSelecionado().getDadosCategoria().size() > 0) {
-			for (DadosCategoria dc : getImovelSelecionado().getDadosCategoria()) {
-				if (dc.getFaturamentoAgua() != null) {
-					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoAgua())).intValue());
-					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().indexOf(dc)).getFaturamentoAgua().getFaixas();
-					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
-						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
-						
-						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
-					}
-					
-				} else if (dc.getFaturamentoEsgoto() != null) {
-					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoEsgoto())).intValue());
-					
-					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(dc.getId()-1).getFaturamentoEsgoto().getFaixas();
-					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
-						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
-						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
-					}
-				}
-			}
-		}
-	}
-
-	return retorno;
+		return retorno;
 	}
 
     /**
      * Metodo responsavel por chamar o calculo do consumo desconsiderando a leitura e anormalidade adicionada pelo usuario
      */
-    public Consumo CalculoConsumoDescartaLeitura() {
+    public static Consumo CalculoConsumoDescartaLeitura() {
    
     	Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
 		Consumo consumoAguaRetorno = consumos[0];
@@ -282,7 +255,7 @@ public class BusinessConta {
     /**
      * Metodo responsavel por chamar o calculo do consumo pelo consumo médio.
      */
-    public Consumo chamarCalculoConsumoMedio(boolean salvarImovel) {
+    public static Consumo chamarCalculoConsumoMedio() {
 
 		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
@@ -342,39 +315,34 @@ public class BusinessConta {
 			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
 		}
 		
-		if (salvarImovel){
-			
-			ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-			
-			Consumo agua = getImovelSelecionado().getConsumoAgua();
-
-			if (getImovelSelecionado().getConsumoAgua() != null){
-				ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-			}
-			
-			if(getImovelSelecionado().getConsumoEsgoto() != null){
-				ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
-			}
-			
-			if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
-				ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
-			}
+		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+		
+		if (getImovelSelecionado().getConsumoAgua() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
 		}
+		
+		if(getImovelSelecionado().getConsumoEsgoto() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		}
+		
+		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		}
+			
 		consumoAguaRetorno = null;	
 		consumoEsgotoRetorno = null;
 		consumos = null;
 	return retorno;
     }
-
+    
     /**
-     * Metodo responsavel por calcular e imprimir a conta
+     * Metodo responsavel fazer verificaçoes da leitura e anmormalidade de leitura
      * 
-     * @return confirmacao
+     * @return leituraInválida
      */
-    public boolean imprimirCalculo(boolean salvarImovel, boolean descartaLeitura) {
+    public boolean isLeituraInvalida(boolean descartaLeitura) {
 
 		leituraInvalida = false;
-		Consumo validacao = null;
 		
 		// Se nao for rota toda calculada pela média ou não descarta leitura e anormalidade informada pelo usário
 		if (ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.NAO && !descartaLeitura){
@@ -412,94 +380,166 @@ public class BusinessConta {
 				}
 			}
 		}
-	
-		if (!leituraInvalida) {
+		return leituraInvalida;
+    }
+    
+    /**
+     * Metodo responsavel por calcular e imprimir a conta
+     * 
+     * @return confirmacao
+     */
+    public Consumo imprimirCalculo(boolean descartaLeitura) {
+
+		Consumo validacao = null;
+		
+		if (!isLeituraInvalida(descartaLeitura)) {
 	
 			if (descartaLeitura){
-				
-				validacao = BusinessConta.instancia.CalculoConsumoDescartaLeitura();			
+				validacao = CalculoConsumoDescartaLeitura();			
 			
 			}else if(ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.SIM){
-				
-				validacao = BusinessConta.instancia.chamarCalculoConsumoMedio(salvarImovel);			
+				validacao = chamarCalculoConsumoMedio();			
 			
 			}else{
-				validacao = BusinessConta.instancia.chamarCalculoConsumo(salvarImovel);			
+				validacao = chamarCalculoConsumo();			
 			}
-		    
-			double valorTotalConta = getImovelSelecionado().getValorConta();
-	
-			if(!descartaLeitura){
-			    String mensagemConsumo = "";
-			    mensagemConsumo = Util.validarAnormalidadeConsumo(validacao);
-			    System.out.println("Consumo = " + mensagemConsumo);
-			    if (mensagemConsumo != null && !mensagemConsumo.equals("")) {
-					if (valorTotalConta != Constantes.NULO_DOUBLE) {
-					    System.out.println("Valor = " + valorTotalConta);
-					    BusinessConta.mensagemConsumo(mensagemConsumo, valorTotalConta);
-					}
-			    }
-			    mensagemConsumo = null;	    
-			}
-		
+			return validacao;
+
 		}else{
 			
-			AlertDialog.Builder a = new AlertDialog.Builder(instancia.activityContext);
+			AlertDialog.Builder a = new AlertDialog.Builder(activityContext);
 			a.setTitle("Aviso");
-			a.setMessage(ValidacaoLeitura.getInstancia().getReturnMessage());
+			a.setMessage(ValidacaoLeitura.getInstancia().getMensagemValidacaoLeitura());
 			
 			a.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface arg0, int arg1) {}
 			});
 
 			a.show();
+			return null;
+		}
+    }
+
+	public boolean isImpressaoPermitida(){
+		
+		getImovelSelecionado().setIndcGeracaoConta(Constantes.SIM);
+		
+		// Caso o valor da conta seja menor que o valor permitido para ser impresso, não imprimir a conta.
+		boolean valorAcimaDoMinimo = true;
+		boolean valorContaMaiorPermitido = false;
+		boolean emiteConta = true; 
+		boolean reterConta = false; 
+		boolean permiteImpressao = true;
+		
+		double valorConta = getImovelSelecionado().getValorConta();			
+		valorAcimaDoMinimo = getImovelSelecionado().isValorContaAcimaDoMinimo();
+		valorContaMaiorPermitido = getImovelSelecionado().isValorContaMaiorPermitido();
+		
+		if (getImovelSelecionado().getIndcEmissaoConta() == 2 && leituraInvalida == false) {
+			
+			// A conta já não seria impressa. Mas nos casos abaixo, deve reter a conta, isto é, não deve ser faturado no Gsan.
+			if ( Integer.parseInt(getImovelSelecionado().getCodigoPerfil()) == Imovel.PERFIL_GOVERNO_METROPOLITANO){
+				
+				reterConta = true;
+				
+			}else{
+				// Conta centralizada nao permite impressao. E não é retido.
+				emiteConta = false;
+			}
+			
+			// Verificando Consumo de agua e Anormalidades de Consumo e Anormalidades de Leitura para imoveis CORPORATIVOS e CONDOMINIAIS
+		}else if (getImovelSelecionado().getConsumoAgua() != null){
+			
+			if ( (getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
+					getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
+					getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
+					getImovelSelecionado().getConsumoAgua().getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO)
+					||
+					( (Integer.parseInt(getImovelSelecionado().getCodigoPerfil()) == Imovel.PERFIL_CORPORATIVO ||
+					Integer.parseInt(getImovelSelecionado().getCodigoPerfil()) == Imovel.PERFIL_CONDOMINIAL) 
+					&&
+					(getImovelSelecionado().getConsumoAgua().getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
+					getImovelSelecionado().getConsumoAgua().getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO) ) ){
+				
+				reterConta = true;
+			}
 		}
 		
-		// Daniel - setting variables to null	
-		validacao = null;
+		if (!leituraInvalida && !emiteConta){
+			
+			mensagemPermiteImpressao = "Conta do imóvel nao pode ser emitida!";
+//			Toast.makeText(this, "Conta do imóvel nao pode ser emitida!", Toast.LENGTH_LONG).show();
+			permiteImpressao = false;
+			
+		} else if (!leituraInvalida && (valorContaMaiorPermitido || reterConta)){
+			
+			getImovelSelecionado().setIndcGeracaoConta(Constantes.NAO);
+    		mensagemPermiteImpressao = "Conta retida, entrega posterior!";
+//			Toast.makeText(this, "Conta retida, entrega posterior!", Toast.LENGTH_LONG).show();
+			permiteImpressao = false;
+			
+		} else if (!leituraInvalida && !valorAcimaDoMinimo) {
+			
+    		mensagemPermiteImpressao = "Valor da conta menor que o permitido!";
+//			Toast.makeText(this, "Valor da conta menor que o permitido!", Toast.LENGTH_LONG).show();
+			
+			// Imovel com conta abaixo do minimo nao deve ser impresso, mas não deve fazer parte dos imoveis com conta a imprimir no Gsan. 
+			getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
+			permiteImpressao = false;
+			
+		} else if (!leituraInvalida && 
+				(getImovelSelecionado().getIndicadorParalizarFaturamentoAgua() == Constantes.SIM || 
+				getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == Constantes.SIM)){
+			
+			getImovelSelecionado().setIndcGeracaoConta(Constantes.NAO);
+    		mensagemPermiteImpressao = "Não é permitido a impressão de conta deste imóvel.";
+//			Toast.makeText(this, "Não é permitido a impressão de conta deste imóvel.", Toast.LENGTH_LONG).show();
+			permiteImpressao = false;
+			
+		} else if ( !leituraInvalida && valorConta == 0d && getImovelSelecionado().getValorResidualCredito() == 0d) {
+    		mensagemPermiteImpressao = "Conta com valor zerado e sem crédito. Não imprimir!";
+//			Toast.makeText(this, "Conta com valor zerado e sem crédito. Não imprimir!", Toast.LENGTH_LONG).show();
+			permiteImpressao = false;
+			
+			// Daniel - Imovel com Endereço alternativo
+			// caso nao haja erro de leitura e imovel contém endereço alternativo
+		} else if ( !leituraInvalida && getImovelSelecionado().getEnderecoEntrega().length() > 0 ){
+			
+    		mensagemPermiteImpressao = "Conta do imóvel não pode ser emitida! Entrega  posterior!";
+//			Toast.makeText(this, "Conta do imóvel não pode ser emitida! Entrega  posterior!", Toast.LENGTH_LONG).show();
+			permiteImpressao = false;
+		}
 		
-		return leituraInvalida;
-    }
-    
-    /**
+		return permiteImpressao;
+	}
+
+	   /**
      * Metodo responsavel por retornar a instancia do objeto BussinessConta
      * 
      * @return instancia
      */
     public static BusinessConta getInstancia(Context context) {
 
-    	if (BusinessConta.instancia == null) {
-    		BusinessConta.instancia = new BusinessConta();
+    	if (instancia == null) {
+    		instancia = new BusinessConta();
 		}
 
-    	BusinessConta.instancia.activityContext = context;
-		return BusinessConta.instancia;
+    	activityContext = context;
+		return instancia;
     }
 
-    public static void mensagemConsumo(String mensagem, double valor) {
+    /**
+     * Metodo responsavel por retornar a instancia do objeto BussinessConta
+     * 
+     * @return instancia
+     */
+    public static BusinessConta getInstancia() {
 
-		AlertDialog.Builder alert = new AlertDialog.Builder(instancia.activityContext);
-		alert.setTitle("Aviso");
-		alert.setMessage( mensagem + "\n" + "Valor: " + valor );
-		
-		alert.setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface arg0, int arg1) {
-				
-				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-			    leituraInvalida = true;
-			}
-		});
+    	if (instancia == null) {
+    		instancia = new BusinessConta();
+		}
 
-		alert.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface arg0, int arg1) {
-				
-			    leituraInvalida = false;
-
-			}
-		});
-
-		alert.show();
-    	
+		return instancia;
     }
 
     private static Imovel getImovelSelecionado(){
