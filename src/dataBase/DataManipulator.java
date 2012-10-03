@@ -202,7 +202,7 @@ public class DataManipulator {
 				boolean imovelHasMedidor = false;
 
 				// Imóvel é INFORMATIVO!
-				if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_INFORMTIVO) {
+				if (Integer.parseInt(cursor.getString(0)) == Constantes.IMOVEL_STATUS_INFORMATIVO) {
 		        	qtdeinformativos++;
 		       	
 		        // Considera apenas imóveis não-informativos na estatística. 
@@ -590,7 +590,8 @@ public class DataManipulator {
 	public DadosFaturamento selectDadosFaturamento(int idDadosCategoria, int tipoFaturamento) {
 		Cursor cursor = db.query(Constantes.TABLE_DADOS_FATURAMENTO, new String[] {"valor_faturado",
 																					"consumo_faturado", "valor_tarifa_minima",
-																					"consumo_minimo", "id"}, "id_dados_categoria = ? AND tipo_faturamento = ?", 
+																					"consumo_minimo", "id", "tipo_faturamento"}, 
+																					"id_dados_categoria = ? AND tipo_faturamento = ?", 
 																					new String[] {String.valueOf(idDadosCategoria), 
 																					String.valueOf(tipoFaturamento)}, 
 																					null, null, null);
@@ -605,6 +606,7 @@ public class DataManipulator {
 			dadosFaturamento.setValorTarifaMinima(cursor.getDouble(2));
 			dadosFaturamento.setConsumoMinimo(cursor.getInt(3));
 			dadosFaturamento.setId(cursor.getInt(4));
+			dadosFaturamento.setTipoFaturamento(tipoFaturamento);
 			
 			dadosFaturamento.setFaixas(selectDadosFaturamentoFaixa(dadosFaturamento.getId(), tipoFaturamento));
 		}
@@ -617,30 +619,33 @@ public class DataManipulator {
 	public List selectDadosFaturamentoFaixa(int idDadosFaturamento, int idTipoFaturamento) {
 		Cursor cursor = db.query(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, new String[] {"consumo_faturado", "valor_faturado",
 																						"limite_inicial_consumo", "limite_final_consumo",
-																						"valor_tarifa"
+																						"valor_tarifa", "tipo_faturamento_faixa"
 																						}, "id_dados_faturamento = ? AND tipo_faturamento_faixa = ?", 
 																						new String[] {String.valueOf(idDadosFaturamento),
 																						String.valueOf(idTipoFaturamento)}, 
 																						null, null, "id asc");
-		List dffs = new ArrayList();
+		List dadosFaturamentoFaixa = null;
 		
 		if (cursor.moveToFirst()) {
+			dadosFaturamentoFaixa = new ArrayList();
 			do {
-				DadosFaturamentoFaixa dff = new DadosFaturamentoFaixa();
+				DadosFaturamentoFaixa faturamentoFaixa = new DadosFaturamentoFaixa();
 				
-				dff.setConsumoFaturado(cursor.getInt(0));
-				dff.setValorFaturado(cursor.getDouble(1));
-				dff.setLimiteInicialConsumo(cursor.getInt(2));
-				dff.setLimiteFinalConsumo(cursor.getInt(3));
-				dff.setValorTarifa(cursor.getDouble(4));
+				faturamentoFaixa.setConsumoFaturado(cursor.getInt(0));
+				faturamentoFaixa.setValorFaturado(cursor.getDouble(1));
+				faturamentoFaixa.setLimiteInicialConsumo(cursor.getInt(2));
+				faturamentoFaixa.setLimiteFinalConsumo(cursor.getInt(3));
+				faturamentoFaixa.setValorTarifa(cursor.getDouble(4));
+				faturamentoFaixa.setTipoFaturamentoFaixa(idTipoFaturamento);
+				faturamentoFaixa.setIdDadosFaturamento(idDadosFaturamento);
 				
-				dffs.add(dff);
+				dadosFaturamentoFaixa.add(faturamentoFaixa);
 			} while(cursor.moveToNext());
 		}
 		
 		fecharCursor(cursor);
 		
-		return dffs;
+		return dadosFaturamentoFaixa;
 	}
 	
 	public void selectDadosQualidadeAgua() {
@@ -1016,9 +1021,6 @@ public class DataManipulator {
 					tc.setLimiteFinalFaixa(cursor.getInt(5));
 					tc.setValorM3Faixa(cursor.getDouble(6));
 					
-					Log.i("inicial", ">>" + tc.getLimiteInicialFaixa());
-					Log.i("final", ">>" + tc.getLimiteFinalFaixa());
-					
 					imovel.getTarifacoesComplementares().add(tc);
 					
 				} catch (Exception e) {
@@ -1096,10 +1098,10 @@ public class DataManipulator {
 				anormalidade.setCodigo(cursor.getString(1));
 				anormalidade.setDescricao(cursor.getString(2));
 				anormalidade.setIndicadorLeitura(cursor.getString(3));
-				anormalidade.setIdConsumoACobrarComLeitura(cursor.getString(4));
-				anormalidade.setIdConsumoACobrarSemLeitura(cursor.getString(5));
-				anormalidade.setIdLeituraFaturarComLeitura(cursor.getString(6));
-				anormalidade.setIdLeituraFaturarSemLeitura(cursor.getString(7));
+				anormalidade.setIdConsumoACobrarSemLeitura(cursor.getString(4));
+				anormalidade.setIdConsumoACobrarComLeitura(cursor.getString(5));
+				anormalidade.setIdLeituraFaturarSemLeitura(cursor.getString(6));
+				anormalidade.setIdLeituraFaturarComLeitura(cursor.getString(7));
 				anormalidade.setIndcUso(cursor.getString(8));
 				anormalidade.setNumeroFatorSemLeitura(cursor.getString(9));
 				anormalidade.setNumeroFatorComLeitura(cursor.getString(10));
@@ -1565,7 +1567,7 @@ public class DataManipulator {
 																				   Util.verificarNuloInt(numeroConta), 
 																				   situacaoLigacaoAgua);
     	if (informativo){
-    		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_INFORMTIVO));
+    		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_INFORMATIVO));
     	}else{
     		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_PENDENTE));
     	}
@@ -1701,7 +1703,7 @@ public class DataManipulator {
 	public long insertImposto(String linhaArquivo) {
 
 		ParserUtil parser = new ParserUtil(linhaArquivo);
-		parser.obterDadoParser(2);
+		parser.obterDadoParser(11);
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put("matricula", SituacaoTipo.getInstancia().getMatricula());
@@ -2050,18 +2052,25 @@ public class DataManipulator {
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
 	}
 	
-	public long insertDadosFaturamento(DadosFaturamento df) {
+	public long saveDadosFaturamento(DadosFaturamento df) {
+
+		if (selectDadosFaturamento(df.getIdDadosCategoria(), df.getTipoFaturamento()) != null)
+			return -1;
+		
 		ContentValues initialValues = new ContentValues();
 		
 		 initialValues.put("valor_faturado", df.getValorFaturado());
 		 initialValues.put("consumo_faturado", df.getConsumoFaturado());
 		 initialValues.put("valor_tarifa_minima", df.getValorTarifaMinima());
 		 initialValues.put("consumo_minimo", df.getConsumoMinimo());
+		 initialValues.put("tipo_faturamento", df.getTipoFaturamento());
+		 initialValues.put("id_dados_categoria", df.getIdDadosCategoria());
 		 
 		 return db.insert(Constantes.TABLE_DADOS_FATURAMENTO, null, initialValues);
 	}
 	
-	public long insertDadosFaturamentoFaixa(DadosFaturamentoFaixa dff) {
+	public long saveDadosFaturamentoFaixa(DadosFaturamentoFaixa dff) {
+		
 		ContentValues initialValues = new ContentValues();
 		
 		initialValues.put("consumo_faturado", dff.getConsumoFaturado());
@@ -2069,6 +2078,8 @@ public class DataManipulator {
 		initialValues.put("limite_inicial_consumo", dff.getLimiteInicialConsumo());
 		initialValues.put("limite_final_consumo", dff.getLimiteFinalConsumo());
 		initialValues.put("valor_tarifa", dff.getValorTarifa());
+		initialValues.put("id_dados_faturamento", dff.getIdDadosFaturamento());
+		initialValues.put("tipo_faturamento_faixa", dff.getTipoFaturamento());
 		
 		return db.insert(Constantes.TABLE_DADOS_FATURAMENTO_FAIXA, null, initialValues);
 	}

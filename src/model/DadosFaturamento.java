@@ -86,6 +86,7 @@ public class DadosFaturamento {
     private int consumoFaturado;    
     private double valorTarifaMinima;
     private int consumoMinimo;
+    private int tipoFaturamento;
     private List faixas;
     
 	public DadosFaturamento(){
@@ -157,4 +158,14 @@ public class DadosFaturamento {
 	public void setFaixas(List faixas) {
 		this.faixas = faixas;
 	}
+
+	public int getTipoFaturamento() {
+		return tipoFaturamento;
+	}
+
+	public void setTipoFaturamento(int tipoFaturamento) {
+		this.tipoFaturamento = tipoFaturamento;
+	}
+	
+	
 }

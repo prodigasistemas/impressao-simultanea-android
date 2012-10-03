@@ -45,7 +45,7 @@ public class GerarArquivoCompletoThread extends Thread {
     	mState = RUNNING;
     	FileManager.getInstancia();
     		
-    	ArquivoRetorno.gerarArquivoCompleto(mHandler, context, increment);
+    	ArquivoRetorno.getInstancia().gerarArquivoCompleto(mHandler, context, increment);
 
     	mState = DONE;
     }

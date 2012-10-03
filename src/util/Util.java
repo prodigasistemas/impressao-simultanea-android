@@ -6,23 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import model.Consumo;
-import model.DadosGerais;
 import model.DadosRelatorio;
-
-import ui.ArquivoRetorno;
-import ui.MessageDispatcher;
-
-import business.ControladorAcessoOnline;
-import business.ControladorRota;
-
 import android.os.Environment;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.EditText;
+import business.ControladorRota;
 
 public class Util {
 
@@ -317,11 +309,12 @@ public class Util {
     public static String getRetornoRotaDirectory(){
     	String diretorioRetornoRota = null;
     	
-    	ControladorRota.getInstancia().getDataManipulator().selectGeral();
-//    	diretorioRetornoRota =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
-//    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
-//    	diretorioRetornoRota += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	diretorioRetornoRota += ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento();
+    	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
+    	
+    	diretorioRetornoRota =  info.get(1) + "_";
+    	diretorioRetornoRota +=info.get(2) + "_";
+    	diretorioRetornoRota += info.get(3) + "_";
+    	diretorioRetornoRota += info.get(4).substring(4, 6) + "/" + info.get(4).substring(0, 4);
     	
         File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
         if(!fileRotaDiretorio.exists()) {
@@ -334,11 +327,12 @@ public class Util {
     public static String getRotaFileName(){
     	String rotaFileName = null;
     	
-    	ControladorRota.getInstancia().getDataManipulator().selectGeral();
-//    	rotaFileName =  Controlador.getInstancia().getDadosGerais().getLocalidade() + "_";
-//    	rotaFileName += Controlador.getInstancia().getDadosGerais().getSetor() + "_";
-//    	rotaFileName += Controlador.getInstancia().getDadosGerais().getRota() + "_";
-    	rotaFileName += ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento() + ".txt";
+    	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
+    	
+    	rotaFileName =  info.get(1) + "_";
+    	rotaFileName +=info.get(2) + "_";
+    	rotaFileName += info.get(3) + "_";
+    	rotaFileName += info.get(4)+ ".txt";
     	
     	return rotaFileName;
     }

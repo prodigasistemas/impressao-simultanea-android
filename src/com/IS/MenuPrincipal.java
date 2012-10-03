@@ -156,14 +156,14 @@ public class MenuPrincipal extends Activity {
         				}
         	    	}
         	    	
-        	    	if (statusOk){
+//        	    	if (statusOk){
                 		showDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
         	    	
-        	    	}else{
-            		
-        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo enquanto houver imóveis não visitados.";
-            	    	showDialog(Constantes.DIALOG_ID_ERRO);
-        	    	}
+//        	    	}else{
+//            		
+//        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo enquanto houver imóveis não visitados.";
+//            	    	showDialog(Constantes.DIALOG_ID_ERRO);
+//        	    	}
             		
             	}else if (position == MENU_CADASTROS_CONCLUIDOS){
 					

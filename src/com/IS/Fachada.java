@@ -30,6 +30,8 @@ import android.widget.TextView;
 
 public class Fachada extends Activity {
 	
+	public static String appVersion;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,8 @@ public class Fachada extends Activity {
     	setContentView(R.layout.welcome);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     	
+        appVersion = getString(R.string.app_versao);
+        
 	    // get IMEI
     	ControladorAcessoOnline.getInstancia().setIMEI(((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
 
@@ -196,6 +200,10 @@ public class Fachada extends Activity {
     	ControladorRota.getInstancia().finalizeDataManipulator();
     	super.onDestroy();
     	
+    }
+    
+    public static String getAppVersion() {
+    	return appVersion; 
     }
 	
 }
