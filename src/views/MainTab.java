@@ -239,43 +239,45 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 	    		Consumo validacaoConsumo = BusinessConta.getInstancia(this).imprimirCalculo(descartaLeitura);
 				
-				if(!descartaLeitura && validacaoConsumo != null){
+	    		if(!descartaLeitura){
 
-					String mensagemAnormalidadeConsumo = "";
-				    
-					mensagemAnormalidadeConsumo = Util.validarAnormalidadeConsumo(validacaoConsumo);
-				    System.out.println("Consumo = " + mensagemAnormalidadeConsumo);
-				    
-				    // Se houve anormalidade de consumo
-				    if (mensagemAnormalidadeConsumo != null && !mensagemAnormalidadeConsumo.equals("")) {
-					
-				    	if (getImovelSelecionado().getValorConta() != Constantes.NULO_DOUBLE) {
-						    System.out.println("Valor = " + getImovelSelecionado().getValorConta());
-						    mensagemConsumo(mensagemAnormalidadeConsumo, getImovelSelecionado().getValorConta());
-						}
-				    
-				    // Nao houve anormalidade de consumo. 	
-				    }else{
-				    	
-				    	if (BusinessConta.getInstancia(this).isImpressaoPermitida()){
-							
-				    		boolean erroImpressao = false;
-							imprimirConta();
-							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-							
-							if (!erroImpressao) {
-								callProximoImovel();
+	    			if (validacaoConsumo != null){
+						
+	    				String mensagemAnormalidadeConsumo = "";
+						mensagemAnormalidadeConsumo = Util.validarAnormalidadeConsumo(validacaoConsumo);
+					    System.out.println("Consumo = " + mensagemAnormalidadeConsumo);
+					    
+					    // Se houve anormalidade de consumo
+					    if (mensagemAnormalidadeConsumo != null && !mensagemAnormalidadeConsumo.equals("")) {
+						
+					    	if (getImovelSelecionado().getValorConta() != Constantes.NULO_DOUBLE) {
+							    System.out.println("Valor = " + getImovelSelecionado().getValorConta());
+							    mensagemConsumo(mensagemAnormalidadeConsumo, getImovelSelecionado().getValorConta());
 							}
+					    
+					    // Nao houve anormalidade de consumo. 	
+					    }else{
+					    	
+					    	if (BusinessConta.getInstancia(this).isImpressaoPermitida()){
+								
+								imprimirConta();
 
-				    	} else{
-				    		
-				    		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
-				    		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-				    	}
-				    }
-				    	
-				    mensagemAnormalidadeConsumo = null;
-				}
+					    	} else{
+					    		
+					    		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
+					    		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+					    	}
+					    }
+					    mensagemAnormalidadeConsumo = null;
+	    			}
+	    			
+	    		// Se deve descartar leitura, imóvel já está calculado e salvo no DB.
+	    		}else{
+			    	if (BusinessConta.getInstancia(this).isImpressaoPermitida()){
+
+			    		imprimirConta();
+			    	}	
+	    		}
 	    	}
 	    	return true;
 	    	
@@ -315,8 +317,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-			ImpressaoContaCosanpa.getInstancia().getComando().getBytes();
-//	    	Log.i("Comando", ImpressaoContaCosanpa.getInstancia().getComando());
+			ImpressaoContaCosanpa.getInstancia().getComando(getImovelSelecionado()).getBytes();
+	    	Log.i("Comando", ImpressaoContaCosanpa.getInstancia().getComando(getImovelSelecionado()));
 			setupDataAfterPrinting();
 			
 		}else{
@@ -333,7 +335,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    		progress.setTitle("Imprimindo conta");
 	    		progress.setMessage("Aguarde");
 	    			
-	    		new ImpressaoThread(bluetoothAddress).start();
+	    		new ImpressaoThread(bluetoothAddress, getImovelSelecionado()).start();
 	    			
 	    		progress.show();
 	    		
@@ -398,14 +400,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			public void onClick(DialogInterface arg0, int arg1) {
 				
 		    	if (BusinessConta.getInstancia(getApplicationContext()).isImpressaoPermitida()){
-					
-		    		boolean erroImpressao = false;
-					imprimirConta();
-					ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-					
-					if (!erroImpressao) {
-						callProximoImovel();
-					}
+
+		    		imprimirConta();
 
 		    	} else{
 
@@ -490,16 +486,18 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		progress.show();
 		
 		
-		new ImpressaoThread(bluetoothAddress).start();
+		new ImpressaoThread(bluetoothAddress, getImovelSelecionado()).start();
 		
 	}
 	
 	
 	class ImpressaoThread extends Thread {
 		String bluetoothAddress;
+		Imovel imovelToBePrinted;
 		
-		public ImpressaoThread(String address) {
+		public ImpressaoThread(String address, Imovel imovelToBePrinted) {
 			this.bluetoothAddress = address;
+			this.imovelToBePrinted = imovelToBePrinted;
 		}
 		
 		@Override
@@ -513,7 +511,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				if (conexao.isConnected()) {
 
 					progress.show();
-					conexao.write(ImpressaoContaCosanpa.getInstancia().getComando().getBytes());
+					conexao.write(ImpressaoContaCosanpa.getInstancia().getComando(imovelToBePrinted).getBytes());
 					conexao.close();
 					
 					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
@@ -543,10 +541,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						 * o campo de endereco bluetooth é apagado e em seguida é chamado o método de impressão 
 						 */
 						ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", null);
-						
 						imprimirConta();
-//				    	Log.i("Comando", ImpressaoContaCosanpa.getInstancia().getComando());
-
 					}
 				});
 				
@@ -581,10 +576,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
     	}
     	
+    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
 		// Imovel da lista de imoveis pendentes
 		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 
 		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+		
+		callProximoImovel();
+
 //		Repositorio.salvarObjeto(getImovelSelecionado());
 
 		// caso seja imovel impresso pela opcao de imprimir todos os nao-hidrometrados

@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 public class Fachada extends Activity {
 	
-	public static String appVersion;
+	private static String appVersion;
 	
     /** Called when the activity is first created. */
     @Override

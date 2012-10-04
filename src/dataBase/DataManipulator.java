@@ -624,10 +624,10 @@ public class DataManipulator {
 																						new String[] {String.valueOf(idDadosFaturamento),
 																						String.valueOf(idTipoFaturamento)}, 
 																						null, null, "id asc");
-		List dadosFaturamentoFaixa = null;
+		List dadosFaturamentoFaixa = new ArrayList();
 		
 		if (cursor.moveToFirst()) {
-			dadosFaturamentoFaixa = new ArrayList();
+
 			do {
 				DadosFaturamentoFaixa faturamentoFaixa = new DadosFaturamentoFaixa();
 				

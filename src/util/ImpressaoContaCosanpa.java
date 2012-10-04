@@ -3,6 +3,8 @@ package util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.IS.Fachada;
+
 import model.Consumo;
 import model.DadosCategoria;
 import model.DadosFaturamentoFaixa;
@@ -105,7 +107,7 @@ public class ImpressaoContaCosanpa {
         		"LINE 656 518 656 692 1\n"+
         		"LINE 425 518 425 692 1\n"+
         		"LINE 535 518 535 692 1\n"+
-        		"T 0 2 135 121 Versao: 4.2.1.1 - 21/07/2012 18:47:39 /2\n"+
+        		"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ Util.getDataHora() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
         		"T 7 1 464 90 "+ imovel.getMatricula() + "\n" +
         		"T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n" +
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
@@ -228,15 +230,13 @@ public class ImpressaoContaCosanpa {
     	return instancia;
     }
     
-    public String getComando() {
-    	getDados();
-    	
+    public String getComando(Imovel imovel) {
+
+    	getDados(imovel);
     	return montarComando();
     }
     
-    public void getDados() {
-    	
-    	imovel = ControladorImovel.getInstancia().getImovelSelecionado();
+    public void getDados(Imovel imovel) {
     	
     	List dc = imovel.getDadosCategoria();
     	List quantidadeEconomias = categoriasEconomias(dc);

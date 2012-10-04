@@ -611,11 +611,33 @@ public class Util {
      */
     public static Date dataAtual() {
       	 return new Date( (new Date()).getTime());
-
-//    	return Calendar.getInstance().getTime();
     }
 
-
+    public static String getDataHora() {
+    	//recupera data e hora atual do sistema
+    	Calendar calendario = Calendar.getInstance();
+    	Date date = new Date((new Date()).getTime());
+    	calendario.setTime(date);
+    	String mes = String.valueOf(calendario.get(Calendar.MONTH) + 1);
+    	String dia = String.valueOf(calendario.get(Calendar.DAY_OF_MONTH));
+    	String ano = String.valueOf(calendario.get(Calendar.YEAR));
+    	String horas = String.valueOf(calendario.get(Calendar.HOUR_OF_DAY));
+    	String minutos = String.valueOf(calendario.get(Calendar.MINUTE));
+    	String segundos = String.valueOf(calendario.get(Calendar.SECOND));
+    	//
+    	calendario = null;
+    	date = null;
+    	//
+    	//formata a data de modo que o tamanho do resultado seja sempre fixo
+    	//dia
+    	if (dia.length() < 2) { dia = "0" + dia; } //mes
+    	if (mes.length() < 2) { mes = "0" + mes; } //horas
+    	if (horas.length() < 2) { horas = "0" + horas; } //minutos
+    	if (minutos.length() < 2) { minutos = "0" + minutos; } //segundos
+    	if (segundos.length() < 2) { segundos = "0" + segundos; } //
+    	return dia + "/" + mes + "/" + ano + " " + horas + ":" + minutos + ":" + segundos;
+    } 
+    
     /**
      * Diferença entre datas em dias
      * 

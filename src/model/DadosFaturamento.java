@@ -101,8 +101,6 @@ public class DadosFaturamento {
 		this.faixas = faixas;
 	}
 	
-	
-	
 	public int getId() {
 		return id;
 	}
