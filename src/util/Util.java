@@ -119,6 +119,24 @@ public class Util {
     	    return new Date(calendario.getTime().getTime());
     	}
 	}
+    
+    public static Date getDataComHora(String data) {
+    	if (data.equals(Constantes.NULO_STRING)) {
+    	    return null;
+    	} else {
+    	    Calendar calendario = Calendar.getInstance();
+    	    calendario.set(Calendar.YEAR, Integer.valueOf(data.substring(0, 4)).intValue());
+    	    calendario.set(Calendar.MONTH, Integer.valueOf(data.substring(4, 6)).intValue() - 1);
+    	    calendario.set(Calendar.DAY_OF_MONTH, Integer.valueOf(data.substring(6, 8)).intValue());
+    	    calendario.set(Calendar.HOUR_OF_DAY, Integer.parseInt(data.substring(9, 11)));
+    	    calendario.set(Calendar.MINUTE, Integer.parseInt(data.substring(12, 14)));
+    	    calendario.set(Calendar.SECOND, Integer.parseInt(data.substring(15, 17)));
+    	    calendario.set(Calendar.MILLISECOND, Integer.parseInt(data.substring(18, 24)));
+
+    	    return new Date(calendario.getTime().getTime());
+    	}
+
+    }
 
     /**
      * < <Descrição do método>>
@@ -179,6 +197,46 @@ public class Util {
 		}
 	
 		return dataBD.toString();
+    }
+    
+    public static String formataDataHora(Date data) {
+    	StringBuffer dataBD = new StringBuffer();
+    	
+    	if (data == null)
+    		return null;
+    	
+    	Calendar dataCalendar = Calendar.getInstance();
+	    dataCalendar.setTime(data);
+	    
+	    dataBD.append(" ");
+    	
+    	if (dataCalendar.get(Calendar.HOUR_OF_DAY) > 9) {
+	    	dataBD.append(dataCalendar.get(Calendar.HOUR_OF_DAY));
+	    } else {
+	    	dataBD.append("0" + dataCalendar.get(Calendar.HOUR_OF_DAY));
+	    }
+
+	    dataBD.append(":");
+
+	    if (dataCalendar.get(Calendar.MINUTE) > 9) {
+	    	dataBD.append(dataCalendar.get(Calendar.MINUTE));
+	    } else {
+	    	dataBD.append("0" + dataCalendar.get(Calendar.MINUTE));
+	    }
+
+	    dataBD.append(":");
+
+	    if (dataCalendar.get(Calendar.SECOND) > 9) {
+	    	dataBD.append(dataCalendar.get(Calendar.SECOND));
+	    } else {
+	    	dataBD.append("0" + dataCalendar.get(Calendar.SECOND));
+	    }
+
+	    dataBD.append(".");
+
+	    dataBD.append(Util.adicionarZerosEsquerdaNumero(6, dataCalendar.get(Calendar.MILLISECOND) + ""));
+	    
+	    return dataBD.toString();
     }
 
     /**
@@ -307,16 +365,11 @@ public class Util {
     }
 
     public static String getRetornoRotaDirectory(){
-    	String diretorioRetornoRota = null;
+//    	String diretorioRetornoRota = null;
     	
     	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
     	
-    	diretorioRetornoRota =  info.get(1) + "_";
-    	diretorioRetornoRota +=info.get(2) + "_";
-    	diretorioRetornoRota += info.get(3) + "_";
-    	diretorioRetornoRota += info.get(4).substring(4, 6) + "/" + info.get(4).substring(0, 4);
-    	
-        File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO, diretorioRetornoRota);
+        File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO);
         if(!fileRotaDiretorio.exists()) {
         	fileRotaDiretorio.mkdirs();
         }
@@ -329,10 +382,11 @@ public class Util {
     	
     	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
     	
-    	rotaFileName =  info.get(1) + "_";
-    	rotaFileName +=info.get(2) + "_";
-    	rotaFileName += info.get(3) + "_";
-    	rotaFileName += info.get(4)+ ".txt";
+    	rotaFileName = "GCOMPLETO";
+    	rotaFileName +=  info.get(1);
+    	rotaFileName +=info.get(2);
+    	rotaFileName += info.get(3);
+    	rotaFileName += info.get(4) + ".txt";
     	
     	return rotaFileName;
     }

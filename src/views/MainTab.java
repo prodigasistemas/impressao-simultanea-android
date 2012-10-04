@@ -668,5 +668,4 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 		return result;
 	}
-
 }

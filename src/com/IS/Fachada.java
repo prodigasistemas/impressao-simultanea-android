@@ -30,7 +30,11 @@ import android.widget.TextView;
 
 public class Fachada extends Activity {
 	
+	/**
+     * Versão da aplicação.
+     */
 	private static String appVersion;
+    public static final String IMPRESSAO_SIMULTANEA_ACTION_URL = "processarRequisicaoDipositivoMovelImpressaoSimultaneaAction.do";
 	
     /** Called when the activity is first created. */
     @Override
@@ -57,6 +61,13 @@ public class Fachada extends Activity {
         startButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	v.clearAnimation();
+            	
+            	// Define URL GSAN
+            	//Produção
+//            	ControladorAcessoOnline.getInstancia().setURL("http:/200.178.173.131:8080/gsan");
+            	
+            	//Treinamento
+            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.0.107:8080/gsan/");
 
                 if (ControladorRota.getInstancia().databaseExists(getBaseContext()) && 
                 	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
@@ -92,13 +103,6 @@ public class Fachada extends Activity {
             public void onClick(View v) {
             	v.clearAnimation();
 
-            	// Define URL GSAN
-            	//Produção
-            	ControladorAcessoOnline.getInstancia().setURL("http:/200.178.173.131:8080/gsan");
-            	
-            	//Treinamento
-            	ControladorAcessoOnline.getInstancia().setURL("http:/200.178.173.136:8080/gsan");
-            	
                 if (ControladorRota.getInstancia().databaseExists(getBaseContext()) &&
                 	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
                 	

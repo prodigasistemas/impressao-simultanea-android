@@ -2,13 +2,17 @@ package background;
 
 import java.io.IOException;
 
-import business.ControladorAcessoOnline;
+import model.Imovel;
 import ui.ArquivoRetorno;
 import ui.FileManager;
+import util.Constantes;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import business.ControladorAcessoOnline;
+import business.ControladorImovel;
+import business.ControladorRota;
     
 
 // Class that performs progress calculations on a thread.  Implement
@@ -22,6 +26,7 @@ public class EnviarImovelOnlineThread extends Thread {
     public final static int DONE_ERROR = 3;
     public final static int RUNNING = 1;
     private static Context context;
+    private Imovel imovel;
     
     Handler mHandler;
     int mState;
@@ -30,11 +35,12 @@ public class EnviarImovelOnlineThread extends Thread {
 
     // Constructor with an argument that specifies Handler on main thread
     // to which messages will be sent by this thread.
-    public EnviarImovelOnlineThread(Handler h, Context context, int increment) {
+    public EnviarImovelOnlineThread(Handler h, Context context, int increment, Imovel imovel) {
     	this.mHandler = h;
         EnviarImovelOnlineThread.context = context;
         this.total = 0;
         this.increment = increment;
+        this.imovel = imovel;
     }
     
     // Override the run() method that will be invoked automatically when 
@@ -53,21 +59,26 @@ public class EnviarImovelOnlineThread extends Thread {
 //    	Util.enviarCadastroOnline(1);
 
     	// Obter dados do imóvel finalizado
-    	StringBuffer mensagem = ArquivoRetorno.getInstancia().gerarDadosImovelSelecionado();
+    	StringBuffer mensagem = ArquivoRetorno.getInstancia().gerarDadosImovelParaEnvio(imovel);
     	
 		// Transmitir Cadastro ao servidor        			
 		try {
 			
 			ControladorAcessoOnline.getInstancia().enviarCadastro(mensagem.toString().getBytes());
 		
+			
+			System.out.println("Antes");
 		    if (ControladorAcessoOnline.getInstancia().isRequestOK()) {
 //				SET CADASTRO PARA TRANSMITIDO!!
 //		    	mensagemSucesso("Imovel enviado!");
 		    	mState = DONE_OK;
-
+		    	imovel.setIndcImovelEnviado(Constantes.IMOVEL_TRANSMITIDO);
+		    	ControladorRota.getInstancia().getDataManipulator().salvarImovel(imovel);
+		    	System.out.println("Dentro IF");
 		    } else {
 //		    	mensagemAviso("Aviso:", "Imovel não enviado!");
 		    	mState = DONE_ERROR;
+		    	System.out.println("Dentro ELSE");
 		    }	    
 
 		} catch (IOException e) {

@@ -53,11 +53,14 @@ public class ArquivoRetorno {
     	return instancia;
     }
     
-    public StringBuffer gerarDadosImovelSelecionado(){
+    public StringBuffer gerarDadosImovelParaEnvio(Imovel i){
 
     	arquivo = new StringBuffer();
 		
-//    	gerarRegistroTipoImovel();
+    	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + i.getId());
+    	gerarRegistroTipoImovel(imovel);
+    	gerarRegistroDadosCategoria(imovel);
+    	gerarRegistroTipoDebito(imovel);
     		    
     	return arquivo;
     }
@@ -66,11 +69,6 @@ public class ArquivoRetorno {
 
     	try {
     		
-            File diretorioRetorno = new File(Environment.getExternalStorageDirectory() + "/external_sd/Cadastro", "Retorno");
-            if(!diretorioRetorno.exists()) {
-            	diretorioRetorno.mkdirs();
-            }
-
             File fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getRotaFileName());
             
             if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

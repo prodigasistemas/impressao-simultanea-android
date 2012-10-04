@@ -130,7 +130,8 @@ public class Medidor {
     }
 
     public void setDataLeitura(String dataLeitura) {
-    	this.dataLeitura = Util.getData(Util.verificarNuloString(dataLeitura));
+//    	this.dataLeitura = Util.getData(Util.verificarNuloString(dataLeitura));
+    	this.dataLeitura = Util.getDataComHora(dataLeitura);
     }
 
     public Date getDataInstalacaoHidrometro() {
