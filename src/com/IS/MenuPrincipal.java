@@ -1,10 +1,16 @@
 package com.IS;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import model.Imovel;
 import util.Constantes;
+import util.Util;
+import views.MainTab;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -22,6 +28,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.view.KeyEvent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +43,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import background.CarregarRotaThread;
+import background.EnviarImoveisConcluidosThread;
+import background.FinalizarRotaThread;
 import background.GerarArquivoCompletoThread;
+import business.ControladorAcessoOnline;
 import business.ControladorImovel;
 import business.ControladorRota;
 
@@ -57,12 +67,16 @@ public class MenuPrincipal extends Activity {
 
 	private ProgressDialog progDialog;
 	private GerarArquivoCompletoThread progThread;
+	private EnviarImoveisConcluidosThread enviarImoveisThread;
+	private FinalizarRotaThread finalizarRotaThread;
 	private String dialogMessage = null;
 	public LocationManager mLocManager;
 	private static int increment= 0;
 	private BluetoothAdapter bluetoothAdapter;
 	private ListView listaDispositivos;
 	private AlertDialog dialog;
+	
+	public static String mensagemRetorno;
 	
     //---the images to display---
     Integer[] imageIDs = {
@@ -97,7 +111,7 @@ public class MenuPrincipal extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
- 
+        
         instanciate();
 	}
     
@@ -105,7 +119,7 @@ public class MenuPrincipal extends Activity {
 		  super.onNewIntent(intent);
 		  setIntent(intent);//must store the new intent unless getIntent() will return the old one.
 		  instanciate();
-		}
+	}
 
 	public void instanciate(){
 
@@ -151,26 +165,48 @@ public class MenuPrincipal extends Activity {
         	    	
                     // 	Verifica se todos os imoveis já foram visitados.
         	    	ArrayList<String> listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(null);
+        	    	int imoveisPendentes = 0;
         	    	
         	    	for (int i=0; i < listStatusImoveis.size(); i++){
         	    		if ( Integer.parseInt(listStatusImoveis.get(i)) == Constantes.IMOVEL_STATUS_PENDENTE ){
         	    			statusOk = false;
+        	    			imoveisPendentes++;
         				}
         	    	}
         	    	
-//        	    	if (statusOk){
+        	    	if (statusOk){
                 		showDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
         	    	
-//        	    	}else{
-//            		
-//        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo enquanto houver imóveis não visitados.";
-//            	    	showDialog(Constantes.DIALOG_ID_ERRO);
-//        	    	}
+        	    	}else{
+            		
+        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+            	    	
+        	    	}
             		
             	}else if (position == MENU_CADASTROS_CONCLUIDOS){
-					
+					showDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
             	}else if (position == MENU_FINALIZAR){
-					
+            		boolean statusOk = true;
+        	    	
+                    // 	Verifica se todos os imoveis já foram visitados.
+        	    	ArrayList<String> listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(null);
+        	    	int imoveisPendentes = 0;
+        	    	
+        	    	for (int i=0; i < listStatusImoveis.size(); i++){
+        	    		if ( Integer.parseInt(listStatusImoveis.get(i)) == Constantes.IMOVEL_STATUS_PENDENTE ){
+        	    			statusOk = false;
+        	    			imoveisPendentes++;
+        				}
+        	    	}
+        	    	
+        	    	if (statusOk) {
+        	    		showDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
+        	    	} else {
+            		
+        	    		dialogMessage = "Não é permitido Finalizar Rota. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+        	    	}
             	}else if (position == MENU_RELATORIO){
 					Intent myIntent = new Intent(getApplicationContext(),TelaRelatorio.class);
 	        		startActivity(myIntent);
@@ -238,9 +274,73 @@ public class MenuPrincipal extends Activity {
                 
             	dismissDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
             	
-	    		dialogMessage = "Arquivo de retorno Completo gerado com sucesso!";
+	    		dialogMessage = "Arquivo de retorno COMPLETO gerado com sucesso. Enviar o arquivo ao supervisor para carregar via cabo USB.";
     	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
-			    increment = increment + 5;
+			    increment += 13;
+            }
+         }
+    };
+    
+    final Handler imoveisNaoTransmitidosHandler = new Handler() {
+        @SuppressWarnings({ "deprecation", "static-access" })
+		public void handleMessage(Message msg) {
+            
+        	// Get the current value of the variable total from the message data and update the progress bar.
+        	int totalArquivoCompleto = msg.getData().getInt("imoveisNaoTransmitidos" + String.valueOf(increment));
+            progDialog.setProgress(totalArquivoCompleto);
+            
+            if (totalArquivoCompleto >= ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis() 
+            		|| 	enviarImoveisThread.getCustomizedState() == EnviarImoveisConcluidosThread.DONE
+            	){
+                
+            	dismissDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
+            	
+            	if (enviarImoveisThread.idsImoveisAEnviar.size() == 0) {
+            		dialogMessage = "Não existem imóveis a serem transmitidos";
+            		showDialog(Constantes.DIALOG_ID_ERRO);
+            	} else {
+            		
+            		dialogMessage = mensagemRetorno;
+            	
+		    		if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
+//		    			dialogMessage = "Ocorreu um erro na trasmissão dos imóveis!";
+		    			showDialog(Constantes.DIALOG_ID_ERRO);
+		    		} else {
+//		    			dialogMessage = "Imóveis transmitidos com sucesso!";
+		    			showDialog(Constantes.DIALOG_ID_SUCESSO);
+		    		}
+            	}
+	    		
+			    increment += 13;
+            }
+         }
+    };
+    
+    final Handler finalizarRotaHandler = new Handler() {
+        @SuppressWarnings({ "deprecation", "static-access" })
+		public void handleMessage(Message msg) {
+            
+        	// Get the current value of the variable total from the message data and update the progress bar.
+        	int totalArquivoCompleto = msg.getData().getInt("finalizarRota" + String.valueOf(increment));
+            progDialog.setProgress(totalArquivoCompleto);
+            
+            if (totalArquivoCompleto >= ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis() 
+            		|| 	finalizarRotaThread.getCustomizedState() == EnviarImoveisConcluidosThread.DONE
+            	){
+                
+            	dismissDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
+            	
+            	dialogMessage = mensagemRetorno;
+            	
+	    		if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
+//		   			dialogMessage = "Ocorreu um erro na trasmissão dos imóveis!";
+		   			showDialog(Constantes.DIALOG_ID_ERRO);
+		   		} else {
+//		   			dialogMessage = "Imóveis transmitidos com sucesso!";
+		    		showDialog(Constantes.DIALOG_ID_SUCESSO);
+		    	}
+
+		    		increment += 13;
             }
          }
     };
@@ -303,7 +403,7 @@ public class MenuPrincipal extends Activity {
 				    }
 				});
 	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
-	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis());
+	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveisNaoInformativos());
 	            progThread = new GerarArquivoCompletoThread(handler, this, increment);
 	            progThread.start();
 	            return progDialog;
@@ -340,6 +440,60 @@ public class MenuPrincipal extends Activity {
 
 	        AlertDialog messageDialog = builder.create();
 	        return messageDialog;
+	    } else if (id == Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment) {
+	    	progDialog = new ProgressDialog(this);
+            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progDialog.setCancelable(false);
+            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
+            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size());
+            enviarImoveisThread = new EnviarImoveisConcluidosThread(imoveisNaoTransmitidosHandler, this, increment);
+            enviarImoveisThread.start();
+            return progDialog;
+	    } else if (id == Constantes.DIALOG_ID_FINALIZA_ROTA+increment) {
+	    	if (envio()) {
+	    		progDialog = new ProgressDialog(this);
+	            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	            progDialog.setCancelable(false);
+	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
+	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
+	            finalizarRotaThread.start();
+	            return progDialog;
+	    	} else {
+	    		progDialog = new ProgressDialog(this);
+	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	            progDialog.setCancelable(false);
+	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo gerados e enviados...");
+	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size());
+	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
+	            finalizarRotaThread.start();
+	            return progDialog;
+	    	}
+	    } else if (id == Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA) {
+	    	
+	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    	
+	    	final View layoutCustonDialog = inflater.inflate(R.layout.custon_dialog, (ViewGroup) findViewById(R.id.layout_root));
+	    	
+	    	((ImageView)layoutCustonDialog.findViewById(R.id.imageDialog)).setImageResource(R.drawable.aviso);
+	    	((TextView)layoutCustonDialog.findViewById(R.id.messageDialog)).setText(dialogMessage);
+	    	
+	    	builder = new AlertDialog.Builder(this);
+	        builder.setView(layoutCustonDialog);
+	        builder.setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+	        	
+	        	public void onClick(DialogInterface dialog, int whichButton) {
+	        		removeDialog(id);
+
+	        		localizarImovelPendente();
+	        		
+	        		Intent myIntent = new Intent(getApplicationContext(),MainTab.class);
+	        		startActivity(myIntent);
+	        	}
+	        });
+	        
+	        AlertDialog messageDialog = builder.create();
+	        return messageDialog;
+
 	    }
 
 	    return null;
@@ -392,5 +546,33 @@ public class MenuPrincipal extends Activity {
 			
 			return view;
 		}
-    }    
+    }  
+    
+    public void localizarImovelPendente() {
+    	
+    	ListaImoveis.tamanhoListaImoveis = ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis();
+		
+		Imovel imovelPendente = ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE);
+		
+		// Se nao encontrar imovel com status pendente
+		if (imovelPendente == null) {
+			return;
+		}
+		
+		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(Long.valueOf(imovelPendente.getId()).intValue()-1);
+	
+    }
+    
+    public File arquivoFinalizacaoRota() {
+		File file = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
+		
+		return file.exists() ? file : null;
+	}
+    
+    public boolean envio() {
+    	if (arquivoFinalizacaoRota() != null)
+    		return true;
+    	
+    	return false;
+    }
 }

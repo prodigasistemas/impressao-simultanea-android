@@ -1,6 +1,7 @@
 package views;
 
 import java.util.Iterator;
+
 import java.util.Set;
 
 import model.Consumo;
@@ -47,6 +48,7 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
 import background.CarregarRotaThread;
+import background.EnviarImovelOnlineThread;
 import business.BusinessConta;
 import business.ControladorImovel;
 import business.ControladorRota;
@@ -67,6 +69,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	AlertDialog dialog;
 	private ProgressDialog progress;
 	private ZebraPrinterConnection conexao;
+	private static int increment;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -129,7 +132,22 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
         });
 	    
 	    tabHost.addTab(tabSpec);
+	    
+	    setTabColor();
 	}
+	
+	public static void setTabColor() {
+        for(int i=0;i<tabHost.getTabWidget().getChildCount();i++){
+            
+        	if (ControladorImovel.getInstancia().getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_CONCLUIDO){
+        		tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_green);
+            
+            }
+            else if(ControladorImovel.getInstancia().getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_PENDENTE){
+            	tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_white);            	
+            }
+        }
+    }
 	
     public boolean onKeyDown(int keyCode, KeyEvent event){
         
@@ -266,6 +284,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					    		
 					    		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 					    		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+					    		tranmitirImovel();
 					    	}
 					    }
 					    mensagemAnormalidadeConsumo = null;
@@ -284,9 +303,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    case R.id.localizarPendente:
 	    	
 	    	localizarImovelPendente();
-	    	finish();
-	    	Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
-			startActivity(myIntent);
 	    	
 	    	return true;
 	        
@@ -306,6 +322,29 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 		
 		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(Long.valueOf(imovelPendente.getId()).intValue()-1);
+		
+		finish();
+    	Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
+		startActivity(myIntent);
+		
+	}
+	
+	private void tranmitirImovel() {
+		
+		if (getImovelSelecionado().getIndcImovelEnviado() == Constantes.IMOVEL_TRANSMITIDO) {
+			return;
+		}
+		
+		final Handler handler = new Handler() {
+	        public void handleMessage(Message msg) {
+	            
+	        	// Get the current value of the variable total from the message data and update the progress bar.
+	        	int cadastroOnline = msg.getData().getInt("envioCadastroOnline" + String.valueOf(increment));
+	         }
+	    };
+	    
+	    new EnviarImovelOnlineThread(handler, this, increment, getImovelSelecionado()).start();
+
 		
 	}
 	
@@ -535,8 +574,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				conexao.open();
 
 				if (conexao.isConnected()) {
+					
+					Looper.prepare();
 
 					progress.show();
+//					Log.i("COMANDO IMPRESSORA:", ImpressaoContaCosanpa.getInstancia().getComando(imovelToBePrinted));
 					conexao.write(ImpressaoContaCosanpa.getInstancia().getComando(imovelToBePrinted).getBytes());
 					conexao.close();
 					
@@ -546,6 +588,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					
 					// already printed!
 					setupDataAfterPrinting();
+					
+					Looper.loop();
+					Looper.getMainLooper().quit();
 					
 				}
 				
@@ -608,7 +653,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 		
-		callProximoImovel();
+		tranmitirImovel();
+		
+	    callProximoImovel();
 
 //		Repositorio.salvarObjeto(getImovelSelecionado());
 

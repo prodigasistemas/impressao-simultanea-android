@@ -27,6 +27,7 @@ import model.TarifacaoMinima;
 import util.Constantes;
 import util.ParserUtil;
 import util.Util;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -37,6 +38,7 @@ import android.util.Log;
 import business.ControladorImovel;
 import business.ControladorRota;
 
+@SuppressLint("NewApi")
 public class DataManipulator {
 	private static Context context;
 	private DbHelper openHelper;
@@ -59,6 +61,16 @@ public class DataManipulator {
 
 	public int getNumeroImoveis() {
 		return (int) DatabaseUtils.queryNumEntries(db, Constantes.TABLE_IMOVEL);
+	}
+	
+	public int getNumeroImoveisNaoInformativos() {
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, null, "imovel_status != ?", new String[] {""+Constantes.IMOVEL_STATUS_INFORMATIVO}, null, null, null);
+		
+		int numeroImoveis = cursor.getCount();
+		
+		fecharCursor(cursor);
+		
+		return numeroImoveis;
 	}
 
 	public DadosGerais getDadosGerais() {
@@ -1055,14 +1067,14 @@ public class DataManipulator {
 
 		ArrayList<String> list = new ArrayList<String>();
 		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {
-				"grupo_faturamento", "localidade", "setor", "quadra" }, null, null, null, null,
+				"grupo_faturamento", "localidade", "setor", "codigo_rota" }, null, null, null, null,
 				"grupo_faturamento asc");
 		
 		if (cursor.moveToFirst()) {
 			list.add(cursor.getString(0));
 			list.add(cursor.getString(1));
 			list.add(cursor.getString(2));
-			list.add(cursor.getString(3).substring(0, 2));
+			list.add(cursor.getString(3).length() == 1 ? "0" + cursor.getString(3) : cursor.getString(3));
 		}
 		
 		cursor = db.query(Constantes.TABLE_GERAL, new String[] {"ano_mes_faturamento", "login"}, null, null, null, null, null);
@@ -1075,7 +1087,7 @@ public class DataManipulator {
 		fecharCursor(cursor);
 
 		return list;
-	}
+		}
 
 	public Anormalidade selectAnormalidadeByCodigo(String codigo, boolean apenasComIndicadorUso) {
 		
@@ -1112,6 +1124,45 @@ public class DataManipulator {
 		fecharCursor(cursor);
 
 		return anormalidade;
+	}
+	
+	public List<Anormalidade> selectAnormalidades(boolean apenasComIndicadorUso) {
+		
+		Cursor cursor = null; 
+		
+		if (apenasComIndicadorUso){
+			cursor = db.query(Constantes.TABLE_ANORMALIDADE, null, "indc_uso = ?", new String []{ String.valueOf(Constantes.SIM)}, null, null, "codigo asc");
+			
+		}else{
+			cursor = db.query(Constantes.TABLE_ANORMALIDADE, null, null, null, null, null, "codigo asc");
+		}
+		
+		Anormalidade anormalidade = null;
+		List<Anormalidade> anormalidades = null;
+		
+		if (cursor.moveToFirst()) {
+			anormalidades = new ArrayList<Anormalidade>();
+			do {
+				anormalidade = new Anormalidade();
+				anormalidade.setId(Long.parseLong(cursor.getString(0)));
+				anormalidade.setCodigo(cursor.getString(1));
+				anormalidade.setDescricao(cursor.getString(2));
+				anormalidade.setIndicadorLeitura(cursor.getString(3));
+				anormalidade.setIdConsumoACobrarSemLeitura(cursor.getString(4));
+				anormalidade.setIdConsumoACobrarComLeitura(cursor.getString(5));
+				anormalidade.setIdLeituraFaturarSemLeitura(cursor.getString(6));
+				anormalidade.setIdLeituraFaturarComLeitura(cursor.getString(7));
+				anormalidade.setIndcUso(cursor.getString(8));
+				anormalidade.setNumeroFatorSemLeitura(cursor.getString(9));
+				anormalidade.setNumeroFatorComLeitura(cursor.getString(10));
+
+				anormalidades.add(anormalidade);
+			} while (cursor.moveToNext());
+		}
+		
+		fecharCursor(cursor);
+
+		return anormalidades;
 	}
 	
 	public ArrayList<String> selectListaAnormalidades(boolean apenasComIndicadorUso) {
@@ -1273,7 +1324,6 @@ public class DataManipulator {
 		fecharCursor(cursor);
 		
 	}
-
 	
 	public List<String> selectDescricoesFromTable(String table) {
 
@@ -2086,6 +2136,26 @@ public class DataManipulator {
 	
 	public long getNumeroDeImoveis() {
 		return DatabaseUtils.queryNumEntries(db, Constantes.TABLE_IMOVEL);
+	}
+	
+	public List<Integer> selectIdsImoveisConcluidosENaoEnviados() {
+		
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id"}, "imovel_status = ? AND imovel_enviado = ?", 
+																				new String[] {""+Constantes.IMOVEL_CONCLUIDO, ""+Constantes.NAO},
+																				null, null, null);
+		
+		List<Integer> listaIds = new ArrayList<Integer>();
+		
+		if (cursor.moveToFirst()) {
+			do {
+				listaIds.add(cursor.getInt(0));
+			}while(cursor.moveToNext());
+		}
+		
+		fecharCursor(cursor);
+		
+		return listaIds;
+		
 	}
 	
 	public void fecharCursor(Cursor cursor) {

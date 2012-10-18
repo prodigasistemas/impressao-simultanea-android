@@ -21,7 +21,11 @@
  	<uses-feature android:name="android.hardware.camera.autofocus" />
 
 	<application android:icon="@drawable/gsan" android:debuggable="true" android:label="@string/app_name" android:allowTaskReparenting="true">
+<<<<<<< HEAD
         <activity android:name=".Fachada" android:theme="@android:style/Theme.NoTitleBar">
+=======
+        <activity android:name=".Fachada" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
+>>>>>>> af6ab47ea9b23b5d82ef6de11c371f6eb837006a
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

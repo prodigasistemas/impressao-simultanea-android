@@ -238,6 +238,24 @@ public class Util {
 	    
 	    return dataBD.toString();
     }
+    
+    public static String formatarInscricao(String inscricao) {
+    	String inscricaoFormatada = "";
+    	
+    	inscricaoFormatada += inscricao.substring(0, 3) + ".";
+    	inscricaoFormatada += inscricao.substring(3, 6) + ".";
+    	if (inscricao.length() == 16) {
+    		inscricaoFormatada += "0" + inscricao.substring(6, 9) + ".";
+    		inscricaoFormatada += inscricao.substring(9, 13) + ".";
+    		inscricaoFormatada += inscricao.substring(13, 16);
+    	} else if (inscricao.length() == 17) {
+    		inscricaoFormatada += inscricao.substring(6, 10) + ".";
+    		inscricaoFormatada += inscricao.substring(10, 14) + ".";
+    		inscricaoFormatada += inscricao.substring(14, 17);
+    	}
+    	
+    	return inscricaoFormatada;
+    }
 
     /**
      * Adiciona zeros a esqueda do número informado tamamho máximo campo 6
@@ -383,6 +401,20 @@ public class Util {
     	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
     	
     	rotaFileName = "GCOMPLETO";
+    	rotaFileName +=  info.get(1);
+    	rotaFileName +=info.get(2);
+    	rotaFileName += info.get(3);
+    	rotaFileName += info.get(4) + ".txt";
+    	
+    	return rotaFileName;
+    }
+    
+    public static String getNomeArquivoEnviarConcluidos(){
+    	String rotaFileName = null;
+    	
+    	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
+    	
+    	rotaFileName = "G";
     	rotaFileName +=  info.get(1);
     	rotaFileName +=info.get(2);
     	rotaFileName += info.get(3);

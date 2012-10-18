@@ -3,7 +3,9 @@ package background;
 import ui.ArquivoRetorno;
 import ui.FileManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
     
 
 // Class that performs progress calculations on a thread.  Implement
@@ -48,6 +50,13 @@ public class GerarArquivoCompletoThread extends Thread {
     	ArquivoRetorno.getInstancia().gerarArquivoCompleto(mHandler, context, increment);
 
     	mState = DONE;
+    	
+    	Bundle b = new Bundle();
+        // Send message (with current value of total as data) to Handler on UI thread
+        Message msg = mHandler.obtainMessage();
+        b.putInt("arquivoCompleto" + String.valueOf(increment), 100);
+        msg.setData(b);
+        mHandler.sendMessage(msg);
     }
     
     // Set current state of thread

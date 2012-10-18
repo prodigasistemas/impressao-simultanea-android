@@ -89,6 +89,7 @@ public class ControladorRota {
 		String line = "";
 	    linhasLidas = 0;
 		int matricula = 0;
+		linhasLidas = 0;
 		
 		if (input != null){
 			

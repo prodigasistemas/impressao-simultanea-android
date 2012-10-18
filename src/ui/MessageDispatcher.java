@@ -29,6 +29,7 @@ public class MessageDispatcher {
     public static final String RESPOSTA_OK = "*";
     public static final String RESPOSTA_ERRO = "#";
     
+    
     // Tipos de parametros que podem ser retornados
     public static final String PARAMETRO_IMOVEIS_PARA_REVISITAR = "imoveis=";
     public static final String PARAMETRO_MENSAGEM = "mensagem=";
@@ -68,6 +69,9 @@ public class MessageDispatcher {
 		synchronized ( mensagem ) {
 		    
 		    InputStream resposta = null;
+		    
+//		    String s = new String(mensagem);
+//		    System.out.println(s);
 		
 		    try {
 		    	
@@ -78,6 +82,7 @@ public class MessageDispatcher {
 				conexao.setDoOutput(true);
 				conexao.setDoInput(true);
 				conexao.setUseCaches(false);
+				conexao.setConnectTimeout(2000);				
 		
 				conexao.setRequestProperty("Content-Type","application/octet-stream");
 				conexao.setRequestProperty("Content-Length", Integer
@@ -170,6 +175,7 @@ public class MessageDispatcher {
 		    } catch (IOException e) {
 				// Informamos que um erro ocorreu
 				respostaServidor = RESPOSTA_ERRO;
+				mensagemError = "Não foi possível estabelecer conexão com o servidor. Tente novamente mais tarde.";
 		    } catch (SecurityException se) {
 				// Informamos que um erro ocorreu
 				respostaServidor = RESPOSTA_ERRO;

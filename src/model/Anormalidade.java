@@ -97,11 +97,11 @@ public class Anormalidade {
 	}
 
 	public void setDescricao(String descricao) {
-		if (descricao != null && descricao.length() > 21) {
-			this.descricao = descricao.substring(0, 21);
-		} else {
+//		if (descricao != null && descricao.length() > 21) {
+//			this.descricao = descricao.substring(0, 21);
+//		} else {
 			this.descricao = descricao;
-		}
+//		}
 	}
 
 	public void setIndicadorLeitura(String indicadorLeitura) {

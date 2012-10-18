@@ -1,21 +1,23 @@
 package util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.IS.Fachada;
 
 import model.Consumo;
 import model.DadosCategoria;
 import model.DadosFaturamentoFaixa;
-import model.HistoricoConsumo;
 import model.DadosQualidadeAgua;
+import model.HistoricoConsumo;
 import model.Imovel;
 import model.Medidor;
+import ui.FileManager;
 import android.util.Log;
+import business.ControladorConta;
 import business.ControladorImovel;
 import business.ControladorRota;
 
+import com.IS.Fachada;
 
 public class ImpressaoContaCosanpa {
 
@@ -46,10 +48,11 @@ public class ImpressaoContaCosanpa {
     private String media = "0";
     private int tipoConsumo = 0;
     private String economias = "";
+    private String endereco = "";
     
     // Historico consumo
     private String anoMesReferencia = "";
-    private String consumoHistorico = "";
+    private String historicoConsumo = "";
     private String hcMensagem = "7 0 50 499 ULTIMOS CONSUMOS\n";
 
     // Exigido Portaria 518/2004
@@ -95,6 +98,9 @@ public class ImpressaoContaCosanpa {
     private String repCodigoBarrasSemDigitoVerificador = "";
     private String grupoFaturamento = "";
     
+    private String txtConsumo = "";
+    private String anormalidadeLeitura = "";
+    
     private String montarComando() {
     	String comando = "! 0 200 200 1720 1\n"+
         		"BOX 32 435 802 482 1\n"+
@@ -113,11 +119,13 @@ public class ImpressaoContaCosanpa {
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
         		"T 0 0 285 64 "+ ControladorRota.getInstancia().getDadosGerais().getInscricaoEstadualEmpresa().trim() + "\n" +
         		"T 0 0 222 81 "+ imovel.getGrupoFaturamento() + "\n" +
-        		"T 0 0 140 108 \n"+
+//        		"T 0 0 140 108 \n"+
+//        		formarLinha(0, 0, 140, 108, (imovel.getEnderecoAtendimento() != null && !imovel.getEnderecoAtendimento().equals("") ? imovel.getEnderecoAtendimento() + " - " : "")
+//        				+ (imovel.getTelefoneLocalidadeDDD() != null && !imovel.getTelefoneLocalidadeDDD().equals("") ? imovel.getTelefoneLocalidadeDDD().trim() : ""), 0, 0) +
         		"T 0 2 52 172 "+imovel.getNomeUsuario() + "\n"+
         		"T 0 2 52 199 \n"+
-        		"T 0 2 434 169 "+imovel.getEndereco()+"\n"+
-        		"T 7 0 15 250 "+imovel.getInscricao()+"\n"+
+        		endereco +
+        		"T 7 0 15 250 "+Util.formatarInscricao(imovel.getInscricao())+"\n"+
         		"T 7 0 315 250 "+imovel.getCodigoRota()+"\n"+
         		"T 7 0 415 250 "+imovel.getSequencialRota()+"\n"+
         		economias +
@@ -135,6 +143,7 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 37 378 ATUAL\n"+
         		
         		anormalidadeConsumo +
+        		anormalidadeLeitura +
         		
         		"T 7 0 163 412 FATURADO\n"+
         		"T 7 0 190 436 "+ leituraAnteriorFaturada + "\n"+
@@ -142,15 +151,17 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 313 412 DATA\n"+
         		"T 7 0 285 436 "+ dataLeituraAnteriorFaturada + "\n" +
         		"T 7 0 285 460 "+ dataLeituraAtualFaturada + "\n" +
-        		"T 7 0 418 412 CONSUMO (m3)\n"+
+//        		"T 7 0 418 412 CONSUMO (m3)\n"+
+        		txtConsumo +
         		"T 7 0 511 436 "+ consumo + "\n" +
         		"T 7 0 745 412 DIAS\n"+
         		"T 7 0 760 436 "+ diasConsumo +"\n" +
         		"T 7 0 37 436 ANTERIOR\n"+
         		"T 7 0 37 460 ATUAL\n"+
         		"T "+ hcMensagem +
-        		"T 0 2 44 522 "+ anoMesReferencia + "\n" +
-        		consumoHistorico +
+//        		"T 0 2 44 522 "+ anoMesReferencia + "\n" +
+        		anoMesReferencia +
+        		historicoConsumo +
         		"T 7 0 75 672 MEDIA(m3):\n"+
         		"T 7 0 195 672 "+ media + "\n" +
         		"T 7 0 448 496 QUALIDADE DA AGUA\n"+
@@ -202,7 +213,7 @@ public class ImpressaoContaCosanpa {
         		"T 0 2 443 1456 "+ referencia + "\n" +
         		"T 0 2 558 1456 "+ dataVencimento + "\n" +
         		"T 0 2 694 1456 "+ totalAPagar + "\n" +
-        		"T 5 0 66 1515 "+ repNumericaCodBarra +
+        		repNumericaCodBarra +
         		"B I2OF5 1 2 90 35 1538 "+ repCodigoBarrasSemDigitoVerificador + "\n" +
         		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
         		"T 5 0 352 1661 4\n"+
@@ -240,6 +251,16 @@ public class ImpressaoContaCosanpa {
     	
     	List dc = imovel.getDadosCategoria();
     	List quantidadeEconomias = categoriasEconomias(dc);
+    	
+    	String cpfCnpjFormatado = "";
+ 	    if (imovel.getCpfCnpjCliente() != null && !imovel.getCpfCnpjCliente().equals("")) {
+ 	    	cpfCnpjFormatado = imovel.getCpfCnpjCliente().trim();
+ 	    }
+    	if (imovel.getEnderecoEntrega().trim().length() == 0){
+		    endereco = 	formarLinha(0, 2, 52, 172, imovel.getNomeUsuario().trim(), 0, 0) + formarLinha(0, 2, 52, 199, cpfCnpjFormatado, 0, 0) + dividirLinha(0, 2, 434, 169, imovel.getEndereco(), 40, 27);
+	    }else{
+		    endereco =	formarLinha(0, 2, 52, 172, imovel.getNomeUsuario().trim(), 0, 0) + formarLinha(0, 2, 52, 199, cpfCnpjFormatado, 0, 0) + dividirLinha(0, 2, 434, 169, imovel.getEnderecoEntrega(), 40, 27);
+	    }
 	    
 	    for (int i = 0; i < quantidadeEconomias.size(); i++) {
 			Object[] dadosCategoria = (Object[]) quantidadeEconomias.get(i);
@@ -359,22 +380,34 @@ public class ImpressaoContaCosanpa {
 			}
 		}
 	    
+	    if (imovel.getConsumoAgua() != null){
+			if (imovel.getConsumoAgua().getAnormalidadeLeituraFaturada() != 0 &&
+					imovel.getConsumoAgua().getAnormalidadeLeituraFaturada() != Constantes.NULO_INT	){
+
+				try {
+					anormalidadeLeitura += formarLinha(0, 2, 430, 374, "ANORM. LEITURA: " + FileManager.getAnormalidade(imovel.getConsumoAgua().getAnormalidadeLeituraFaturada()).getDescricao(), 0, 0);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	    
 
 	    List<HistoricoConsumo> historicosConsumo = imovel.getHistoricosConsumo();
 	    int k = 0;
 	    if (historicosConsumo.size() > 0) {
 	    	hcMensagem += "LINE 115 525 115 665 1\n"; 
 	    	for (HistoricoConsumo hc : historicosConsumo) {
-				anoMesReferencia = Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia());
+	    		anoMesReferencia += formarLinha(0, 2, 44, 520, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
 				
 				String anormalidade = "";
 			    if (hc.getAnormalidadeLeitura() != Constantes.NULO_INT && hc.getAnormalidadeLeitura() != 0) {
-			    	anormalidade = "A. Leit.:" + hc.getAnormalidadeLeitura() + "";
+			    	anormalidade = " A. Leit.:" + hc.getAnormalidadeLeitura() + "";
 			    } else if (hc.getAnormalidadeConsumo() != Constantes.NULO_INT && hc.getAnormalidadeConsumo() != 0) {
-			    	anormalidade = "A. Cons.:" + hc.getAnormalidadeConsumo() + "";
+			    	anormalidade = " A. Cons.:" + hc.getAnormalidadeConsumo() + "";
 			    }
 			    
-			    consumoHistorico += formarLinha(0, 2, 127, 522, Util.verificarNuloInt(hc.getConsumo()) + "m3" + anormalidade, 0, k*25);
+			    historicoConsumo += formarLinha(0, 2, 127, 522, Util.verificarNuloInt(hc.getConsumo()) + "m3" + anormalidade, 0, k*25);
 			    k++;
 			}
 	    } else {
@@ -439,6 +472,14 @@ public class ImpressaoContaCosanpa {
 	    }
 	    if (DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme() != Constantes.NULO_INT){
 		    quantidadeColiformesTermoTolerantesConforme = DadosQualidadeAgua.getInstancia().getQuantidadeColiformesTermoTolerantesConforme();
+	    }
+	    
+	    if (imovel.isImovelCondominio()) {
+	    	txtConsumo += formarLinha(7, 0, 418, 412, "CONSUMO (m3)", 0, 0);// + formarLinha(7, 0, 511, 436, consumo, 0, 0);
+	    
+	    } else {
+	    	txtConsumo +=	formarLinha(7, 0, 412, 412, ControladorConta.getInstancia().getTipoConsumoToPrint(tipoConsumo), 0, 0);
+//	    	txtConsumo +=	formarLinha(7, 0, 511, 436, consumo, 0, 0);
 	    }
 	    
 	    int ultimaLinhaAgua = 0;
@@ -534,6 +575,22 @@ public class ImpressaoContaCosanpa {
 	    grupoFaturamento = ""+imovel.getGrupoFaturamento();
 	    
     }
+    
+    private static String dividirLinha(int fonte, int tamanhoFonte, int x, int y, String texto, int tamanhoLinha, int deslocarPorLinha) {
+    	String retorno = "";
+    	int contador = 0;
+    	int i;
+    	for (i = 0; i < texto.length(); i += tamanhoLinha) {
+    	    contador += tamanhoLinha;
+    	    if (contador > texto.length()) {
+    		retorno += "T " + fonte + " " + tamanhoFonte + " " + x + " " + y + " " + texto.substring(i, texto.length()).trim() + "\n";
+    	    } else {
+    		retorno += "T " + fonte + " " + tamanhoFonte + " " + x + " " + y + " " + texto.substring(i, contador).trim() + "\n";
+    	    }
+    	    y += deslocarPorLinha;
+    	}
+    	return retorno;
+        }
     
     private String formarLinha(int font, int tamanhoFonte, int x, int y, String texto, int adicionarColuna, int adicionarLinha) {
     	return "T " + font + " " + tamanhoFonte + " " + (x + adicionarColuna) + " " + (y + adicionarLinha) + " " + texto + "\n";
