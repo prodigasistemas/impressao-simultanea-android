@@ -1,8 +1,6 @@
 package com.IS;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -28,7 +26,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.view.KeyEvent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -443,7 +440,19 @@ public class MenuPrincipal extends Activity {
 	    } else if (id == Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment) {
 	    	progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progDialog.setCancelable(false);
+			progDialog.setCancelable(false);
+			progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+			    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+			        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+			            return true; // Pretend we processed it
+			        
+			        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+			            return true; // Pretend we processed it
+			        }
+			        return false; // Any other keys are still processed as normal
+			    }
+			});
             progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
             progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size());
             enviarImoveisThread = new EnviarImoveisConcluidosThread(imoveisNaoTransmitidosHandler, this, increment);
@@ -453,7 +462,19 @@ public class MenuPrincipal extends Activity {
 	    	if (envio()) {
 	    		progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-	            progDialog.setCancelable(false);
+				progDialog.setCancelable(false);
+				progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        
+				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        }
+				        return false; // Any other keys are still processed as normal
+				    }
+				});
 	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
 	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
 	            finalizarRotaThread.start();
@@ -461,7 +482,19 @@ public class MenuPrincipal extends Activity {
 	    	} else {
 	    		progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	            progDialog.setCancelable(false);
+				progDialog.setCancelable(false);
+				progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        
+				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        }
+				        return false; // Any other keys are still processed as normal
+				    }
+				});
 	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo gerados e enviados...");
 	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size());
 	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
