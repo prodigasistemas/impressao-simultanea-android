@@ -334,6 +334,19 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    		progress = new ProgressDialog(this);
 	    		progress.setTitle("Imprimindo conta");
 	    		progress.setMessage("Aguarde");
+	    		progress.setCancelable(false);
+	    		progress.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        
+				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        }
+				        return false; // Any other keys are still processed as normal
+				    }
+				});
 	    			
 	    		new ImpressaoThread(bluetoothAddress, getImovelSelecionado()).start();
 	    			
@@ -472,6 +485,19 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		progress = new ProgressDialog(this);
 		progress.setTitle("Imprimindo conta");
 		progress.setMessage("Aguarde");
+		progress.setCancelable(false);
+		progress.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+		    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+		        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+		            return true; // Pretend we processed it
+		        
+		        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+		            return true; // Pretend we processed it
+		        }
+		        return false; // Any other keys are still processed as normal
+		    }
+		});
 		
 		/* Seleciona a segunda linha do texto
 		 * Exemplo:

@@ -28,6 +28,4 @@ public class TelaInformacoes extends Activity {
     	((TextView)findViewById(R.id.valorTotalImoveis)).setText(String.valueOf(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis()));
     	((TextView)findViewById(R.id.valorUsuario)).setText(infoList.get(5));
     }
-    
-    
 }

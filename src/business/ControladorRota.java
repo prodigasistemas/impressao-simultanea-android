@@ -32,8 +32,8 @@ import dataBase.DataManipulator;
 
 public class ControladorRota {
 
-    public static ControladorRota instancia;
-	DataManipulator dataManipulator;
+    private static ControladorRota instancia;
+	private DataManipulator dataManipulator;
     
     private boolean permissionGranted = false;
     private int qtdRegistros = 0;
@@ -52,6 +52,10 @@ public class ControladorRota {
     		
     	}
     	return ControladorRota.instancia;
+    }
+    
+    public void cleanControladorRota(){
+    	instancia = null;
     }
     
     public void setDadosGerais(DadosGerais dadosGerais){
@@ -83,6 +87,7 @@ public class ControladorRota {
      */
     public void carregarDadosParaRecordStore(BufferedReader input, Handler mHandler, Context context) {
 		String line = "";
+	    linhasLidas = 0;
 		int matricula = 0;
 		
 		if (input != null){
@@ -174,7 +179,7 @@ public class ControladorRota {
 				        mHandler.sendMessage(msg);
 			        }
 				}
-
+			    
 			    // Define Rota Carregada com sucesso.
 		    	setRotaCarregamentoOk(Constantes.SIM);
 		    	

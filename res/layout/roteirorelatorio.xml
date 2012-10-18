@@ -1,96 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/fundocadastro">
+    android:background="@drawable/fundocadastro"
+    android:orientation="vertical" >
 
-    <TextView android:id="@+id/info" android:text="Informações" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:gravity="center" android:textSize="25dp" android:layout_marginTop="10dp" android:layout_marginBottom="15dp"/>
- 	
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtPendentes" android:text="Pendentes" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroPendentes" android:text="33" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
+	<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="@drawable/fundocadastro">
+	
+	    <TextView android:id="@+id/info" android:text="Informações" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:gravity="center" android:textSize="25dp" android:layout_marginTop="10dp" android:layout_marginBottom="15dp"/>
+	 	
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtPendentes" android:text="Pendentes" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroPendentes" android:text="33" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressPendentes" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
 		    
-	<ProgressBar 
-		android:id="@+id/progressPendentes" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-	    
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtConcluidos" android:text="Concluídos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroConcluidos" android:text="55" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtConcluidos" android:text="Concluídos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroConcluidos" android:text="55" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressConcluidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
+	
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtFixosConcluidos" android:text="Fixos Concluídos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroFixosConcluidos" android:text="55" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressFixosConcluidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
+	
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtHidrometradosConcluidos" android:text="Hidrometrados Concluídos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroHidrometradosConcluidos" android:text="55" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressHidrometradosConcluidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
+			    
+			    
+	<!-- 	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtConcluídosAnormalidadeLeitura" android:text="Concluídos com Anormalidade de Leitura" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroConcluídosAnormalidadeLeitura" android:text="12" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    			
+		<ProgressBar 
+			android:id="@+id/progressConcluídosAnormalidadeConsumo" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
 		    
-	<ProgressBar 
-		android:id="@+id/progressConcluidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtConcluídosAnormalidadeConsumo" android:text="Concluídos com Anormalidade de Consumo" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroConcluídosAnormalidadeConsumo" android:text="12" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    			
+		<ProgressBar 
+			android:id="@+id/progressConcluídosAnormalidadeConsumo" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>	    
+	 -->				
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtRetidos" android:text="Retidos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroRetidos" android:text="25" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressRetidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
+	
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtImpressos" android:text="Impressos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroImpressos" android:text="25" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressImpressos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
+	
+		<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
+			<TextView android:id="@+id/txtTransmitidos" android:text="Transmitidos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
+			<TextView android:id="@+id/txtNumeroTransmitidos" android:text="25" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
+		</LinearLayout>
+			    
+		<ProgressBar 
+			android:id="@+id/progressTransmitidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
+		</ProgressBar>
+		    	
+	</LinearLayout>
 
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtFixosConcluidos" android:text="Fixos Concluídos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroFixosConcluidos" android:text="55" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    
-	<ProgressBar 
-		android:id="@+id/progressFixosConcluidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtHidrometradosConcluidos" android:text="Hidrometrados Concluídos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroHidrometradosConcluidos" android:text="55" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    
-	<ProgressBar 
-		android:id="@+id/progressHidrometradosConcluidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-		    
-		    
-<!-- 	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtConcluídosAnormalidadeLeitura" android:text="Concluídos com Anormalidade de Leitura" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroConcluídosAnormalidadeLeitura" android:text="12" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    			
-	<ProgressBar 
-		android:id="@+id/progressConcluídosAnormalidadeConsumo" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-	    
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtConcluídosAnormalidadeConsumo" android:text="Concluídos com Anormalidade de Consumo" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroConcluídosAnormalidadeConsumo" android:text="12" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    			
-	<ProgressBar 
-		android:id="@+id/progressConcluídosAnormalidadeConsumo" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>	    
- -->				
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtRetidos" android:text="Retidos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroRetidos" android:text="25" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    
-	<ProgressBar 
-		android:id="@+id/progressRetidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtImpressos" android:text="Impressos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroImpressos" android:text="25" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    
-	<ProgressBar 
-		android:id="@+id/progressImpressos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-
-	<LinearLayout     android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout">
-		<TextView android:id="@+id/txtTransmitidos" android:text="Transmitidos" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/labelColor" android:textSize="15sp" android:layout_weight="1" android:ellipsize="end"/>
-		<TextView android:id="@+id/txtNumeroTransmitidos" android:text="25" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:textSize="12sp" android:gravity="right" android:layout_weight="0"/>
-	</LinearLayout>
-		    
-	<ProgressBar 
-		android:id="@+id/progressTransmitidos" android:layout_marginBottom="15dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:indeterminateOnly="false" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminateDrawable="@android:drawable/progress_indeterminate_horizontal" android:minHeight="12dip" android:maxHeight="12dip" android:layout_width="fill_parent" android:layout_height="wrap_content"> 
-	</ProgressBar>
-	    	
-</LinearLayout>
-
-
-
-
+</ScrollView>

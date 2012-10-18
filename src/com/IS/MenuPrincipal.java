@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import background.CarregarRotaThread;
 import background.GerarArquivoCompletoThread;
+import business.ControladorImovel;
 import business.ControladorRota;
 
 import com.IS.R.color;
@@ -43,7 +45,7 @@ import com.IS.R.color;
 @SuppressLint("NewApi")
 public class MenuPrincipal extends Activity {
 	
-	static final int MENU_LISTA_CADASTROS = 0;
+	static final int MENU_LISTA_IMOVEIS = 0;
 	static final int MENU_INFO = 1;
 	static final int MENU_CONSULTA = 2;
 	static final int MENU_ARQUIVO_COMPLETO = 3;
@@ -114,7 +116,7 @@ public class MenuPrincipal extends Activity {
         	public void onItemClick(AdapterView parent, View v, int position, long id){        
         		String text = parent.getItemAtPosition(position).toString();
 				
-            	if (position == MENU_LISTA_CADASTROS){
+            	if (position == MENU_LISTA_IMOVEIS){
             		
             		// Verifica se GPS esta ligado
             		/* Use the LocationManager class to obtain GPS locations */
@@ -267,14 +269,14 @@ public class MenuPrincipal extends Activity {
 	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        	public void onClick(DialogInterface dialog, int which) {
 	        		removeDialog(id);
-	        		ControladorRota.getInstancia().getDataManipulator().close();
+	        		ControladorRota.getInstancia().finalizeDataManipulator();
 	        		ControladorRota.getInstancia().deleteDatabase();
-	        		ControladorRota.getInstancia().setPermissionGranted(false);
-	        		ControladorRota.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
+	        		ControladorRota.getInstancia().cleanControladorRota();
+//	        		ControladorRota.getInstancia().setPermissionGranted(false);
+//	        		ControladorRota.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
 	        		
 	        	    Toast.makeText(getBaseContext(),"Todas as informações foram apagadas com sucesso!",Toast.LENGTH_LONG).show();
 
-	        	    ControladorRota.getInstancia().finalizeDataManipulator();
         		    Intent myIntent = new Intent(layoutConfirmationDialog.getContext(), Fachada.class);
         	        startActivity(myIntent);
 
@@ -288,6 +290,18 @@ public class MenuPrincipal extends Activity {
 		    	progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	            progDialog.setCancelable(false);
+				progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        
+				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        }
+				        return false; // Any other keys are still processed as normal
+				    }
+				});
 	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
 	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis());
 	            progThread = new GerarArquivoCompletoThread(handler, this, increment);

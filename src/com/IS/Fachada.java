@@ -79,46 +79,48 @@ public class Fachada extends Activity {
 
                 }else{
         		    Intent myIntent = new Intent(getBaseContext(), ListaRotas.class);
-        	        startActivityForResult(myIntent, 1);
+        		    myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        		    startActivityForResult(myIntent, 1);
                 }
             }
         });
     }
 
-	protected void onNewIntent(Intent intent) {
-		
-		super.onNewIntent(intent);
-		setIntent(intent);//must store the new intent unless getIntent() will return the old one.
-
-        final Animation animation = new AlphaAnimation(1, (float)0.3);
-        animation.setDuration(1000);
-        animation.setInterpolator(new LinearInterpolator());
-        animation.setRepeatCount(Animation.INFINITE);
-        animation.setRepeatMode(Animation.REVERSE);
-
-        final Button startButton = (Button)findViewById(R.id.buttonStart);
-        startButton.startAnimation(animation);
-
-        startButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-            	v.clearAnimation();
-
-                if (ControladorRota.getInstancia().databaseExists(getBaseContext()) &&
-                	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
-                	
-                	if (!ControladorRota.getInstancia().isPermissionGranted()){
-                    	ControladorRota.getInstancia().initiateDataManipulator(getBaseContext());
-                	}
-                	onPasswordDialogButtonClick(findViewById(R.id.buttonStart));			
-
-                }else{
-        		    Intent myIntent = new Intent(getBaseContext(), ListaRotas.class);
-        	        startActivityForResult(myIntent, 1);
-                }
-            }
-        });
-	}
-
+//	protected void onNewIntent(Intent intent) {
+//		
+//		super.onNewIntent(intent);
+//		setIntent(intent);//must store the new intent unless getIntent() will return the old one.
+//
+//        final Animation animation = new AlphaAnimation(1, (float)0.3);
+//        animation.setDuration(1000);
+//        animation.setInterpolator(new LinearInterpolator());
+//        animation.setRepeatCount(Animation.INFINITE);
+//        animation.setRepeatMode(Animation.REVERSE);
+//
+//        final Button startButton = (Button)findViewById(R.id.buttonStart);
+//        startButton.startAnimation(animation);
+//
+//        startButton.setOnClickListener(new OnClickListener() {
+//            public void onClick(View v) {
+//            	v.clearAnimation();
+//
+//                if (ControladorRota.getInstancia().databaseExists(getBaseContext()) &&
+//                	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
+//                	
+//                	if (!ControladorRota.getInstancia().isPermissionGranted()){
+//                    	ControladorRota.getInstancia().initiateDataManipulator(getBaseContext());
+//                	}
+//                	onPasswordDialogButtonClick(findViewById(R.id.buttonStart));			
+//
+//                }else{
+//        		    Intent myIntent = new Intent(getBaseContext(), ListaRotas.class);
+//        		    myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        	        startActivityForResult(myIntent, 1);
+//                }
+//            }
+//        });
+//	}
+//
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (ControladorRota.getInstancia().databaseExists(getBaseContext()) &&
         	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
@@ -142,6 +144,7 @@ public class Fachada extends Activity {
 	    	
 	    }else{
 		    Intent myIntent = new Intent(v.getContext(), MenuPrincipal.class);
+		    myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		    startActivity(myIntent);
 	    }
 	}
@@ -183,6 +186,7 @@ public class Fachada extends Activity {
 	        	    	  removeDialog(Constantes.DIALOG_ID_PASSWORD);
 	        	    	  
 	        	    	  Intent myIntent = new Intent(layout.getContext(), MenuPrincipal.class);
+	        	    	  myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        	    	  startActivity(myIntent);
 
 	        	      }else {
@@ -193,17 +197,14 @@ public class Fachada extends Activity {
 	        
 	        AlertDialog passwordDialog = builder.create();
 	        return passwordDialog;
-	        
 	    }
 	    return null;
 	}
 	
     @Override
     public void onDestroy(){
-    	
-    	ControladorRota.getInstancia().finalizeDataManipulator();
+//    	ControladorRota.getInstancia().finalizeDataManipulator();
     	super.onDestroy();
-    	
     }
     
     public static String getAppVersion() {
