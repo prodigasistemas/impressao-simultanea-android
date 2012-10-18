@@ -2,12 +2,11 @@ package com.IS;
 
 import java.util.List;
 
-import business.ControladorImovel;
-import business.ControladorRota;
-
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+import business.ControladorRota;
 
 public class TelaInformacoes extends Activity {
 	

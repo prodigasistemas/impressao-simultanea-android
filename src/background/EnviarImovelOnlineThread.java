@@ -56,12 +56,14 @@ public class EnviarImovelOnlineThread extends Thread {
     	mState = RUNNING;
     	FileManager.getInstancia();
     		
-//    	Util.enviarCadastroOnline(1);
+    	if (imovel.getIndcImovelEnviado() == Constantes.SIM) {
+    		return;
+    	}
 
     	// Obter dados do imóvel finalizado
     	StringBuffer mensagem = ArquivoRetorno.getInstancia().gerarDadosImovelParaEnvio(imovel);
     	
-		// Transmitir Cadastro ao servidor        			
+		// Transmitir dados do imovel ao servidor        			
 		try {
 			
 			ControladorAcessoOnline.getInstancia().enviarCadastro(mensagem.toString().getBytes());
@@ -72,7 +74,7 @@ public class EnviarImovelOnlineThread extends Thread {
 //				SET CADASTRO PARA TRANSMITIDO!!
 //		    	mensagemSucesso("Imovel enviado!");
 		    	mState = DONE_OK;
-		    	imovel.setIndcImovelEnviado(Constantes.IMOVEL_TRANSMITIDO);
+		    	imovel.setIndcImovelEnviado(Constantes.SIM);
 		    	ControladorRota.getInstancia().getDataManipulator().salvarImovel(imovel);
 		    	System.out.println("Dentro IF");
 		    } else {

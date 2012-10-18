@@ -84,6 +84,7 @@ public class ControladorRota {
     public void carregarDadosParaRecordStore(BufferedReader input, Handler mHandler, Context context) {
 		String line = "";
 		int matricula = 0;
+		linhasLidas = 0;
 		
 		if (input != null){
 			
@@ -174,7 +175,7 @@ public class ControladorRota {
 				        mHandler.sendMessage(msg);
 			        }
 				}
-
+			    
 			    // Define Rota Carregada com sucesso.
 		    	setRotaCarregamentoOk(Constantes.SIM);
 		    	

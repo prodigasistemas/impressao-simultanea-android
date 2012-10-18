@@ -8,7 +8,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
+import model.Configuracao;
 import model.Consumo;
 import model.DadosCategoria;
 import model.DadosFaturamento;
@@ -35,11 +37,15 @@ public class ArquivoRetorno {
     private static ArquivoRetorno instancia;
     private static StringBuffer arquivo;
 
-    private StringBuffer registrosTipoImovel = null;
-    private StringBuffer registroTipoDadosCategoria = null;
-    private StringBuffer registrosTipoImposto = null;
+    private StringBuffer registrosTipo1 = null;
+    private StringBuffer registroTipo2e3 = null;
+    private StringBuffer registrosTipo4 = null;
     private StringBuffer registroTipo0 =  null;
     private boolean linhaTipo1Anexada;
+    public static final short ARQUIVO_COMPLETO = 0; 
+    public static final short ARQUIVO_CONCLUIDOS_ATE_AGORA = 1;
+    public static final short ARQUIVO_INCOMPLETO = 2;
+    public static final short ARQUIVO_TODOS_OS_CALCULADOS = 3;
 
     
     private ArquivoRetorno() {
@@ -58,9 +64,9 @@ public class ArquivoRetorno {
     	arquivo = new StringBuffer();
 		
     	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + i.getId());
-    	gerarRegistroTipoImovel(imovel);
-    	gerarRegistroDadosCategoria(imovel);
-    	gerarRegistroTipoDebito(imovel);
+    	gerarRegistroTipo1(imovel);
+    	gerarRegistroTipo2e3(imovel);
+    	gerarRegistroTipo4(imovel);
     		    
     	return arquivo;
     }
@@ -96,9 +102,9 @@ public class ArquivoRetorno {
 		    		arquivo = arquivo.append(registroTipo0);
 		    	 }
 
-		    	gerarRegistroTipoImovel(imovel);
-		    	gerarRegistroDadosCategoria(imovel);
-		    	gerarRegistroTipoDebito(imovel);
+		    	gerarRegistroTipo1(imovel);
+		    	gerarRegistroTipo2e3(imovel);
+		    	gerarRegistroTipo4(imovel);
 		    	
 		        Bundle b = new Bundle();
 		        // Send message (with current value of total as data) to Handler on UI thread
@@ -150,9 +156,9 @@ public class ArquivoRetorno {
 	    return arquivo;		    
     }
     
-    private void gerarRegistroTipoImovel(Imovel imovel) {
+    private void gerarRegistroTipo1(Imovel imovel) {
 
-    	registrosTipoImovel = new StringBuffer();
+    	registrosTipo1 = new StringBuffer();
     	
     	String anormalidadeLeitura = "";
 	    Date dataLeitura = new Date();
@@ -195,64 +201,64 @@ public class ArquivoRetorno {
 		    }
 		    
     	// Tipo de Registro
-    	registrosTipoImovel.append("1"); 
+    	registrosTipo1.append("1"); 
     	// Matricula
-    	registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula()+ "")); 
+    	registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula()+ "")); 
     	// Tipo de Medição
-    	registrosTipoImovel.append("1"); 
+    	registrosTipo1.append("1"); 
 	    // Ano/Mês do faturamento
-    	registrosTipoImovel.append(Util.formatarAnoMesParaMesAnoSemBarra(anoMesFaturamento)); 
+    	registrosTipo1.append(Util.formatarAnoMesParaMesAnoSemBarra(anoMesFaturamento)); 
 	    // Número da Conta
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getNumeroConta() + "")); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getNumeroConta() + "")); 
 	    // Grupo de faturamento
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getGrupoFaturamento() + "")); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getGrupoFaturamento() + "")); 
 	    // Código da rota
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + "")); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + "")); 
 	    // Leitura do Hidrômetro
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (imovel.getMedidor(Constantes.LIGACAO_AGUA) != null ? imovel.getMedidor(Constantes.LIGACAO_AGUA).getLeitura() + "" : ""), ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(7, (imovel.getMedidor(Constantes.LIGACAO_AGUA) != null ? imovel.getMedidor(Constantes.LIGACAO_AGUA).getLeitura() + "" : ""), ' ')); 
 	    // Anormalidade de Leitura
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(2, anormalidadeLeitura.equals(Constantes.NULO_INT+"") ? "0" : anormalidadeLeitura, ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(2, anormalidadeLeitura.equals(Constantes.NULO_INT+"") ? "0" : anormalidadeLeitura, ' ')); 
 	    // Data e hora da leitura
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(26, (Util.formatarData(dataLeitura)), ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(26, (Util.formatarData(dataLeitura)), ' ')); 
 	    // Indicador de situação da leitura
-	    registrosTipoImovel.append(indicadorSituacao); 
+	    registrosTipo1.append(indicadorSituacao); 
 	    // Leitura de faturamento
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, consumoAgua != null ? consumoAgua.getLeituraAtual() + "" : "", ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(7, consumoAgua != null ? consumoAgua.getLeituraAtual() + "" : "", ' ')); 
 	    // Consumo Medido no Mes
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(6, consumoAgua != null ? consumoAgua.getConsumoMedidoMes() + "": "", ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(6, consumoAgua != null ? consumoAgua.getConsumoMedidoMes() + "": "", ' ')); 
 	    // Consumo Cobrado no Mes
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(6, consumoAgua != null ? consumoAgua.getConsumoCobradoMes() + "": "", ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(6, consumoAgua != null ? consumoAgua.getConsumoCobradoMes() + "": "", ' ')); 
 	    // Consumo Rateio Agua
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioAgua() > 0 ? imovel.getConsumoRateioAgua() + "": "")); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioAgua() > 0 ? imovel.getConsumoRateioAgua() + "": "")); 
 	    // Valor Rateio Agua
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioAgua() > 0 ? imovel.getValorRateioAgua() + "": "")); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioAgua() > 0 ? imovel.getValorRateioAgua() + "": "")); 
 	    // Consumo Rateio Esgoto
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioEsgoto() > 0 ? imovel.getConsumoRateioEsgoto() + "" : "") ); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioEsgoto() > 0 ? imovel.getConsumoRateioEsgoto() + "" : "") ); 
 	    // Valor Rateio Esgoto
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioEsgoto() > 0 ? imovel.getValorRateioEsgoto() + "" : "") ); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioEsgoto() > 0 ? imovel.getValorRateioEsgoto() + "" : "") ); 
 	    // Tipo de Consumo
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(2, consumoAgua != null ? consumoAgua.getTipoConsumo() + "": "", ' ') ); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(2, consumoAgua != null ? consumoAgua.getTipoConsumo() + "": "", ' ') ); 
 	    // Anormalidade de Consumo
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(2, consumoAgua != null ? consumoAgua.getAnormalidadeConsumo() + "": "", ' ') ); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(2, consumoAgua != null ? consumoAgua.getAnormalidadeConsumo() + "": "", ' ') ); 
 	    // Indicador de emissao de conta
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(1, imovel.getIndcImovelImpresso() + "") ); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(1, imovel.getIndcImovelImpresso() + "") ); 
 	    // Inscricao do Imovel
-	    registrosTipoImovel.append(imovel.getInscricao()); 
+	    registrosTipo1.append(imovel.getInscricao()); 
 	    // Indicador Conta Retida
-	    registrosTipoImovel.append(imovel.getIndcGeracaoConta()); 
+	    registrosTipo1.append(imovel.getIndcGeracaoConta()); 
 	    // Consumo Imóveis MICRO Sem Rateio
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(6, consumoAgua != null ? consumoAgua.getConsumoCobradoMesImoveisMicro() + "": "", ' ') ); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(6, consumoAgua != null ? consumoAgua.getConsumoCobradoMesImoveisMicro() + "": "", ' ') ); 
 	    // Anormalidade de faturamento
-	    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(2, consumoAgua != null ? consumoAgua.getAnormalidadeLeituraFaturada() + "": "")); 
+	    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(2, consumoAgua != null ? consumoAgua.getAnormalidadeLeituraFaturada() + "": "")); 
 	    // ID do documento de cobrança
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
 	    // Leitura Anterior do Hidrômetro
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeituraAnterior() + "" : ""), ' ')); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeituraAnterior() + "" : ""), ' ')); 
 	    // Versao do I.S. em uso
-	    registrosTipoImovel.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
-	    registrosTipoImovel.append("\n"); 
+	    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
+	    registrosTipo1.append("\n"); 
 	
-	    System.out.println(registrosTipoImovel);
+	    System.out.println(registrosTipo1);
 
 //    	arquivo.append(registrosTipoImovel);
 		}
@@ -285,141 +291,141 @@ public class ArquivoRetorno {
 			    }
 		
 		    	// Tipo de Registro
-	    		registrosTipoImovel.append("1"); 
+	    		registrosTipo1.append("1"); 
 	    		// Matricula
-	    		registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + "")); 
+	    		registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + "")); 
 			    // Tipo de Medição
-	    		registrosTipoImovel.append("2"); 
+	    		registrosTipo1.append("2"); 
 	    		// Ano/Mês do faturamento
-	    		registrosTipoImovel.append(Util.formatarAnoMesParaMesAnoSemBarra(anoMesFaturamento)); 
+	    		registrosTipo1.append(Util.formatarAnoMesParaMesAnoSemBarra(anoMesFaturamento)); 
 			    // Número da Conta
-	    		registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getNumeroConta() + "") ); 
+	    		registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getNumeroConta() + "") ); 
 			    // Grupo de faturamento
-	    		registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getGrupoFaturamento() + "") ); 
+	    		registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getGrupoFaturamento() + "") ); 
 			    // Código da rota
-	    		registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + "") ); 
+	    		registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + "") ); 
 			    // Leitura do Hidrômetro
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (medidorPoco != null ? medidorPoco.getLeitura() + "" : ""), ' ') );  
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorPoco != null ? medidorPoco.getLeitura() + "" : ""), ' ') );  
 			    // Anormalidade de Leitura
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(2, anormalidadeLeitura.equals(Constantes.NULO_INT+"") ? "0" : anormalidadeLeitura, ' ')); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(2, anormalidadeLeitura.equals(Constantes.NULO_INT+"") ? "0" : anormalidadeLeitura, ' ')); 
 			    // Data e hora da leitura
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(26, (Util.formatarData(dataLeitura)), ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(26, (Util.formatarData(dataLeitura)), ' ') ); 
 			    // Indicador de situação da leitura
-	    		registrosTipoImovel.append(indicadorSituacao); 
+	    		registrosTipo1.append(indicadorSituacao); 
 			    // Leitura de faturamento
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(7, consumoEsgoto != null ? consumoEsgoto.getLeituraAtual() + "": "", ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(7, consumoEsgoto != null ? consumoEsgoto.getLeituraAtual() + "": "", ' ') ); 
 			    // Consumo Medido no Mes
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(6, consumoEsgoto != null ? consumoEsgoto.getConsumoMedidoMes() + "": "", ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(6, consumoEsgoto != null ? consumoEsgoto.getConsumoMedidoMes() + "": "", ' ') ); 
 			    // Consumo Cobrado no Mes
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(6, consumoEsgoto != null ? consumoEsgoto.getConsumoCobradoMes() + "": "", ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(6, consumoEsgoto != null ? consumoEsgoto.getConsumoCobradoMes() + "": "", ' ') ); 
 			    // Consumo Rateio Agua
-			    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioAgua() > 0 ? imovel.getConsumoRateioAgua() + "": "")); 
+			    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioAgua() > 0 ? imovel.getConsumoRateioAgua() + "": "")); 
 			    // Valor Rateio Agua
-			    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioAgua() > 0 ? imovel.getValorRateioAgua() + "": "")); 
+			    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioAgua() > 0 ? imovel.getValorRateioAgua() + "": "")); 
 			    // Consumo Rateio Esgoto
-			    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioEsgoto() > 0 ? imovel.getConsumoRateioEsgoto() + "" : "") ); 
+			    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(6, imovel.getConsumoRateioEsgoto() > 0 ? imovel.getConsumoRateioEsgoto() + "" : "") ); 
 			    // Valor Rateio Esgoto
-			    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioEsgoto() > 0 ? imovel.getValorRateioEsgoto() + "" : "") ); 
+			    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(8, imovel.getValorRateioEsgoto() > 0 ? imovel.getValorRateioEsgoto() + "" : "") ); 
 			    // Tipo de Consumo
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(2, consumoEsgoto != null ? consumoEsgoto.getTipoConsumo() + "": "", ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(2, consumoEsgoto != null ? consumoEsgoto.getTipoConsumo() + "": "", ' ') ); 
 			    // Anormalidade de Consumo
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(2, consumoEsgoto != null ? consumoEsgoto.getAnormalidadeConsumo() + "": "", ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(2, consumoEsgoto != null ? consumoEsgoto.getAnormalidadeConsumo() + "": "", ' ') ); 
 			    // Indicador de emissao de conta
-	    		registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(1, imovel.getIndcImovelImpresso() + "") ); 
+	    		registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(1, imovel.getIndcImovelImpresso() + "") ); 
 			    // Inscricao do Imovel
-	    		registrosTipoImovel.append(imovel.getInscricao() ); 
+	    		registrosTipo1.append(imovel.getInscricao() ); 
 	    		// Indicador Conta Retida
-	    		registrosTipoImovel.append(imovel.getIndcGeracaoConta() ); 
+	    		registrosTipo1.append(imovel.getIndcGeracaoConta() ); 
 			    // Consumo Imóveis MICRO Sem Rateio
-	    		registrosTipoImovel.append(Util.adicionarCharEsquerda(6, consumoEsgoto != null ? consumoEsgoto.getConsumoCobradoMesImoveisMicro() + "": "", ' ') ); 
+	    		registrosTipo1.append(Util.adicionarCharEsquerda(6, consumoEsgoto != null ? consumoEsgoto.getConsumoCobradoMesImoveisMicro() + "": "", ' ') ); 
 			    // Anormalidade de faturamento
-	    		registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(2, consumoEsgoto != null ? consumoEsgoto.getAnormalidadeLeituraFaturada() + "": "")); 
+	    		registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(2, consumoEsgoto != null ? consumoEsgoto.getAnormalidadeLeituraFaturada() + "": "")); 
 	    		// ID do documento de cobrança
-			    registrosTipoImovel.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
+			    registrosTipo1.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
 			    // Leitura Anterior do Hidrômetro
-			    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (medidorPoco != null ? medidorPoco.getLeituraAnterior() + "" : ""), ' ')); 
+			    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorPoco != null ? medidorPoco.getLeituraAnterior() + "" : ""), ' ')); 
 			    // Versao do I.S. em uso
-			    registrosTipoImovel.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
-	    		registrosTipoImovel.append("\n"); 
+			    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
+	    		registrosTipo1.append("\n"); 
 		
-			    System.out.println(registrosTipoImovel);
+			    System.out.println(registrosTipo1);
 			}
 		
 		// Caso nao tenha consumo nem de agua nem de esgoto
 				// geramos um registro tipo 1 apenas com os débitos.
 				if (!temAgua && !temEsgoto) {
 				    // Tipo de Registro
-				    registrosTipoImovel.append("1"); 
+				    registrosTipo1.append("1"); 
 				    // Matricula
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + "")); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + "")); 
 				    // Tipo de Medição
-				    registrosTipoImovel.append("1" ); 
+				    registrosTipo1.append("1" ); 
 				    // Ano/Mês do faturamento
-			    	registrosTipoImovel.append(Util.formatarAnoMesParaMesAnoSemBarra(anoMesFaturamento)); 
+			    	registrosTipo1.append(Util.formatarAnoMesParaMesAnoSemBarra(anoMesFaturamento)); 
 				    // Número da Conta
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getNumeroConta() + "")); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getNumeroConta() + "")); 
 				    // Grupo de faturamento
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getGrupoFaturamento() + "") ); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getGrupoFaturamento() + "") ); 
 				    // Código da rota
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + "")); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + "")); 
 				    // Leitura do Hidrômetro
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeitura() + "" : ""), ' ') ); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeitura() + "" : ""), ' ') ); 
 				    // Anormalidade de Leitura
-				    registrosTipoImovel.append(
+				    registrosTipo1.append(
 					    Util.adicionarCharEsquerda(
 						    2, ( imovel.getAnormalidadeSemHidrometro() != Constantes.NULO_INT ? imovel.getAnormalidadeSemHidrometro() + "" : (medidorAgua != null ? medidorAgua.getAnormalidade() + "" : "")), ' ') ); 
 				    // Data e hora da leitura
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(26, Util.formatarData(new Date()), ' ') ); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(26, Util.formatarData(new Date()), ' ') ); 
 				    // Indicador de situação da leitura
-				    registrosTipoImovel.append(" " ); 
+				    registrosTipo1.append(" " ); 
 				    // Leitura de faturamento
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeitura() + "" : ""), ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeitura() + "" : ""), ' ')); 
 				    // Consumo Medido no Mes
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(6, " ", ' ') ); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(6, " ", ' ') ); 
 				    // Consumo Cobrado no Mes
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(6, " ", ' ') ); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(6, " ", ' ') ); 
 				    // Consumo Rateio Agua
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(6, "0") ); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(6, "0") ); 
 				    // Valor Rateio Agua
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(8, "0") ); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(8, "0") ); 
 				    // Consumo Rateio Esgoto
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(6, "0") ); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(6, "0") ); 
 				    // Valor Rateio Esgoto
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(8, "0") ); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(8, "0") ); 
 				    // Tipo de Consumo
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(2, " ", ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(2, " ", ' ')); 
 				    // Anormalidade de Consumo
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(2, " ", ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(2, " ", ' ')); 
 				    // Indicador de emissao de conta
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(1, imovel.getIndcImovelImpresso() + "")); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(1, imovel.getIndcImovelImpresso() + "")); 
 				    // Inscricao do Imovel
-				    registrosTipoImovel.append(imovel.getInscricao()); 
+				    registrosTipo1.append(imovel.getInscricao()); 
 				    // Indicador Conta Retida
-				    registrosTipoImovel.append(imovel.getIndcGeracaoConta()); 
+				    registrosTipo1.append(imovel.getIndcGeracaoConta()); 
 				    // Consumo Imóveis MICRO Sem Rateio
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(6, "", ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(6, "", ' ')); 
 				    // Anormalidade de faturamento
-				    registrosTipoImovel.append(Util.adicionarZerosEsquerdaNumero(2, "")); 
+				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(2, "")); 
 				    // ID do documento de cobrança
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
 				    // Leitura Anterior do Hidrômetro
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeituraAnterior() + "" : ""), ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeituraAnterior() + "" : ""), ' ')); 
 				    // Versao do I.S. em uso
-				    registrosTipoImovel.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
-				    registrosTipoImovel.append("\n");
+				    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
+				    registrosTipo1.append("\n");
 				
-				    System.out.println(registrosTipoImovel);
+				    System.out.println(registrosTipo1);
 				
 				}
 
-				arquivo.append(registrosTipoImovel);
+				arquivo.append(registrosTipo1);
     }
     
     
-    private void gerarRegistroDadosCategoria(Imovel imovel) {
+    private void gerarRegistroTipo2e3(Imovel imovel) {
 
 
-    	registroTipoDadosCategoria = new StringBuffer();
+    	registroTipo2e3 = new StringBuffer();
     	
     	List<DadosCategoria> registrosTipoDadosCategoria = imovel.getDadosCategoria();
 	
@@ -442,11 +448,11 @@ public class ArquivoRetorno {
 	    		}
 		
 	    		// Tipo de registro (1)
-	    		registroTipoDadosCategoria.append("2");
+	    		registroTipo2e3.append("2");
 	    		// Matrícula (9);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
 	    		// Código da categoria (1)
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(1, dadosCategoria.getCodigoCategoria() + ""));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(1, dadosCategoria.getCodigoCategoria() + ""));
 	    		// Código da subcategoria (3)    		
 	    		short indicadorTarifa = ControladorRota.getInstancia().getDadosGerais().getIndcTarifaCatgoria();
 	    		String codigoSubcategoria = "";
@@ -456,30 +462,30 @@ public class ArquivoRetorno {
 	    		    codigoSubcategoria = Util.adicionarCharEsquerda(3, dadosCategoria.getCodigoSubcategoria(), ' ');
 	    		}
 				
-	    		registroTipoDadosCategoria.append(codigoSubcategoria);
+	    		registroTipo2e3.append(codigoSubcategoria);
 	    		// Valor faturado de água na categoria (13,2)
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoAgua.getValorFaturado())));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoAgua.getValorFaturado())));
 	    		// Consumo faturado de água na categoria (6);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoAgua.getConsumoFaturado() + ""));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoAgua.getConsumoFaturado() + ""));
 	    		// Valor da tarifa mínima de água da categoria (13,2);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoAgua.getValorTarifaMinima())));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoAgua.getValorTarifaMinima())));
 	    		// Consumo mínimo de água da categoria (6);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoAgua.getConsumoMinimo() + ""));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoAgua.getConsumoMinimo() + ""));
 	    		// Valor faturado de esgoto na categoria (13,2)
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoEsgoto.getValorFaturado())));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoEsgoto.getValorFaturado())));
 	    		// Consumo faturado de esgoto na categoria (6);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoEsgoto.getConsumoFaturado() + ""));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoEsgoto.getConsumoFaturado() + ""));
 	    		// Valor da tarifa mínima de esgoto da categoria (13,2);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoEsgoto.getValorTarifaMinima())));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faturamentoEsgoto.getValorTarifaMinima())));
 	    		// Consumo mínimo de esgoto da categoria (6);
-	    		registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoEsgoto.getConsumoMinimo() + ""));
+	    		registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faturamentoEsgoto.getConsumoMinimo() + ""));
     			// Numero de vezes que a conta foi impressa
-    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(2, String.valueOf(imovel.getQuantidadeContasImpressas())));
+    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(2, String.valueOf(imovel.getQuantidadeContasImpressas())));
     			// Valores das contas impressas
 //    			for (int count = 0; count < imovel.getValoresContasImpressas().size(); count++){
 //	    			registroTipoDadosCategoriaEHistoricoConsumo.append(Util.adicionarZerosEsquerdaNumero(10, Util.formatarDoubleParaMoedaReal(Double.parseDouble((String)imovel.getValoresContasImpressas().elementAt(count)))));
 //    			}
-	    		registroTipoDadosCategoria.append("\n");
+	    		registroTipo2e3.append("\n");
 		
 	    		List faixasAgua = faturamentoAgua.getFaixas();
 	    		List faixasEsgoto = faturamentoEsgoto.getFaixas();
@@ -503,30 +509,30 @@ public class ArquivoRetorno {
 		    			}
 			
 		    			// Tipo de registro (1)
-		    			registroTipoDadosCategoria.append("3");
+		    			registroTipo2e3.append("3");
 		    			// Matrícula (9);
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
 		    			// Código da categoria (1)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(1, dadosCategoria.getCodigoCategoria() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(1, dadosCategoria.getCodigoCategoria() + ""));
 		    			// Código da subcategoria (3)
-		    			registroTipoDadosCategoria.append(Util.adicionarCharEsquerda(3, dadosCategoria.getCodigoSubcategoria(), ' '));
+		    			registroTipo2e3.append(Util.adicionarCharEsquerda(3, dadosCategoria.getCodigoSubcategoria(), ' '));
 		    			// Consumo faturado de água na faixa (6)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaAgua.getConsumoFaturado() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaAgua.getConsumoFaturado() + ""));
 		    			// Valor faturado de água na faixa (13,2)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaAgua.getValorFaturado())));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaAgua.getValorFaturado())));
 		    			// Limite inicial de consumo na faixa (6);
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaAgua.getLimiteInicialConsumo() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaAgua.getLimiteInicialConsumo() + ""));
 		    			// Limite final de consumo na faixa (6);
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaAgua.getLimiteFinalConsumo() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaAgua.getLimiteFinalConsumo() + ""));
 		    			// Valor da tarifa de água na faixa (13,2);
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaAgua.getValorTarifa())));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaAgua.getValorTarifa())));
 		    			// Valor da tarifa de esgoto na faixa (13,2);
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorTarifa())));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorTarifa())));
 		    			// Consumo Faturado de esgoto na faixa (6)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getConsumoFaturado() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getConsumoFaturado() + ""));
 		    			// Valor faturado de esgoto na faixa (13,2)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorFaturado())));
-		    			registroTipoDadosCategoria.append("\n");
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorFaturado())));
+		    			registroTipo2e3.append("\n");
 	    		    }
 	    		} else if (faixasEsgoto != null) {
 		
@@ -537,42 +543,42 @@ public class ArquivoRetorno {
 		    			faixaEsgoto = (DadosFaturamentoFaixa) faixasEsgoto.get(k);
 			
 		    			// Tipo de registro (1)
-		    			registroTipoDadosCategoria.append("3");
+		    			registroTipo2e3.append("3");
 		    			// Matrícula (9);
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
 		    			// Código da categoria (1)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(1, dadosCategoria.getCodigoCategoria() + ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(1, dadosCategoria.getCodigoCategoria() + ""));
 		    			// Código da subcategoria (3)
-		    			registroTipoDadosCategoria.append(Util.adicionarCharEsquerda(3, dadosCategoria.getCodigoSubcategoria(), ' '));
+		    			registroTipo2e3.append(Util.adicionarCharEsquerda(3, dadosCategoria.getCodigoSubcategoria(), ' '));
 		    			// Consumo faturado de água na faixa (6)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, ""));
 		    			// Valor faturado de água na faixa (13,2)
-		    			registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, ""));
+		    			registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, ""));
 		    			// Limite inicial de consumo na faixa (6);
-						registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getLimiteInicialConsumo() + ""));
+						registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getLimiteInicialConsumo() + ""));
 						// Limite final de consumo na faixa (6);
-						registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getLimiteFinalConsumo() + ""));
+						registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getLimiteFinalConsumo() + ""));
 						// Valor da tarifa de água na faixa (13,2);
-						registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, ""));
+						registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, ""));
 						// Valor da tarifa de esgoto na faixa (13,2);
-						registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorTarifa())));
+						registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorTarifa())));
 						// Consumo Faturado de esgoto na faixa (6)
-						registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getConsumoFaturado() + ""));
+						registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(6, faixaEsgoto.getConsumoFaturado() + ""));
 						// Valor faturado de esgoto na faixa (13,2)
-						registroTipoDadosCategoria.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorFaturado())));
-						registroTipoDadosCategoria.append("\n");
+						registroTipo2e3.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(faixaEsgoto.getValorFaturado())));
+						registroTipo2e3.append("\n");
 	    		    }
 	    		}
     	    }
     	}
     	
-    	arquivo.append(registroTipoDadosCategoria);
+    	arquivo.append(registroTipo2e3);
     
     }
     
-    private void gerarRegistroTipoDebito(Imovel imovel) {
+    private void gerarRegistroTipo4(Imovel imovel) {
 
-    	registrosTipoImposto = new StringBuffer();
+    	registrosTipo4 = new StringBuffer();
 
     	List<Imposto> impostos = imovel.getImpostos();
 	
@@ -581,25 +587,25 @@ public class ArquivoRetorno {
     		Imposto reg6 = impostos.get(i);
 		
     		// Tipo de registro (1)
-    		registrosTipoImposto.append("4");
+    		registrosTipo4.append("4");
 				
     		// Matricula (9)
-    		registrosTipoImposto.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
+    		registrosTipo4.append(Util.adicionarZerosEsquerdaNumero(9, imovel.getMatricula() + ""));
     		
     		// Tipo de Imposto(1)
-    		registrosTipoImposto.append(Util.adicionarZerosEsquerdaNumero(1, reg6.getTipoImposto() + ""));
+    		registrosTipo4.append(Util.adicionarZerosEsquerdaNumero(1, reg6.getTipoImposto() + ""));
     		// Descrição do imposto (15);
-    		registrosTipoImposto.append(Util.adicionarCharEsquerda(15, reg6.getDescricaoImposto(), ' '));
+    		registrosTipo4.append(Util.adicionarCharEsquerda(15, reg6.getDescricaoImposto(), ' '));
     		// Percentual da Alíquota (6);
-    		registrosTipoImposto.append(Util.adicionarZerosEsquerdaNumero(6, Util.formatarDoubleParaMoedaReal(reg6.getPercentualAlicota())));
+    		registrosTipo4.append(Util.adicionarZerosEsquerdaNumero(6, Util.formatarDoubleParaMoedaReal(reg6.getPercentualAlicota())));
     		// Valor do Imposto (13,2)
     		double valorImposto = imovel.getValorContaSemImposto() * Util.arredondar((reg6.getPercentualAlicota() / 100), 7);
-    		registrosTipoImposto.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(valorImposto)) );
-    		registrosTipoImposto.append("\n");
+    		registrosTipo4.append(Util.adicionarZerosEsquerdaNumero(16, Util.formatarDoubleParaMoedaReal(valorImposto)) );
+    		registrosTipo4.append("\n");
     	    }
     	}
     	
-    	arquivo.append(registrosTipoImposto);
+    	arquivo.append(registrosTipo4);
     }
     
     private void gerarRegistroTipo0(int tipoFinalizacao, Imovel imovel) {
@@ -631,6 +637,334 @@ public class ArquivoRetorno {
     	registroTipo0.append("\n");
     	
     }
+    
+    /**
+     * Métodos gera o arquivo de retorno de todos os imóveis não 
+     * enviados até o momento;
+     * 
+     * @param p
+     *            Progress bar que irá mostrar o progresso do processo
+     * @return Vetor de objetos com dois objetos 1 - boolean com indicação de
+     *         erro na geração 2 - todas os id's dos imóveis que foram gerados
+     *         para envio
+     */
+    public Object[] gerarArquivoRetorno( short tipoArquivoRetorno ){
+    	
+    	File fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getRotaFileName());
+        
+//        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+//            Toast.makeText(context, "Erro ao salvar no cartão de memória!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+
+        FileOutputStream os = null;
+		try {
+			os = new FileOutputStream(fileArquivoCompleto);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+        OutputStreamWriter out = new OutputStreamWriter(os);
+    	
+    	Object[] retorno = new Object[2];
+    	Vector idsImoveisGerados = new Vector();
+    	
+    	arquivo = new StringBuffer();
+    	
+    	List<Integer> idsImoveisConcluidos = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
+    	int qtdImoveisCalculados = 0;
+    	
+    	// Sequencial de rota de marcacão
+    	StringBuffer sequencialRotaMarcacao = new StringBuffer();
+    	
+    	if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_COMPLETO || 
+    	     tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS ){	
+    	    qtdImoveisCalculados = Configuracao.getInstancia().getQtdImoveis();
+    	} else if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_CONCLUIDOS_ATE_AGORA || 
+    		    tipoArquivoRetorno == ARQUIVO_INCOMPLETO ) {
+    // Daniel - considerar numero de imoveis impressos
+//    		qtdImoveisCalculados = Configuracao.getInstancia().getIdsImoveisConcluidos().size();
+    		qtdImoveisCalculados = idsImoveisConcluidos.size();
+    		
+    		Imovel primeiroImovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1");
+    		
+    		if ( tipoArquivoRetorno == ARQUIVO_COMPLETO ){			    
+    	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO , primeiroImovel);		
+    	    } else if ( tipoArquivoRetorno == ARQUIVO_TODOS_OS_CALCULADOS ){
+    	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_TODOS_IMOVEIS , primeiroImovel );
+    	    } else if ( tipoArquivoRetorno == ARQUIVO_INCOMPLETO ){
+    			this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_INCOMPLETO , primeiroImovel );
+    	    }
+    		
+    		
+    		if ( registroTipo0 != null ){
+    			arquivo = arquivo.append(registroTipo0);
+    		}
+    		
+    		for (int i = 0; i < qtdImoveisCalculados; i++) {
+    			int id = 0;
+    			
+    			if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_COMPLETO ||
+    			     tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS ){
+    			    id = i + 1;
+    			} else if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_CONCLUIDOS_ATE_AGORA || 
+    				    tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_INCOMPLETO ) {
+//    			    id = ( (Integer) Configuracao.getInstancia().getIdsImoveisConcluidos().elementAt( i ) ).intValue();
+    				id = idsImoveisConcluidos.get(i);
+    			}
+    			
+    			// Informamos quanto ainda falta
+    			double d = (double) (i+1) / qtdImoveisCalculados;
+    			byte percentual = (byte) ((d) * 100);
+
+//    			p.setProgress(percentual);
+//    			p.repaint();
+    			
+    			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+    			
+//    			ControladorImoveis.getInstancia().setImovelSelecionado(imovel);
+//    			imovel = null;
+    	//Daniel - Rota completa - checa se o imovel selecionado é informativo ou nao.
+//    			Caso seja informativo, nao deve entrar no arquivo de retorno.
+    			// Guardamos todos os sequencias e matriculas, para a rota de marcação
+    			if (!imovel.isImovelInformativo()  || imovel.isImovelCondominio()){
+    				System.out.println("Incluindo Imovel: " + imovel.getMatricula());
+    				if ( ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_COMPLETO ||
+    				       tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS ) 
+//    				       && Configuracao.getInstancia().getIndcRotaMarcacaoAtivada() == Constantes.SIM
+    				       ) {
+    				    
+    				    if ( imovel.getSequencialRotaMarcacao() == Constantes.NULO_INT ){
+    					
+    					int indicador = 0;//Configuracao.getInstancia().getSequencialAtualRotaMarcacao();
+    					
+    					sequencialRotaMarcacao.append( 
+    						"5" +
+    						Util.adicionarZerosEsquerdaNumero( 9, imovel.getMatricula()+"" ) + 
+    						Util.adicionarZerosEsquerdaNumero( 4, indicador+"" ) + "\n" );
+    					
+    					imovel.setSequencialRotaMarcacao( indicador );
+    				    } else {
+    					sequencialRotaMarcacao.append( 
+    						"5" +
+    						Util.adicionarZerosEsquerdaNumero( 9, imovel.getMatricula()+"" ) + 
+    						Util.adicionarZerosEsquerdaNumero( 4, imovel.getSequencialRotaMarcacao()+"" ) + "\n" );
+    				    }
+    				}
+    		
+    				 /*Caso estejamos enviando apenas os lidos e não enviados até agora
+    				 verificamos se o imovel deve ser enviado imediatamente. Como imóveis
+    				 condominio podem ser impressos parcialmente, como no caso de conta 
+    				 menor do que o valor limite ou valor do crédito maior do que o valor
+    				 da conta, não enviamos imóvel condominio para o arquivo de não enviados
+    				 e lidos até agora. Esse procedimento só deve ser feito na finalização
+    				 do roteiro. Caso estejamos enviando o imóvel completo, enviamos todos 
+    				 os calculados e não enviados até agora;*/
+    				   // Condição 1 
+    				if ( ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_CONCLUIDOS_ATE_AGORA && 
+    						imovel.enviarAoImprimir() && !imovel.isImovelCondominio() ) ||
+    				   // Condição 2
+    				     ( (tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_COMPLETO ||
+    				        tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_INCOMPLETO	) &&
+    				        imovel.enviarAoFinalizar() ) ||
+    				   // Condicao 3
+    				     ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS &&
+    				    		 imovel.getIndcImovelCalculado() == Constantes.SIM ) ) {
+
+    					System.out.println("vai enviar o movel: " + imovel.getMatricula());
+
+    				    	// Criamos os registros tipo 1
+    				    	this.gerarRegistroTipo1(imovel);
+    		
+    				    	// Criamos os registros tipo 2 e 3
+    				    	this.gerarRegistroTipo2e3(imovel);
+    		
+    				    	// Criamos os registros tipo 4
+    				    	this.gerarRegistroTipo4(imovel);
+    		 	
+    				    	arquivo = arquivo.append(registrosTipo1);
+    				    	arquivo = arquivo.append(registroTipo2e3);
+    				    	arquivo = arquivo.append(registrosTipo4);
+    		
+    						linhaTipo1Anexada = false;
+
+    				    	idsImoveisGerados.addElement(new Long(imovel.getId()).intValue());
+    		
+    				    	imovel = null;
+    				} else if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS ){
+    				    arquivo = null;
+//    				    Util.mostrarErro( "O imovel de matricula " + imovel.getMatricula() + " nao esta calculado. Favor recalcular" );
+//    				    out.close();
+//    				    fc.close();
+//    				    out = null;
+//    				    fc = null;
+    				    
+    				    retorno[0] = Boolean.TRUE;
+    				    retorno[1] = null;
+    				    
+    				    ControladorImovel.getInstancia().setImovelSelecionado( imovel );
+//    				    Abas.getInstancia().criarAbas();
+    				}
+    		    }
+    		}
+    		
+    		if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_COMPLETO || 
+    	    		tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS ){
+    	    	
+    	    	arquivo.append( sequencialRotaMarcacao.toString() );
+    	    }
+    		
+    		try {
+				out.write(arquivo.toString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    		retorno[0] = Boolean.FALSE;
+    	    retorno[1] = idsImoveisGerados;
+    	}
+    	
+    	return retorno;
+    }
+    
+//    public List<Integer> gerarArquivoImoveisConcluidos(Handler mHandler, Context context, int increment) {
+//    	List<Integer> idsImoveisConcluidos = null;
+//    	try {
+//        	File fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
+//            
+//          if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+//              Toast.makeText(context, "Erro ao salvar no cartão de memória!", Toast.LENGTH_SHORT).show();
+//              return new ArrayList<Integer>();
+//          }
+//
+//	          FileOutputStream os = new FileOutputStream(fileArquivoCompleto);
+//	          OutputStreamWriter out = new OutputStreamWriter(os);
+//	          
+//	          Vector idsImoveisGerados = new Vector();
+//          
+//          	arquivo = new StringBuffer();
+//          	
+//      		 idsImoveisConcluidos = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
+//      		int qtdImoveisCalculados = idsImoveisConcluidos.size();
+//      		
+//      		for (int i = 0; i < qtdImoveisCalculados; i++) {
+//				int id = idsImoveisConcluidos.get(i);
+//				
+//				Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+//				
+//				System.out.println("vai enviar o movel: " + imovel.getMatricula());
+//
+//		    	// Criamos os registros tipo 1
+//		    	this.gerarRegistroTipo1(imovel);
+//	
+//		    	// Criamos os registros tipo 2 e 3
+//		    	this.gerarRegistroTipo2e3(imovel);
+//	
+//		    	// Criamos os registros tipo 4
+//		    	this.gerarRegistroTipo4(imovel);
+//	 	
+//				linhaTipo1Anexada = false;
+//
+//			  	idsImoveisGerados.addElement(new Long(imovel.getId()).intValue());
+//	
+//			 	imovel = null;
+//			 	
+//			 	Bundle b = new Bundle();
+//		        // Send message (with current value of total as data) to Handler on UI thread
+//		        // so that it can update the progress bar.
+//		        Message msg = mHandler.obtainMessage();
+//		        b.putInt("imoveisNaoTransmitidos" + String.valueOf(increment), (i+1));
+//		        msg.setData(b);
+//		        mHandler.sendMessage(msg);
+//			
+//			}
+//      		
+//      		out.write(arquivo.toString());
+//      		out.flush();
+//      		out.close();
+//      		
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//    	
+//    	return idsImoveisConcluidos;
+//    }
+    
+    public List<Integer> gerarArquivoParaEnvio(Handler mHandler, Context context, int increment, int tipoEnvio) {
+
+    	List<Integer> listIdImoveis = null;
+    	OutputStreamWriter out = null;
+
+    	try {
+    		
+            if (tipoEnvio == Constantes.TIPO_ENVIO_FINALIZAR_ROTA) {
+            	File fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
+                
+                if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                    Toast.makeText(context, "Erro ao salvar no cartão de memória!", Toast.LENGTH_SHORT).show();
+                    return new ArrayList<Integer>();
+                }
+
+                FileOutputStream os = new FileOutputStream(fileArquivoCompleto); 
+                out = new OutputStreamWriter(os);
+
+            }
+		    arquivo = new StringBuffer();
+		    
+		     listIdImoveis = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
+		    
+		    Imovel imovelReferencia = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1");
+		    gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO, imovelReferencia);
+		    arquivo = arquivo.append(registroTipo0);
+		    int i = 0;
+		    
+		    for (Integer id : listIdImoveis){
+
+		    	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+		    	
+		    	if (imovel.isImovelInformativo())
+		    		continue;
+		    	
+		    	
+		    	gerarRegistroTipo1(imovel);
+		    	gerarRegistroTipo2e3(imovel);
+		    	gerarRegistroTipo4(imovel);
+		    	
+		        Bundle b = new Bundle();
+		        // Send message (with current value of total as data) to Handler on UI thread
+		        // so that it can update the progress bar.
+		        Message msg = mHandler.obtainMessage();
+		        b.putInt("finalizarRota" + String.valueOf(increment), (i+1));
+		        b.putInt("imoveisNaoTransmitidos" + String.valueOf(increment), (i+1));
+		        msg.setData(b);
+		        mHandler.sendMessage(msg);
+		        i++;
+		    }
+		    
+			if (tipoEnvio == Constantes.TIPO_ENVIO_FINALIZAR_ROTA) {
+				out.write(arquivo.toString());
+				out.flush();
+				out.close();
+			}
+		    
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}    
+    	
+    	return listIdImoveis; 
+    
+    }
+    
+    public static String getConteudoArquivoRetorno(){
+    	if (arquivo != null){
+    	   	return arquivo.toString();
+    	}else{
+    		return null;
+    	}
+ 	}
     
     public static Imovel getImovelSelecionado(){
     	return ControladorImovel.getInstancia().getImovelSelecionado();

@@ -739,15 +739,23 @@ public class Imovel {
     }
 
     public void setInscricao(String inscricao) {
-		this.inscricao = Util.verificarNuloString(inscricao);
+		this.inscricao = Util.verificarNuloString(inscricao.trim());
 	    
 		if (this.inscricao != Constantes.NULO_STRING){
-	    	
-	    	localidade = inscricao.substring(0, 3);
-	    	setor = inscricao.substring(3, 6);
-	    	quadra = inscricao.substring(6, 10);
-	    	lote = inscricao.substring(10, 14);
-	    	sublote = inscricao.substring(14, 17);
+			
+			if (this.inscricao.length() == 17) {
+		    	localidade = inscricao.substring(0, 3);
+		    	setor = inscricao.substring(3, 6);
+		    	quadra = inscricao.substring(6, 10);
+		    	lote = inscricao.substring(10, 14);
+		    	sublote = inscricao.substring(14, 17);
+			} else if (this.inscricao.length() == 16) {
+				localidade = inscricao.substring(0, 3);
+		    	setor = inscricao.substring(3, 6);
+		    	quadra = "0"+inscricao.substring(6, 9);
+		    	lote = inscricao.substring(9, 13);
+		    	sublote = inscricao.substring(13, 16);
+			}
 	    }
     }
 

@@ -18,7 +18,7 @@ public class ControladorAcessoOnline {
 	// Identificadores das requisições
 	private static final byte PACOTE_BAIXAR_ROTEIRO = 0;
 	private static final byte PACOTE_ATUALIZAR_MOVIMENTO = 1;
-	private static final byte PACOTE_FINALIZAR_CADASTRAMENTO = 2;
+	private static final byte PACOTE_FINALIZAR_ROTA = 2;
 	private static final byte PACOTE_CONFIRMAR_ARQUIVO_RECEBIDO = 3;
 	private static final byte BAIXAR_NOVA_VERSAO = 4;
 	
@@ -177,11 +177,11 @@ public class ControladorAcessoOnline {
      * @param Array
      *            de bytes com o arquivo
      */
-    public void finalizarCadastramento(byte[] arquivoRetorno, short tipoFinalizacao) throws IOException {
+    public void finalizarRota(byte[] arquivoRetorno) throws IOException {
 
 		// cria o vetor de parâmetros
 		Vector param = new Vector();
-		param.addElement(new Byte(PACOTE_FINALIZAR_CADASTRAMENTO));
+		param.addElement(new Byte(PACOTE_FINALIZAR_ROTA));
 		param.addElement(arquivoRetorno);
 		param.trimToSize();
 		this.iniciarServicoRede(param, true);

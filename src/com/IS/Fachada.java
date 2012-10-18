@@ -63,11 +63,12 @@ public class Fachada extends Activity {
             	v.clearAnimation();
             	
             	// Define URL GSAN
-            	//Produção
-//            	ControladorAcessoOnline.getInstancia().setURL("http:/200.178.173.131:8080/gsan");
+            	// Treinamento
+            	ControladorAcessoOnline.getInstancia().setURL("http://200.178.173.136:8080/gsan/");
             	
-            	//Treinamento
-            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.0.107:8080/gsan/");
+            	//Pamela
+//            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.0.107:8080/gsan/");
+  
 
                 if (ControladorRota.getInstancia().databaseExists(getBaseContext()) && 
                 	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
@@ -181,6 +182,8 @@ public class Fachada extends Activity {
 	        	    	  
 	        	    	  ControladorRota.getInstancia().setPermissionGranted(true);
 	        	    	  removeDialog(Constantes.DIALOG_ID_PASSWORD);
+	        	    	  
+	        	    	  System.out.println("DataManipulator nulo: " + ControladorRota.getInstancia().getDataManipulator() == null);
 	        	    	  
 	        	    	  Intent myIntent = new Intent(layout.getContext(), MenuPrincipal.class);
 	        	    	  startActivity(myIntent);
