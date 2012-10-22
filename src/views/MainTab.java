@@ -278,6 +278,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					    	
 					    	if (BusinessConta.getInstancia(this).isImpressaoPermitida()){
 								
+					    		Log.i("Impressao 3", "ccccc");
 								imprimirConta();
 
 					    	} else{
@@ -353,10 +354,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		/* Caso não haja nenhum endereco bluetooth préviamente salvo é mostrada a tela de pareamento de dispositivos.
 		 * Caso contrário é realizada a conexão com a impressora e impressa a conta
 		 */
+		
+		Log.i("DENTRO IMPRESSAO", "aaaaa");
 
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-			ImpressaoContaCosanpa.getInstancia().getComando(getImovelSelecionado()).getBytes();
 	    	Log.i("Comando", ImpressaoContaCosanpa.getInstancia().getComando(getImovelSelecionado()));
 			setupDataAfterPrinting();
 			
@@ -440,6 +442,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 		    	if (BusinessConta.getInstancia(getApplicationContext()).isImpressaoPermitida()){
 
+		    		Log.i("Impressao 2", "bbbbb");
 		    		imprimirConta();
 
 		    	} else{
@@ -586,6 +589,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						 * o campo de endereco bluetooth é apagado e em seguida é chamado o método de impressão 
 						 */
 						ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", null);
+						Log.i("Impressao 1", "aaaaa");
 						imprimirConta();
 					}
 				});

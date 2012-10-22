@@ -20,6 +20,7 @@ public class Constantes {
     public static final int DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS = 10;
     public static final int DIALOG_ID_FINALIZA_ROTA = 11;
     public static final int DIALOG_ID_ROTA_NAO_FINALIZADA = 12;
+    public static final int DIALOG_ID_SPINNER = 13;
        
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
@@ -168,4 +169,8 @@ public class Constantes {
     
     public static final int TIPO_ENVIO_IMOVEIS_NAO_TRANSMITIDOS = 1;
     public static final int TIPO_ENVIO_FINALIZAR_ROTA = 2;
+    
+    public static final int TIPO_GERACAO_ARQUIVO_COMPLETO = 1;
+    public static final int TIPO_GERACAO_FINALIZAR_ROTA = 2;
+    public static final int TIPO_GERACAO_IMOVEIS_CONCLUIDOS = 3;
 }

@@ -90,6 +90,7 @@ android:orientation="vertical">
             android:background="@drawable/edittext_rounded_corners"
             android:ems="5"
             android:inputType="number" >
+            <requestFocus></requestFocus>
         </EditText>
     </LinearLayout>
 

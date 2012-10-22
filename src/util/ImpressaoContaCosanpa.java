@@ -119,10 +119,8 @@ public class ImpressaoContaCosanpa {
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
         		"T 0 0 285 64 "+ ControladorRota.getInstancia().getDadosGerais().getInscricaoEstadualEmpresa().trim() + "\n" +
         		"T 0 0 222 81 "+ imovel.getGrupoFaturamento() + "\n" +
-//        		"T 0 0 140 108 \n"+
 //        		formarLinha(0, 0, 140, 108, (imovel.getEnderecoAtendimento() != null && !imovel.getEnderecoAtendimento().equals("") ? imovel.getEnderecoAtendimento() + " - " : "")
 //        				+ (imovel.getTelefoneLocalidadeDDD() != null && !imovel.getTelefoneLocalidadeDDD().equals("") ? imovel.getTelefoneLocalidadeDDD().trim() : ""), 0, 0) +
-        		"T 0 2 52 172 "+imovel.getNomeUsuario() + "\n"+
         		"T 0 2 52 199 \n"+
         		endereco +
         		"T 7 0 15 250 "+Util.formatarInscricao(imovel.getInscricao())+"\n"+
@@ -151,7 +149,6 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 313 412 DATA\n"+
         		"T 7 0 285 436 "+ dataLeituraAnteriorFaturada + "\n" +
         		"T 7 0 285 460 "+ dataLeituraAtualFaturada + "\n" +
-//        		"T 7 0 418 412 CONSUMO (m3)\n"+
         		txtConsumo +
         		"T 7 0 511 436 "+ consumo + "\n" +
         		"T 7 0 745 412 DIAS\n"+
@@ -159,7 +156,6 @@ public class ImpressaoContaCosanpa {
         		"T 7 0 37 436 ANTERIOR\n"+
         		"T 7 0 37 460 ATUAL\n"+
         		"T "+ hcMensagem +
-//        		"T 0 2 44 522 "+ anoMesReferencia + "\n" +
         		anoMesReferencia +
         		historicoConsumo +
         		"T 7 0 75 672 MEDIA(m3):\n"+
@@ -374,9 +370,9 @@ public class ImpressaoContaCosanpa {
 	    }
 	    
 	    if (imovel.getConsumoAgua() != null){
-			String anormalidadeConsumo = Util.validarAnormalidadeConsumo(imovel.getConsumoAgua());
+			anormalidadeConsumo = Util.validarAnormalidadeConsumo(imovel.getConsumoAgua());
 			if( anormalidadeConsumo != null){
-				anormalidadeConsumo = formarLinha(0, 2, 460, 460, "ANORM. CONSUMO: " + anormalidadeConsumo, 0, 0);
+				anormalidadeConsumo = formarLinha(0, 2, 430, 460, "ANORM. CONSUMO: " + anormalidadeConsumo, 0, 0);
 			}
 		}
 	    
@@ -398,7 +394,7 @@ public class ImpressaoContaCosanpa {
 	    if (historicosConsumo.size() > 0) {
 	    	hcMensagem += "LINE 115 525 115 665 1\n"; 
 	    	for (HistoricoConsumo hc : historicosConsumo) {
-	    		anoMesReferencia += formarLinha(0, 2, 44, 520, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
+	    		anoMesReferencia += formarLinha(0, 2, 44, 522, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
 				
 				String anormalidade = "";
 			    if (hc.getAnormalidadeLeitura() != Constantes.NULO_INT && hc.getAnormalidadeLeitura() != 0) {

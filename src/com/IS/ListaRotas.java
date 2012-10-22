@@ -47,6 +47,7 @@ public class ListaRotas extends ListActivity {
 	private CarregarRotaThread progThread;
 	private ProgressDialog progDialog;
 	MySimpleArrayAdapter fileList;
+	private Toast toast;
 
     /** Called when the activity is first created. */
     @Override
@@ -82,7 +83,8 @@ public class ListaRotas extends ListActivity {
             getDir(root);
 
             // Display a messagebox.
-    	    Toast.makeText(getBaseContext(),"Por favor, escolha a rota a ser carregada.",Toast.LENGTH_LONG).show();
+    	    toast = Toast.makeText(getBaseContext(),"Por favor, escolha a rota a ser carregada.",Toast.LENGTH_LONG);
+    	    toast.show();
     	}    	
 	}
 	
@@ -126,6 +128,8 @@ public class ListaRotas extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View view, int position, long id) {
+		
+		toast.cancel();
 
 		// user clicked a list item, make it "selected"
 		fileList.setSelectedPosition(position);

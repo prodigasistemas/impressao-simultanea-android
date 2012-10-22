@@ -2,6 +2,7 @@ package background;
 
 import ui.ArquivoRetorno;
 import ui.FileManager;
+import util.Constantes;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,14 +48,14 @@ public class GerarArquivoCompletoThread extends Thread {
     	mState = RUNNING;
     	FileManager.getInstancia();
     		
-    	ArquivoRetorno.getInstancia().gerarArquivoCompleto(mHandler, context, increment);
+    	ArquivoRetorno.getInstancia().gerarArquivoRetorno(mHandler, context, increment, Constantes.TIPO_GERACAO_ARQUIVO_COMPLETO);
 
     	mState = DONE;
     	
     	Bundle b = new Bundle();
         // Send message (with current value of total as data) to Handler on UI thread
         Message msg = mHandler.obtainMessage();
-        b.putInt("arquivoCompleto" + String.valueOf(increment), 100);
+        b.putBoolean("geracaoDoArquivoCompletoConcluido", true);
         msg.setData(b);
         mHandler.sendMessage(msg);
     }

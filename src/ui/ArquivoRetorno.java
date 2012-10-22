@@ -71,15 +71,22 @@ public class ArquivoRetorno {
     	return arquivo;
     }
 
-    public void gerarArquivoCompleto(Handler mHandler, Context context, int increment) {
+    public List gerarArquivoRetorno(Handler mHandler, Context context, int increment, int tipoGeracao) {
+    	List listIdImoveis = null;
 
     	try {
     		
-            File fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getRotaFileName());
+            File fileArquivoCompleto = null;
             
+            if (tipoGeracao == Constantes.TIPO_GERACAO_ARQUIVO_COMPLETO) {
+            	fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getRotaFileName());
+            } else {
+            	fileArquivoCompleto = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
+            }
+            		
             if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 Toast.makeText(context, "Erro ao salvar no cartão de memória!", Toast.LENGTH_SHORT).show();
-                return;
+                return new ArrayList();
             }
 
             FileOutputStream os = new FileOutputStream(fileArquivoCompleto); 
@@ -87,11 +94,20 @@ public class ArquivoRetorno {
 
 		    arquivo = new StringBuffer();
 		    
-		    ArrayList<String> listIdImoveis = (ArrayList<String>) ControladorRota.getInstancia().getDataManipulator().selectIdImoveis(null);
+		    if (tipoGeracao == Constantes.TIPO_GERACAO_ARQUIVO_COMPLETO) {
+		    	 listIdImoveis = ControladorRota.getInstancia().getDataManipulator().selectIdImoveis(null);
+		    } else {
+		    	listIdImoveis = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
+		    }
 		    
 		    for (int i = 0; i < listIdImoveis.size(); i++){
 
-		    	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + (i+1));
+		    	Imovel imovel = null;
+		    	if (tipoGeracao == Constantes.TIPO_GERACAO_ARQUIVO_COMPLETO) {
+		    		imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + (i+1));
+		    	} else {
+		    		imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listIdImoveis.get(i));
+		    	}
 		    	
 		    	if (imovel.isImovelInformativo())
 		    		continue;
@@ -123,6 +139,8 @@ public class ArquivoRetorno {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}    
+    	
+    	return listIdImoveis;
     }
     
     // Gera StringBuffer contendo apenas cadastros concluidos e nao transmitidos
