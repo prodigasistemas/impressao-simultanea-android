@@ -21,7 +21,7 @@
  	<uses-feature android:name="android.hardware.camera.autofocus" />
 
 	<application android:icon="@drawable/gsan" android:debuggable="true" android:label="@string/app_name" android:allowTaskReparenting="true">
-        <activity android:name=".Fachada" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
+        <activity android:name=".Fachada" android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -40,7 +40,7 @@
    		<activity android:name=".MenuPrincipal" android:launchMode="singleTask" android:screenOrientation="portrait" configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
 
-		<activity android:name=".TelaInformacoes" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
+		<activity android:name=".TelaInformacoes" android:screenOrientation="portrait" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         
 		<activity android:name="TelaRelatorio" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">

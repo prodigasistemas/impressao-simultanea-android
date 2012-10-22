@@ -51,27 +51,9 @@ public class DadosGerais {
 	public static final short CALCULO_POR_CATEGORA = 1;
 
 	private int id;
-	
-//    private static DadosGerais instancia;
 
     public DadosGerais() {}
     
-//    public void adicionaDadosGerais(DadosGerais dadosGerais) {
-//    	DadosGerais.instancia = dadosGerais;
-//
-//    }
-
-//    public DadosGerais getDadosGerais() {
-//    	return DadosGerais.instancia;
-//
-//    }
-//
-//    public static DadosGerais getInstancia() {
-//
-//    	return DadosGerais.instancia;
-//    }
-
-
 	public short getIndcBloquearReemissaoConta() {
 		return indcBloquearReemissaoConta;
 	}

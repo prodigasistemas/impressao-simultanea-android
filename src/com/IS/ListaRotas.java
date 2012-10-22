@@ -55,7 +55,6 @@ public class ListaRotas extends ListActivity {
        	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
         instanciate();
     }
     
@@ -71,10 +70,6 @@ public class ListaRotas extends ListActivity {
     	
     	if (Environment.MEDIA_MOUNTED.equals(state)) {
     	    
-//    		ControladorImovel.getInstancia().deleteDatabase();
-//    		ControladorImovel.getInstancia().setPermissionGranted(false);
-//    		ControladorImovel.getInstancia().initiateDataManipulator(getBaseContext());
-   		
     		// We can read and write the media
             File path = Environment.getExternalStorageDirectory();
             path.getAbsolutePath();
@@ -141,7 +136,6 @@ public class ListaRotas extends ListActivity {
 		}else{
 			fileName = fileList.getListElementName(position);
 			carregaRotaDialogButtonClick();
-		
 		}
 	}
 	
@@ -158,7 +152,19 @@ public class ListaRotas extends ListActivity {
             progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progDialog.setMessage("Por favor, espere enquanto a rota está sendo carregada...");
 			progDialog.setCancelable(false);
-            
+			progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+			    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+			        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+			            return true; // Pretend we processed it
+			        
+			        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+			            return true; // Pretend we processed it
+			        }
+			        return false; // Any other keys are still processed as normal
+			    }
+			});
+			
             try {
             	int fileLineNumber = FileManager.getFileLineNumber(fileName);
 
@@ -257,16 +263,22 @@ public class ListaRotas extends ListActivity {
 	
     public boolean onKeyDown(int keyCode, KeyEvent event){
         
-    	if ((keyCode == KeyEvent.KEYCODE_BACK)){
+    	if (keyCode == KeyEvent.KEYCODE_BACK){
 
-            if (progDialog != null && progDialog.isShowing()){
-            	progThread.stop();
-            }
+//            if (progDialog != null && progDialog.isShowing()){
+//            	progThread.stop();
+//            }
 
     		finish();
             return true;
 
-        }else{
+        }else if (keyCode == KeyEvent.KEYCODE_SEARCH){
+            return true;
+        
+        }else if (keyCode == KeyEvent.KEYCODE_HOME){
+            return true;
+        
+        }else {
             return super.onKeyDown(keyCode, event);
         }
     }

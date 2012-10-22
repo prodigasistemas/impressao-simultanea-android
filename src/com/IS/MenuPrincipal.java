@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -452,24 +453,26 @@ public class MenuPrincipal extends Activity {
             enviarImoveisThread.start();
             return progDialog;
 	    } else if (id == Constantes.DIALOG_ID_FINALIZA_ROTA+increment) {
-//	    	if (envio()) {
-//	    		progDialog = new ProgressDialog(this);
-//	            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//	            progDialog.setCancelable(false);
-//	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
-//	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
-//	            finalizarRotaThread.start();
-//	            return progDialog;
-//	    	} else {
 	    		progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	            progDialog.setCancelable(false);
+				progDialog.setCancelable(false);
+				progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        
+				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+				            return true; // Pretend we processed it
+				        }
+				        return false; // Any other keys are still processed as normal
+				    }
+				});
 	            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo gerados e enviados...");
 	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size());
 	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
 	            finalizarRotaThread.start();
 	            return progDialog;
-//	    	}
 	    } else if (id == Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA) {
 	    	
 	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
