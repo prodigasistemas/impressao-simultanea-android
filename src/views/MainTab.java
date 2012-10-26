@@ -523,13 +523,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		    	imovelMicro.setConsumoRateioEsgoto(0);
 		    }
 		    
-		    getDataManipulator().salvarImovel(imovelMicro);
-	
 		    // Calculamos as contas imovel a imovel
 		    ControladorConta.getInstancia().calcularValoresCondominio(imovelMicro,
 			    imovelMicro.getConsumoAgua(),
 			    imovelMicro.getConsumoEsgoto());
-	
+
+		    getDataManipulator().salvarImovel(imovelMicro);
+			
+
 		    // Caso o imóvel ja exista na lista não deve ser adicionado novamente
 //		    if (!imoveisParaEnvio.contains(imovelMicro)) {
 //		    	imoveisParaEnvio.addElement(imovelMicro);
