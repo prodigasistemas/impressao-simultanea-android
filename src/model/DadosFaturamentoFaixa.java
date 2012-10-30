@@ -87,7 +87,7 @@ public class DadosFaturamentoFaixa {
 	private int limiteFinalConsumo;
 	private double valorTarifa;
 	private int tipoFaturamentoFaixa;
-	
+
 	public DadosFaturamentoFaixa(){
 	}
 	
@@ -169,6 +169,5 @@ public class DadosFaturamentoFaixa {
 		this.tipoFaturamentoFaixa = tipoFaturamento;
 	}
 
-	
     
 }

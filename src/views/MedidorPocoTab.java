@@ -132,7 +132,7 @@ public class MedidorPocoTab extends Fragment {
         	leitura.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura()));
         }
         
-        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade() > 0 ){
+        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade() != Constantes.NULO_INT ){
         	codigoAnormalidade.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade()));
         }
 

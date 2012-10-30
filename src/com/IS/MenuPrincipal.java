@@ -174,15 +174,15 @@ public class MenuPrincipal extends Activity {
         				}
         	    	}
         	    	
-        	    	if (statusOk){
+//        	    	if (statusOk){
                 		showDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
         	    	
-        	    	}else{
-            		
-        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
-            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
-            	    	
-        	    	}
+//        	    	}else{
+//            		
+//        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+//            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+//            	    	
+//        	    	}
             		
             	}else if (position == MENU_CADASTROS_CONCLUIDOS){
 					if (ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size() > 0) {
@@ -285,7 +285,7 @@ public class MenuPrincipal extends Activity {
             	
 	    		dialogMessage = "Arquivo de retorno COMPLETO gerado com sucesso. Enviar o arquivo ao supervisor para carregar via cabo USB.";
     	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
-			    increment += 14;
+			    increment += 15;
             }
          }
     };
@@ -309,7 +309,7 @@ public class MenuPrincipal extends Activity {
             	
             	dismissDialog(Constantes.DIALOG_ID_SPINNER+increment);
             	
-            	increment += 14;
+            	increment += 15;
             	
             	dialogMessage = mensagemRetorno;
             	
@@ -347,14 +347,14 @@ public class MenuPrincipal extends Activity {
             	if (!msg.getData().getBoolean("arquivoJaExistente"))
             		dismissDialog(Constantes.DIALOG_ID_SPINNER+increment);
             	
-            	increment += 14;
+            	increment += 15;
             	
             	dialogMessage = mensagemRetorno;
             	
             	if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
             		showDialog(Constantes.DIALOG_ID_ERRO);
 	    		} else {
-	    			showDialog(Constantes.DIALOG_ID_SUCESSO);
+	    			showDialog(Constantes.DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA+increment);
 	    		}
             }
             
@@ -506,6 +506,34 @@ public class MenuPrincipal extends Activity {
             progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
             
             return progDialog;
+	    } else if (id == Constantes.DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA+increment) {
+	    	
+	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			  
+			final View layoutCustonDialog = inflater.inflate(R.layout.custon_dialog, (ViewGroup) findViewById(R.id.layout_root));
+	        ((TextView)layoutCustonDialog.findViewById(R.id.messageDialog)).setText(dialogMessage);
+	        ((ImageView)layoutCustonDialog.findViewById(R.id.imageDialog)).setImageResource(R.drawable.save);
+	    	
+	    	builder = new AlertDialog.Builder(this);
+	    	builder.setView(layoutCustonDialog);
+	        builder.setTitle("Sucesso!");
+	        
+	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+	        	public void onClick(DialogInterface dialog, int which) {
+	        		removeDialog(id);
+	        		ControladorRota.getInstancia().finalizeDataManipulator();
+	        		ControladorRota.getInstancia().deleteDatabase();
+	        		ControladorRota.getInstancia().setPermissionGranted(false);
+	        		ControladorRota.getInstancia().initiateDataManipulator(MenuPrincipal.this);
+	        		
+        		    Intent myIntent = new Intent(MenuPrincipal.this, Fachada.class);
+        	        startActivity(myIntent);
+
+	        	}
+	        });
+	        
+	        AlertDialog passwordDialog = builder.create();
+	        return passwordDialog;
 	    }
 
 	    return null;

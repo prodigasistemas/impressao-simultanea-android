@@ -133,7 +133,7 @@ public class MedidorAguaTab extends Fragment {
         	leitura.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura()));
         }
         
-        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade() > 0 ){
+        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade() != Constantes.NULO_INT ){
         	codigoAnormalidade.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade()));
         }
 		
@@ -150,11 +150,19 @@ public class MedidorAguaTab extends Fragment {
 	}
 
 	public static String getLeitura(){
-		return ((EditText)layout.findViewById(R.id.leitura)).getText().toString();
+		try {
+			return ((EditText)layout.findViewById(R.id.leitura)).getText().toString();
+		} catch (NullPointerException e) {
+			return "";
+		}
 	}
 
 	public static String getCodigoAnormalidade(){
-		return ((EditText)layout.findViewById(R.id.codigoAnormalidade)).getText().toString();
+		try {
+			return ((EditText)layout.findViewById(R.id.codigoAnormalidade)).getText().toString();
+		} catch (NullPointerException e) {
+			 return "";
+		}
 	}
 
 	public static void setLeituraDigitada(int leituraDigitada) {

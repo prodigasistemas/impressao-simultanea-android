@@ -155,6 +155,8 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			matricula = cursor.getInt(0);
 		}
+		
+		fecharCursor(cursor);
 
 		return matricula;
 	}
@@ -911,7 +913,7 @@ public class DataManipulator {
 																		 "leitura_atual_faturamento",
 																		 "leitura_relatorio",
 																		 "anormalidade_relatorio",
-																		 "matricula" }, "matricula = " + imovel.getMatricula(), null, null, null, "id asc");
+																		 "matricula" }, "matricula = ?", new String[] {""+imovel.getMatricula()}, null, null, "id asc");
 		
 		Medidor medidor = new Medidor();
 		
@@ -1076,6 +1078,8 @@ public class DataManipulator {
 			list.add(cursor.getString(2));
 			list.add(cursor.getString(3).length() == 1 ? "0" + cursor.getString(3) : cursor.getString(3));
 		}
+		
+		fecharCursor(cursor);
 		
 		cursor = db.query(Constantes.TABLE_GERAL, new String[] {"ano_mes_faturamento", "login"}, null, null, null, null, null);
 		

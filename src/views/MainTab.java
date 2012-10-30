@@ -1,7 +1,11 @@
 package views;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.util.Iterator;
-
 import java.util.Set;
 
 import model.Consumo;
@@ -12,7 +16,6 @@ import util.Util;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -41,13 +44,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
-import background.CarregarRotaThread;
 import background.EnviarImovelOnlineThread;
 import business.BusinessConta;
 import business.ControladorImovel;
@@ -285,10 +286,25 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					    		
 					    		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 					    		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+					    		setTabColor();
 					    		tranmitirImovel();
 					    	}
 					    }
 					    mensagemAnormalidadeConsumo = null;
+	    			
+	    			} else if (getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)) {
+	    				if (BusinessConta.getInstancia(this).isImpressaoPermitida()){
+							
+							imprimirConta();
+
+				    	} else{
+				    		
+				    		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
+				    		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+				    		setTabColor();
+				    		tranmitirImovel();
+				    	}
+
 	    			}
 	    			
 	    		// Se deve descartar leitura, imóvel já está calculado e salvo no DB.
@@ -359,7 +375,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-	    	Log.i("Comando", ImpressaoContaCosanpa.getInstancia().getComando(getImovelSelecionado()));
+	    	Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado()));
 			setupDataAfterPrinting();
 			
 		}else{
@@ -461,9 +477,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		    	} else{
 
 		    		showMessage(BusinessConta.getInstancia().getMensagemPermiteImpressao());
-		    		
 		    		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 		    		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+		    		setTabColor();
 		    	}
 			}
 		});
@@ -515,10 +531,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.landscape_background));
-		else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-			tabHost.setBackgroundDrawable(getResources().getDrawable(R.drawable.fundocadastro));
 	}
 	
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -581,8 +593,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					Looper.prepare();
 
 					progress.show();
-//					Log.i("COMANDO IMPRESSORA:", ImpressaoContaCosanpa.getInstancia().getComando(imovelToBePrinted));
-					conexao.write(ImpressaoContaCosanpa.getInstancia().getComando(imovelToBePrinted).getBytes());
+					String comando = new ImpressaoContaCosanpa().getComando(imovelToBePrinted);
+					Log.i("COMANDO IMPRESSORA:", comando);
+					conexao.write(comando.getBytes());
 					conexao.close();
 					
 					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
@@ -651,7 +664,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
     	}
     	
-    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
+//    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
 		// Imovel da lista de imoveis pendentes
 		getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 
@@ -737,10 +750,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	 (ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.SIM))
 		{
 	    	
+			result = true;
 			if (getImovelSelecionado().getIndcImovelCalculado() == Constantes.NAO){
 
 				BusinessConta.getInstancia(this).imprimirCalculo(false);
-				result = true;
+				System.out.println("Imovel ja calculado: " + (getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM));
 			}
 		}
 		return result;

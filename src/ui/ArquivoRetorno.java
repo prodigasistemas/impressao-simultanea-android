@@ -391,7 +391,7 @@ public class ArquivoRetorno {
 				    // Anormalidade de Leitura
 				    registrosTipo1.append(
 					    Util.adicionarCharEsquerda(
-						    2, ( imovel.getAnormalidadeSemHidrometro() != Constantes.NULO_INT ? imovel.getAnormalidadeSemHidrometro() + "" : (medidorAgua != null ? medidorAgua.getAnormalidade() + "" : "")), ' ') ); 
+						    2, ( imovel.getAnormalidadeSemHidrometro() != Constantes.NULO_INT ? imovel.getAnormalidadeSemHidrometro() + "" : (medidorAgua != null ? (medidorAgua.getAnormalidade() == Constantes.NULO_INT ? "0" : medidorAgua.getAnormalidade()) + "" : "")), ' ') ); 
 				    // Data e hora da leitura
 				    registrosTipo1.append(Util.adicionarCharEsquerda(26, Util.formatarData(new Date()), ' ') ); 
 				    // Indicador de situação da leitura
@@ -427,7 +427,7 @@ public class ArquivoRetorno {
 				    // ID do documento de cobrança
 				    registrosTipo1.append(Util.adicionarCharEsquerda(9,imovel.getNumeroDocumentoNotificacaoDebito(), ' ')); 
 				    // Leitura Anterior do Hidrômetro
-				    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeituraAnterior() + "" : ""), ' ')); 
+				    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? (medidorAgua.getLeituraAnterior() == Constantes.NULO_INT ? "0" : medidorAgua.getLeituraAnterior()) + "" : ""), ' ')); 
 				    // Versao do I.S. em uso
 				    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
 				    registrosTipo1.append("\n");

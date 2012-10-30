@@ -85,7 +85,7 @@ public class FinalizarRotaThread extends Thread {
 				File file = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
 				boolean bool = file.delete();
 				
-				MenuPrincipal.mensagemRetorno = "Imóveis transmitidos com sucesso!";
+				MenuPrincipal.mensagemRetorno = "Roteiro finalizado com sucesso. Todas as informações da rota serão apagadas.";
 			} else {
 				
 				// TODO: Testar mensagens de erro vindas do GSAN

@@ -487,7 +487,7 @@ public class Imovel {
 			 * será inserido como lido com anormalidade nas
 			 * informações do relatório
 			 */
-			if (anormalidade != Constantes.NULO_INT	&& anormalidade != 0) {
+			if (anormalidade != Constantes.NULO_INT) {
 			    Util.inserirValoresStringRelatorio("("
 				    + stringQuadra + ")", true, false);
 
@@ -649,8 +649,7 @@ public class Imovel {
 			 * será inserido como lido com anormalidade nas
 			 * informações do relatório
 			 */
-			if (anormalidade != Constantes.NULO_INT
-				&& anormalidade != 0) {
+			if (anormalidade != Constantes.NULO_INT) {
 			    Util.inserirValoresStringRelatorio("("
 				    + stringQuadra + ")", true, false);
 
@@ -681,7 +680,7 @@ public class Imovel {
 		    // leitura e inserido como lido com anormalidade
 		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
 			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
-			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
+			if (anormalidade != Constantes.NULO_INT && anormalidadeRelatorio == Constantes.NULO_INT) {
 
 			    Util.inserirValoresStringRelatorioConsumoNulo("("
 				    + stringQuadra + ")", false, true);
@@ -694,7 +693,7 @@ public class Imovel {
 			// seja lido novamente colocando uma anormalidade
 			// o mesmo deve ser retirado do relatorio como lido com
 			// leitura e inserido como lido com anormalidade
-			if (anormalidade == 0 && anormalidadeRelatorio != 0) {
+			if (anormalidade == Constantes.NULO_INT && anormalidadeRelatorio != Constantes.NULO_INT) {
 
 			    Util.inserirValoresStringRelatorioConsumoNulo("("
 				    + stringQuadra + ")", true, false);
@@ -1273,7 +1272,7 @@ public class Imovel {
 		for (int i = 0; i < size && ret; i++) {
 		    Medidor medidor = (Medidor) this.medidores.get(i);
 		    
-		    if (medidor.getAnormalidade() == 0 && medidor.getLeitura() == Constantes.LEITURA_INVALIDA) {
+		    if (medidor.getAnormalidade() == Constantes.NULO_INT && medidor.getLeitura() == Constantes.LEITURA_INVALIDA) {
 		    	ret = false;
 		    }
 		}
@@ -1310,7 +1309,7 @@ public class Imovel {
     	return historicoConsumo;
     }
 
-    public List<Debito> getDebitos() {
+    public List<Debito> getDebitos(int indcUso) {
 	
 		if ( debitos != null ){	
 		    // Retornamos apenas os débitos com indicador de uso = SIM
@@ -1320,7 +1319,7 @@ public class Imovel {
 		    
 				Debito debito = (Debito)debitos.get( i );
 			    
-				if ( debito.getIndcUso() == Constantes.SIM ){
+				if ( debito.getIndcUso() == indcUso ){
 				    tempDebito.add( debito );
 				}
 		    }
@@ -1331,8 +1330,12 @@ public class Imovel {
 		    return null;
 		}	
     }
+    
+    public List<Debito> getDebitos() {
+    	return debitos;
+    }
 
-    public List<Credito> getCreditos() {
+    public List<Credito> getCreditos(int indcUso) {
 	
 		if ( creditos != null ){	
 	
@@ -1343,7 +1346,7 @@ public class Imovel {
 		    
 				Credito credito = (Credito)creditos.get( i );
 			    
-				if ( credito.getIndcUso() == Constantes.SIM ){
+				if ( credito.getIndcUso() == indcUso ){
 				    tempCreditos.add( credito );
 				}
 		    }
@@ -1353,6 +1356,10 @@ public class Imovel {
 		} else {
 		    return null;
 		}		
+    }
+    
+    public List<Credito> getCreditos() {
+    	return creditos;
     }
 
     public List<Imposto> getImpostos() {
@@ -1469,9 +1476,9 @@ public class Imovel {
 
 		double soma = 0d;
 	
-		if (this.getDebitos() != null) {
-		    for (int i = 0; i < this.getDebitos().size(); i++) {
-		    	soma += ((Debito) (this.getDebitos().get(i))).getValor();
+		if (this.getDebitos(Constantes.SIM) != null) {
+		    for (int i = 0; i < this.getDebitos(Constantes.SIM).size(); i++) {
+		    	soma += ((Debito) (this.getDebitos(Constantes.SIM).get(i))).getValor();
 		    }
 		}
 	
@@ -1483,11 +1490,11 @@ public class Imovel {
 		double soma = 0d;
 	
 	//	Daniel - Tratamento de Bônus Social
-		if (this.getCreditos() != null) {
+		if (this.getCreditos(Constantes.SIM) != null) {
 		    
-			for (int i = 0; i < this.getCreditos().size(); i++) {
+			for (int i = 0; i < this.getCreditos(Constantes.SIM).size(); i++) {
 		    	
-				if( ((Credito) (this.getCreditos().get(i))).getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)  &&
+				if( ((Credito) (this.getCreditos(Constantes.SIM).get(i))).getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)  &&
 		    		Integer.parseInt(this.getCodigoPerfil()) == PERFIL_BONUS_SOCIAL &&
 		    		this.getConsumoAgua() != null &&
 		    		this.getConsumoAgua().getConsumoCobradoMes() > 10 ){
@@ -2647,6 +2654,22 @@ public class Imovel {
 	public void setTarifacoesComplementares(
 			List<TarifacaoComplementar> tarifacoesComplementares) {
 		this.tarifacoesComplementares = tarifacoesComplementares;
-	}    
+	}
+	
+	public double getValorImpostos() {
+		double soma = 0d;
+		if (impostos != null) {
+		    for (int i = 0; i < this.impostos.size(); i++) {
+			double percentualAlicota = ((this.impostos
+				.get(i))).getPercentualAlicota();
+			double valorImposto = this.getValorContaSemImposto()
+				* Util.arredondar((percentualAlicota / 100), 7);
+			soma += valorImposto;
+		    }
+		}
+
+		return Util.arredondar(soma, 2);
+	    }
+
         
 }

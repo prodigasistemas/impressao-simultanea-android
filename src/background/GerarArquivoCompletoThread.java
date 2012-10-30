@@ -6,6 +6,7 @@ import util.Constantes;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
     
 
@@ -47,8 +48,13 @@ public class GerarArquivoCompletoThread extends Thread {
     	
     	mState = RUNNING;
     	FileManager.getInstancia();
+    	
+//    	Looper.prepare();
     		
     	ArquivoRetorno.getInstancia().gerarArquivoRetorno(mHandler, context, increment, Constantes.TIPO_GERACAO_ARQUIVO_COMPLETO);
+    	
+//    	Looper.loop();
+//		Looper.myLooper().quit();
 
     	mState = DONE;
     	

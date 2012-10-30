@@ -21,6 +21,7 @@ public class Constantes {
     public static final int DIALOG_ID_FINALIZA_ROTA = 11;
     public static final int DIALOG_ID_ROTA_NAO_FINALIZADA = 12;
     public static final int DIALOG_ID_SPINNER = 13;
+    public static final int DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA = 14;
        
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
