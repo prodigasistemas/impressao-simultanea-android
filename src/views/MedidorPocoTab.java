@@ -3,6 +3,8 @@ package views;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Imovel;
+
 import util.Constantes;
 
 import business.ControladorImovel;
@@ -21,9 +23,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -41,6 +45,8 @@ public class MedidorPocoTab extends Fragment {
     private static EditText leitura;
     private static int leituraDigitada;
     private static View layout;
+	private TextView imovelCondominial;
+	private LinearLayout imovelCondominialLayout;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,12 +72,14 @@ public class MedidorPocoTab extends Fragment {
 		endereco = (TextView) view.findViewById(R.id.endereco);
 		hidrometro = (TextView) view.findViewById(R.id.hidrometro);
 		locInstalacao = (TextView) view.findViewById(R.id.locInstalacao);
-		
-		endereco.setText(ControladorImovel.getInstancia().getImovelSelecionado().getEndereco());
-		hidrometro.setText(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getNumeroHidrometro());
-		locInstalacao.setText(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLocalInstalacao());
-		
 		leitura = (EditText)view.findViewById(R.id.leitura);
+		imovelCondominial = (TextView) view.findViewById(R.id.imovelCondominial);
+		imovelCondominialLayout = (LinearLayout) view.findViewById(R.id.imovelCondominialLayout);
+		
+		endereco.setText(getImovelSelecionado().getEndereco());
+		hidrometro.setText(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getNumeroHidrometro());
+		locInstalacao.setText(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLocalInstalacao());
+		
 		
 		// Codigo de Anormalidade
         codigoAnormalidade = (EditText)view.findViewById(R.id.codigoAnormalidade);
@@ -128,13 +136,23 @@ public class MedidorPocoTab extends Fragment {
 		});
 		
         //Populate Leitura e Anormalidade
-        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura() != Constantes.NULO_INT){
-        	leitura.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura()));
+        if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura() != Constantes.NULO_INT){
+        	leitura.setText(String.valueOf(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura()));
         }
         
-        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade() > 0 ){
-        	codigoAnormalidade.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade()));
+        if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade() > 0 ){
+        	codigoAnormalidade.setText(String.valueOf(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade()));
         }
+
+		if (getImovelSelecionado().isImovelCondominio()) {
+			imovelCondominialLayout.setBackgroundResource(R.drawable.box_imovel_condominio);
+			imovelCondominial.setText(" Imóvel " + 
+									  getImovelSelecionado().getIndiceImovelCondominio() + 
+									  " de " 
+									  + getImovelSelecionado().getQuantidadeImoveisCondominio());
+			
+			imovelCondominial.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		}
 
 		return view;
 	}
@@ -172,4 +190,7 @@ public class MedidorPocoTab extends Fragment {
     	((EditText)layout.findViewById(R.id.leitura)).setText(leitura);
     }
 
+    public Imovel getImovelSelecionado(){
+    	return ControladorImovel.getInstancia().getImovelSelecionado();
+    }
 }

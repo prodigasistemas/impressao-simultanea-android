@@ -122,22 +122,12 @@ public class BusinessConta {
 		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeitura(MedidorPocoTab.getLeitura());
 		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
-	//	    Daniel
+
 		    if(anormalidade != null){
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
 		    }
 		}
 	
-	//	if (AbaAnormalidade.getInstancia().getAnormalidade() != null) {
-	//	    if (AbaAnormalidade.getInstancia().getAnormalidade().getSelectedIndex() != -1) {
-	//	    	Anormalidade anormalidade = (Anormalidade) AbaAnormalidade.getInstancia().getAnormalidade().getSelectedItem();
-	//	    	// Daniel
-	//	    	if(anormalidade != null){
-	//	    		getImovelSelecionado().setAnormalidadeSemHidrometro(anormalidade.getCodigo());
-	//	    	}
-	//	    }
-	//	}
-	//
 		Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
 		Consumo consumoAguaRetorno = consumos[0];
 		Consumo consumoEsgotoRetorno = consumos[1];
@@ -189,7 +179,7 @@ public class BusinessConta {
 		}
 		
 		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
-			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominioHelper(getImovelSelecionado().getEfetuarRateioConsumoHelper());
 		}
 		
 		if (getImovelSelecionado().getDadosCategoria().size() > 0) {
@@ -217,69 +207,6 @@ public class BusinessConta {
 
 		return retorno;
 	}
-
-    /**
-     * Metodo responsavel por chamar o calculo do consumo desconsiderando a leitura e anormalidade adicionada pelo usuario
-     */
-    public static Consumo CalculoConsumoDescartaLeitura() {
-   
-    	Consumo[] consumos = ControladorConta.getInstancia().calcularContaConsumo();
-		Consumo consumoAguaRetorno = consumos[0];
-		Consumo consumoEsgotoRetorno = consumos[1];
-		Consumo retorno = null;
-	
-		getImovelSelecionado().setIndcImovelCalculado(Constantes.SIM);	
-		getImovelSelecionado().atualizarResumoEfetuarRateio(consumoAguaRetorno, consumoEsgotoRetorno);
-	
-		if (consumoAguaRetorno != null) {
-			getImovelSelecionado().setConsumoAgua(consumoAguaRetorno);
-		    retorno = getImovelSelecionado().getConsumoAgua();
-		}
-	
-		if (consumoEsgotoRetorno != null) {
-			getImovelSelecionado().setConsumoEsgoto(consumoEsgotoRetorno);
-		    if (consumoAguaRetorno == null) {
-		    	retorno = getImovelSelecionado().getConsumoEsgoto();
-		    }
-		}
-		
-		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
-			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura());
-			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade());
-
-			// Update DB - Medidor água
-			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
-		}
-		
-		if(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null){
-			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setLeituraRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getLeitura());
-			getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidadeRelatorio(getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).getAnormalidade());
-		
-			// Update DB - Medidor poço
-			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
-		
-		}
-		
-		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-		
-		if (getImovelSelecionado().getConsumoAgua() != null){
-			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-		}
-		
-		if(getImovelSelecionado().getConsumoEsgoto() != null){
-			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
-		}
-
-		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
-			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
-		}
-	    
-		consumoAguaRetorno = null;	
-		consumoEsgotoRetorno = null;
-		consumos = null;	
-	
-		return retorno;
-    }
 
     /**
      * Metodo responsavel por chamar o calculo do consumo pelo consumo médio.
@@ -355,7 +282,7 @@ public class BusinessConta {
 		}
 		
 		if(getImovelSelecionado().getEfetuarRateioConsumoHelper() != null){
-			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+			ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominioHelper(getImovelSelecionado().getEfetuarRateioConsumoHelper());
 		}
 			
 		consumoAguaRetorno = null;	
@@ -424,7 +351,6 @@ public class BusinessConta {
 		if (!isLeituraInvalida(descartaLeitura)) {
 	
 			if (!descartaLeitura){
-//				validacao = CalculoConsumoDescartaLeitura();			
 			
 				if(ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.SIM){
 					validacao = chamarCalculoConsumoMedio();			

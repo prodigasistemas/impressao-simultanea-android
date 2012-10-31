@@ -247,6 +247,10 @@ public class ImpressaoContaCosanpa {
     	return montarComando();
     }
     
+    public String imprimirExtratoConsumoMacroMedidor(){
+    	return null;
+    }
+    
     public void getDados(Imovel imovel) {
     	
     	List dc = imovel.getDadosCategoria();

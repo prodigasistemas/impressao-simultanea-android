@@ -625,11 +625,11 @@ public class ControladorImovel {
 		    faturamento.setIdDadosCategoria(dadosEconomiasSubcategorias.getId());
 	    	faturamento.setTipoFaturamento(tipoMedicao);
 	    	
-	    	int posicao = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().indexOf(dadosEconomiasSubcategorias);
+	    	int posicao = imovel.getDadosCategoria().indexOf(dadosEconomiasSubcategorias);
 	    	if (tipoMedicao == Constantes.TIPO_FATURAMENTO_AGUA) {
-	    		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(posicao).setFaturamentoAgua(faturamento);
+	    		imovel.getDadosCategoria().get(posicao).setFaturamentoAgua(faturamento);
 	    	} else if (tipoMedicao == Constantes.TIPO_FATURAMENTO_ESGOTO) {
-	    		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(posicao).setFaturamentoEsgoto(faturamento);
+	    		imovel.getDadosCategoria().get(posicao).setFaturamentoEsgoto(faturamento);
 	    	}
 		    
 	    	// ================
@@ -989,6 +989,4 @@ public class ControladorImovel {
      	
     	return informativo;
     }
- 
-
 }

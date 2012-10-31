@@ -10,9 +10,6 @@ import java.util.Vector;
 import business.ControladorConta;
 import business.ControladorImovel;
 import business.ControladorRota;
-import android.util.Log;
-
-import ui.FileManager;
 import util.Constantes;
 import util.Util;
 
@@ -128,7 +125,6 @@ public class Imovel {
     private int anormalidadeGravadaAnterior;
     private Date dataImpressaoNaoMedido;
     private double valorResidualCredito;
-    private int quantidadeImoveisCondominio;
     
     private boolean indcAdicionouDadosIniciaisHelperRateio = false;
     private double valorRateioAgua;
@@ -155,7 +151,7 @@ public class Imovel {
     private int indcImovelCalculado = Constantes.NAO;
     private int anormalidadeSemHidrometro = Constantes.NULO_INT;
     private int indcImoveldo = Constantes.NAO;
-    private int idImovelCondominio = Constantes.NULO_INT;
+//    private int idImovelCondominio = Constantes.NULO_INT;
     private int sequencialRotaMarcacao = Constantes.NULO_INT;
     private int indcImoveisVisitados = 0;
 
@@ -185,6 +181,15 @@ public class Imovel {
 	
     public boolean isIndcAdicionouDadosIniciaisHelperRateio() {
     	return indcAdicionouDadosIniciaisHelperRateio;
+    }
+
+    public int getIndcAdicionouDadosIniciaisHelperRateio() {
+
+    	if (indcAdicionouDadosIniciaisHelperRateio){
+    		return Constantes.SIM;
+    	}else{
+    		return Constantes.NAO;
+    	}
     }
 
 	public int getImovelStatus() {
@@ -243,35 +248,34 @@ public class Imovel {
 
     public EfetuarRateioConsumoHelper getEfetuarRateioConsumoHelper() {
 
-	if (this.indcCondominio == Constantes.SIM || this.idImovelCondominio != Constantes.NULO_INT) {
-
-	    long idImovelMacro = Constantes.NULO_INT;
-
-	    if (this.indcCondominio == Constantes.SIM) {
-	    	idImovelMacro = this.getId();
-	    
-	    } else {
-	    	idImovelMacro = this.getIdImovelCondominio();
-	    }
-
-//	    if (this.efetuarRateioConsumoDispositivoMovelHelper == null) {
-//			this.efetuarRateioConsumoDispositivoMovelHelper = new EfetuarRateioConsumoHelper(
-//				idImovelMacro, id + quantidadeImoveisCondominio - 1);
+//    	if (this.isImovelCondominio()){
 //	
-//			// Salvamos as informações obtidas
-//			Repositorio.salvarObjeto(this);
-//	    }
-	}
-
-	return efetuarRateioConsumoHelper;
+//		    int matriculaImovelMacro = Constantes.NULO_INT;
+//	
+//		    if (this.indcCondominio == Constantes.SIM) {
+//		    	matriculaImovelMacro = this.getMatricula();
+//		    
+//		    } else {
+//		    	matriculaImovelMacro = this.matriculaCondominio;
+//		    }
+//	
+//		    if (this.efetuarRateioConsumoHelper == null) {
+//				this.efetuarRateioConsumoHelper = ControladorRota.getInstancia().getDataManipulator().selectEfetuarRateioConsumoHelper(matriculaImovelMacro);
+//		
+//				// Salvamos as informações obtidas
+////				Repositorio.salvarObjeto(this);
+//		    }
+//		}
+	
+		return efetuarRateioConsumoHelper;
     }
 
     public int getIndcImovelEnviado() {
-	return indcImovelEnviado;
+    	return indcImovelEnviado;
     }
 
     public void setIndcImovelEnviado(int indcImovelEnviado) {
-	this.indcImovelEnviado = indcImovelEnviado;
+    	this.indcImovelEnviado = indcImovelEnviado;
     }
 
     public int getIndcImovelImpresso() {
@@ -301,26 +305,23 @@ public class Imovel {
     }
 
     public String getNumeroCodigoBarraNotificacaoDebito() {
-	return numeroCodigoBarraNotificacaoDebito;
+    	return numeroCodigoBarraNotificacaoDebito;
     }
 
     public Imovel() {
-
     	this.matricula = Constantes.NULO_INT;
-    	
-
     }
 
     public int getIndcImoveisVisitados() {
-	return indcImoveisVisitados;
+    	return indcImoveisVisitados;
     }
 
     public void setIndcImoveisVisitados(int indcImoveisVisitados) {
-	this.indcImoveisVisitados = indcImoveisVisitados;
+    	this.indcImoveisVisitados = indcImoveisVisitados;
     }
 
     public int getIndcImovelCalculado() {
-	return indcImovelCalculado;
+    	return indcImovelCalculado;
     }
 
     public void setIndcImovelCalculado(int indcImovelCalculado) {
@@ -417,10 +418,10 @@ public class Imovel {
 		if (!dadosRelatorio.idsNaoLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsNaoLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
-			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+		    if (this.getMedidor(Constantes.LIGACAO_AGUA) != null) {
+			leituraRelatorio = this.getMedidor(
 				Constantes.LIGACAO_AGUA).getLeituraRelatorio();
-			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+			anormalidadeRelatorio = this.getMedidor(
 				Constantes.LIGACAO_AGUA)
 				.getAnormalidadeRelatorio();
 
@@ -447,39 +448,37 @@ public class Imovel {
 			}
 		    }
 
-		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA)
+		    this.getMedidor(Constantes.LIGACAO_AGUA)
 			    .setLeituraRelatorio(Constantes.NULO_INT);
-		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA)
+		    this.getMedidor(Constantes.LIGACAO_AGUA)
 			    .setAnormalidadeRelatorio(Constantes.NULO_INT);
 
 		}
 
 	    }
-
-	    removerAdicionarIdImovelCondominioLidoHelperResumo(consumoAgua);
 	}
 
 	if (dadosRelatorio.idsNaoLidosRelatorio != null) {
 
-	    if (temConsumo && ControladorImovel.getInstancia().getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM) {
+	    if (temConsumo && this.getIndcImovelCalculado() == Constantes.SIM) {
 
 		dadosRelatorio.idsNaoLidosRelatorio.removeElement(id);
 
-		if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
-		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA)
+		if (this.getMedidor(Constantes.LIGACAO_AGUA) != null) {
+		    anormalidade = this.getMedidor(Constantes.LIGACAO_AGUA)
 			    .getAnormalidade();
-		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+		    anormalidadeRelatorio = this.getMedidor(
 			    Constantes.LIGACAO_AGUA).getAnormalidadeRelatorio();
-		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+		    leituraRelatorio = this.getMedidor(
 			    Constantes.LIGACAO_AGUA).getLeituraRelatorio();
 		}
 
 		if (!dadosRelatorio.idsLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+		    if (this.getMedidor(Constantes.LIGACAO_AGUA) != null) {
 
-			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+			anormalidade = this.getMedidor(
 				Constantes.LIGACAO_AGUA).getAnormalidade();
 
 			/**
@@ -501,7 +500,7 @@ public class Imovel {
 			 * Caso o imóvel seja não medido, o mesmo será inserido
 			 * como lido com leitura nas informações do relatório
 			 */
-			if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null) {
+			if (this.getMedidor(Constantes.LIGACAO_POCO) == null) {
 			    Util.inserirValoresStringRelatorio("("
 				    + stringQuadra + ")", false, true);
 			}
@@ -513,7 +512,7 @@ public class Imovel {
 		    // lido novamente colocando uma anormalidade
 		    // o mesmo deve ser retirado do relatorio como lido com
 		    // leitura e inserido como lido com anormalidade
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null) {
+		    if (this.getMedidor(Constantes.LIGACAO_AGUA) != null) {
 
 			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
 
@@ -577,11 +576,11 @@ public class Imovel {
 		if (!dadosRelatorio.idsNaoLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsNaoLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
-			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
-			leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+		    if (this.getMedidor(Constantes.LIGACAO_POCO) != null
+			    && this.getMedidor(Constantes.LIGACAO_AGUA) == null) {
+			leituraRelatorio = this.getMedidor(
 				Constantes.LIGACAO_POCO).getLeituraRelatorio();
-			anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+			anormalidadeRelatorio = this.getMedidor(
 				Constantes.LIGACAO_POCO)
 				.getAnormalidadeRelatorio();
 
@@ -608,40 +607,38 @@ public class Imovel {
 			}
 		    }
 
-		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO)
+		    this.getMedidor(Constantes.LIGACAO_POCO)
 			    .setLeituraRelatorio(Constantes.NULO_INT);
-		    ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO)
+		    this.getMedidor(Constantes.LIGACAO_POCO)
 			    .setAnormalidadeRelatorio(Constantes.NULO_INT);
 
 		}
 
 	    }
-
-	    removerAdicionarIdImovelCondominioLidoHelperResumo(consumoEsgoto);
 	}
 
 	if (dadosRelatorio.idsNaoLidosRelatorio != null) {
 
-	    if (temConsumo && ControladorImovel.getInstancia().getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM) {
+	    if (temConsumo && this.getIndcImovelCalculado() == Constantes.SIM) {
 
 		dadosRelatorio.idsNaoLidosRelatorio.removeElement(id);
 
-		if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null) {
-		    anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO)
+		if (this.getMedidor(Constantes.LIGACAO_POCO) != null) {
+		    anormalidade = this.getMedidor(Constantes.LIGACAO_POCO)
 			    .getAnormalidade();
-		    anormalidadeRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+		    anormalidadeRelatorio = this.getMedidor(
 			    Constantes.LIGACAO_POCO).getAnormalidadeRelatorio();
-		    leituraRelatorio = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+		    leituraRelatorio = this.getMedidor(
 			    Constantes.LIGACAO_POCO).getLeituraRelatorio();
 		}
 
 		if (!dadosRelatorio.idsLidosRelatorio.contains(id)) {
 		    dadosRelatorio.idsLidosRelatorio.addElement(id);
 
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
-			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
+		    if (this.getMedidor(Constantes.LIGACAO_POCO) != null
+			    && this.getMedidor(Constantes.LIGACAO_AGUA) == null) {
 
-			anormalidade = ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(
+			anormalidade = this.getMedidor(
 				Constantes.LIGACAO_POCO).getAnormalidade();
 
 			/**
@@ -660,8 +657,8 @@ public class Imovel {
 			}
 
 		    } else {
-			if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null
-				&& ControladorImovel.getInstancia().getImovelSelecionado().getConsumoAgua() == null) {
+			if (this.getMedidor(Constantes.LIGACAO_AGUA) == null
+				&& this.getConsumoAgua() == null) {
 
 			    /**
 			     * Caso o imóvel seja não medido, o mesmo será
@@ -679,8 +676,8 @@ public class Imovel {
 		    // lido novamente colocando uma anormalidade
 		    // o mesmo deve ser retirado do relatorio como lido com
 		    // leitura e inserido como lido com anormalidade
-		    if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) != null
-			    && ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null) {
+		    if (this.getMedidor(Constantes.LIGACAO_POCO) != null
+			    && this.getMedidor(Constantes.LIGACAO_AGUA) == null) {
 			if (anormalidade != 0 && anormalidadeRelatorio == 0) {
 
 			    Util.inserirValoresStringRelatorioConsumoNulo("("
@@ -1862,21 +1859,24 @@ public class Imovel {
     	return (indcCondominio == Constantes.NAO && matriculaCondominio != Constantes.NULO_INT);
     }
    
-    public int getQuantidadeImoveisCondominio() {
-    	return quantidadeImoveisCondominio;
-    }
+	public int getIndiceImovelCondominio() {
+		return (int)(id - (getIdImovelCondominio() - 1));
+	}
 
-    public void setQuantidadeImoveisCondominio(int quantidadeImoveisCondominio) {
-    	this.quantidadeImoveisCondominio = quantidadeImoveisCondominio;
-    }
+	public int getIdImovelCondominio() {
 
-    public int getIdImovelCondominio() {
-    	return idImovelCondominio;
-    }
-
-    public void setIdImovelCondominio(int idImovelCondominio) {
-    	this.idImovelCondominio = idImovelCondominio;
-    }
+		if (isImovelMicroCondominio()){
+			return ControladorRota.getInstancia().getDataManipulator().getListaIdsCondominio(matriculaCondominio).get(0);
+			
+		// Macro-medidor
+		}else{
+			return ControladorRota.getInstancia().getDataManipulator().getListaIdsCondominio(matricula).get(0);
+		}
+	}
+	
+	public int getQuantidadeImoveisCondominio(){
+		return ControladorRota.getInstancia().getDataManipulator().selectQuantidadeImoveisCondominio(efetuarRateioConsumoHelper.getMatriculaMacro());
+	}
 
     public void setSituacaoTipo(SituacaoTipo situacaoTipo) {
     	this.situacaoTipo = situacaoTipo;
@@ -2048,163 +2048,151 @@ public class Imovel {
      *            Consumo de esgoto novo, caso esteja atualizando o consumo de
      *            agua, setar nulo
      */
-    public void atualizarResumoEfetuarRateio(Consumo consumoAgua,
-	    Consumo consumoEsgoto) {
-
-	// Verificamos se é um imóvel micro
-	if (this.idImovelCondominio != Constantes.NULO_INT) {
-
-	    Imovel hidrometroMacro = new Imovel();
-//	    Repositorio.carregarObjeto(hidrometroMacro, this.idImovelCondominio);
-
-	    EfetuarRateioConsumoHelper helper = hidrometroMacro
-		    .getEfetuarRateioConsumoHelper();
-
-	    // Apenas adicionamos a quantidade de economias,
-	    // se ela não houver sido adicionada anteriormente
-	    if ((!indcAdicionouDadosIniciaisHelperRateio)) {
-
-		indcAdicionouDadosIniciaisHelperRateio = true;
-
-		// Verificamos se o imóvel é faturado de agua
-		if ((this.getIndcFaturamentoAgua() == Constantes.SIM) ||
-			(this.getIndcFaturamentoAgua() == Constantes.NAO && isImovelMicroCondominio())) {
-
-		    // Calculamos a quantidade de econimias total
-		    int quantidadeEconomiasImovel = this
-			    .getQuantidadeEconomiasTotal();
-
-		    Medidor ligacaoAguaImovelMicro = this
-			    .getMedidor(Constantes.LIGACAO_AGUA);
-
-			helper.setQuantidadeEconomiasAguaTotal(helper.getQuantidadeEconomiasAguaTotal() + quantidadeEconomiasImovel);
-
-		}
-
-		// Verifica se o imóvel é faturado de esgoto
-	   	if ( (this.getIndcFaturamentoEsgoto() == Constantes.SIM) ||
-	         (this.getIndcFaturamentoEsgoto() == Constantes.NAO && this.isImovelMicroCondominio()) ){
-
-//		if (this.getIndcFaturamentoEsgoto() == Constantes.SIM) {
-
-		    // Calculamos a quantidade de econimias total
-		    int quantidadeEconomiasImovel = this
-			    .getQuantidadeEconomiasTotal();
-
-		    // Selecionamos a ligação de agua do imovel macro
-		    // para verificarmos se o mesmo possue
-		    // tipo de rateio = 4
-		    Medidor ligacaoAguaImovelMacro = hidrometroMacro
-			    .getMedidor(Constantes.LIGACAO_AGUA);
-		    /*
-		     * Considerar não medido de esgoto igual a não medido de
-		     * água, ou seja, de acordo com a existência de hidrometro
-		     * de ligação de água quando o tipo de rateio for igual a
-		     * rateio não medido de água.
-		     */
-		    if (ligacaoAguaImovelMacro != null
-			    && ligacaoAguaImovelMacro.getTipoRateio() == Medidor.TIPO_RATEIO_NAO_MEDIDO_AGUA) {
-
-			Medidor ligacaoAguaImovelMicro = this
-				.getMedidor(Constantes.LIGACAO_AGUA);
-
-			helper.setQuantidadeEconomiasEsgotoTotal(helper.getQuantidadeEconomiasEsgotoTotal() + quantidadeEconomiasImovel);
-
-		    } else {
-			Medidor ligacaoEsgotoImovelMicro = this
-				.getMedidor(Constantes.LIGACAO_POCO);
-
+    public void atualizarResumoEfetuarRateio(Consumo consumoAgua, Consumo consumoEsgoto) {
+	
+		// Verificamos se é um imóvel micro
+		if (this.isImovelMicroCondominio()) {
+	
+		    Imovel hidrometroMacro = ControladorRota.getInstancia().getDataManipulator().selectImovel("matricula = " + this.getMatriculaCondominio());
+	
+		    // Apenas adicionamos a quantidade de economias,
+		    // se ela não houver sido adicionada anteriormente
+		    if ((!indcAdicionouDadosIniciaisHelperRateio)) {
+		
+				indcAdicionouDadosIniciaisHelperRateio = true;
+		
+				// Verificamos se o imóvel é faturado de agua
+				if ((this.getIndcFaturamentoAgua() == Constantes.SIM) ||
+					(this.getIndcFaturamentoAgua() == Constantes.NAO && isImovelMicroCondominio())) {
+		
+				    // Calculamos a quantidade de economias total
+				    int quantidadeEconomiasImovel = this.getQuantidadeEconomiasTotal();
+		
+				    Medidor ligacaoAguaImovelMicro = this.getMedidor(Constantes.LIGACAO_AGUA);
+		
+					efetuarRateioConsumoHelper.setQuantidadeEconomiasAguaTotal(efetuarRateioConsumoHelper.getQuantidadeEconomiasAguaTotal() + quantidadeEconomiasImovel);
+				}
+		
+				// Verifica se o imóvel é faturado de esgoto
+			   	if ( (this.getIndcFaturamentoEsgoto() == Constantes.SIM) ||
+			         (this.getIndcFaturamentoEsgoto() == Constantes.NAO && this.isImovelMicroCondominio()) ){
+		
+		//		if (this.getIndcFaturamentoEsgoto() == Constantes.SIM) {
+		
+				    // Calculamos a quantidade de economias total
+				    int quantidadeEconomiasImovel = this.getQuantidadeEconomiasTotal();
+		
+				    // Selecionamos a ligação de agua do imovel macro
+				    // para verificarmos se o mesmo possue
+				    // tipo de rateio = 4
+				    Medidor ligacaoAguaImovelMacro = hidrometroMacro.getMedidor(Constantes.LIGACAO_AGUA);
+				    /*
+				     * Considerar não medido de esgoto igual a não medido de
+				     * água, ou seja, de acordo com a existência de hidrometro
+				     * de ligação de água quando o tipo de rateio for igual a
+				     * rateio não medido de água.
+				     */
+				    if (ligacaoAguaImovelMacro != null
+					    && ligacaoAguaImovelMacro.getTipoRateio() == Medidor.TIPO_RATEIO_NAO_MEDIDO_AGUA) {
+		
+				    	Medidor ligacaoAguaImovelMicro = this.getMedidor(Constantes.LIGACAO_AGUA);
+		
+				    	efetuarRateioConsumoHelper.setQuantidadeEconomiasEsgotoTotal(efetuarRateioConsumoHelper.getQuantidadeEconomiasEsgotoTotal() + quantidadeEconomiasImovel);
+		
+				    } else {
+				    	Medidor ligacaoEsgotoImovelMicro = this.getMedidor(Constantes.LIGACAO_POCO);
+		
+				    }
+				}
+				
+				// Adicionamos o consumo mínimo do imóvel ao total
+		//		helper.setConsumoMinimoTotal(helper.getConsumoMinimoTotal()
+		//			+ ControladorImoveis.getInstancia().getImovelSelecionado().getConsumoMinimoImovel());
 		    }
-		}
+	
+		    indcGeracaoConta = Constantes.SIM;
+		    if (consumoAgua != null) {
+	
+				boolean valorContaMaiorPermitido = this.isValorContaMaiorPermitido();
 		
-		// Adicionamos o consumo mínimo do imóvel ao total
-//		helper.setConsumoMinimoTotal(helper.getConsumoMinimoTotal()
-//			+ ControladorImoveis.getInstancia().getImovelSelecionado().getConsumoMinimoImovel());
-	    }
-
-	    if (consumoAgua != null) {
-
-			boolean valorContaMaiorPermitido = ControladorImovel.getInstancia().getImovelSelecionado().isValorContaMaiorPermitido();
-	
-			if (ControladorImovel.getInstancia().getImovelSelecionado().consumoAgua != null) {
-			    // Removemos do total o consumo calculado anteriormente,
-			    // para logo mais abaixo, adicionamos o novo consumo
-			    helper.setConsumoLigacaoAguaTotal(helper
-				    .getConsumoLigacaoAguaTotal()
-				    - ControladorImovel.getInstancia().getImovelSelecionado().consumoAgua.getConsumoCobradoMesOriginal());
-			}
-	
-			// Adicionamos o consumo de agua total
-			helper.setConsumoLigacaoAguaTotal(helper
-				.getConsumoLigacaoAguaTotal()
-				+ consumoAgua.getConsumoCobradoMesOriginal());
-			
-			//Daniel - Veifica se houve anormalidade de consumo para reter conta.
-			if (consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
-				consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
-				consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
-				consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO ){
-				
-					helper.setReterImpressaoConta(Constantes.SIM);
-			}
-	
-			//Daniel - Veifica se houve anormalidade de leitura para reter conta.
-			if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
-				consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
-				
-					helper.setReterImpressaoConta(Constantes.SIM);
-			}
-			// Daniel - desconsiderando caso de nao imprimir contas abaixo do permitido para condomínio.
-//			if (valorContaMaiorPermitido){
-//				helper.setReterImpressaoConta(true);
-//			}
-	    }
-
-	    if (consumoEsgoto != null) {
-
-		if (ControladorImovel.getInstancia().getImovelSelecionado().consumoEsgoto != null) {
-		    // Removemos do total o consumo calculado anteriormente,
-		    // para logo mais abaixo, adicionarmos o novo consumo
-		    helper
-			    .setConsumoLigacaoEsgotoTotal(helper
-				    .getConsumoLigacaoEsgotoTotal()
-				    - ControladorImovel.getInstancia().getImovelSelecionado().consumoEsgoto
-					    .getConsumoCobradoMesOriginal());
-		}
-
-		// Adicionamos o consumo de esgoto total
-		helper.setConsumoLigacaoEsgotoTotal(helper
-			.getConsumoLigacaoEsgotoTotal()
-			+ consumoEsgoto.getConsumoCobradoMesOriginal());
-	    }
+				if (this.consumoAgua != null) {
+				    // Removemos do total o consumo calculado anteriormente,
+				    // para logo mais abaixo, adicionamos o novo consumo
+				    efetuarRateioConsumoHelper.setConsumoLigacaoAguaTotal(efetuarRateioConsumoHelper.getConsumoLigacaoAguaTotal()
+				    			- this.consumoAgua.getConsumoCobradoMesOriginal());
+				}
 		
-//	    Repositorio.salvarObjeto(hidrometroMacro);
-
-//	    Daniel - Caso seja Hidrometro Macro
-	}else if (this.indcCondominio == Constantes.SIM && this.matriculaCondominio == Constantes.NULO_INT){
-
-	    if (consumoAgua != null) {
-
-//Daniel - Veifica se houve anormalidade de consumo para reter conta.
-			if (consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
+				// Adicionamos o consumo de agua total
+				efetuarRateioConsumoHelper.setConsumoLigacaoAguaTotal(efetuarRateioConsumoHelper.getConsumoLigacaoAguaTotal()
+								+ consumoAgua.getConsumoCobradoMesOriginal());
+				
+				//Daniel - Veifica se houve anormalidade de consumo para reter conta.
+				if (consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO ){
-
-				this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
+					
+					indcGeracaoConta = Constantes.NAO;
+//					efetuarRateioConsumoHelper.setReterImpressaoConta(Constantes.SIM);
+				}
+		
+				//Daniel - Veifica se houve anormalidade de leitura para reter conta.
+				if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
+					consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
+					
+					indcGeracaoConta = Constantes.NAO;
+//						efetuarRateioConsumoHelper.setReterImpressaoConta(Constantes.SIM);
+				}
+				// Daniel - desconsiderando caso de nao imprimir contas abaixo do permitido para condomínio.
+	//			if (valorContaMaiorPermitido){
+	//				helper.setReterImpressaoConta(true);
+	//			}
+		    }
+	
+		    if (consumoEsgoto != null) {
+	
+			if (this.consumoEsgoto != null) {
+			    // Removemos do total o consumo calculado anteriormente,
+			    // para logo mais abaixo, adicionarmos o novo consumo
+			    efetuarRateioConsumoHelper
+				    .setConsumoLigacaoEsgotoTotal(efetuarRateioConsumoHelper.getConsumoLigacaoEsgotoTotal()
+					    - this.consumoEsgoto.getConsumoCobradoMesOriginal());
 			}
 	
-			//Daniel - Veifica se houve anormalidade de leitura para reter conta.
-			if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
-				consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
-				
-				this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
-			}
-	    }
-//	    Repositorio.salvarObjeto(this);
+			// Adicionamos o consumo de esgoto total
+			efetuarRateioConsumoHelper.setConsumoLigacaoEsgotoTotal(efetuarRateioConsumoHelper.getConsumoLigacaoEsgotoTotal()
+						+ consumoEsgoto.getConsumoCobradoMesOriginal());
+		    }
+			
+	//	    Repositorio.salvarObjeto(hidrometroMacro);
+	
+	//	    Daniel - Caso seja Hidrometro Macro
+		}else if (this.indcCondominio == Constantes.SIM && this.matriculaCondominio == Constantes.NULO_INT){
+	
+		    if (consumoAgua != null) {
+	
+	//Daniel - Veifica se houve anormalidade de consumo para reter conta.
+				if (consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
+						consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
+						consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
+						consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO ){
+	
+					indcGeracaoConta = Constantes.NAO;
+//					this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
+				}
+		
+				//Daniel - Veifica se houve anormalidade de leitura para reter conta.
+				if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
+					consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
+					
+					indcGeracaoConta = Constantes.NAO;
+//					this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
+				}
+		    }
+	//	    Repositorio.salvarObjeto(this);
+		}
+		
 	}
-	
-    }
 
     public int getIndicadorParalizarFaturamentoAgua() {
     	return indicadorParalizarFaturamentoAgua;
@@ -2220,55 +2208,6 @@ public class Imovel {
 
     public void setOpcaoDebitoAutomatico(String opcaoDebitoAutomatico) {
     	this.opcaoDebitoAutomatico = Util.verificarNuloInt(opcaoDebitoAutomatico);
-    }
-
-    /**
-     * @param consumo
-     */
-    private void removerAdicionarIdImovelCondominioLidoHelperResumo(Consumo consumo) {
-	EfetuarRateioConsumoHelper helper = null;
-	Imovel macro = null;
-
-	if (this.getIdImovelCondominio() != Constantes.NULO_INT) {
-	    macro = new Imovel();
-//	    Repositorio.carregarObjeto(macro, this.getIdImovelCondominio());
-	    helper = macro.getEfetuarRateioConsumoHelper();
-	} else if (this.indcCondominio == Constantes.SIM) {
-	    helper = this.getEfetuarRateioConsumoHelper();
-	}
-
-	boolean removido = false;
-	boolean adicionado = false;
-
-//	if (consumo != null || this.getSituacaoLigAgua().equals(Constantes.CORTADO)) {
-//	    removido = helper.getIdsAindaFaltamSerCalculador().removeElement( new Integer(this.getId()));
-//	} else {
-//		
-//		// Daniel - remover imoveis do condominio que não possuem conta.	    
-//		if (isImovelInformativo()) {
-//			if (helper != null && helper.getIdsAindaFaltamSerCalculador().contains(new Integer(this.getId()))){
-//			    removido = helper.getIdsAindaFaltamSerCalculador().removeElement(new Integer(this.getId()));				
-//			}
-//			
-//		}else{
-//			int indice = helper.getIdsAindaFaltamSerCalculador().indexOf(new Integer(this.getId()));
-//	
-//		    if (indice == -1) {
-//				adicionado = true;
-//				helper.getIdsAindaFaltamSerCalculador().addElement(new Integer(this.getId()));
-//		    }
-//		}
-//	}
-
-	if (removido || adicionado) {
-	    if (macro != null) {
-		macro.setEfetuarRateioConsumoHelper(helper);
-//		Repositorio.salvarObjeto(macro);
-	    } else {
-		this.setEfetuarRateioConsumoHelper(helper);
-//		Repositorio.salvarObjeto(this);
-	    }
-	}
     }
 
     /**
@@ -2294,7 +2233,8 @@ public class Imovel {
 				    }
 				
 				} else {
-				    Imovel imovelMacro = new Imovel();
+				    Imovel imovelMacro = ControladorRota.getInstancia().getDataManipulator().selectImovel("matricula = " + this.getMatriculaCondominio());
+//				    Imovel imovelMacro = new Imovel();
 		//		    Repositorio.carregarObjeto(imovelMacro, this.getIdImovelCondominio());
 		
 				    if (imovelMacro.getIndcImovelImpresso() == Constantes.SIM) {

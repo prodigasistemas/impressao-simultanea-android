@@ -9,14 +9,14 @@
         android:id="@+id/imprimirContasCondominio"
         android:title="@string/options_imprimir_condominio"/>
 
+     <item
+        android:id="@+id/calcularConsumo"
+        android:title="@string/options_calcular_consumo"/>
+
     <item
         android:id="@+id/localizarPendente"
         android:title="@string/options_localizar_pendente"/>
 
-<!--     <item
-        android:id="@+id/listCadastros"
-        android:title="@string/options_lista_cadastro"/>
- -->
     <item
         android:id="@+id/imovelAnterior"
         android:icon="@drawable/anterior"

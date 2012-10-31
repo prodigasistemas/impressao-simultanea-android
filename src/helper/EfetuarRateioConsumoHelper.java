@@ -1,6 +1,13 @@
 package helper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+
+import business.ControladorRota;
+
+import model.Consumo;
+import model.DadosCategoria;
 
 import util.Constantes;
 
@@ -33,15 +40,9 @@ public class EfetuarRateioConsumoHelper {
     int consumoMinimoTotal = 0;
     int consumoParaRateioAgua = 0;
     double contaParaRateioAgua = 0;
-
     int consumoParaRateioEsgoto = 0;
     double contaParaRateioEsgoto = 0;
-    boolean reterImpressaoContas = false;
     int passos = 0;
-    
-    private Vector idsAindaFaltamSerCalculador;    
-    
-    
     
     public int getMatriculaMacro() {
 		return matriculaMacro;
@@ -51,10 +52,46 @@ public class EfetuarRateioConsumoHelper {
 		this.matriculaMacro = matriculaMacro;
 	}
 
-	public Vector getIdsAindaFaltamSerCalculador() {
-        return idsAindaFaltamSerCalculador;
-    }
+	public List<Integer> getIdsAindaFaltamSerCalculador() {
+		
+		List<Integer> listaIdsCondominio = ControladorRota.getInstancia().getDataManipulator().getListaIdsCondominio(matriculaMacro);
+		List<Integer> listaIdsNaoCalculados = new ArrayList<Integer>();
+		
+		for (int i=1; i<listaIdsCondominio.size(); i++){
+			
+			int matriculaImovelCondominial = ControladorRota.getInstancia().getDataManipulator().selectMatriculaImovel("id = " + listaIdsCondominio.get(i));
+			Consumo consumoAgua = ControladorRota.getInstancia().getDataManipulator().selectConsumoImovelByTipoMedicao(matriculaImovelCondominial, Constantes.LIGACAO_AGUA);
+			Consumo consumoEsgoto = ControladorRota.getInstancia().getDataManipulator().selectConsumoImovelByTipoMedicao(matriculaImovelCondominial, Constantes.LIGACAO_POCO);
+			
+			if (consumoAgua == null && consumoEsgoto == null){
+				
+				// Imovel ainda nao calculado
+				// verificar situacao de imovel cortado tambem!!!
+				listaIdsNaoCalculados.add(listaIdsCondominio.get(i));
+			}
+		}
+		
+		return listaIdsNaoCalculados;
+	}
+	
+	public boolean isCondominioRetido(){
+		boolean result = false;
+		ArrayList<Integer> listIndcGeracaoConta = ControladorRota.getInstancia().getDataManipulator().selectIndcgeracaoContasCondominio(matriculaMacro);
+		
+		for (int i=0; i<listIndcGeracaoConta.size(); i++){
+			if (listIndcGeracaoConta.get(i) == Constantes.NAO){
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
 
+	public int getIdUltimoImovelMicro(){
+		List<Integer> listaIdsCondominio = ControladorRota.getInstancia().getDataManipulator().getListaIdsCondominio(matriculaMacro);
+		return listaIdsCondominio.get(listaIdsCondominio.size()-1);
+	}
+	
     public int getConsumoParaRateioEsgoto() {
         return consumoParaRateioEsgoto;
     }
@@ -100,7 +137,7 @@ public class EfetuarRateioConsumoHelper {
     }
 
     public int getConsumoLigacaoAguaTotal() {
-	return consumoLigacaoAguaTotal;
+    	return consumoLigacaoAguaTotal;
     }
 
     public int getQuantidadeEconomiasEsgotoTotal() {
@@ -119,19 +156,19 @@ public class EfetuarRateioConsumoHelper {
 	return matriculaUltimoImovelMicro;
     }
 
-    public EfetuarRateioConsumoHelper( int matriculaMacro, int matriculaUltimoImovelMicro ){ 
+    public EfetuarRateioConsumoHelper( int matriculaMacro){ 
+    	this.matriculaMacro = matriculaMacro;
+    	// Cuidar do caso onde existe imovel cortado no condomínio. Este deve ser removido da lista de IDs
 
-    	// Daniel - cuidar do caso onde existe imovel cortado no condominio. Este deve ser removido da lista de IDs
-		this.matriculaUltimoImovelMicro = matriculaUltimoImovelMicro;
-		this.idsAindaFaltamSerCalculador = new Vector( (matriculaUltimoImovelMicro+1) - matriculaMacro );
-		
-		for ( int i = matriculaMacro; i <= matriculaUltimoImovelMicro; i++ ){
-		    this.idsAindaFaltamSerCalculador.addElement( new Integer( i ) );
-		}
+//		this.matriculaUltimoImovelMicro = matriculaUltimoImovelMicro;
+//		this.idsAindaFaltamSerCalculador = new Vector( (matriculaUltimoImovelMicro+1) - matriculaMacro );
+//		
+//		for ( int i = matriculaMacro; i <= matriculaUltimoImovelMicro; i++ ){
+//		    this.idsAindaFaltamSerCalculador.addElement( new Integer( i ) );
+//		}
     }
     
-    public boolean getReterImpressaoConta(){
-    	return this.reterImpressaoContas;
+    public EfetuarRateioConsumoHelper(){ 
     }
 
     public void setQuantidadeEconomiasAguaTotal(int quantidadeEconomiasAguaTotal) {
@@ -160,15 +197,6 @@ public class EfetuarRateioConsumoHelper {
     
     public long getId(){
     	return id;
-    }
-    
-    public void setReterImpressaoConta(int reter){
-		if (reter == Constantes.SIM){
-			this.reterImpressaoContas = true;
-		
-		}else{
-			this.reterImpressaoContas = false;
-		}
     }
     
 }

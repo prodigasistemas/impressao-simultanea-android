@@ -141,6 +141,7 @@ public class Fachada extends Activity {
 	public void onPasswordDialogButtonClick(View v) {
 	    if(!ControladorRota.getInstancia().isPermissionGranted()){
 	    	ControladorRota.getInstancia().getDataManipulator().selectGeral();
+	    	ControladorRota.getInstancia().getDataManipulator().selectDadosQualidadeAgua();
 	    	showDialog(Constantes.DIALOG_ID_PASSWORD);
 	    	
 	    }else{

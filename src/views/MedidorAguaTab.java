@@ -3,6 +3,8 @@ package views;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Imovel;
+
 import util.Constantes;
 
 import business.ControladorImovel;
@@ -22,9 +24,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -42,6 +47,8 @@ public class MedidorAguaTab extends Fragment {
     private static EditText leitura;
     private static int leituraDigitada;
     private static View layout;
+	private TextView imovelCondominial;
+	private LinearLayout imovelCondominialLayout;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,12 +74,13 @@ public class MedidorAguaTab extends Fragment {
 		endereco = (TextView) view.findViewById(R.id.endereco);
 		hidrometro = (TextView) view.findViewById(R.id.hidrometro);
 		locInstalacao = (TextView) view.findViewById(R.id.locInstalacao);
-		
-		endereco.setText(ControladorImovel.getInstancia().getImovelSelecionado().getEndereco());
-		hidrometro.setText(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getNumeroHidrometro());
-		locInstalacao.setText(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLocalInstalacao());
-		
 		leitura = (EditText)view.findViewById(R.id.leitura);
+		imovelCondominial = (TextView) view.findViewById(R.id.imovelCondominial);
+		imovelCondominialLayout = (LinearLayout) view.findViewById(R.id.imovelCondominialLayout);
+
+		endereco.setText(getImovelSelecionado().getEndereco());
+		hidrometro.setText(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getNumeroHidrometro());
+		locInstalacao.setText(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLocalInstalacao());
 		
 		// Codigo de Anormalidade
         codigoAnormalidade = (EditText)view.findViewById(R.id.codigoAnormalidade);
@@ -129,14 +137,24 @@ public class MedidorAguaTab extends Fragment {
 		});
         
         //Populate Leitura e Anormalidade
-        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura() != Constantes.NULO_INT){
-        	leitura.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura()));
+        if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura() != Constantes.NULO_INT){
+        	leitura.setText(String.valueOf(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getLeitura()));
         }
         
-        if (ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade() > 0 ){
-        	codigoAnormalidade.setText(String.valueOf(ControladorImovel.getInstancia().getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade()));
+        if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade() > 0 ){
+        	codigoAnormalidade.setText(String.valueOf(getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getAnormalidade()));
         }
 		
+		if (getImovelSelecionado().isImovelCondominio()) {
+			imovelCondominialLayout.setBackgroundResource(R.drawable.box_imovel_condominio);
+			imovelCondominial.setText(" Imóvel " + 
+									  getImovelSelecionado().getIndiceImovelCondominio() + 
+									  " de " 
+									  + getImovelSelecionado().getQuantidadeImoveisCondominio());
+			
+			imovelCondominial.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		}
+			
 		return view;
 	}
 	
@@ -171,6 +189,10 @@ public class MedidorAguaTab extends Fragment {
 
     public static void setLeituraCampo(String leitura) {
     	((EditText)layout.findViewById(R.id.leitura)).setText(leitura);
+    }
+    
+    public Imovel getImovelSelecionado(){
+    	return ControladorImovel.getInstancia().getImovelSelecionado();
     }
 
 }

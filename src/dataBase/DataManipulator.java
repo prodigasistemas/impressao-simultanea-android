@@ -85,8 +85,8 @@ public class DataManipulator {
 		db.delete(tableName, null, null);
 	}
 
-	public void deleteElementId(int rowId, String tableName) {
-		db.delete(tableName, null, null);
+	public void deleteElement(String tableName, String elementName, String elementValue) {
+		db.delete(tableName, elementName+" = ?", new String[] {String.valueOf(elementValue)});
 	}
 
 	public List<String> selectEnderecoImoveis(String condition) {
@@ -95,7 +95,7 @@ public class DataManipulator {
 		Cursor cursor;
 
 		cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "id", "matricula", "endereco" }, condition, null, null, null,
-				"inscricao asc");
+				"id asc");
 
 		int x = 0;
 		if (cursor.moveToFirst()) {
@@ -120,12 +120,12 @@ public class DataManipulator {
 		if (condition == Constantes.NULO_STRING || condition == null) {
 
 			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "id" },
-							  null, null, null, null, "inscricao asc");
+							  null, null, null, null, "id asc");
 
 		} else {
 
 			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "id" },
-							  condition, null, null, null, "inscricao asc");
+							  condition, null, null, null, "id asc");
 		}
 
 		if (cursor.moveToFirst()) {
@@ -138,6 +138,32 @@ public class DataManipulator {
 		fecharCursor(cursor);
 
 		return list;
+	}
+
+	public int selectMatriculaImovel(String condition) {
+
+		int matricula = Constantes.NULO_INT;
+		Cursor cursor;
+
+		if (condition == Constantes.NULO_STRING || condition == null) {
+
+			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "matricula" },
+							  null, null, null, null, "id asc");
+
+		} else {
+
+			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "matricula" },
+							  condition, null, null, null, "id asc");
+		}
+
+		if (cursor.moveToFirst()) {
+			do {
+				matricula = Integer.valueOf(cursor.getString(0));
+			} while (cursor.moveToNext());
+		}
+
+		fecharCursor(cursor);
+		return matricula;
 	}
 
 	public int selectMatriculaMedidor(String condition) {
@@ -166,11 +192,11 @@ public class DataManipulator {
 
 		if (condition == Constantes.NULO_STRING || condition == null) {
 
-			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "imovel_status" }, null, null, null, null,"inscricao asc");
+			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "imovel_status" }, null, null, null, null,"id asc");
 
 		} else {
 
-			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "imovel_status" }, condition, null, null, null, "inscricao asc");
+			cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "imovel_status" }, condition, null, null, null, "id asc");
 		}
 
 		if (cursor.moveToFirst()) {
@@ -205,7 +231,7 @@ public class DataManipulator {
 																		 "indc_imovel_impresso", 
 																		 "indc_geracao",
 																		 "matricula",
-																		 }, null, null, null, null, "inscricao asc");
+																		 }, null, null, null, null, "id asc");
 		
 		if (cursor.moveToFirst()) {
 
@@ -419,7 +445,6 @@ public class DataManipulator {
 																		"anormalidade_gravada_anterior",
 																		"data_impressao_nao_medido",
 																		"valor_residual_credito",
-																		"quantidade_imoveis_condominio",
 																		"indc_adicionou_dados_iniciais_helper_rateio",
 																		"valor_rateio_agua",
 																		"valor_rateio_esgoto",
@@ -431,7 +456,7 @@ public class DataManipulator {
 																		"imovel_status",
 																		"imovel_enviado",
 																		"indc_imovel_impresso",
-																		"indc_geracao"}, condition, null, null, null,  "inscricao asc");
+																		"indc_geracao"}, condition, null, null, null,  "id asc");
 		Imovel imovel = null;
 		
 		if (cursor.moveToFirst()) {
@@ -507,19 +532,18 @@ public class DataManipulator {
           	imovel.setAnormalidadeGravadaAnterior(Integer.parseInt(cursor.getString(66)));
           	imovel.setDataImpressaoNaoMedido(cursor.getString(67));
           	imovel.setValorResidualCredito(Double.parseDouble(cursor.getString(68)));
-          	imovel.setQuantidadeImoveisCondominio(Integer.parseInt(cursor.getString(69)));
-          	imovel.setIndcAdicionouDadosIniciaisHelperRateio(Integer.parseInt(cursor.getString(70)));
-          	imovel.setValorRateioAgua(Double.parseDouble(cursor.getString(71)));
-          	imovel.setValorRateioEsgoto(Double.parseDouble(cursor.getString(72)));
-          	imovel.setConsumoRateioAgua(Integer.parseInt(cursor.getString(73)));
-          	imovel.setConsumoRateioEsgoto(Integer.parseInt(cursor.getString(74)));
-          	imovel.setMensagemEstouroConsumo1(cursor.getString(75));
-          	imovel.setMensagemEstouroConsumo2(cursor.getString(76));
-          	imovel.setMensagemEstouroConsumo3(cursor.getString(77));
-          	imovel.setImovelStatus(cursor.getString(78));
-          	imovel.setImovelEnviado(cursor.getString(79));
-          	imovel.setIndcImovelImpresso(Integer.parseInt(cursor.getString(80)));
-          	imovel.setIndcGeracaoConta(Integer.parseInt(cursor.getString(81)));
+          	imovel.setIndcAdicionouDadosIniciaisHelperRateio(Integer.parseInt(cursor.getString(69)));
+          	imovel.setValorRateioAgua(Double.parseDouble(cursor.getString(70)));
+          	imovel.setValorRateioEsgoto(Double.parseDouble(cursor.getString(71)));
+          	imovel.setConsumoRateioAgua(Integer.parseInt(cursor.getString(72)));
+          	imovel.setConsumoRateioEsgoto(Integer.parseInt(cursor.getString(73)));
+          	imovel.setMensagemEstouroConsumo1(cursor.getString(74));
+          	imovel.setMensagemEstouroConsumo2(cursor.getString(75));
+          	imovel.setMensagemEstouroConsumo3(cursor.getString(76));
+          	imovel.setImovelStatus(cursor.getString(77));
+          	imovel.setImovelEnviado(cursor.getString(78));
+          	imovel.setIndcImovelImpresso(Integer.parseInt(cursor.getString(79)));
+          	imovel.setIndcGeracaoConta(Integer.parseInt(cursor.getString(80)));
 		}
 		
 		fecharCursor(cursor);
@@ -533,15 +557,26 @@ public class DataManipulator {
 		
 		if (imovel != null){
 			
+			// Consumo Água
 			if (selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_AGUA) != null){
 				imovel.setConsumoAguaFromDB(selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_AGUA));
 			}
 			
+			// Consumo Esgoto
 			if (selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_POCO) != null){
 				imovel.setConsumoEsgotoFromDB(selectConsumoImovelByTipoMedicao(imovel.getMatricula(), Constantes.LIGACAO_POCO));
 			}
+
+			// Imovel Micro-Medido
+			if (imovel.isImovelMicroCondominio()){
+				imovel.setEfetuarRateioConsumoHelper(selectEfetuarRateioConsumoHelper(imovel.getMatriculaCondominio()));
+			}
+			
+			// Imovel Macro-Medido
+			if (imovel.getIndcCondominio() == Constantes.SIM){
+				imovel.setEfetuarRateioConsumoHelper(selectEfetuarRateioConsumoHelper(imovel.getMatricula()));
+			}
 		
-			selectDadosQualidadeAgua();
 			selectDadosCategoria(imovel);
 			selectHistoricosConsumo(imovel);
 			selectDebitos(imovel);
@@ -552,7 +587,6 @@ public class DataManipulator {
 			selectTarifacoesMinimas(imovel);
 			selectTarifacoesComplementares(imovel);
 		}
-		
 		return imovel;
 	}
 	
@@ -568,8 +602,6 @@ public class DataManipulator {
 																				 "id"}, 
 																				 "matricula = " + imovel.getMatricula(), null, null, null, null);
 
-		ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().clear();
-			
 		if (cursor.moveToFirst()) {
 			do {
 				
@@ -752,8 +784,6 @@ public class DataManipulator {
 		
 		HistoricoConsumo hc;
 		
-		ControladorImovel.getInstancia().getImovelSelecionado().getHistoricosConsumo().clear();
-		
 		if (cursor.moveToFirst()) {
 			do {
 				hc = new HistoricoConsumo();
@@ -779,8 +809,6 @@ public class DataManipulator {
 																		"matricula = " + imovel.getMatricula(), null, null, null, null);
 		Debito debito;
 		
-		ControladorImovel.getInstancia().getImovelSelecionado().getDebitos().clear();
-		
 		if (cursor.moveToFirst()) {
 			do {
 				debito = new Debito();
@@ -804,8 +832,6 @@ public class DataManipulator {
 				"matricula = " + imovel.getMatricula(), null, null, null, null);
 		
 		Credito credito;
-		
-		ControladorImovel.getInstancia().getImovelSelecionado().getCreditos().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -833,8 +859,6 @@ public class DataManipulator {
 		
 		Imposto imposto;
 		
-		ControladorImovel.getInstancia().getImovelSelecionado().getImpostos().clear();
-		
 		if (cursor.moveToFirst()) {
 			do {
 				imposto = new Imposto();
@@ -860,8 +884,6 @@ public class DataManipulator {
 																		"matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		Conta conta;
-		
-		ControladorImovel.getInstancia().getImovelSelecionado().getContas().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -915,8 +937,6 @@ public class DataManipulator {
 		
 		Medidor medidor = new Medidor();
 		
-		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().clear();
-
 		if (cursor.moveToFirst()) {
 			
 			medidor.setTipoMedicao(cursor.getString(0));
@@ -964,14 +984,9 @@ public class DataManipulator {
 		Cursor cursor = db.query(Constantes.TABLE_MEDIDOR, new String[] {"id", 
 																		 "matricula" }, "matricula = " + matricula, null, null, null, "id asc");
 		
-		Medidor medidor = new Medidor();
-		
-		ControladorImovel.getInstancia().getImovelSelecionado().getMedidores().clear();
-
 		if (cursor.moveToFirst()) {
 			result = true;
 		}
-
 		return result;
 	}
 
@@ -982,8 +997,6 @@ public class DataManipulator {
 																		"matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		TarifacaoMinima tm;
-		
-		ControladorImovel.getInstancia().getImovelSelecionado().getTarifacoesMinimas().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -1016,8 +1029,6 @@ public class DataManipulator {
 																						"matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		TarifacaoComplementar tc;
-		
-		ControladorImovel.getInstancia().getImovelSelecionado().getTarifacoesComplementares().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -1222,7 +1233,7 @@ public class DataManipulator {
 		return consumo;
 	}
 	
-	public long salvarRateioCondominio(EfetuarRateioConsumoHelper rateio) {
+	public long salvarRateioCondominioHelper(EfetuarRateioConsumoHelper rateio) {
 		
 		Cursor cursor = db.query(Constantes.TABLE_RATEIO_CONDOMINIO, null , 
 				"matricula_macro = ? ", new String []{String.valueOf(rateio.getMatriculaMacro())}, null, null, null);
@@ -1241,7 +1252,7 @@ public class DataManipulator {
 		values.put("conta_para_rateio_agua", rateio.getContaParaRateioAgua());
 		values.put("consumo_para_rateio_esgoto", rateio.getConsumoParaRateioEsgoto());
 		values.put("conta_para_rateio_esgoto", rateio.getContaParaRateioEsgoto());
-		values.put("reter_impressao_contas", rateio.getReterImpressaoConta());
+//		values.put("reter_impressao_contas", rateio.getReterImpressaoConta());
 		values.put("passos", rateio.getPassos());
 		
 		if (cursor.moveToFirst()) {
@@ -1262,7 +1273,7 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			do {
 				
-				helper = new EfetuarRateioConsumoHelper(matriculaMacro, cursor.getInt(2));
+				helper = new EfetuarRateioConsumoHelper(matriculaMacro);
 				helper.setQuantidadeEconomiasAguaTotal(cursor.getInt(3));
 				helper.setConsumoLigacaoAguaTotal(cursor.getInt(4));
 				helper.setQuantidadeEconomiasEsgotoTotal(cursor.getInt(5));
@@ -1272,8 +1283,8 @@ public class DataManipulator {
 				helper.setConsumoParaRateioAgua(cursor.getInt(9));
 				helper.setContaParaRateioEsgoto(cursor.getInt(10));
 				helper.setConsumoParaRateioEsgoto(cursor.getInt(11));
-				helper.setReterImpressaoConta(cursor.getInt(12));
-				helper.setPassos(cursor.getInt(13));
+//				helper.setReterImpressaoConta(cursor.getInt(12));
+				helper.setPassos(cursor.getInt(12));
 				
 			} while (cursor.moveToNext());
 		}
@@ -1282,25 +1293,56 @@ public class DataManipulator {
 
 		return helper;
 	}
+	
+	public List<Integer> getListaIdsCondominio(int matriculaMacro) {
+		
+		EfetuarRateioConsumoHelper helper = null;
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, 
+								 new String[] { "id" },
+								 "(matricula_condominio = ? AND indc_condominio = ?) OR matricula = ?", 
+								 new String []{String.valueOf(matriculaMacro), String.valueOf(Constantes.NAO), String.valueOf(matriculaMacro)},
+								 null,
+								 null,
+								 "id asc");
 
-	public int selectQuantidadeImoveisCondominio(int matriculaMacro) {
-
-		int quantidadeImoveisCondominio = 0;
-
-		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, null , "matricula = ? OR matricula_condominio = ?", 
-				new String []{String.valueOf(matriculaMacro), String.valueOf(matriculaMacro)}, null, null, "inscricao asc");
+		List<Integer> listaIdsCondominio = new ArrayList<Integer>();
 		
 		if (cursor.moveToFirst()) {
-		
 			do {
-				quantidadeImoveisCondominio++;
-			
-			} while (cursor.moveToNext());
+				listaIdsCondominio.add(cursor.getInt(0));
+			}while(cursor.moveToNext());
 		}
 		
 		fecharCursor(cursor);
-		
-		return quantidadeImoveisCondominio;
+		return listaIdsCondominio;
+	}
+
+	public ArrayList<Integer> selectIndcgeracaoContasCondominio(int matriculaMacro) {
+
+		ArrayList<Integer> listIndcGeracaoConta = new ArrayList<Integer>();
+		Cursor cursor;
+
+		cursor = db.query(Constantes.TABLE_IMOVEL, 
+						  new String[] { "indc_geracao" },
+						  "(matricula_condominio = ? AND indc_condominio = ?) OR matricula = ?", 
+						  new String []{String.valueOf(matriculaMacro), String.valueOf(Constantes.NAO), String.valueOf(matriculaMacro)},
+						  null, 
+						  null, 
+						  "id asc");
+
+		if (cursor.moveToFirst()) {
+			do {
+				listIndcGeracaoConta.add(Integer.valueOf(cursor.getString(0)));
+			} while (cursor.moveToNext());
+		}
+
+		fecharCursor(cursor);
+		return listIndcGeracaoConta;
+	}
+
+	public int selectQuantidadeImoveisCondominio(int matriculaMacro) {
+
+		return getListaIdsCondominio(matriculaMacro).size();
 	}
 
 	public void selectConfiguracao() {
@@ -1417,12 +1459,14 @@ public class DataManipulator {
 		parser.obterDadoParser(2);
 		ContentValues initialValues = new ContentValues();
 		SituacaoTipo situacaoTipo = SituacaoTipo.getInstancia();
+		EfetuarRateioConsumoHelper helper;
 		DadosQualidadeAgua qualidadeAgua = DadosQualidadeAgua.getInstancia();
 		String indcParalizarFaturamentoAgua; 
 		String indcParalizarFaturamentoEsgoto;
 		String numeroConta;
 		String situacaoLigacaoAgua;
-		
+		int indcCondominio = Constantes.NAO;
+		String matriculaCondominio = "";
 		int matricula = Integer.parseInt(parser.obterDadoParser(9));
 		
 		initialValues.put("matricula", matricula);
@@ -1455,10 +1499,18 @@ public class DataManipulator {
 		initialValues.put("situacao_lig_esgoto", parser.obterDadoParser(1));
 		initialValues.put("descricao_banco", parser.obterDadoParser(15));
 		initialValues.put("codigo_agencia", parser.obterDadoParser(5));
-		initialValues.put("matricula_condominio", parser.obterDadoParser(9));
-		initialValues.put("indc_condominio", parser.obterDadoParser(1));
-		initialValues.put("codigo_perfil", parser.obterDadoParser(2));
 
+		// Informações Comdominiais
+		matriculaCondominio = parser.obterDadoParser(9);
+		indcCondominio = Integer.valueOf(parser.obterDadoParser(1));
+		if (matriculaCondominio.trim().compareTo(Constantes.NULO_STRING) == 0){
+			initialValues.put("matricula_condominio", matriculaCondominio);
+		}else{
+			initialValues.put("matricula_condominio", Integer.parseInt(matriculaCondominio));
+		}
+		initialValues.put("indc_condominio", indcCondominio);
+
+		initialValues.put("codigo_perfil", parser.obterDadoParser(2));
 		initialValues.put("consumo_medio", parser.obterDadoParser(6));
 		initialValues.put("indc_faturamento_agua", parser.obterDadoParser(1));
 		initialValues.put("indc_faturamento_esgoto", parser.obterDadoParser(1));
@@ -1575,15 +1627,24 @@ public class DataManipulator {
 		//=============================================================================================
 
 		
+		// DADOS CONDOMINIO
+		//==========================================================================
+		if (indcCondominio == Constantes.SIM ){
+			helper = new EfetuarRateioConsumoHelper(matricula);
+			salvarRateioCondominioHelper(helper);
+		}
+		//=============================================================================================
+
+		
 		initialValues.put("data_leitura_anterior_nao_medido", parser.obterDadoParser(8));
 		initialValues.put("indicador_abastecimento_agua", parser.obterDadoParser(1));
 		initialValues.put("indicador_imovel_sazonal", parser.obterDadoParser(1));
 		
-		// Indicador Faparalizar Faturamento de Água
+		// Indicador Paralizar Faturamento de Água
 		indcParalizarFaturamentoAgua = parser.obterDadoParser(1);
 		initialValues.put("indicador_paralizar_faturamento_agua", indcParalizarFaturamentoAgua);
 
-		// Indicador Faparalizar Faturamento de Esgoto
+		// Indicador Paralizar Faturamento de Esgoto
 		indcParalizarFaturamentoEsgoto = parser.obterDadoParser(1);
 		initialValues.put("indicador_paralizar_faturamento_esgoto", indcParalizarFaturamentoEsgoto);
 		
@@ -1598,7 +1659,6 @@ public class DataManipulator {
 		initialValues.put("leitura_gravada_anterior", "0");
 		initialValues.put("anormalidade_gravada_anterior", "0");
 		initialValues.put("valor_residual_credito", "0");
-		initialValues.put("quantidade_imoveis_condominio", "0");
 		initialValues.put("indc_adicionou_dados_iniciais_helper_rateio", String.valueOf(Constantes.NAO));
 		initialValues.put("valor_rateio_agua", "0");
 		initialValues.put("valor_rateio_esgoto", "0");
@@ -1616,7 +1676,8 @@ public class DataManipulator {
 																				   Integer.parseInt(indcParalizarFaturamentoEsgoto), 
 																				   Util.verificarNuloInt(numeroConta), 
 																				   situacaoLigacaoAgua);
-    	if (informativo){
+    	
+		if (informativo && indcCondominio == Constantes.NAO){
     		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_INFORMATIVO));
     	}else{
     		initialValues.put("imovel_status", String.valueOf(Constantes.IMOVEL_STATUS_PENDENTE));
@@ -2098,6 +2159,11 @@ public class DataManipulator {
 		initialValues.put("imovel_enviado", String.valueOf(imovel.getIndcImovelEnviado()));
 		initialValues.put("indc_imovel_impresso", String.valueOf(imovel.getIndcImovelImpresso()));
 		initialValues.put("indc_geracao", String.valueOf(imovel.getIndcGeracaoConta()));
+		initialValues.put("indc_adicionou_dados_iniciais_helper_rateio", String.valueOf(imovel.getIndcAdicionouDadosIniciaisHelperRateio()));
+		initialValues.put("valor_rateio_agua", String.valueOf(imovel.getValorRateioAgua()));
+		initialValues.put("valor_rateio_esgoto", String.valueOf(imovel.getValorRateioEsgoto()));
+		initialValues.put("consumo_rateio_agua", String.valueOf(imovel.getConsumoRateioAgua()));
+		initialValues.put("consumo_rateio_esgoto", String.valueOf(imovel.getConsumoRateioEsgoto()));
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
 	}
@@ -2155,7 +2221,6 @@ public class DataManipulator {
 		fecharCursor(cursor);
 		
 		return listaIds;
-		
 	}
 	
 	public void fecharCursor(Cursor cursor) {

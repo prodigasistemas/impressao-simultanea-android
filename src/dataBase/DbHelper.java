@@ -22,7 +22,7 @@ public class DbHelper extends SQLiteOpenHelper {
 			"alto_consumo INTEGER, baixo_consumo INTEGER, fator_mult_estouro TEXT, fator_mult_media_alto_consumo TEXT, percent_baixo_consumo TEXT, consumo_maximo INTEGER, grupo_faturamento TEXT, codigo_rota INTEGER, numero_conta TEXT, tipo_calculo_tarifa TEXT, endereco_atendimento TEXT, telefone_localidade_ddd TEXT," +
 			" sequencial_rota INTEGER, mensagem_conta1 TEXT, mensagem_conta2 TEXT, mensagem_conta3 TEXT, consumo_minimo_imovel INTEGER, consumo_minimo_imovel_nao_medido INTEGER, numero_documento_notificacao_debito TEXT, numero_codigo_barra_notificacao_debito TEXT, cpf_cnpj_cliente TEXT, data_leitura_anterior_nao_medido DATE, indicador_abastecimento_agua TEXT," +
 			" indicador_imovel_sazonal TEXT, indicador_paralizar_faturamento_agua TEXT, indicador_paralizar_faturamento_esgoto TEXT, opcao_debito_automatico TEXT, percentual_alternativo_esgoto TEXT, consumo_percentual_alternativo_esgoto TEXT, data_emissao_documento DATE, quantidade_contas_impressas TEXT, contagem_validacao_agua TEXT," +
-			" contagem_validacao_poco TEXT, leitura_gravada_anterior TEXT, anormalidade_gravada_anterior TEXT, data_impressao_nao_medido DATE, valor_residual_credito TEXT, quantidade_imoveis_condominio TEXT, indc_adicionou_dados_iniciais_helper_rateio TEXT, valor_rateio_agua TEXT, valor_rateio_esgoto TEXT, consumo_rateio_agua TEXT, " +
+			" contagem_validacao_poco TEXT, leitura_gravada_anterior TEXT, anormalidade_gravada_anterior TEXT, data_impressao_nao_medido DATE, valor_residual_credito TEXT, indc_adicionou_dados_iniciais_helper_rateio TEXT, valor_rateio_agua TEXT, valor_rateio_esgoto TEXT, consumo_rateio_agua TEXT, " +
 			"consumo_rateio_esgoto TEXT, mensagem_estouro_consumo_1 TEXT, mensagem_estouro_consumo_2 TEXT, mensagem_estouro_consumo_3 TEXT, imovel_status TEXT, imovel_enviado TEXT, indc_imovel_impresso TEXT, indc_geracao TEXT)";
 	
 	private static final String DATABASE_DADOS_CATEGORIA_QUERY =
@@ -85,7 +85,7 @@ public class DbHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_RATEIO_CONSUMO_HELPER_QUERY =
         "CREATE TABLE rateio_condominio (id INTEGER PRIMARY KEY autoincrement, matricula_macro INTEGER not null, matricula_ultimo_micro INTEGER, quantidade_economia_agua_total INTEGER, consumo_ligacao_agua_total INTEGER, quantidade_economia_esgoto_total INTEGER, consumo_ligacao_esgoto_total INTEGER, " +
-        " consumo_minimo_total INTEGER, consumo_para_rateio_agua INTEGER, conta_para_rateio_agua TEXT, consumo_para_rateio_esgoto INTEGER, conta_para_rateio_esgoto TEXT, reter_impressao_contas INTEGER, passos INTEGER)";
+        " consumo_minimo_total INTEGER, consumo_para_rateio_agua INTEGER, conta_para_rateio_agua TEXT, consumo_para_rateio_esgoto INTEGER, conta_para_rateio_esgoto TEXT, passos INTEGER)";
 
     private static final String DATABASE_CONSUMO_ANORMALIDADE_ACAO_QUERY =
     	"CREATE TABLE consumo_anormalidade_acao (id INTEGER PRIMARY KEY autoincrement, id_consumo_anormalidade INTEGER, id_categoria INTEGER, id_perfil INTEGER, id_leitura_anormalidade_consumo_primeiro_mes INTEGER, id_leitura_anormalidade_consumo_segundo_mes INTEGER, " +

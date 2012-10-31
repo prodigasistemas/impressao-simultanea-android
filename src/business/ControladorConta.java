@@ -85,8 +85,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.util.Log;
+import android.view.KeyEvent;
+
+import dataBase.DataManipulator;
+
 import util.Constantes;
+import util.ImpressaoContaCosanpa;
 import util.Util;
+import views.MainTab;
 import views.MedidorAguaTab;
 
 import model.Anormalidade;
@@ -105,8 +117,9 @@ public class ControladorConta {
 
     private static ControladorConta instancia = null;
 
-// Daniel - Valor limite estipulado para cada Perfil
-    // Valor limite para a conta
+    /**
+     * Valor limite para a conta estipulado para cada Perfil
+     */
     public static final int VALOR_LIMITE_CONTA = 100000;
     public static final int VALOR_LIMITE_PERFIL_CORPORATIVO = 100000;
     public static final int VALOR_LIMITE_PERFIL_CONDOMINIAL = 100000;
@@ -151,7 +164,7 @@ public class ControladorConta {
     public static final int ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE = 4;
     public static final int ANORM_HIDR_PORTAO_FECHADO = 5;
 
-    /*
+    /**
      * Leitura Anormalidade Consumo
      */
     private static final int NAO_OCORRE = 0;
@@ -180,10 +193,10 @@ public class ControladorConta {
     }
 
     public static ControladorConta getInstancia() {
-	if (instancia == null) {
-	    instancia = new ControladorConta();
-	}
-	return instancia;
+		if (instancia == null) {
+		    instancia = new ControladorConta();
+		}
+		return instancia;
     }
 
     /**
@@ -434,9 +447,9 @@ public class ControladorConta {
     	    	EfetuarRateioConsumoHelper helper = null;
     			Imovel macro = null;
     	
-    			if (getImovelSelecionado().getIdImovelCondominio() != Constantes.NULO_INT) {
+    			if (getImovelSelecionado().getId() != getImovelSelecionado().getIdImovelCondominio()) {
     			    
-    				macro =  ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getIdImovelCondominio());
+    				macro =  getDataManipulator().selectImovel("matricula = " + getImovelSelecionado().getMatriculaCondominio());
     			    helper = macro.getEfetuarRateioConsumoHelper();
     			
     			} else if (getImovelSelecionado().getIndcCondominio() == Constantes.SIM) {
@@ -491,7 +504,7 @@ public class ControladorConta {
     	    Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_AGUA);
         	medidor.setDataLeitura(Util.dataAtual());
 			// Update DB - Medidor água
-			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
+			getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
 
     	}
         	 
@@ -499,13 +512,13 @@ public class ControladorConta {
     		Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_POCO);
     	    medidor.setDataLeitura(Util.dataAtual());
 			// Update DB - Medidor poço
-			ControladorRota.getInstancia().getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
+			getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
     	}	
     	
-		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
-//		ControladorRota.getInstancia().getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
+		getDataManipulator().salvarImovel(getImovelSelecionado());
+//		getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+//		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+//		getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
 
     	// Verifica se o imóvel tem um percentual de esgoto alternativo
     	if (consumoEsgoto != null) {
@@ -832,7 +845,7 @@ public class ControladorConta {
     	// [SB0000] 2. Caso a anormalidade de leitura tenha sido informada
     	if (consumo.getAnormalidadeLeituraFaturada() > 0) {
 
-    	    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(String.valueOf(consumo.getAnormalidadeLeituraFaturada()), true);
+    	    Anormalidade anormalidade = getDataManipulator().selectAnormalidadeByCodigo(String.valueOf(consumo.getAnormalidadeLeituraFaturada()), true);
 
     	    // [SB0004] - Dados para Faturamento com Anormalidade de leitura
     	    // 1. leitura Atual Informada não coletada
@@ -1115,14 +1128,79 @@ public class ControladorConta {
     	}
 
     	// Salvamos o objeto
-    	
-		ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-//		ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		getDataManipulator().salvarImovel(getImovelSelecionado());
+//		getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+//		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
     }
 
-    public void calcularValoresCondominio(Imovel imovelMicro) {}
+    public void calcularValoresCondominio(Imovel imovelMicro) {
 
+//    	ControladorImoveis controladorImoveis = ControladorImoveis.getInstancia();
+    	
+    	boolean imovelComDebitoTipoCortado = false;
+    	
+    	Debito debito = imovelMicro.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
+    	
+    	if ( debito != null && debito.getIndcUso() == Constantes.SIM ){
+    	    imovelComDebitoTipoCortado = true;
+    	}
+
+    	// [UC0743] 2.
+    	if ( (imovelMicro.getIndcFaturamentoAgua() == SIM) && 
+    	     imovelMicro.getIndicadorParalizarFaturamentoAgua() == NAO &&
+    	     !imovelComDebitoTipoCortado ) {
+    		
+    		ControladorImovel.getInstancia().calcularValores(imovelMicro, consumoAgua,ControladorConta.LIGACAO_AGUA);
+    	
+    	} else {	    
+    	    // Agora o indicador de faturamento pode ser alterado dinamicamente.
+    	    // Sendo assim, zeramos os valores calculados de agua e de esgoto caso seja necessário
+    		List<DadosCategoria> categoriasSubcategorias = imovelMicro.getDadosCategoria();
+    	    
+    	    for ( int i = 0; i < categoriasSubcategorias.size(); i++ ){		
+    	    	DadosCategoria categoriaSubcategoria = categoriasSubcategorias.get(i);		
+    	    	categoriaSubcategoria.setFaturamentoAgua(null);
+    	    }
+    	}
+
+    	// [UC0743] 3.
+    	if ( (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM)
+    		&& imovelMicro.getIndicadorParalizarFaturamentoEsgoto() == NAO) {
+    		
+    		ControladorImovel.getInstancia().calcularValores(imovelMicro, consumoEsgoto,ControladorConta.LIGACAO_POCO);
+    	}
+    	
+    	// Salvamos que o imovel ja foi calculado
+    	// imovelMicro.setIndcImovelCalculado( Constantes.SIM );
+
+    	// Se o imóvel estiver com a situação referente a nitrato
+    	if (imovelMicro.getSituacaoTipo() != null && !imovelMicro.getSituacaoTipo().equals("")) {
+    	    
+    		if (imovelMicro.getSituacaoTipo().getTipoSituacaoEspecialFaturamento() == SituacaoTipo.NITRATO) {
+	    		// calcula 50% do valor da água
+	    		double valorCreditoNitrato = imovelMicro.getValorAgua() / 2;
+	    		// atualiza o crédito referente a Nitrato com o valor calculado do crédito
+	    		imovelMicro.setValorCreditosNitrato(valorCreditoNitrato);
+    	    }
+    	}
+
+    	// Verifica se o valor de creditos é maior que o valor da conta
+    	double valorCreditos = imovelMicro.getValorCreditos();
+
+    	if (valorCreditos != 0d) {
+
+    		double valorContaSemCreditos = imovelMicro.getValorContaSemCreditos();
+    	    if (valorContaSemCreditos < valorCreditos) {
+	    		double valorResidual = valorCreditos - valorContaSemCreditos;
+	    		imovelMicro.setValorResidualCredito(valorResidual);
+    	    }
+    	}
+
+    	// Salvamos o objeto
+		getDataManipulator().salvarImovel(getImovelSelecionado());
+//		getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+//		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+	}
     
     public void calcularValores(Consumo consumoAgua, Consumo consumoEsgoto) {
 
@@ -1132,8 +1210,7 @@ public class ControladorConta {
 		calcularValores();
     }
 
-    public void calcularValoresCondominio(Imovel imovelMicro, Consumo consumoAgua,
-    	    Consumo consumoEsgoto) {
+    public void calcularValoresCondominio(Imovel imovelMicro, Consumo consumoAgua, Consumo consumoEsgoto) {
 
     	if (consumoAgua == null){
     		consumoAgua = new Consumo();
@@ -1146,7 +1223,7 @@ public class ControladorConta {
     	this.setConsumoEsgoto(consumoEsgoto);
 
     	calcularValoresCondominio(imovelMicro);
-        }
+	}
 
     public Consumo getConsumoAgua() {
 	return consumoAgua;
@@ -1164,16 +1241,10 @@ public class ControladorConta {
     	this.consumoEsgoto = consumoEsgoto;
     }
 
-
-    private int calcularConsumoAguaASerRateado(Imovel imovelMacro) { return 0;}
-    
-    private int calcularConsumoEsgotoASerRateado(Imovel imovelMacro) {return 0;}
-
   //Daniel - Novo método de calculo - condominio
     private double calcularContaAguaParaRateado(Imovel imovelMacro) {
 
-    	EfetuarRateioConsumoHelper helper = imovelMacro
-    		.getEfetuarRateioConsumoHelper();
+//    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
 
     	boolean imovelComDebitoTipoCortado = false;
     	
@@ -1197,8 +1268,7 @@ public class ControladorConta {
   //Daniel - Novo método de calculo - condominio
     private double calcularContaEsgotoParaRateado(Imovel imovelMacro) {
 
-    	EfetuarRateioConsumoHelper helper = imovelMacro
-    		.getEfetuarRateioConsumoHelper();
+//    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
 
     	if ( (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM) && getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == NAO) {
     		
@@ -1212,8 +1282,163 @@ public class ControladorConta {
     	return imovelMacro.getValorEsgoto();
 	}
 
-    public boolean verificarEstouroConsumo(Consumo consumo,
-	    Medidor medidor) {
+    /**
+     * [UC0970] Efetuar Rateio de Consumo no Dispositivo Movel Metodo
+     * responsavel em efetuar a diferença entre o consumo coletado
+     * no hidrometro macro e a soma dos hidrometros micro. Calcula o valor para rateio de água e esgoto
+     * 
+     * [SB0002] Determinar Rateio de Agua
+     * 
+     * @date 29/10/2012
+     * @author Daniel Zaccarias
+     * 
+     * @return void
+     * 
+     * @param none
+     */
+	public void determinarRateio() {
+		        
+		// Carregamos as informações do hidrometro macro
+		Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
+
+		EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
+	
+		// Calculamos o valor do consumo a ser rateado na ligação de agua
+		if (imovelMacro.getIndcFaturamentoAgua() == Constantes.SIM) {
+	   		
+	   		int consumoAguaASerRateadoAgua = imovelMacro.getConsumoAgua().getConsumoCobradoMesOriginal()
+			- helper.getConsumoLigacaoAguaTotal();
+	
+	   		if (consumoAguaASerRateadoAgua > 0){
+	   			helper.setConsumoParaRateioAgua(consumoAguaASerRateadoAgua);
+	   		}else{
+	   			helper.setConsumoParaRateioAgua(0);
+	   		}
+	   		
+	   		double valorContaAgua = calcularContaAguaParaRateado(imovelMacro);
+	   		if (valorContaAgua > 0){
+	   			helper.setContaParaRateioAgua(valorContaAgua);
+	   			helper.setConsumoParaRateioAgua(consumoAguaASerRateadoAgua);
+	
+	   		}else{
+	   			helper.setContaParaRateioAgua(0);
+	   			helper.setConsumoParaRateioAgua(0);
+	   		}
+		}
+	
+		// Calculamos o valor do consumo a ser rateado na ligação de esgoto
+		if (imovelMacro.getIndcFaturamentoEsgoto() == Constantes.SIM) {
+	
+	   		int consumoEsgotoASerRateadoEsgoto = imovelMacro.getConsumoEsgoto().getConsumoCobradoMesOriginal()
+	   		- helper.getConsumoLigacaoEsgotoTotal();
+	
+	   		if (consumoEsgotoASerRateadoEsgoto > 0){
+	   			helper.setConsumoParaRateioEsgoto(consumoEsgotoASerRateadoEsgoto);
+	   		}else{
+	   			helper.setConsumoParaRateioEsgoto(0);
+	   		}
+	   		
+	   		double valorContaEsgoto = calcularContaEsgotoParaRateado(imovelMacro);
+	   		if (valorContaEsgoto > 0){
+	   			helper.setContaParaRateioEsgoto(valorContaEsgoto);
+	   			helper.setConsumoParaRateioEsgoto(consumoEsgotoASerRateadoEsgoto);
+	
+	   		}else{
+	   			helper.setContaParaRateioEsgoto(0);
+	   			helper.setConsumoParaRateioEsgoto(0);
+	   		}
+		}
+	
+		if (imovelMacro.getIndcFaturamentoAgua() == Constantes.SIM) {
+			//Daniel - Novo método de calculo - condominio
+	   		imovelMacro.getConsumoAgua().setConsumoCobradoMesImoveisMicro(
+			    helper.getConsumoLigacaoAguaTotal());
+		}
+	
+		//Daniel - Novo método de calculo - condominio
+		if (imovelMacro.getIndcFaturamentoEsgoto() == Constantes.SIM) {
+		    imovelMacro.getConsumoEsgoto().setConsumoCobradoMesImoveisMicro(
+			    helper.getConsumoLigacaoEsgotoTotal());
+		}
+		
+		getDataManipulator().salvarRateioCondominioHelper(helper);
+	}
+
+	private int calcularConsumoAguaASerRateado(Imovel imovelMacro) {
+	
+		EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
+	
+		// Calculamos o valor do consumo a ser rateado na ligação de agua
+	
+		int consumoAguaASerRateadoAgua = imovelMacro.getConsumoAgua().getConsumoCobradoMesOriginal()
+			- helper.getConsumoLigacaoAguaTotal();
+	
+		// Caso o consumo de agua a ser rateado seja maior que zero e o consumo
+		// de agua do imovel macro seja menor ou igual a soma dos consumo
+		// mínimos, atribuir
+		// valor zero ao consumo de agua a ser rateado
+	
+	//Daniel - Novo método de calculo - condominio
+		if (consumoAguaASerRateadoAgua > 0 && 
+			imovelMacro.getConsumoAgua().getConsumoCobradoMesOriginal() <= helper.getConsumoMinimoTotal()) {
+		    
+			consumoAguaASerRateadoAgua = 0; 
+		}
+	
+		// Caso o valor absoluto do consumo de Agua a ser rateado seja menor
+		// ou igual a consumo de Agua do imovel macro * percentual de
+		// tolerancia para
+		// rateio do consumo atribuir zero ao consumo Agua a ser rateado
+	
+	//Daniel - Novo método de calculo - condominio
+		if (Math.abs(consumoAguaASerRateadoAgua) <= imovelMacro.getConsumoAgua().getConsumoCobradoMesOriginal()
+			* (ControladorRota.getInstancia().getDadosGerais().getPercentToleranciaRateio() / 100)) {
+		    
+			consumoAguaASerRateadoAgua = 0;
+		}
+			return consumoAguaASerRateadoAgua;
+	}
+    
+    private int calcularConsumoEsgotoASerRateado(Imovel imovelMacro) {
+
+		EfetuarRateioConsumoHelper helper = imovelMacro
+			.getEfetuarRateioConsumoHelper();
+	
+		// Calculamos o valor do consumo a ser rateado na ligação de esgoto
+		// Consumo de esgoto a ser rateado = consumo de esgoto do imóvel MACRO –
+		// soma do consumo de esgoto dos imóveis MICRO;
+		int consumoEsgotoASerRateadoEsgoto = imovelMacro.getConsumoEsgoto()
+			.getConsumoCobradoMesOriginal()
+			- helper.getConsumoLigacaoEsgotoTotal();
+	
+		// Caso o consumo de Esgoto a ser rateado seja maior que sero
+		// e o consumo de Esgoto do imovel macro seja menor ou igual a soma dos
+		// consumo
+		// mínimos, atrituir valor zero ao consumo de Esgoto a ser rateado
+	
+		//Daniel - Novo método de calculo - condominio
+		if (consumoEsgotoASerRateadoEsgoto > 0 && 
+				imovelMacro.getConsumoEsgoto().getConsumoCobradoMesOriginal() <= helper.getConsumoMinimoTotal()) {
+		    
+			consumoEsgotoASerRateadoEsgoto = 0;
+		}
+	
+		// Caso o valor absoluto do consumo de Esgoto a ser rateado seja menor
+		// ou igual a consumo de Esgoto do imovel marco * percentual de
+		// tolerancia para rateio do consumo
+		// atribuir zero ao consumo Esgoto a ser rateado
+	
+		//Daniel - Novo método de calculo - condominio
+		if (Math.abs(consumoEsgotoASerRateadoEsgoto) <= imovelMacro.getConsumoEsgoto().getConsumoCobradoMesOriginal()
+			* (ControladorRota.getInstancia().getDadosGerais().getPercentToleranciaRateio() / 100)) {
+		    
+			consumoEsgotoASerRateadoEsgoto = 0;
+		}
+	
+		return consumoEsgotoASerRateadoEsgoto;
+    }
+    
+    public boolean verificarEstouroConsumo(Consumo consumo, Medidor medidor) {
 
 	int cMedio;
 
@@ -1291,9 +1516,9 @@ public class ControladorConta {
 						    break;
 					}
 		
-						ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-						ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-						ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+						getDataManipulator().salvarImovel(getImovelSelecionado());
+						getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+						getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 				    }
 		
 				} else {
@@ -1321,9 +1546,9 @@ public class ControladorConta {
 							break;
 						    }
 			
-							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarImovel(getImovelSelecionado());
+							getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 						}
 		
 				    } else {
@@ -1345,9 +1570,9 @@ public class ControladorConta {
 							break;
 						    }
 			
-							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarImovel(getImovelSelecionado());
+							getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 						}
 		
 				    }
@@ -1530,9 +1755,9 @@ public class ControladorConta {
 						    break;
 						}
 						
-						ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-						ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-						ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+						getDataManipulator().salvarImovel(getImovelSelecionado());
+						getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+						getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 				    }
 		
 				} else {
@@ -1559,9 +1784,9 @@ public class ControladorConta {
 							break;
 						    }
 			
-							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarImovel(getImovelSelecionado());
+							getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 						}
 		
 				    } else {
@@ -1583,9 +1808,9 @@ public class ControladorConta {
 							break;
 						    }
 			
-							ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-							ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarImovel(getImovelSelecionado());
+							getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+							getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 						}
 			
 				    }
@@ -1747,9 +1972,9 @@ public class ControladorConta {
 				 * .substring(80, mensagemContaPrimeiroMes .length()));
 				 */
 	
-				ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-				ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-				ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+				getDataManipulator().salvarImovel(getImovelSelecionado());
+				getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+				getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 	
 			    }
 	
@@ -1782,9 +2007,9 @@ public class ControladorConta {
 					getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
 					break;
 				    }
-					ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-					ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-					ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+					getDataManipulator().salvarImovel(getImovelSelecionado());
+					getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+					getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 				}
 	
 			    } else {
@@ -1808,9 +2033,9 @@ public class ControladorConta {
 					getImovelSelecionado().setMensagemEstouroConsumo1(mensagem[0]);
 					break;
 				    }
-					ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
-					ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-					ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+					getDataManipulator().salvarImovel(getImovelSelecionado());
+					getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
+					getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
 				}
 			    }
 			}
@@ -2671,5 +2896,9 @@ public class ControladorConta {
 
     	}
     	return resultado;
+    }
+    
+    public DataManipulator getDataManipulator(){
+    	return ControladorRota.getInstancia().getDataManipulator();
     }
 }

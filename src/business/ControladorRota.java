@@ -13,6 +13,8 @@ import static util.Constantes.REGISTRO_TIPO_MEDIDOR;
 import static util.Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR;
 import static util.Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA;
 
+import helper.EfetuarRateioConsumoHelper;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
