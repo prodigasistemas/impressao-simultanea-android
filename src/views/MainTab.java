@@ -320,7 +320,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-	    	Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado()));
+	    	Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado(), Constantes.IMPRESSAO_FATURA));
 			setupDataAfterPrinting(false);
 			
 		}else{
@@ -365,7 +365,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		 */
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-			Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado()));
+			Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado(),Constantes.IMPRESSAO_FATURA));
 			setupDataAfterPrinting(true);
 			
 		}else{
@@ -534,7 +534,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	public void mensagemImpressaoParcialCondominioOk(String mensagem, final int idImovelinicial, final int idImovelFinal) {
 
         final AlertDialog alertMessage = new AlertDialog.Builder(this).create();
-//		alertMessage.setTitle("Aviso");
 		alertMessage.setMessage(mensagem);
 		
 		alertMessage.setButton(AlertDialog.BUTTON_NEGATIVE, "Não", new DialogInterface.OnClickListener() {
@@ -809,7 +808,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					Looper.prepare();
 
 					progress.show();
-					String comando = new ImpressaoContaCosanpa().getComando(imovelToBePrinted);
+					String comando = new ImpressaoContaCosanpa().getComando(imovelToBePrinted, Constantes.IMPRESSAO_FATURA);
 					Log.i("COMANDO IMPRESSORA:", comando);
 					conexao.write(comando.getBytes());
 					conexao.close();

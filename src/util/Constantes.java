@@ -31,6 +31,12 @@ public class Constantes {
 
     
     /**
+     * Impressao Tipo
+     */
+    public static final int IMPRESSAO_FATURA = 1;
+    public static final int IMPRESSAO_EXTRATO_CONDOMINIAL = 2;
+
+    /**
      * Medição Tipo
      */
     public static final int LIGACAO_AGUA = 1;

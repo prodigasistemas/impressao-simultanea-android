@@ -54,6 +54,9 @@ public class ImpressaoContaCosanpa {
     private String valorDebitos = "";
     private String valorCreditos = "";
     private String valorImpostos = "";
+  
+    // Linhas e molduras
+    private String linesAndBoxes = "";
     
     // Historico consumo
     private String anoMesReferencia = "";
@@ -106,19 +109,12 @@ public class ImpressaoContaCosanpa {
     private String txtConsumo = "";
     private String anormalidadeLeitura = "";
     
-    private String montarComando() {
+    private String montarComando(int tipoImpressao) {
     	String comando = "! 0 200 200 1720 1\n"+
-        		"BOX 32 435 802 482 1\n"+
-        		"LINE 720 415 720 455 1\n"+
-        		"LINE 403 415 403 477 1\n"+
-        		"BOX 32 411 802 435 1\n"+
-        		"LINE 278 415 278 477 1\n"+
-        		"BOX 283 518 802 545 1\n"+
-        		"BOX 283 545 802 692 1\n"+
-        		"LINE 656 518 656 692 1\n"+
-        		"LINE 425 518 425 692 1\n"+
-        		"LINE 535 518 535 692 1\n"+
-        		"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ Util.getDataHora() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
+    			
+    			linesAndBoxes +
+
+    			"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ Util.getDataHora() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
         		"T 7 1 464 90 "+ imovel.getMatricula() + "\n" +
         		"T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n" +
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
@@ -164,65 +160,103 @@ public class ImpressaoContaCosanpa {
         		anoMesReferencia +
         		historicoConsumo +
         		"T 7 0 75 672 MEDIA(m3):\n"+
-        		"T 7 0 195 672 "+ media + "\n" +
-        		"T 7 0 448 496 QUALIDADE DA AGUA\n"+
-        		"T 0 0 672 505 Ref: \n"+
-        		"T 0 0 705 505 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n" +
-        		"T 7 0 287 520 PARAMETROS\n"+
-        		"T 7 0 428 520 PORT. 518\n"+
-        		"T 7 0 540 520 ANALISADO\n"+
-        		"T 7 0 672 520 CONFORME\n"+
-        		"T 0 0 287 552 COR(uH)\n"+
-        		"T 0 0 287 571 TURBIDEZ(UT)\n"+
-        		"T 0 0 287 590 CLORO(mg/L)\n"+
-        		"T 0 0 287 609 FLUOR(mg/L)\n"+
-        		"T 0 0 287 628 COLIFORME TOTAL\n"+
-        		"T 0 0 287 640 Pres/Aus)\n"+
-        		"T 0 0 287 657 COLIFORME TERMO\n"+
-        		"T 0 0 287 671 TOLER.(Pres/Aus)\n"+
-        		"T 0 0 469 552 "+ quantidadeCorExigidas + "\n" +
-        		"T 0 0 469 571 "+ quantidadeTurbidezExigidas + "\n" +
-        		"T 0 0 469 590 "+ quantidadeCloroExigidas + "\n"+
-        		"T 0 0 469 609 "+ quantidadeFluorExigidas +"\n"+
-        		"T 0 0 469 628 "+ quantidadeColiformesTotaisExigidas + "\n"+
-        		"T 0 0 469 657 "+ quantidadeColiformesTermoTolerantesExigidas + "\n" +
-        		"T 0 0 582 552 "+ quantidadeCorAnalisadas + "\n" +
-        		"T 0 0 582 571 "+ quantidadeTurbidezAnalisadas + "\n" +
-        		"T 0 0 582 590 "+ quantidadeCloroAnalisadas + "\n" +
-        		"T 0 0 582 609 "+ quantidadeFluorAnalisadas + "\n" +
-        		"T 0 0 582 628 "+ quantidadeColiformesTotaisAnalisadas + "\n" +
-        		"T 0 0 582 657 "+ quantidadeColiformesTermoTolerantesAnalisadas + "\n"+
-        		"T 0 0 726 552 "+ quantidadeCorConforme + "\n" +
-        		"T 0 0 726 571 "+ quantidadeTurbidezConforme + "\n" +
-        		"T 0 0 726 590 "+ quantidadeCloroConforme + "\n" +
-        		"T 0 0 726 609 "+ quantidadeFluorConforme + "\n" +
-        		"T 0 0 726 628 "+ quantidadeColiformesTotaisConforme + "\n" +
-        		"T 0 0 726 657 "+ quantidadeColiformesTermoTolerantesConforme + "\n" +
-        		"T 7 0 53 708 DESCRICAO\n"+
-        		"T 7 0 571 708 CONSUMO\n"+
-        		"T 7 0 687 708 TOTAL(R$)\n"+
-        		// Retornando "" (String vazia)
-        		tarifacaoAgua +
-        		tarifacaoEsgoto +
-        		rateioAguaEsgoto +
-        		valorDebitos +
-        		valorCreditos +
-        		valorImpostos +
-        		"T 7 1 160 1210 "+ dataVencimentoConta + "\n" +
-        		"T 4 0 640 1210 "+ valorConta + "\n" +
-        		"T 0 2 424 1265 OPCAO PELO DEB. AUTOMATICO: \n"+
-        		"T 5 0 649 1266 "+ opcaoDebitoAutomatico + "\n" +
-				mensagens + 
-        		"T 0 2 344 1456 "+ matricula + "\n" +
-        		"T 0 2 443 1456 "+ referencia + "\n" +
-        		"T 0 2 558 1456 "+ dataVencimento + "\n" +
-        		"T 0 2 694 1456 "+ totalAPagar + "\n" +
-        		repNumericaCodBarra +
-        		repCodigoBarrasSemDigitoVerificador +
-        		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
-        		"T 5 0 352 1661 4\n"+
-        		"FORM\n"+
-        		"PRINT\n";
+        		"T 7 0 195 672 "+ media + "\n";
+        		
+    	//==============================================
+    	
+    	if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
+    		comando +=
+        		
+    				"T 7 0 448 496 QUALIDADE DA AGUA\n"+
+	        		"T 0 0 672 505 Ref: \n"+
+	        		"T 0 0 705 505 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n" +
+	        		"T 7 0 287 520 PARAMETROS\n"+
+	        		"T 7 0 428 520 PORT. 518\n"+
+	        		"T 7 0 540 520 ANALISADO\n"+
+	        		"T 7 0 672 520 CONFORME\n"+
+	        		"T 0 0 287 552 COR(uH)\n"+
+	        		"T 0 0 287 571 TURBIDEZ(UT)\n"+
+	        		"T 0 0 287 590 CLORO(mg/L)\n"+
+	        		"T 0 0 287 609 FLUOR(mg/L)\n"+
+	        		"T 0 0 287 628 COLIFORME TOTAL\n"+
+	        		"T 0 0 287 640 Pres/Aus)\n"+
+	        		"T 0 0 287 657 COLIFORME TERMO\n"+
+	        		"T 0 0 287 671 TOLER.(Pres/Aus)\n"+
+	        		"T 0 0 469 552 "+ quantidadeCorExigidas + "\n" +
+	        		"T 0 0 469 571 "+ quantidadeTurbidezExigidas + "\n" +
+	        		"T 0 0 469 590 "+ quantidadeCloroExigidas + "\n"+
+	        		"T 0 0 469 609 "+ quantidadeFluorExigidas +"\n"+
+	        		"T 0 0 469 628 "+ quantidadeColiformesTotaisExigidas + "\n"+
+	        		"T 0 0 469 657 "+ quantidadeColiformesTermoTolerantesExigidas + "\n" +
+	        		"T 0 0 582 552 "+ quantidadeCorAnalisadas + "\n" +
+	        		"T 0 0 582 571 "+ quantidadeTurbidezAnalisadas + "\n" +
+	        		"T 0 0 582 590 "+ quantidadeCloroAnalisadas + "\n" +
+	        		"T 0 0 582 609 "+ quantidadeFluorAnalisadas + "\n" +
+	        		"T 0 0 582 628 "+ quantidadeColiformesTotaisAnalisadas + "\n" +
+	        		"T 0 0 582 657 "+ quantidadeColiformesTermoTolerantesAnalisadas + "\n"+
+	        		"T 0 0 726 552 "+ quantidadeCorConforme + "\n" +
+	        		"T 0 0 726 571 "+ quantidadeTurbidezConforme + "\n" +
+	        		"T 0 0 726 590 "+ quantidadeCloroConforme + "\n" +
+	        		"T 0 0 726 609 "+ quantidadeFluorConforme + "\n" +
+	        		"T 0 0 726 628 "+ quantidadeColiformesTotaisConforme + "\n" +
+	        		"T 0 0 726 657 "+ quantidadeColiformesTermoTolerantesConforme + "\n" +
+	        		"T 7 0 53 708 DESCRICAO\n"+
+	        		"T 7 0 571 708 CONSUMO\n"+
+	        		"T 7 0 687 708 TOTAL(R$)\n"+
+	        		// Retornando "" (String vazia)
+	        		tarifacaoAgua +
+	        		tarifacaoEsgoto +
+	        		rateioAguaEsgoto +
+	        		valorDebitos +
+	        		valorCreditos +
+	        		valorImpostos +
+	        		"T 7 1 160 1210 "+ dataVencimentoConta + "\n" +
+	        		"T 4 0 640 1210 "+ valorConta + "\n" +
+	        		"T 0 2 424 1265 OPCAO PELO DEB. AUTOMATICO: \n"+
+	        		"T 5 0 649 1266 "+ opcaoDebitoAutomatico + "\n" +
+					mensagens + 
+	        		"T 0 2 344 1456 "+ matricula + "\n" +
+	        		"T 0 2 443 1456 "+ referencia + "\n" +
+	        		"T 0 2 558 1456 "+ dataVencimento + "\n" +
+	        		"T 0 2 694 1456 "+ totalAPagar + "\n" +
+	        		repNumericaCodBarra +
+	        		repCodigoBarrasSemDigitoVerificador +
+	        		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
+	        		"T 5 0 352 1661 4\n"+
+	        		"FORM\n"+
+	        		"PRINT\n";
+        		
+    	}else if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
+    		comando +=
+    				"T 7 0 200 700 EXTRATO DE CONSUMO DO MACROMEDIDOR \n"+
+        			"T 7 0 53 725 CONSUMO DO IMOVEL CONDOMINIO \n"+
+        			"T 7 0 571 725 "+ imovel.getConsumoAgua().getConsumoCobradoMes() + "\n" +
+        			"T 7 0 53 750 SOMA DOS CONSUMOS DOS IMÓVEIS VINCULADOS \n"+
+        			"T 7 0 571 750 "+ imovel.getConsumoAgua().getConsumoCobradoMesImoveisMicro() + "\n" +
+        			"T 7 0 53 775 QUANTIDADE IMÓVEIS VINCULADOS \n"+
+        			"T 7 0 571 775 "+ imovel.getEfetuarRateioConsumoHelper().getQuantidadeEconomiasAguaTotal() + "\n" +
+        			"T 7 0 53 800 VALOR RATEADO \n"+
+        			"T 7 0 571 800  R$ "+ imovel.getEfetuarRateioConsumoHelper().getContaParaRateioAgua() + "\n" +
+        			"T 7 0 53 825 VALOR RATEADO POR UNIDADE \n"+
+        			"T 7 0 571 825 R$ "+ Util.formatarDoubleParaMoedaReal(imovel.getEfetuarRateioConsumoHelper().getContaParaRateioAgua()
+        																/ imovel.getEfetuarRateioConsumoHelper().getQuantidadeEconomiasAguaTotal()) + "\n" +
+        			
+        		    "T 7 0 367 850 IMPORTANTE \n"+
+        		    "T 7 0 53 900 CASO O VALOR DO RATEIO ESTEJA ELEVADO \n"+
+        		    "T 7 0 63 925 1. Confirme a leitura do macro \n"+
+        		    "T 7 0 63 950 2. Verifique os reservatórios \n"+
+        		    "T 7 0 63 975 3. Verifique se há apartamento ligado clandestino \n"+
+        		    "T 7 0 53 1025 QUALQUER IRREGULARIDADE COMUNIQUE A COSANPA ATRAVÉS DO \n"+
+        		    "T 7 0 53 1050 SERTOR DE ATENDIMENTO \n"+
+        		    "T 7 0 53 1075 RATEIO: Obtido atraves da diferença do consumo entre \n"+
+        		    "T 7 0 53 1100 o macromedidor e os consumos dos apartamentos \n"+
+
+        			"T 0 2 344 1456 "+ matricula + "\n" +
+	        		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
+	        		"T 5 0 352 1661 4\n"+
+	        		"FORM\n"+
+	        		"PRINT\n";
+        		}
     	
 //    	instancia = null;
     	
@@ -237,18 +271,38 @@ public class ImpressaoContaCosanpa {
 //    	return instancia;
 //    }
     
-    public String getComando(Imovel imovel) {
+    public String getComando(Imovel imovel, int impressaoTipo) {
     	this.imovel = imovel;
-    	getDados(imovel);
-    	return montarComando();
+    	getDados(imovel, impressaoTipo);
+    	return montarComando(impressaoTipo);
     }
     
     public String imprimirExtratoConsumoMacroMedidor(){
     	return null;
     }
     
-    public void getDados(Imovel imovel) {
+    public void getDados(Imovel imovel, int tipoImpressao) {
     	
+		if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
+			linesAndBoxes = "BOX 32 435 802 482 1\n"+
+							"LINE 720 415 720 455 1\n"+
+							"LINE 403 415 403 477 1\n"+
+							"BOX 32 411 802 435 1\n"+
+							"LINE 278 415 278 477 1\n"+
+							"BOX 283 518 802 545 1\n"+
+							"BOX 283 545 802 692 1\n"+
+							"LINE 656 518 656 692 1\n"+
+							"LINE 425 518 425 692 1\n"+
+							"LINE 535 518 535 692 1\n";
+			
+		}else if (tipoImpressao == Constantes.IMPRESSAO_EXTRATO_CONDOMINIAL){
+			linesAndBoxes = "BOX 32 435 802 482 1\n" + 
+							"BOX 32 411 802 435 1\n" + 
+							"LINE 720 415 720 455 1\n" + 
+							"LINE 403 415 403 477 1\n" + 
+							"LINE 290 415 290 477 1\n";
+		}
+
     	List dc = imovel.getDadosCategoria();
     	List quantidadeEconomias = categoriasEconomias(dc);
     	
