@@ -2,6 +2,7 @@ package views;
 
 import helper.EfetuarRateioConsumoHelper;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +48,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
+import background.EnviarImoveisCondominioThread;
 import background.EnviarImovelOnlineThread;
 import business.BusinessConta;
 import business.ControladorConta;
@@ -70,6 +72,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	private ListView listaDispositivos;
 	AlertDialog dialog;
 	private ProgressDialog progress;
+	private ProgressDialog progressImpressaoCondominial;
 	private ZebraPrinterConnection conexao;
 	private static int increment;
 	
@@ -138,7 +141,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    setTabColor();
 	}
 	
-	public static void setTabColor() {
+	public void setTabColor() {
         for(int i=0;i<tabHost.getTabWidget().getChildCount();i++){
             
         	if (getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_CONCLUIDO){
@@ -150,6 +153,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
             }
         }
     }
+	
 	
     public boolean onKeyDown(int keyCode, KeyEvent event){
         
@@ -295,7 +299,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		
 	}
 	
-	private void tranmitirImovel() {
+	private void transmitirImovel() {
 		
 		if (getImovelSelecionado().getIndcImovelEnviado() == Constantes.IMOVEL_TRANSMITIDO) {
 			return;
@@ -321,7 +325,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
 	    	Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado()));
-			setupDataAfterPrinting(false);
+			setupDataAfterPrinting();
 			
 		}else{
 			
@@ -358,16 +362,45 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 	}
 
-	public void imprimirContaCondominial() {
+	public void imprimirContaCondominial(int idImovelInicial, int idImovelFinal, List<Imovel> imoveis) {
 		
 		/* Caso não haja nenhum endereco bluetooth préviamente salvo é mostrada a tela de pareamento de dispositivos.
 		 * Caso contrário é realizada a conexão com a impressora e impressa a conta
 		 */
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-			Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado()));
-			setupDataAfterPrinting(true);
+			for (Imovel imovel : imoveis) {
+
+				int indiceImovelImpresso = getDataManipulator().getListaIdsCondominio(imovel.getEfetuarRateioConsumoHelper().getMatriculaMacro())
+						.indexOf(Long.valueOf(imovel.getId()).intValue());
+				
+				String comando = new ImpressaoContaCosanpa().getComando(imovel);
+				Log.i("COMANDO IMPRESSORA:", comando);
+				
+				progressImpressaoCondominial.setProgress(indiceImovelImpresso);
+				
+				imovel.setIndcImovelImpresso(Constantes.SIM);
+		    	imovel.setQuantidadeContasImpressas(1+(imovel.getQuantidadeContasImpressas()));
+		    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
+		    	if (imovel.getMedidor(Constantes.LIGACAO_AGUA) == null && 
+		    		imovel.getMedidor(Constantes.LIGACAO_POCO) == null){
+		    		imovel.setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
+		    	}
+				getDataManipulator().salvarImovel(imovel);
+				
+				// Perguntamos na ultima conta
+			    if (imovel.getId() == idImovelFinal) {
+			    	
+			    	// Se for o último imóvel do condominio
+			    	if (imovel.getId() == imovel.getEfetuarRateioConsumoHelper().getIdUltimoImovelMicro()){
+			    		mensagemImpressaoCondominialOk(idImovelInicial, idImovelFinal);
+			    	}else{
+			    		mensagemImpressaoParcialCondominioOk("As últimas "+ Constantes.QUEBRA_CONTAS_IMOVEL_CONDOMINIO + " contas foram emitidas com sucesso ?", idImovelInicial, idImovelFinal);
+			    	}
+			    }
+			}
 			
+
 		}else{
 			
 			if (ControladorRota.getInstancia().getBluetoothAddress() == null) {
@@ -378,33 +411,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	
 			} else {
 	    		String bluetoothAddress = ControladorRota.getInstancia().getBluetoothAddress();
-	    		progress = new ProgressDialog(this);
-	    		progress.setTitle("Imprimindo conta");
-	    		progress.setMessage("Aguarde");
-	    		progress.setCancelable(false);
-	    		progress.setOnKeyListener(new DialogInterface.OnKeyListener() {
 
-				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-				        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
-				            return true; // Pretend we processed it
-				        
-				        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
-				            return true; // Pretend we processed it
-				        }
-				        return false; // Any other keys are still processed as normal
-				    }
-				});
+	    		new ImpressaoCondominialThread(bluetoothAddress, imoveis, idImovelInicial, idImovelFinal).start();
 	    			
-	    		new ImpressaoThread(bluetoothAddress, getImovelSelecionado()).start();
-	    			
-	    		progress.show();
-	    		
 	    	}
 		}
 	}
 	
 	public void controladorImpressaoCondominial(){
-//		Vector imoveisParaEnvio = new Vector();
 	
 		// Carregamos as informações do hidrometro macro
 		Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
@@ -415,7 +429,27 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		ControladorConta.getInstancia().calcularValoresCondominio(imovelMacro,
 																  imovelMacro.getConsumoAgua(), 
 																  imovelMacro.getConsumoEsgoto());
-//		imoveisParaEnvio.addElement(imovelMacro);
+		
+		progressImpressaoCondominial = new ProgressDialog(this);
+		progressImpressaoCondominial.setTitle("Imprimindo contas condominiais");
+		progressImpressaoCondominial.setMessage("Imóveis impressos");
+		progressImpressaoCondominial.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressImpressaoCondominial.setCancelable(false);
+		progressImpressaoCondominial.setMax(getDataManipulator().selectQuantidadeImoveisCondominio(imovelMacro.getMatricula())-1);
+		progressImpressaoCondominial.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+		    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+		        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
+		            return true; // Pretend we processed it
+		        
+		        }else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+		            return true; // Pretend we processed it
+		        }
+		        return false; // Any other keys are still processed as normal
+		    }
+		});
+		
+		progressImpressaoCondominial.show();
 	
 		if( (getDataManipulator().getListaIdsCondominio(helper.getMatriculaMacro()).size()-1) >= Constantes.QUEBRA_CONTAS_IMOVEL_CONDOMINIO){
 			imprimirContasCondominio(helper, (int)(imovelMacro.getId() + 1), (int)(imovelMacro.getId() + Constantes.QUEBRA_CONTAS_IMOVEL_CONDOMINIO));
@@ -425,7 +459,10 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 	}
 	
+	
 	private void imprimirContasCondominio(EfetuarRateioConsumoHelper helper, int idImovelinicial, int idImovelFinal){
+		
+		List<Imovel> imoveis = new ArrayList<Imovel>();
 
 		int contadorImoveisParaEnvio = 1;
 //		Vector imoveisParaEnvio = new Vector();
@@ -436,13 +473,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 		// Para cada imóvel MICRO ligado ou cortado de água:
 		for (int indiceHidrometroMicro = idImovelinicial; indiceHidrometroMicro <= idImovelFinal; indiceHidrometroMicro++) {
-	
-//		    double d = (double) (indiceHidrometroMicro - (imovelMacro.getId() + 1))
-//			    / (helper.getIdUltimoImovelMicro() - (imovelMacro.getId() + 1));
-//		    byte percentual = (byte) ((d) * 100);
-//	
-//		    p.setProgress(percentual);
-//		    p.repaint();
 	
 		    Imovel imovelMicro = getDataManipulator().selectImovel("id="+indiceHidrometroMicro);
 	
@@ -494,40 +524,30 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 		    boolean error = false;
 	
+		    System.out.println("********** " + imovelMicro.getMatricula() + "********** ");
+		    System.out.println("Consumo Agua: " + (imovelMicro.getConsumoAgua() != null ? imovelMicro
+		    		.getConsumoAgua().getConsumoCobradoMes() + "" : "Nulo"));
+		    System.out.println("Valor de Rateio de Agua: "  + (imovelMicro.getConsumoAgua() != null ? imovelMicro
+		    		.getValorRateioAgua() + "" : "Nulo"));
+		    System.out.println("Consumo Esgoto: " + (imovelMicro.getConsumoEsgoto() != null ? imovelMicro
+		    		.getConsumoEsgoto().getConsumoCobradoMes() + "" : "Nulo"));
+		    System.out.println("Valor de Rateio de Esgoto: " + (imovelMicro.getConsumoEsgoto() != null ? imovelMicro
+		    		.getValorRateioEsgoto() + "" : "Nulo"));
+		    System.out.println("*************************** ");
+
 		    // Imprimimos, Conta
 		    if (imprimirEnviarValorContaMenorMinimo
 			    && imovelMicro.getIndcEmissaoConta() == Constantes.SIM) {
 	
 			    if (imovelMicro != null) {
-					ControladorImovel.getInstancia().setImovelSelecionado(imovelMicro);
+//					ControladorImovel.getInstancia().setImovelSelecionado(imovelMicro);
+					imoveis.add(imovelMicro);
 			    }
 	
-		    	imprimirContaCondominial();
 		    }
-	
-		    System.out.println("********** " + imovelMicro.getMatricula() + "********** ");
-		    System.out.println("Consumo Agua: " + (imovelMicro.getConsumoAgua() != null ? imovelMicro
-				    .getConsumoAgua().getConsumoCobradoMes() + "" : "Nulo"));
-		    System.out.println("Valor de Rateio de Agua: "  + (imovelMicro.getConsumoAgua() != null ? imovelMicro
-				    .getValorRateioAgua() + "" : "Nulo"));
-		    System.out.println("Consumo Esgoto: " + (imovelMicro.getConsumoEsgoto() != null ? imovelMicro
-				    .getConsumoEsgoto().getConsumoCobradoMes() + "" : "Nulo"));
-		    System.out.println("Valor de Rateio de Esgoto: " + (imovelMicro.getConsumoEsgoto() != null ? imovelMicro
-				    .getValorRateioEsgoto() + "" : "Nulo"));
-		    System.out.println("*************************** ");
-	
-		    // Perguntamos na ultima conta
-		    if (indiceHidrometroMicro == idImovelFinal) {
-		    	
-		    	// Se for o último imóvel do condominio
-		    	if (indiceHidrometroMicro == helper.getIdUltimoImovelMicro()){
-		    		mensagemImpressaoCondominialOk(idImovelinicial, idImovelFinal);		    		
-
-		    	}else{
-		    		mensagemImpressaoParcialCondominioOk("As últimas "+ Constantes.QUEBRA_CONTAS_IMOVEL_CONDOMINIO + " contas foram emitidas com sucesso ?", idImovelinicial, idImovelFinal);
-		    	}
-		    }
+		    
 		}
+		imprimirContaCondominial(idImovelinicial, idImovelFinal, imoveis);
 	}
 
 	
@@ -573,6 +593,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		alertMessage.setButton(AlertDialog.BUTTON_NEGATIVE, "Não", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				alertMessage.dismiss();
+				progressImpressaoCondominial.dismiss();
 				// abortar impressao
 			}
 		});
@@ -580,6 +601,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		alertMessage.setButton(AlertDialog.BUTTON_POSITIVE, "Sim", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				alertMessage.dismiss();
+				progressImpressaoCondominial.setProgress(idImovelinicial-1);
 				imprimirContasCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper(), idImovelinicial, idImovelFinal);
 			}
 		});
@@ -599,7 +621,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				mensagemReemitirImpressaoParcialCondominio(idImovelinicial, idImovelFinal);
 			}
 		});
-
+		
 		alertMessage.setButton(AlertDialog.BUTTON_POSITIVE, "Sim", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 
@@ -613,8 +635,18 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					imovelCondominial.setIndcImovelImpresso(Constantes.SIM);
 					imovelCondominial.setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 					getDataManipulator().salvarImovel(imovelCondominial);
-					setTabColor();
 				}
+				
+				ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getId()));
+				Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
+				startActivity(myIntent);
+				
+				progressImpressaoCondominial.dismiss();
+				
+				// Seleciona o ultimo imovel do condominio
+				Imovel imovelReferencia = getDataManipulator().selectImovel("id = " + listaIdsCondominio.get(listaIdsCondominio.size()-1));
+				
+				new EnviarImoveisCondominioThread(listaIdsCondominio).start();
 			}
 		});
 
@@ -820,7 +852,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					
 					// already printed!
 					if (!getImovelSelecionado().isImovelCondominio()){
-						setupDataAfterPrinting(false);
+						setupDataAfterPrinting();
 					}
 					
 					Looper.loop();
@@ -847,12 +879,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						 */
 						getDataManipulator().updateConfiguracao("bluetooth_address", null);
 						
-						if (getImovelSelecionado().isImovelCondominio()){
-							imprimirContaCondominial();
-
-						}else{
-							imprimirConta();
-						}
+						imprimirConta();
 					}
 				});
 				
@@ -872,7 +899,121 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 	}
 	
-	protected void setupDataAfterPrinting(boolean isImovelCondominial){
+	class ImpressaoCondominialThread extends Thread {
+		String bluetoothAddress;
+		List<Imovel> imoveisToBePrinted;
+		int idImovelInicial;
+		int idImovelFinal;
+//		Handler handler;
+		
+		public ImpressaoCondominialThread(String address, List<Imovel> imovelToBePrinted, int idImovelInicial, int idImovelFinal) { //, Handler handler) {
+			this.bluetoothAddress = address;
+			this.imoveisToBePrinted = imovelToBePrinted;
+			this.idImovelInicial = idImovelInicial;
+			this.idImovelFinal = idImovelFinal;
+//			this.handler = handler;
+		}
+		
+		@Override
+		public void run() {
+			conexao = new BluetoothPrinterConnection(bluetoothAddress);
+
+			System.out.println("Imoveis para impressao: " + imoveisToBePrinted);
+
+			try {
+				conexao.open();
+
+				if (conexao.isConnected()) {
+					for (Imovel imovel : imoveisToBePrinted) {
+
+						
+						int indiceImovelImpresso = getDataManipulator().getListaIdsCondominio(imovel.getEfetuarRateioConsumoHelper().getMatriculaMacro())
+								.indexOf(Long.valueOf(imovel.getId()).intValue());
+						
+						System.out.println("Indice Imovel Impresso: " + indiceImovelImpresso);
+						
+						String comando = new ImpressaoContaCosanpa().getComando(imovel);
+						Log.i("COMANDO IMPRESSORA:", comando);
+						conexao.write(comando.getBytes());
+						
+						getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
+						Thread.sleep(1500);
+						
+						progressImpressaoCondominial.setProgress(indiceImovelImpresso);
+						
+						imovel.setIndcImovelImpresso(Constantes.SIM);
+				    	imovel.setQuantidadeContasImpressas(1+(imovel.getQuantidadeContasImpressas()));
+				    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
+				    	if (imovel.getMedidor(Constantes.LIGACAO_AGUA) == null && 
+				    		imovel.getMedidor(Constantes.LIGACAO_POCO) == null){
+				    		imovel.setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
+				    	}
+						getDataManipulator().salvarImovel(imovel);
+						
+						// Perguntamos na ultima conta
+					    if (imovel.getId() == idImovelFinal) {
+					    	
+					    	// Se for o último imóvel do condominio
+					    	if (imovel.getId() == imovel.getEfetuarRateioConsumoHelper().getIdUltimoImovelMicro()){
+					    		conexao.close();
+					    		Looper.prepare();
+					    		mensagemImpressaoCondominialOk(idImovelInicial, idImovelFinal);
+					    		Looper.loop();
+					    		Looper.getMainLooper().quit();
+					    	}else{
+					    		conexao.close();
+					    		Looper.prepare();
+					    		mensagemImpressaoParcialCondominioOk("As últimas "+ Constantes.QUEBRA_CONTAS_IMOVEL_CONDOMINIO + " contas foram emitidas com sucesso ?", idImovelInicial, idImovelFinal);
+					    		Looper.loop();
+					    		Looper.getMainLooper().quit();
+					    	}
+					    }
+						
+					
+					    
+					}
+					conexao.close();
+				}
+			} catch (ZebraPrinterConnectionException e) {
+
+				e.printStackTrace();
+				progressImpressaoCondominial.dismiss();
+				
+				Looper.prepare();
+				
+				AlertDialog.Builder a = new AlertDialog.Builder(MainTab.this);
+				a.setTitle("Erro ao tentar conectar com impressora");
+				a.setMessage("Nenhuma impressora encontrada");
+				a.setPositiveButton("Selecionar impressora", new DialogInterface.OnClickListener() {
+				     
+					public void onClick(DialogInterface arg0, int arg1) {
+						
+						/* Caso não seja possível localizar a impressora,
+						 * o campo de endereco bluetooth é apagado e em seguida é chamado o método de impressão 
+						 */
+						getDataManipulator().updateConfiguracao("bluetooth_address", null);
+						
+						imprimirContaCondominial(idImovelInicial, idImovelFinal, imoveisToBePrinted);
+					}
+				});
+				
+				a.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+				     
+					public void onClick(DialogInterface arg0, int arg1) {}
+				});
+				
+				a.show();
+				
+				Looper.loop();
+				Looper.getMainLooper().quit();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected void setupDataAfterPrinting(){
     	getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
 
     	getImovelSelecionado().setQuantidadeContasImpressas(1+(getImovelSelecionado().getQuantidadeContasImpressas()));
@@ -890,17 +1031,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
 
 		
-		if (!isImovelCondominial){
-			// Define imovel como concluido
-			getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
-			getDataManipulator().salvarImovel(getImovelSelecionado());
-			tranmitirImovel();
-			callProximoImovel();
-		
-		}else{
-			// Apenas atualiza quantidade de vezes impressas
-			getDataManipulator().salvarImovel(getImovelSelecionado());
-		}
+    	// Define imovel como concluido
+    	getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
+    	getDataManipulator().salvarImovel(getImovelSelecionado());
+    	transmitirImovel();
+    	callProximoImovel();
 	}
 	
 	protected boolean isTabMedidorAguaNeeded(){
@@ -1039,7 +1174,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    			getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 			    			setTabColor();
 			    			getDataManipulator().salvarImovel(getImovelSelecionado());
-			    			tranmitirImovel();
+			    			transmitirImovel();
 			    		}
 			    	}else {
 			    		// imovel condominial avança para o próximo imovel.
@@ -1062,7 +1197,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 						ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
 						setTabColor();
-						tranmitirImovel();
+						transmitirImovel();
 					}
 
 				} else {

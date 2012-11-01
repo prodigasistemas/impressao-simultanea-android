@@ -555,15 +555,16 @@ public class ImpressaoContaCosanpa {
 	 // Daniel Dados dos Valores de Rateio de Água e Esgoto
 	    List rateios = gerarLinhasRateioAguaEsgotoCobrados();
 	    int ultimaLinhaRateio = ultimaLinhaPoco;
+	    rateioAguaEsgoto = "";
 	    for (int i = 0; i < rateios.size(); i++) {
 			String[] debito = (String[]) rateios.get(i);
 			ultimaLinhaRateio = ultimaLinhaPoco + ((i + 1) * 34);
 			quantidadeLinhasAtual++;
 			if (debito[0] != null) {
-			    rateioAguaEsgoto = formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaPoco);
+			    rateioAguaEsgoto += formarLinha(7, 0, 53, 733, debito[0], 0, (i + 1) * 34 + ultimaLinhaPoco);
 			}
 			if (debito[1] != null) {
-			    rateioAguaEsgoto = formarLinha(7, 0, 697, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaPoco);
+			    rateioAguaEsgoto += formarLinha(7, 0, 697, 733, debito[1], 0, (i + 1) * 34 + ultimaLinhaPoco);
 			}
 	    }
 	    

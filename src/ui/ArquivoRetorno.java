@@ -1,5 +1,7 @@
 package ui;
 
+import helper.EfetuarRateioConsumoHelper;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -62,17 +64,32 @@ public class ArquivoRetorno {
     public StringBuffer gerarDadosImovelParaEnvio(Imovel i){
 
     	arquivo = new StringBuffer();
+    	
+		Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + i.getId());
 		
-    	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + i.getId());
-    	gerarRegistroTipo1(imovel);
+		gerarRegistroTipo1(imovel);
     	gerarRegistroTipo2e3(imovel);
     	gerarRegistroTipo4(imovel);
-    		    
+
     	return arquivo;
+    }
+    
+    public void gerarDadosImoveisCondominioParaEnvio(List<Integer> listIds) {
+    	
+    	arquivo = new StringBuffer();
+    	
+    	for (int id : listIds) {
+			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+			
+			gerarRegistroTipo1(imovel);
+        	gerarRegistroTipo2e3(imovel);
+        	gerarRegistroTipo4(imovel);
+		}
     }
 
     public List gerarArquivoRetorno(Handler mHandler, Context context, int increment, int tipoGeracao) {
     	List listIdImoveis = null;
+    	arquivo = new StringBuffer();
 
     	try {
     		
