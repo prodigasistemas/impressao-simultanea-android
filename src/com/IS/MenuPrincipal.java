@@ -174,15 +174,15 @@ public class MenuPrincipal extends Activity {
         				}
         	    	}
         	    	
-//        	    	if (statusOk){
+        	    	if (statusOk){
                 		showDialog(Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment);
         	    	
-//        	    	}else{
-//            		
-//        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
-//            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
-//            	    	
-//        	    	}
+        	    	}else{
+            		
+        	    		dialogMessage = "Não é permitido gerar arquivo de retorno Completo. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+            	    	
+        	    	}
             		
             	}else if (position == MENU_CADASTROS_CONCLUIDOS){
 					if (ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size() > 0) {
@@ -191,6 +191,7 @@ public class MenuPrincipal extends Activity {
 						dialogMessage = "Não existem imóveis a serem transmitidos";
 	            		showDialog(Constantes.DIALOG_ID_ERRO);
 					}
+            	
             	}else if (position == MENU_FINALIZAR){
             		boolean statusOk = true;
         	    	
@@ -205,18 +206,19 @@ public class MenuPrincipal extends Activity {
         				}
         	    	}
         	    	
-//        	    	if (statusOk) {
+        	    	if (statusOk) {
         	    		if (envio()) {
         	    			finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, MenuPrincipal.this, increment);
         	    			finalizarRotaThread.start();
         	    		} else {
         	    			showDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
         	    		}
-//        	    	} else {
-//            		
-//        	    		dialogMessage = "Não é permitido Finalizar Rota. Ainda há " + imoveisPendentes + " imóveis não visitados.";
-//            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
-//        	    	}
+        	    	} else {
+            		
+        	    		dialogMessage = "Não é permitido Finalizar Rota. Ainda há " + imoveisPendentes + " imóveis não visitados.";
+            	    	showDialog(Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA);
+        	    	}
+
             	}else if (position == MENU_RELATORIO){
 					Intent myIntent = new Intent(getApplicationContext(),TelaRelatorio.class);
 	        		startActivity(myIntent);

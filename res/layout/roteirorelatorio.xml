@@ -6,7 +6,7 @@
     android:background="@drawable/fundocadastro"
     android:orientation="vertical" >
 
-	<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="@drawable/fundocadastro">
+	<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
 	
 	    <TextView android:id="@+id/info" android:text="Informações" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textColor="@color/textColorYellowBackground" android:gravity="center" android:textSize="25dp" android:layout_marginTop="10dp" android:layout_marginBottom="15dp"/>
 	 	
