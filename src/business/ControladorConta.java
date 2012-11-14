@@ -449,7 +449,7 @@ public class ControladorConta {
     	
     			if (getImovelSelecionado().getId() != getImovelSelecionado().getIdImovelCondominio()) {
     			    
-    				macro =  getDataManipulator().selectImovel("matricula = " + getImovelSelecionado().getMatriculaCondominio());
+    				macro =  getDataManipulator().selectImovel("matricula = " + getImovelSelecionado().getMatriculaCondominio(), true);
     			    helper = macro.getEfetuarRateioConsumoHelper();
     			
     			} else if (getImovelSelecionado().getIndcCondominio() == Constantes.SIM) {
@@ -1298,7 +1298,7 @@ public class ControladorConta {
 	public void determinarRateio() {
 		        
 		// Carregamos as informações do hidrometro macro
-		Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
+		Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro(), true);
 
 		EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
 	

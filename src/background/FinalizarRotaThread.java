@@ -75,7 +75,7 @@ public class FinalizarRotaThread extends Thread {
 			
 			if (ControladorAcessoOnline.getInstancia().isRequestOK()) {
 				for (Integer id : idsImoveisAEnviar) {
-					Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+					Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id, false);
 					
 					imovel.setIndcImovelEnviado(Constantes.SIM);
 					

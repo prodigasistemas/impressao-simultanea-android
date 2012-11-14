@@ -2060,8 +2060,6 @@ public class Imovel {
 		// Verificamos se é um imóvel micro
 		if (this.isImovelMicroCondominio()) {
 	
-		    Imovel hidrometroMacro = ControladorRota.getInstancia().getDataManipulator().selectImovel("matricula = " + this.getMatriculaCondominio());
-	
 		    // Apenas adicionamos a quantidade de economias,
 		    // se ela não houver sido adicionada anteriormente
 		    if ((!indcAdicionouDadosIniciaisHelperRateio)) {
@@ -2075,8 +2073,6 @@ public class Imovel {
 				    // Calculamos a quantidade de economias total
 				    int quantidadeEconomiasImovel = this.getQuantidadeEconomiasTotal();
 		
-				    Medidor ligacaoAguaImovelMicro = this.getMedidor(Constantes.LIGACAO_AGUA);
-		
 					efetuarRateioConsumoHelper.setQuantidadeEconomiasAguaTotal(efetuarRateioConsumoHelper.getQuantidadeEconomiasAguaTotal() + quantidadeEconomiasImovel);
 				}
 		
@@ -2084,37 +2080,12 @@ public class Imovel {
 			   	if ( (this.getIndcFaturamentoEsgoto() == Constantes.SIM) ||
 			         (this.getIndcFaturamentoEsgoto() == Constantes.NAO && this.isImovelMicroCondominio()) ){
 		
-		//		if (this.getIndcFaturamentoEsgoto() == Constantes.SIM) {
-		
 				    // Calculamos a quantidade de economias total
 				    int quantidadeEconomiasImovel = this.getQuantidadeEconomiasTotal();
 		
-				    // Selecionamos a ligação de agua do imovel macro
-				    // para verificarmos se o mesmo possue
-				    // tipo de rateio = 4
-				    Medidor ligacaoAguaImovelMacro = hidrometroMacro.getMedidor(Constantes.LIGACAO_AGUA);
-				    /*
-				     * Considerar não medido de esgoto igual a não medido de
-				     * água, ou seja, de acordo com a existência de hidrometro
-				     * de ligação de água quando o tipo de rateio for igual a
-				     * rateio não medido de água.
-				     */
-				    if (ligacaoAguaImovelMacro != null
-					    && ligacaoAguaImovelMacro.getTipoRateio() == Medidor.TIPO_RATEIO_NAO_MEDIDO_AGUA) {
+				    efetuarRateioConsumoHelper.setQuantidadeEconomiasEsgotoTotal(efetuarRateioConsumoHelper.getQuantidadeEconomiasEsgotoTotal() + quantidadeEconomiasImovel);
 		
-				    	Medidor ligacaoAguaImovelMicro = this.getMedidor(Constantes.LIGACAO_AGUA);
-		
-				    	efetuarRateioConsumoHelper.setQuantidadeEconomiasEsgotoTotal(efetuarRateioConsumoHelper.getQuantidadeEconomiasEsgotoTotal() + quantidadeEconomiasImovel);
-		
-				    } else {
-				    	Medidor ligacaoEsgotoImovelMicro = this.getMedidor(Constantes.LIGACAO_POCO);
-		
-				    }
 				}
-				
-				// Adicionamos o consumo mínimo do imóvel ao total
-		//		helper.setConsumoMinimoTotal(helper.getConsumoMinimoTotal()
-		//			+ ControladorImoveis.getInstancia().getImovelSelecionado().getConsumoMinimoImovel());
 		    }
 	
 		    indcGeracaoConta = Constantes.SIM;
@@ -2236,7 +2207,7 @@ public class Imovel {
 				    }
 				
 				} else {
-				    Imovel imovelMacro = ControladorRota.getInstancia().getDataManipulator().selectImovel("matricula = " + this.getMatriculaCondominio());
+				    Imovel imovelMacro = ControladorRota.getInstancia().getDataManipulator().selectImovel("matricula = " + this.getMatriculaCondominio(), false);
 		
 				    if (imovelMacro.getIndcImovelImpresso() == Constantes.SIM) {
 				    	habilitar = false;

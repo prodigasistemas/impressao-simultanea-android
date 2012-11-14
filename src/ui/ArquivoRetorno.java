@@ -64,7 +64,7 @@ public class ArquivoRetorno {
 
     	arquivo = new StringBuffer();
     	
-		Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + i.getId());
+		Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + i.getId(), true);
 		
 		gerarRegistroTipo1(imovel);
     	gerarRegistroTipo2e3(imovel);
@@ -78,7 +78,7 @@ public class ArquivoRetorno {
     	arquivo = new StringBuffer();
     	
     	for (int id : listIds) {
-			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id, true);
 			
 			gerarRegistroTipo1(imovel);
         	gerarRegistroTipo2e3(imovel);
@@ -120,9 +120,9 @@ public class ArquivoRetorno {
 
 		    	Imovel imovel = null;
 		    	if (tipoGeracao == Constantes.TIPO_GERACAO_ARQUIVO_COMPLETO) {
-		    		imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + (i+1));
+		    		imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + (i+1), true);
 		    	} else {
-		    		imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listIdImoveis.get(i));
+		    		imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listIdImoveis.get(i), true);
 		    	}
 		    	
 		    	if (imovel.isImovelInformativo())
@@ -719,7 +719,7 @@ public class ArquivoRetorno {
 //    		qtdImoveisCalculados = Configuracao.getInstancia().getIdsImoveisConcluidos().size();
     		qtdImoveisCalculados = idsImoveisConcluidos.size();
     		
-    		Imovel primeiroImovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1");
+    		Imovel primeiroImovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1", true);
     		
     		if ( tipoArquivoRetorno == ARQUIVO_COMPLETO ){			    
     	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO , primeiroImovel);		
@@ -746,11 +746,7 @@ public class ArquivoRetorno {
     				id = idsImoveisConcluidos.get(i);
     			}
     			
-    			// Informamos quanto ainda falta
-    			double d = (double) (i+1) / qtdImoveisCalculados;
-    			byte percentual = (byte) ((d) * 100);
-
-    			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+    			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id, true);
     			
     			//Rota completa - checa se o imovel selecionado é informativo ou nao.
     			//Caso seja informativo, nao deve entrar no arquivo de retorno.
@@ -936,14 +932,14 @@ public class ArquivoRetorno {
 		    
 		     listIdImoveis = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
 		    
-		    Imovel imovelReferencia = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1");
+		    Imovel imovelReferencia = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1", true);
 		    gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO, imovelReferencia);
 		    arquivo = arquivo.append(registroTipo0);
 		    int i = 0;
 		    
 		    for (Integer id : listIdImoveis){
 
-		    	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+		    	Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id, true);
 		    	
 		    	if (imovel.isImovelInformativo())
 		    		continue;

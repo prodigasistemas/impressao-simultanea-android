@@ -24,7 +24,7 @@ public class EnviarImoveisCondominioThread extends Thread {
 			
 			if (ControladorAcessoOnline.getInstancia().isRequestOK()) {
 				for (int id : idsImoveisCondominio) {
-					Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
+					Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id, false);
 					
 					imovel.setIndcImovelEnviado(Constantes.SIM);
 					ControladorRota.getInstancia().getDataManipulator().salvarImovel(imovel);

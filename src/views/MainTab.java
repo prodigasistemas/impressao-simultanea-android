@@ -283,7 +283,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 	public void localizarImovelPendente() {
 		
-		Imovel imovelPendente = getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE);
+		Imovel imovelPendente = getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE, false);
 		
 		// Se nao encontrar imovel com status pendente
 		if (imovelPendente == null) {
@@ -437,7 +437,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	public void controladorImpressaoCondominial(){
 	
 		// Carregamos as informações do hidrometro macro
-		Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
+		Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro(), true);
 
 		EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
 
@@ -486,7 +486,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		// Para cada imóvel MICRO ligado ou cortado de água:
 		for (int indiceHidrometroMicro = idImovelinicial; indiceHidrometroMicro <= idImovelFinal; indiceHidrometroMicro++) {
 	
-		    Imovel imovelMicro = getDataManipulator().selectImovel("id="+indiceHidrometroMicro);
+		    Imovel imovelMicro = getDataManipulator().selectImovel("id="+indiceHidrometroMicro, true);
 	
 		    if (helper.getContaParaRateioAgua() > 0){
 			    
@@ -677,20 +677,20 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 				//define Status Concluido
 				for(int i=0; i<listaIdsCondominio.size(); i++){
-					Imovel imovelCondominial = getDataManipulator().selectImovel("id="+listaIdsCondominio.get(i));
+					Imovel imovelCondominial = getDataManipulator().selectImovel("id="+listaIdsCondominio.get(i), false);
 					imovelCondominial.setIndcImovelImpresso(Constantes.SIM);
 					imovelCondominial.setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 					getDataManipulator().salvarImovel(imovelCondominial);
 				}
 				
-				ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getId()));
-				Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
-				startActivity(myIntent);
-				
 				progressImpressaoCondominial.dismiss();
-				setTabColor();
 				
 				new EnviarImoveisCondominioThread(listaIdsCondominio).start();
+
+		    	finish();
+				ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getId(), true));
+				Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
+				startActivity(myIntent);
 			}
 		});
 
@@ -964,7 +964,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						conexao.write(comando.getBytes());
 						
 						getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
-						Thread.sleep(3000);
+						Thread.sleep(1000);
 						
 						progressImpressaoCondominial.setProgress(indiceImovelImpresso);
 						
@@ -984,7 +984,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 							if ( idImovelFinal  == imovel.getEfetuarRateioConsumoHelper().getIdUltimoImovelMicro()){
 
 								// Carregamos as informações do imovel Macro
-								Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ imovel.getEfetuarRateioConsumoHelper().getMatriculaMacro());
+								Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ imovel.getEfetuarRateioConsumoHelper().getMatriculaMacro(), true);
 
 								comando = new ImpressaoContaCosanpa().getComando(imovelMacro, Constantes.IMPRESSAO_EXTRATO_CONDOMINIAL);
 								Log.i("COMANDO IMPRESSORA:", comando);
@@ -1222,13 +1222,14 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			List<Integer> listaIdsCondominio = getDataManipulator().getListaIdsCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
 	
 			for(int i=0; i<listaIdsCondominio.size(); i++){
-				Imovel imovelCondominial = getDataManipulator().selectImovel("id="+listaIdsCondominio.get(i));
+				Imovel imovelCondominial = getDataManipulator().selectImovel("id="+listaIdsCondominio.get(i), false);
 				imovelCondominial.setIndcGeracaoConta(Constantes.NAO);
 				imovelCondominial.setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 				getDataManipulator().salvarImovel(imovelCondominial);
 			}
 
-			ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getId()));
+			finish();
+			ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getId(), true));
 			Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
 			startActivity(myIntent);
 

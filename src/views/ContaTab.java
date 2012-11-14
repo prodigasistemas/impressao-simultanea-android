@@ -97,7 +97,7 @@ public class ContaTab extends Fragment {
 			} else {
 			    Log.i("Leitura>> ", ">>" + consumoAgua.getLeituraAtual());
 			    if(!ajustado){
-			    	leituraFaturadaAgua.setText( "" + consumoAgua.getLeituraAtual());
+				    leituraFaturadaAgua.setText( "" + (consumoAgua.getLeituraAtual() == Constantes.NULO_INT ? "" : consumoAgua.getLeituraAtual()) );
 			    	diasDeConsumo.setText( consumoAgua.getDiasConsumo()+"" );
 			    }
 			}
@@ -111,7 +111,7 @@ public class ContaTab extends Fragment {
 			    
 			    qtdDiasAjustado = getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_POCO).getQtdDiasAjustado();
 			    
-			    leituraFaturadaPoco.setText( leituraEsgoto +"" );
+			    leituraFaturadaPoco.setText( "" + (leituraEsgoto == Constantes.NULO_INT ? "" : leituraEsgoto) );
 			    diasDeConsumo.setText( qtdDiasAjustado +"" );
 			    
 			    ajustado = true;
@@ -119,8 +119,8 @@ public class ContaTab extends Fragment {
 			}else{
 			    
 			    if(!ajustado){
-				leituraFaturadaPoco.setText( consumoEsgoto.getLeituraAtual() +"" );
-				diasDeConsumo.setText( consumoAgua.getDiasConsumo()+"" );
+				    leituraFaturadaPoco.setText( "" + (consumoEsgoto.getLeituraAtual() == Constantes.NULO_INT ? "" : consumoEsgoto.getLeituraAtual()) );
+					diasDeConsumo.setText( consumoAgua.getDiasConsumo()+"" );
 			    }
 			}
 		
@@ -128,7 +128,7 @@ public class ContaTab extends Fragment {
 				getImovelSelecionado().getMedidor(ControladorConta.LIGACAO_POCO) == null){
 			    
 			    leituraFaturadaAgua.setText( "" + (consumoAgua.getLeituraAtual() == Constantes.NULO_INT ? "" : consumoAgua.getLeituraAtual()) );
-			    leituraFaturadaPoco.setText( "" + consumoEsgoto.getLeituraAtual() );
+			    leituraFaturadaPoco.setText( "" + (consumoEsgoto.getLeituraAtual() == Constantes.NULO_INT ? "" : consumoEsgoto.getLeituraAtual()) );
 			    diasDeConsumo.setText( consumoAgua.getDiasConsumo()+"" );	
 			}
 			
@@ -136,43 +136,14 @@ public class ContaTab extends Fragment {
 			this.consumoTipoAgua.setText( consumoAgua.getTipoConsumo()+"" );
 			this.anormalidadeConsumoAgua.setText( "" + (consumoAgua.getAnormalidadeConsumo() == Constantes.NULO_INT ? "" : consumoAgua.getAnormalidadeConsumo()) );
 			this.valorDeAgua.setText( Util.formatarDoubleParaMoedaReal( getImovelSelecionado().getValorAgua() ) );
-			//lbCampoLeituraFaturadaPoco.setText( consumoEsgoto.getLeituraAtual()+"" );		
 			this.consumoEsgoto.setText( consumoEsgoto.getConsumoCobradoMes()+"" );
 			this.consumoTipoEsgoto.setText( consumoEsgoto.getTipoConsumo()+"" );
-			this.anormalidadeConsumoEsgoto.setText( consumoEsgoto.getAnormalidadeConsumo()+"" );
+			this.anormalidadeConsumoEsgoto.setText( "" + (consumoEsgoto.getAnormalidadeConsumo() == Constantes.NULO_INT ? "" : consumoEsgoto.getAnormalidadeConsumo()) );
 			this.valorDeEsgoto.setText( Util.formatarDoubleParaMoedaReal( getImovelSelecionado().getValorEsgoto() ) );
-			//lbCampoDiasConsumo.setText( consumoAgua.getDiasConsumo()+"" );		
 			this.valorDebitos.setText( Util.formatarDoubleParaMoedaReal( getImovelSelecionado().getValorDebitos() ) );
 			this.valorCreditos.setText( Util.formatarDoubleParaMoedaReal( getImovelSelecionado().getValorCreditos() ) );
 			this.valorTotal.setText( Util.formatarDoubleParaMoedaReal( getImovelSelecionado().getValorConta() ) );
 			
-//			if(getImovelSelecionado().getIndcImovelImpresso() == Constantes.NAO &&
-//					getImovelSelecionado().getIndcImovelCalculado() == Constantes.SIM){
-//				//lbMensagem.setText( "Imovel calculado"+
-//				//		getImovelSelecionado().getRegistro8(	
-//				//				ControladorConta.LIGACAO_AGUA ).getLeitura());
-//				lbCampoMensagem.setText("Imovel ja Calculado");
-//				lbCampoMensagem.setVisible(true);
-//			}
-//			
-//			if ( getImovelSelecionado().getIndcImovelImpresso() == Constantes.SIM ){
-//				lbCampoMensagem.setText( "Conta já impressa" );
-//				lbCampoMensagem.setVisible(true);
-//			}
-//			if(Configuracao.getInstancia().getContadorVisitados() == Configuracao.getInstancia().getQtdImoveis()){
-//				lbCampoMensagem.setText("Rota já concluida");
-//				lbCampoMensagem.setVisible(true);
-//			}		
-//			
-//			if ( getImovelSelecionado().isImovelCondominio() ){
-//			    ImovelConta hidrometroMacro = new ImovelConta();
-//			    Repositorio.carregarObjeto( hidrometroMacro , getImovelSelecionado().getIdImovelCondominio() );	    
-//			    
-//			    lbCampoMensagem.setText("I.C. " + ControladorImoveis.getInstancia().getIndiceAtualImovelCondominio() + " de " + hidrometroMacro.getQuantidadeImoveisCondominio());
-//				
-//			    lbCampoMensagem.setVisible( true );
-//			}
-		
 		return view;
 	}
 	

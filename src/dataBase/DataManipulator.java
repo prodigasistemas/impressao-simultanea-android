@@ -376,7 +376,7 @@ public class DataManipulator {
 		
 	}
 	
-	public Imovel selectImovel(String condition){
+	public Imovel selectImovel(String condition, boolean selectDependencias){
 		
 		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] {"id",
 																		"matricula",
@@ -550,7 +550,9 @@ public class DataManipulator {
 		
 		fecharCursor(cursor);
 		 
-		selectDependenciasImovel(imovel);
+		if(selectDependencias){
+			selectDependenciasImovel(imovel);
+		}
 		 
 		return imovel;
 	}
