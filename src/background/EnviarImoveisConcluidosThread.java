@@ -1,23 +1,22 @@
 package background;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
-
-import com.IS.MenuPrincipal;
 
 import model.Imovel;
 import ui.ArquivoRetorno;
 import ui.MessageDispatcher;
 import util.Constantes;
 import util.Util;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import business.ControladorAcessoOnline;
 import business.ControladorRota;
+
+import com.IS.MenuPrincipal;
 
 public class EnviarImoveisConcluidosThread extends Thread {
 	
@@ -95,6 +94,7 @@ public class EnviarImoveisConcluidosThread extends Thread {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			Util.salvarLog(new Date(), e.fillInStackTrace());
 		}
 		
 		

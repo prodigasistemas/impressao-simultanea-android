@@ -3,6 +3,7 @@ package util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import model.Consumo;
@@ -484,6 +485,7 @@ public class ImpressaoContaCosanpa {
 					anormalidadeLeitura += formarLinha(0, 2, 430, 374, "ANORM. LEITURA: " + FileManager.getAnormalidade(imovel.getConsumoAgua().getAnormalidadeLeituraFaturada()).getDescricao(), 0, 0);
 				} catch (IOException e) {
 					e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 				}
 			}
 		}

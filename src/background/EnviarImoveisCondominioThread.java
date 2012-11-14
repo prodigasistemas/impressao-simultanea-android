@@ -1,10 +1,12 @@
 package background;
 
+import java.util.Date;
 import java.util.List;
 
 import model.Imovel;
 import ui.ArquivoRetorno;
 import util.Constantes;
+import util.Util;
 import business.ControladorAcessoOnline;
 import business.ControladorRota;
 
@@ -36,6 +38,7 @@ public class EnviarImoveisCondominioThread extends Thread {
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
+			Util.salvarLog(new Date(), e.fillInStackTrace());
 		}
 	}
 

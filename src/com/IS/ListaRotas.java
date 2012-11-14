@@ -3,16 +3,11 @@ package com.IS;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import com.IS.R.color;
-
-import background.CarregarRotaThread;
-import business.ControladorImovel;
-import business.ControladorRota;
+import java.util.Date;
 
 import ui.FileManager;
 import util.Constantes;
-
+import util.Util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -37,6 +32,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import background.CarregarRotaThread;
+import business.ControladorRota;
+
+import com.IS.R.color;
 
 public class ListaRotas extends ListActivity {
 	
@@ -55,6 +54,7 @@ public class ListaRotas extends ListActivity {
        	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        this.getListView().setCacheColorHint(Color.TRANSPARENT);
         instanciate();
     }
     
@@ -176,6 +176,7 @@ public class ListaRotas extends ListActivity {
             		
 			} catch (IOException e) {
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
             			
             progThread = new CarregarRotaThread(handler, fileName, this);

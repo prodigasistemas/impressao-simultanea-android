@@ -13,23 +13,31 @@ import static util.Constantes.REGISTRO_TIPO_MEDIDOR;
 import static util.Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR;
 import static util.Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA;
 
-import helper.EfetuarRateioConsumoHelper;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Vector;
 
 import model.DadosGerais;
 import model.DadosQualidadeAgua;
 import model.SituacaoTipo;
 import util.Constantes;
+import util.Util;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+
+import com.IS.Fachada;
+
 import dataBase.DataManipulator;
 
 public class ControladorRota {
@@ -195,7 +203,36 @@ public class ControladorRota {
 
 				
 			} catch (IOException e) {
-				e.printStackTrace();
+        		e.printStackTrace();
+        		Util.salvarLog(new Date(), e.fillInStackTrace());
+			} catch (Exception e) {
+				
+				Util.salvarLog(new Date(), e.fillInStackTrace());
+				
+				finalizeDataManipulator();
+        		deleteDatabase();
+        		setPermissionGranted(false);
+        		
+        		Looper.prepare();
+        		
+        		AlertDialog.Builder a = new AlertDialog.Builder(context);
+    			a.setTitle("Aviso");
+    			a.setMessage("Ocorreu um erro ao carregar rota");
+    			
+    			final Context c = context;
+    			
+    			a.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface arg0, int arg1) {
+    					Intent myIntent = new Intent(c, Fachada.class);
+        				c.startActivity(myIntent);
+    				}
+    			});
+
+    			a.show();
+    			
+    			Looper.myLooper().loop();
+    			Looper.myLooper().quit();
+        		
 			}
 		}
     }

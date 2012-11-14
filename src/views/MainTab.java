@@ -3,6 +3,7 @@ package views;
 import helper.EfetuarRateioConsumoHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -867,6 +868,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			} catch (ZebraPrinterConnectionException e) {
 
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 				progress.dismiss();
 				
 				Looper.prepare();
@@ -899,6 +901,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
 		}
 	}
@@ -975,6 +978,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			} catch (ZebraPrinterConnectionException e) {
 
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 				progressImpressaoCondominial.dismiss();
 				
 				Looper.prepare();
@@ -1007,6 +1011,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
 		}
 	}
@@ -1046,6 +1051,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			} catch (ZebraPrinterConnectionException e) {
 
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 				
 				Looper.prepare();
 				
@@ -1077,6 +1083,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
 		}
 	}
