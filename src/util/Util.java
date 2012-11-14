@@ -1835,7 +1835,6 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 			fw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
 		}
 	}
 }
