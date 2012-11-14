@@ -504,6 +504,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		    	
 		    	imovelMicro.setConsumoRateioAgua(helper.getConsumoParaRateioAgua() * imovelMicro.getQuantidadeEconomiasTotal()
 		    		    / helper.getQuantidadeEconomiasAguaTotal());
+		    }else{
+		    	imovelMicro.setValorRateioAgua(Util.arredondar(0));
+		    	imovelMicro.setConsumoRateioAgua(0);
 		    }
 		    
 		    if (helper.getContaParaRateioEsgoto() > 0){
@@ -518,6 +521,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 		    	imovelMicro.setConsumoRateioEsgoto(helper.getConsumoParaRateioEsgoto() * imovelMicro.getQuantidadeEconomiasTotal()
 		    		    / helper.getQuantidadeEconomiasEsgotoTotal());
+		    }else{
+		    	imovelMicro.setValorRateioEsgoto(Util.arredondar(0));
+		    	imovelMicro.setConsumoRateioEsgoto(0);
 		    }
 		    
 		    getDataManipulator().salvarImovel(imovelMicro);
@@ -656,6 +662,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				startActivity(myIntent);
 				
 				progressImpressaoCondominial.dismiss();
+				setTabColor();
 				
 				new EnviarImoveisCondominioThread(listaIdsCondominio).start();
 			}

@@ -338,8 +338,8 @@ public class ControladorConta {
     								  			  Constantes.NULO_INT,
     								  			  Constantes.NULO_INT));
     	
-    		   	if ( (getImovelSelecionado().getIndcFaturamentoAgua() == SIM) ||
-    		      	 (getImovelSelecionado().getIndcFaturamentoAgua() == NAO && getImovelSelecionado().isImovelMicroCondominio()) ){
+    		   	// Se o imóvel possui ligaçao de água ligada
+    			if (getImovelSelecionado().getIndcFaturamentoAgua() == SIM){
     				
     		   		consumoEsgoto.setConsumoCobradoMes(consumoAgua.getConsumoCobradoMes());
     			
@@ -2732,11 +2732,14 @@ public class ControladorConta {
     	if (!(getImovelSelecionado().getSituacaoLigAgua()).equals(Constantes.CORTADO)){
 		
     		//Se data de instalaçao do hidrometro IGUAL data de leitura anterior informada   E   
-    		//Data de ligação de fornecimento ANTERIOR à data de instalaçao do Hidrometro
+    		//Data de ligação de fornecimento ANTERIOR à data de instalaçao do Hidrometro E 
+    		// Não houve leitura ou anormalidade no mês anterior.
         	if (Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro(), 
-    				getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) == 0 &&
-    				Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataLigacaoFornecimento(), 
-    						getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro()) < 0 ){
+    				getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorFaturada()) == 0 &&
+    			Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataLigacaoFornecimento(), 
+    				getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro()) < 0 &&
+    			!houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao) &&
+    			getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada() == null){
        		 
        		 	result = true;
         	}
@@ -2754,11 +2757,11 @@ public class ControladorConta {
     		//Se data de instalaçao do hidrometro APOS OU IGUAL data de leitura anterior informada   E   
     		//Data de instalaçao do hidrometro ANTERIOR OU IGUAL que data de leitura atual informada E
     		//Houve leitura ou anormalidade no mes anterior (para diferenciar de nova instalação de hidrometro)
-	    	 if ( ( Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
-	    			 	getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) >= 0 ) && 
-	    			(Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
-	    				getImovelSelecionado().getMedidor(tipoMedicao).getDataLeitura()) <= 0 ) &&
-	    			(houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao)) ) {
+	    	 if (houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao) &&
+	    		 Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
+	    			 getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) >= 0  && 
+	    		 Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
+	    			 getImovelSelecionado().getMedidor(tipoMedicao).getDataLeitura()) <= 0 ) {
 	    		 
 	    		 result = true;
 	    	 }
@@ -2775,12 +2778,15 @@ public class ControladorConta {
     	// Imovel Cortado nao necessita verificar.
     	if (!(getImovelSelecionado().getSituacaoLigAgua()).equals(Constantes.CORTADO)){
     		
-    		//Se data de instalaçao do hidrometro IGUAL data de leitura anterior informada   E   
-    		//Data de ligação de fornecimento IGUAL à data de instalaçao do Hidrometro.
-    	    if (Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
-    	    		getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) == 0 &&
-    			Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataLigacaoFornecimento(), 
-    					getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro()) == 0 ){
+    		//Se Data de ligação de fornecimento IGUAL à data de instalaçao do Hidrometro E
+    		//Data de instalaçao do hidrometro IGUAL data de leitura anterior faturada   E
+    		// Não houve leitura ou anormalidade no mês anterior
+    	    if (Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataLigacaoFornecimento(), 
+    	    		getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro()) == 0 &&
+    	    	Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
+    	    		getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorFaturada()) == 0 &&
+    	    	!houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao) &&
+    	    	getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada() == null){
     	    	
     	    	result =  true;
     	    }
