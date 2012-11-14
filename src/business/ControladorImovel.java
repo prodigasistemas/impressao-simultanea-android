@@ -293,7 +293,7 @@ public class ControladorImovel {
 		    // vigencia do primeiro
 		    // dado tarifa que encontramos
 	
-		    //Daniel - Novo método de calculo - condominio
+		    //Novo método de calculo - condominio
 		    if (imovel.getIndcCondominio() == Constantes.SIM && imovel.getMatriculaCondominio() == Constantes.NULO_INT){
 		    	consumoMinimoImovel = 0;
 		    }else{
@@ -305,7 +305,7 @@ public class ControladorImovel {
 		    // minimo do imovel
 		    Double consumoCobradoMes;
 	
-		    //Daniel - Novo método de calculo - condominio
+		    //Novo método de calculo - condominio
 		    if (imovel.getIndcCondominio() == Constantes.SIM && imovel.getMatriculaCondominio() == Constantes.NULO_INT){
 			    consumoCobradoMes = new Double(imovel.getEfetuarRateioConsumoHelper().getConsumoParaRateioAgua());
 		    }else{
@@ -317,7 +317,7 @@ public class ControladorImovel {
 		// 4. Calculamos o consumo por economia
 		int consumoPorEconomia;
 	
-		//Daniel - Novo método de calculo - condominio
+		//Novo método de calculo - condominio
 	    if (imovel.getIndcCondominio() == Constantes.SIM && imovel.getMatriculaCondominio() == Constantes.NULO_INT){
 	    	consumoPorEconomia = imovel.getEfetuarRateioConsumoHelper().getConsumoParaRateioAgua() 
 	    	/ imovel.getQuantidadeEconomiasTotal();;
@@ -393,7 +393,7 @@ public class ControladorImovel {
 		    int consumoMinimo = 0;
 		    double valorPorEconomia = 0;
 		    	
-		    //Daniel - Novo método de calculo - condominio
+		    //Novo método de calculo - condominio
 		    if (imovel.getIndcCondominio() == Constantes.SIM && imovel.getMatriculaCondominio() == Constantes.NULO_INT && consumoPorEconomia < 10){
 		    	if (consumoPorEconomia > 0){
 		    		

@@ -28,9 +28,8 @@
     <string name="menu_selecionar_impressora">Selecionar Impressora</string>
     
     <string-array name="consulta">
-        <item></item>
-	    <item>Nº do Hidrômetro</item>
 	    <item>Matrícula</item>
+	    <item>Nº do Hidrômetro</item>
 	    <item>Sequencial Rota</item>
 	    <item>Sequencial</item>
 	    <item>Quadra</item>

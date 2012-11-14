@@ -580,14 +580,14 @@ public class ControladorConta {
 
         if (isImovelHidrometroSubstituido(tipoMedicao)) {
 
-        	// Daniel - verifica se a leitura informada é maior que a leitura do hidrometro no momento da substituiçao
+        	// verifica se a leitura informada é maior que a leitura do hidrometro no momento da substituiçao
         	if(leitura > medidor.getLeituraInstalacaoHidrometro()){
         		
         		consumo.setConsumoMedidoMes(leitura - medidor.getLeituraInstalacaoHidrometro());
         		consumo.setConsumoCobradoMes(leitura - medidor.getLeituraInstalacaoHidrometro());
         		consumo.setLeituraAtual(leitura);
         	
-        	// Daniel - Se for menor, faz o calculo pela média.
+        	// Se for menor, faz o calculo pela média.
         	}else{
         		consumo.setConsumoMedidoMes(Constantes.NULO_INT);
         		consumo.setConsumoCobradoMes(cMedio);
@@ -705,7 +705,7 @@ public class ControladorConta {
     			    	hidrometroParado = true;
     			    }
 
-    // Daniel - Imovel condominio em situação cortado (é pre-faturado) nao deve gerar anormalidade de leitura = Hidrometro Parado.
+    			    //Imovel condominio em situação cortado (é pre-faturado) nao deve gerar anormalidade de leitura = Hidrometro Parado.
     			    if (hidrometroParado && 
     			    	(!getImovelSelecionado().isImovelMicroCondominio() ||
     			    	(!getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)))) {
@@ -775,8 +775,7 @@ public class ControladorConta {
     				    consumo.setTipoConsumo(CONSUMO_TIPO_ESTIMADO);
     				}
 
-    // Daniel - verificar se o ajuste de consumo desfez a virada de hidrometro.
-    				
+    				// verificar se o ajuste de consumo desfez a virada de hidrometro.
     				if(medidor.getLeituraAtualFaturamento() != Constantes.NULO_INT && 
     						medidor.getLeituraAtualFaturamento() < leituraAnterior){
     					
@@ -786,7 +785,7 @@ public class ControladorConta {
 
     				if (medidor.getLeituraEsperadaInicial() > medidor.getLeituraEsperadaFinal()){
     					
-    					//	Daniel - Verifica se está fora de faixa
+    					//	Verifica se está fora de faixa
     					if (isForaDeFaixa(medidor)) {
 
     						consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_FORA_DE_FAIXA);
@@ -830,7 +829,7 @@ public class ControladorConta {
     		consumo.setLeituraAtual(leituraAnterior + cMedio);
     		consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
 
-    		//		Daniel - se já tiver identificado Hidrometro substituido, nao redefinir anormalidade de consumo.
+    		// Se já tiver identificado Hidrometro substituido, nao redefinir anormalidade de consumo.
     		if(consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO){
     			consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_LEITURA_N_INFO);
     		}
@@ -853,7 +852,7 @@ public class ControladorConta {
     			// 1.1
     			consumo.setConsumoMedidoMes(Constantes.NULO_INT);
 
-//    			Daniel - se já tiver identificado Hidrometro substituido, nao redefinir anormalidade de consumo.
+    			// Se já tiver identificado Hidrometro substituido, nao redefinir anormalidade de consumo.
     			if(consumo.getAnormalidadeConsumo() != Consumo.CONSUMO_ANORM_HIDR_SUBST_INFO){
     				consumo.setAnormalidadeConsumo(Consumo.ANORMALIDADE_LEITURA);
     			}
@@ -1241,7 +1240,7 @@ public class ControladorConta {
     	this.consumoEsgoto = consumoEsgoto;
     }
 
-  //Daniel - Novo método de calculo - condominio
+    //Novo método de calculo - condominio
     private double calcularContaAguaParaRateado(Imovel imovelMacro) {
 
 //    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
@@ -1265,7 +1264,7 @@ public class ControladorConta {
     	return imovelMacro.getValorAgua();
     }
 
-  //Daniel - Novo método de calculo - condominio
+  //Novo método de calculo - condominio
     private double calcularContaEsgotoParaRateado(Imovel imovelMacro) {
 
 //    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
@@ -1350,12 +1349,12 @@ public class ControladorConta {
 		}
 	
 		if (imovelMacro.getIndcFaturamentoAgua() == Constantes.SIM) {
-			//Daniel - Novo método de calculo - condominio
+			//Novo método de calculo - condominio
 	   		imovelMacro.getConsumoAgua().setConsumoCobradoMesImoveisMicro(
 			    helper.getConsumoLigacaoAguaTotal());
 		}
 	
-		//Daniel - Novo método de calculo - condominio
+		//Novo método de calculo - condominio
 		if (imovelMacro.getIndcFaturamentoEsgoto() == Constantes.SIM) {
 		    imovelMacro.getConsumoEsgoto().setConsumoCobradoMesImoveisMicro(
 			    helper.getConsumoLigacaoEsgotoTotal());
@@ -1378,7 +1377,7 @@ public class ControladorConta {
 		// mínimos, atribuir
 		// valor zero ao consumo de agua a ser rateado
 	
-	//Daniel - Novo método de calculo - condominio
+		//Novo método de calculo - condominio
 		if (consumoAguaASerRateadoAgua > 0 && 
 			imovelMacro.getConsumoAgua().getConsumoCobradoMesOriginal() <= helper.getConsumoMinimoTotal()) {
 		    
@@ -1390,7 +1389,7 @@ public class ControladorConta {
 		// tolerancia para
 		// rateio do consumo atribuir zero ao consumo Agua a ser rateado
 	
-	//Daniel - Novo método de calculo - condominio
+	// - Novo método de calculo - condominio
 		if (Math.abs(consumoAguaASerRateadoAgua) <= imovelMacro.getConsumoAgua().getConsumoCobradoMesOriginal()
 			* (ControladorRota.getInstancia().getDadosGerais().getPercentToleranciaRateio() / 100)) {
 		    
@@ -1416,7 +1415,7 @@ public class ControladorConta {
 		// consumo
 		// mínimos, atrituir valor zero ao consumo de Esgoto a ser rateado
 	
-		//Daniel - Novo método de calculo - condominio
+		// - Novo método de calculo - condominio
 		if (consumoEsgotoASerRateadoEsgoto > 0 && 
 				imovelMacro.getConsumoEsgoto().getConsumoCobradoMesOriginal() <= helper.getConsumoMinimoTotal()) {
 		    
@@ -1428,7 +1427,7 @@ public class ControladorConta {
 		// tolerancia para rateio do consumo
 		// atribuir zero ao consumo Esgoto a ser rateado
 	
-		//Daniel - Novo método de calculo - condominio
+		// - Novo método de calculo - condominio
 		if (Math.abs(consumoEsgotoASerRateadoEsgoto) <= imovelMacro.getConsumoEsgoto().getConsumoCobradoMesOriginal()
 			* (ControladorRota.getInstancia().getDadosGerais().getPercentToleranciaRateio() / 100)) {
 		    
@@ -2161,16 +2160,20 @@ public class ControladorConta {
 		}
 	
 		if (getImovelSelecionado().getSituacaoTipo() != null) {
-		    if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
+		    
+			if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
 			consumo.setConsumoCobradoMes(cMedio);
 			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_IMOV);
+		    
 		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MINIMO) {
 		    	consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
 			consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+		    
 		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MEDIA) {
 			consumo.setConsumoCobradoMes(cMedio);
 			consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-	// Daniel - Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
+			
+			// Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
 		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == FIXO) {
 				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
 	
@@ -2251,13 +2254,16 @@ public class ControladorConta {
 			if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == NAO_OCORRE) {
 			    consumo.setConsumoCobradoMes(cMedio);
 			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_IMOV);
+			
 			} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MINIMO) {
 				consumo.setConsumoCobradoMes(getImovelSelecionado().getConsumoMinimoImovel());
 				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
+			
 			} else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == MEDIA) {
 			    consumo.setConsumoCobradoMes(cMedio);
 			    consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-			 // Daniel - Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
+			
+			// Situaçao especial de faturamento - "FATURAR CONSUMO/VOLUME INFORMADO"
 		    } else if (getImovelSelecionado().getSituacaoTipo().getIdAnormalidadeConsumoSemLeitura() == FIXO) {
 				consumo.setTipoConsumo(CONSUMO_TIPO_FIXO_SITUACAO_ESPECIAL);
 	
@@ -2459,7 +2465,7 @@ public class ControladorConta {
 	// Obtém a quantidade de dias de consumo
 	int quantidadeDiasConsumo = 0;
 
-	//    Daniel - Imovel antes fixo e agora hidrometrado.
+	// Imovel antes fixo e agora hidrometrado.
 	if (isImovelFixoComHidrometroInstalado(tipoMedicao)){
 
 		quantidadeDiasConsumo = (int) Util.obterModuloDiferencasDatasDias(
@@ -2483,7 +2489,7 @@ public class ControladorConta {
 		Date dataLeituraNaoMedidoAtual;
 		int diasConsumoLido  = (int) Util.obterModuloDiferencasDatasDias(medidor.getDataLeitura(), medidor.getDataInstalacao());
 		
-//	    Daniel - Imovel com nova instalacao de fornecimento hidrometrado.
+		//Imovel com nova instalacao de fornecimento hidrometrado.
 		if (isImovelNovaInstalacaoHidrometro(tipoMedicao)){
 
 			// Obtém a quantidade de dias de consumo ajustado
@@ -2499,7 +2505,7 @@ public class ControladorConta {
 			quantidadeDiasConsumoAjustado = (int) Util.obterModuloDiferencasDatasDias(medidor.getDataInstalacao(), dataLeituraNaoMedidoAtual);
 		
 		
-//	    Daniel - Imovel antes fixo e agora hidrometrado.
+		//Imovel antes fixo e agora hidrometrado.
 		}else if (isImovelFixoComHidrometroInstalado(tipoMedicao)){
 
 			if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
@@ -2510,7 +2516,8 @@ public class ControladorConta {
 				
 			}
     	
-	    }// Verifica se a data do ajuste é não nula
+	    }
+		// Verifica se a data do ajuste é não nula
 		else if (ControladorRota.getInstancia().getDadosGerais().getDataAjusteLeitura() != null) {
 		// Obtém a quantidade de dias de consumo ajustado
 			quantidadeDiasConsumoAjustado = (int) Util
@@ -2547,11 +2554,10 @@ public class ControladorConta {
 	    if ( (diasAjuste < -3 || diasAjuste > 3) || isImovelHidrometroSubstituido(tipoMedicao) ) {
 
 			// Cálculo para obter a leitura ajustada
-			//Daniel - correçao bug: leitura faturada gerado incoerentemente em situacoes em que nao é registrado leitura e sim anormalidade.
-		    //Daniel - Nao deve ajustar para anormalidade de consumo - leitura menor que anterior.
+		    // Nao deve ajustar para anormalidade de consumo - leitura menor que anterior.
 
 	    	double consumoDiario = 0;
-	    	//Daniel - Hidrometro substituido.
+	    	//Hidrometro substituido.
 			if (medidor.getLeitura() != Constantes.NULO_INT && 
 				isImovelHidrometroSubstituido( tipoMedicao) &&
 				consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
@@ -2573,7 +2579,7 @@ public class ControladorConta {
 					
 				leituraAjustada = medidor.getLeituraInstalacaoHidrometro() + (int) Util.arredondar((consumoDiario * diasConsumoLidoAjustado), 0);
 			
-//		    Daniel - Imovel antes fixo e agora hidrometrado.
+			//Imovel antes fixo e agora hidrometrado.
 			}else if(medidor.getLeitura() != Constantes.NULO_INT &&
 					isImovelFixoComHidrometroInstalado(tipoMedicao) &&
 					consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR){
@@ -2606,11 +2612,10 @@ public class ControladorConta {
 		    }
 		    
 	
-//Daniel - Consumo realizado pelo valor medio nao deve fazer reajuste de consumo
-//pois o consumo médio já é baseado no numero de dias ajustado (28 - 31 dias).
+			//Consumo realizado pelo valor medio nao deve fazer reajuste de consumo
+			//pois o consumo médio já é baseado no numero de dias ajustado (28 - 31 dias).
 			
 			// Obtém o consumo a ser cobrado mês
-			
 			if ((leituraAjustada != Constantes.NULO_INT && 
 				 medidor.getLeitura() != Constantes.NULO_INT && 
 				 consumo.getTipoConsumo() != CONSUMO_TIPO_MEDIA_HIDR) &&
@@ -2666,7 +2671,6 @@ public class ControladorConta {
 			this.obterNumeroDigitosHidrometro(tipoMedicao));
 
 	// Caso a leitura ajustada menor que zero
-	//Daniel - correçao bug: leitura faturada gerado incoerente em situacoes em que nao é regitrado leitura e sim anormalidade.
 	if (leituraAjustada == Constantes.NULO_INT){
 
 		if ( consumo.getLeituraAtual() > (dezElevadoNumeroDigitos - 1) ) {
@@ -2674,9 +2678,9 @@ public class ControladorConta {
 			medidor.setLeituraAtualFaturamento(consumo.getLeituraAtual() - (dezElevadoNumeroDigitos-1));
 			leituraAjustada = leituraAjustada - (dezElevadoNumeroDigitos-1);
 				
-			// Daniel - caso devido ao valor da leitura ajustada ocasione em virada de hidrometro e nao houver nenhuma outra anormalidade já configurada.
+			// caso devido ao valor da leitura ajustada ocasione em virada de hidrometro e nao houver nenhuma outra anormalidade já configurada.
 			if(consumo.getAnormalidadeConsumo() == 0 || 
-					consumo.getAnormalidadeConsumo() == Consumo.ANORMALIDADE_LEITURA){
+			   consumo.getAnormalidadeConsumo() == Consumo.ANORMALIDADE_LEITURA){
 				
 				consumo.setAnormalidadeConsumo(Consumo.CONSUMO_ANORM_VIRADA_HIDROMETRO);
 			}
@@ -2696,7 +2700,7 @@ public class ControladorConta {
 		medidor.setLeituraAtualFaturamento(leituraAjustada - (dezElevadoNumeroDigitos-1));
 		leituraAjustada = leituraAjustada - (dezElevadoNumeroDigitos-1);
 			
-		// Daniel - caso devido ao valor da leitura ajustada ocasione em virada de hidrometro e nao houver nenhuma outra anormalidade já configurada.
+		// caso devido ao valor da leitura ajustada ocasione em virada de hidrometro e nao houver nenhuma outra anormalidade já configurada.
 		if(consumo.getAnormalidadeConsumo() == 0 || 
 				consumo.getAnormalidadeConsumo() == Consumo.ANORMALIDADE_LEITURA){
 			
@@ -2710,9 +2714,8 @@ public class ControladorConta {
 		
     consumo.setLeituraAtual(medidor.getLeituraAtualFaturamento());
 
-	System.out.println("Data Leitura Atual Faturada!!!!!!!!: "
-			+ medidor.getDataLeituraAtualFaturamento());
-	System.out.println("leituraAjustada!!!!!!!!: " + leituraAjustada);
+	System.out.println("Data Leitura Atual Faturada: " + medidor.getDataLeituraAtualFaturamento());
+	System.out.println("leituraAjustada: " + leituraAjustada);
 	
     }
     
@@ -2724,7 +2727,7 @@ public class ControladorConta {
     	return true;
     }
 
-// Daniel - Verifica se o imovel era Nao_medido e agora recebeu um hidrometro.    
+    // Verifica se o imovel era Nao_medido e agora recebeu um hidrometro.    
     public boolean isImovelFixoComHidrometroInstalado(int tipoMedicao){
 		
     	boolean result = false;
@@ -2747,7 +2750,7 @@ public class ControladorConta {
     	return result;
     }
     
- // Daniel - Verifica se o imovel teve hidrometro substituido.    
+    // Verifica se o imovel teve hidrometro substituido.    
     public boolean isImovelHidrometroSubstituido(int tipoMedicao){
    
     	boolean result = false;
@@ -2757,7 +2760,8 @@ public class ControladorConta {
     		//Se data de instalaçao do hidrometro APOS OU IGUAL data de leitura anterior informada   E   
     		//Data de instalaçao do hidrometro ANTERIOR OU IGUAL que data de leitura atual informada E
     		//Houve leitura ou anormalidade no mes anterior (para diferenciar de nova instalação de hidrometro)
-	    	 if (houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao) &&
+	    	 if (getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada() != null &&
+	    		 houveLeituraOuAnormalidadeLeituraMesAnterior(tipoMedicao) &&
 	    		 Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
 	    			 getImovelSelecionado().getMedidor(tipoMedicao).getDataLeituraAnteriorInformada()) >= 0  && 
 	    		 Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacao(), 
@@ -2770,7 +2774,7 @@ public class ControladorConta {
     }
     
     
-//    Daniel - Verifica se é imovel com nova instalacao de fornecimento hidrometrado.
+    //Verifica se é imovel com nova instalacao de fornecimento hidrometrado.
     public boolean isImovelNovaInstalacaoHidrometro(int tipoMedicao){
 
     	boolean result = false;
@@ -2797,7 +2801,7 @@ public class ControladorConta {
     public boolean isForaDeFaixa(Medidor reg8){
 		boolean foraDeFaixa = false;
 
-//		Considerando a possibilidade de virada do hidrometro.
+		//Considerando a possibilidade de virada do hidrometro.
 		if (reg8.getLeituraEsperadaInicial() > reg8.getLeituraEsperadaFinal()){
 	
 			if (reg8.getLeituraAtualFaturamento() < reg8.getLeituraEsperadaInicial() 

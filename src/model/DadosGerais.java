@@ -33,13 +33,14 @@ public class DadosGerais {
 	private short indcBloquearReemissaoConta;
 
 	private int qtdDiasAjusteConsumo;
-	// Daniel - indicador Rota Dividida
+	
+	//indicador Rota Dividida
 	private int indicadorRotaDividida;
 
-	// Daniel - id da Rota
+	// id da Rota
 	private int idRota;
 
-	// Daniel - Indicador de calculo de consumo pela médio do HIDROMETRO.
+	// Indicador de calculo de consumo pela médio do HIDROMETRO.
 	private int indicadorCalculoPelaMedia = Constantes.NAO;
 
 	private int moduloVerificadorCodigoBarras;
@@ -233,32 +234,32 @@ public class DadosGerais {
 		this.qtdDiasAjusteConsumo = Util.verificarNuloInt(qtdDiasAjusteConsumo);
 	}
 
-	// Daniel - get indicador Rota Dividida
+	// get indicador Rota Dividida
 	public int getIndicadorRotaDividida() {
 		return indicadorRotaDividida;
 	}
 
-	// Daniel - set indicador Rota Dividida
+	// set indicador Rota Dividida
 	public void setIndicadorRotaDividida(String indicadorRotaDividida) {
 		this.indicadorRotaDividida = Util.verificarNuloInt(indicadorRotaDividida);
 	}
 
-	// Daniel - get Id de Rota
+	// get Id de Rota
 	public int getIdRota() {
 		return idRota;
 	}
 
-	// Daniel - set Id de Rota
+	// set Id de Rota
 	public void setIdRota(String idRota) {
 		this.idRota = Util.verificarNuloInt(idRota);
 	}
 
-	// Daniel - get Indicador de calculo de consumo pela média do Hidrometro.
+	// get Indicador de calculo de consumo pela média do Hidrometro.
 	public int getIdCalculoMedia() {
 		return indicadorCalculoPelaMedia;
 	}
 
-	// Daniel - set Indicador de calculo de consumo pela média do Hidrometro.
+	// set Indicador de calculo de consumo pela média do Hidrometro.
 	public void setIdCalculoMedia(String indicadorCalculoPelaMedia) {
 		this.indicadorCalculoPelaMedia = Util.verificarNuloInt(indicadorCalculoPelaMedia);
 	}

@@ -232,9 +232,9 @@ public class ImpressaoContaCosanpa {
     				"T 7 0 200 700 EXTRATO DE CONSUMO DO MACROMEDIDOR \n"+
         			"T 7 0 53 725 CONSUMO DO IMOVEL CONDOMINIO \n"+
         			"T 7 0 571 725 "+ imovel.getConsumoAgua().getConsumoCobradoMes() + "\n" +
-        			"T 7 0 53 750 SOMA DOS CONSUMOS DOS IMÓVEIS VINCULADOS \n"+
+        			"T 7 0 53 750 SOMA DOS CONSUMOS DOS IMOVEIS VINCULADOS \n"+
         			"T 7 0 571 750 "+ imovel.getEfetuarRateioConsumoHelper().getConsumoLigacaoAguaTotal() + "\n" +
-        			"T 7 0 53 775 QUANTIDADE IMÓVEIS VINCULADOS \n"+
+        			"T 7 0 53 775 QUANTIDADE IMOVEIS VINCULADOS \n"+
         			"T 7 0 571 775 "+ imovel.getEfetuarRateioConsumoHelper().getQuantidadeEconomiasAguaTotal() + "\n" +
         			"T 7 0 53 800 VALOR RATEADO \n"+
         			"T 7 0 571 800  R$ "+ Util.formatarDoubleParaMoedaReal(imovel.getEfetuarRateioConsumoHelper().getContaParaRateioAgua()) + "\n" +
@@ -246,9 +246,9 @@ public class ImpressaoContaCosanpa {
         		    "T 7 0 53 900 CASO O VALOR DO RATEIO ESTEJA ELEVADO \n"+
         		    "T 7 0 63 925 1. Confirme a leitura do macro \n"+
         		    "T 7 0 63 950 2. Verifique os reservatórios \n"+
-        		    "T 7 0 63 975 3. Verifique se ha apartamento ligado clandestino \n"+
+        		    "T 7 0 63 975 3. Verifique se ha apartamento ligado clandestinamente\n"+
         		    "T 7 0 53 1025 QUALQUER IRREGULARIDADE COMUNIQUE A COSANPA ATRAVES DO \n"+
-        		    "T 7 0 53 1050 SERTOR DE ATENDIMENTO \n"+
+        		    "T 7 0 53 1050 SETOR DE ATENDIMENTO \n"+
         		    "T 7 0 53 1075 RATEIO: Obtido atraves da diferenca do consumo entre \n"+
         		    "T 7 0 53 1100 o macromedidor e os consumos dos apartamentos \n"+
 
@@ -462,7 +462,7 @@ public class ImpressaoContaCosanpa {
 	//		    }
 	
 			    consumo = consumoAgua.getConsumoCobradoMes() + "";
-			 // Daniel - Numero de dias de consumo nunca deve ser ZERO mesmo para imoveis fixos.
+			    // Numero de dias de consumo nunca deve ser ZERO mesmo para imoveis fixos.
 			    diasConsumo =  Long.toString(Util.quantidadeDiasMes(Calendar.getInstance())) + "";
 			}
 	    }
@@ -983,7 +983,7 @@ public class ImpressaoContaCosanpa {
 		if (imovel.getConsumoAgua() != null && imovel.getValorRateioAgua() > 0) {
 
 		    dados = new String[2];
-		    dados[0] = "RATEIO DE ÁGUA DO CONDOMÍNIO";
+		    dados[0] = "RATEIO DE AGUA DO CONDOMINIO";
 		    dados[1] = Util.formatarDoubleParaMoedaReal(imovel.getValorRateioAgua());
 		    retorno.add(dados);
 		}
@@ -992,7 +992,7 @@ public class ImpressaoContaCosanpa {
 		if (imovel.getConsumoEsgoto() != null && imovel.getValorRateioEsgoto() > 0) {
 
 		    dados = new String[2];
-		    dados[0] = "RATEIO DE ESGOTO DO CONDOMÍNIO";
+		    dados[0] = "RATEIO DE ESGOTO DO CONDOMINIO";
 		    dados[1] = Util.formatarDoubleParaMoedaReal(imovel.getValorRateioEsgoto());
 		    retorno.add(dados);
 		}
@@ -1180,7 +1180,7 @@ public class ImpressaoContaCosanpa {
 		    // caso o valor dos créditos n seja maior que o valor da
 		    // conta sem os créditos
 		    
-		    // Daniel - Verificar se o imovel deve ou nao considerar Bonus Social.
+		    //Verificar se o imovel deve ou nao considerar Bonus Social.
 	    	if( ( (imovel.getCreditos(Constantes.SIM).get(i))).getCodigo().equalsIgnoreCase(Imovel.CODIGO_BONUS_SOCIAL)  &&
 		    		Integer.parseInt(imovel.getCodigoPerfil()) == Imovel.PERFIL_BONUS_SOCIAL &&
 		    		imovel.getConsumoAgua() != null &&

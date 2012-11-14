@@ -115,7 +115,6 @@ public class ImovelTab extends Fragment {
 			imovelInformativoImage.setImageResource(R.drawable.informativo32x32);
 		}
 			
-		
 		return view;
 	}
 	

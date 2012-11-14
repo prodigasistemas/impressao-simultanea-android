@@ -39,7 +39,6 @@ public class SituacaoTipo {
 
 	public void setTipoSituacaoEspecialFaturamento(String tipoSituacaoEspecialFaturamento) {
 		this.tipoSituacaoEspecialFaturamento = Util.verificarNuloInt(tipoSituacaoEspecialFaturamento);
-		// Daniel
 		// System.out.println("TipoSituacaoEspecialFaturamento: " +
 		// this.tipoSituacaoEspecialFeturamento);
 	}

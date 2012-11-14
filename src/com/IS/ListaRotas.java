@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -54,7 +56,13 @@ public class ListaRotas extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
        	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+    	this.getListView().setCacheColorHint(Color.TRANSPARENT);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+    	int[] colors = {0x12121212, 0xFFFFFFFF, 0x12121212}; // red for the example
+    	this.getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+    	this.getListView().setDividerHeight(1);
+
         instanciate();
     }
     

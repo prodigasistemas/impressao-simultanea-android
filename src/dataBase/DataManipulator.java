@@ -1283,10 +1283,10 @@ public class DataManipulator {
 				helper.setQuantidadeEconomiasEsgotoTotal(cursor.getInt(5));
 				helper.setConsumoLigacaoEsgotoTotal(cursor.getInt(6));
 				helper.setConsumoMinimoTotal(cursor.getInt(7));
-				helper.setContaParaRateioAgua(cursor.getInt(8));
-				helper.setConsumoParaRateioAgua(cursor.getInt(9));
-				helper.setContaParaRateioEsgoto(cursor.getInt(10));
-				helper.setConsumoParaRateioEsgoto(cursor.getInt(11));
+				helper.setConsumoParaRateioAgua(cursor.getInt(8));
+				helper.setContaParaRateioAgua(cursor.getDouble(9));
+				helper.setConsumoParaRateioEsgoto(cursor.getInt(10));
+				helper.setContaParaRateioEsgoto(cursor.getDouble(11));
 //				helper.setReterImpressaoConta(cursor.getInt(12));
 				helper.setPassos(cursor.getInt(12));
 				

@@ -431,20 +431,17 @@ public class BusinessConta {
 		if (!leituraInvalida && !emiteConta){
 			
 			mensagemPermiteImpressao = "Conta do imóvel nao pode ser emitida!";
-//			Toast.makeText(this, "Conta do imóvel nao pode ser emitida!", Toast.LENGTH_LONG).show();
 			permiteImpressao = false;
 			
 		} else if (!leituraInvalida && (valorContaMaiorPermitido || reterConta)){
 			
 			getImovelSelecionado().setIndcGeracaoConta(Constantes.NAO);
     		mensagemPermiteImpressao = "Conta retida, entrega posterior!";
-//			Toast.makeText(this, "Conta retida, entrega posterior!", Toast.LENGTH_LONG).show();
 			permiteImpressao = false;
 			
 		} else if (!leituraInvalida && !valorAcimaDoMinimo) {
 			
     		mensagemPermiteImpressao = "Valor da conta menor que o permitido!";
-//			Toast.makeText(this, "Valor da conta menor que o permitido!", Toast.LENGTH_LONG).show();
 			
 			// Imovel com conta abaixo do minimo nao deve ser impresso, mas não deve fazer parte dos imoveis com conta a imprimir no Gsan. 
 			getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
@@ -456,20 +453,17 @@ public class BusinessConta {
 			
 			getImovelSelecionado().setIndcGeracaoConta(Constantes.NAO);
     		mensagemPermiteImpressao = "Não é permitido a impressão de conta deste imóvel.";
-//			Toast.makeText(this, "Não é permitido a impressão de conta deste imóvel.", Toast.LENGTH_LONG).show();
 			permiteImpressao = false;
 			
 		} else if ( !leituraInvalida && valorConta == 0d && getImovelSelecionado().getValorResidualCredito() == 0d) {
     		mensagemPermiteImpressao = "Conta com valor zerado e sem crédito. Não imprimir!";
-//			Toast.makeText(this, "Conta com valor zerado e sem crédito. Não imprimir!", Toast.LENGTH_LONG).show();
 			permiteImpressao = false;
 			
-			// Daniel - Imovel com Endereço alternativo
+			// Imovel com Endereço alternativo
 			// caso nao haja erro de leitura e imovel contém endereço alternativo
 		} else if ( !leituraInvalida && getImovelSelecionado().getEnderecoEntrega().length() > 0 ){
 			
     		mensagemPermiteImpressao = "Conta do imóvel não pode ser emitida! Entrega  posterior!";
-//			Toast.makeText(this, "Conta do imóvel não pode ser emitida! Entrega  posterior!", Toast.LENGTH_LONG).show();
 			permiteImpressao = false;
 		}
 		

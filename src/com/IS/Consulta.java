@@ -36,7 +36,7 @@ public class Consulta extends ListActivity {
 	Spinner spinnerMetodoBusca;
 	Spinner spinnerFiltro;
 	String searchCondition = null;
-	static int metodoBusca = Constantes.METODO_BUSCA_NENHUM;
+	static int metodoBusca = Constantes.METODO_BUSCA_MATRICULA;
 
 
     /** Called when the activity is first created. */
@@ -45,7 +45,7 @@ public class Consulta extends ListActivity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.consulta);
  
-    	metodoBusca = Constantes.METODO_BUSCA_NENHUM;
+    	metodoBusca = Constantes.METODO_BUSCA_MATRICULA;
     	
     	// Spinner Metodo Busca
     	spinnerMetodoBusca = (Spinner) findViewById(R.id.spinnerMetodoBusca);
@@ -79,8 +79,7 @@ public class Consulta extends ListActivity {
     	enderecoList = null;
     	setListAdapter(enderecoList);
 
-    		if (ControladorRota.getInstancia().getDataManipulator() != null &&
-    			metodoBusca != Constantes.METODO_BUSCA_NENHUM){
+    		if (ControladorRota.getInstancia().getDataManipulator() != null){
     			
     			searchCondition = null;
 

@@ -48,6 +48,7 @@ public class MedidorAguaTab extends Fragment {
     private static int leituraDigitada;
     private static View layout;
 	private TextView imovelCondominial;
+	private ImageView imovelCondominialImage;
 	private LinearLayout imovelCondominialLayout;
 	
 	@Override
@@ -76,6 +77,7 @@ public class MedidorAguaTab extends Fragment {
 		locInstalacao = (TextView) view.findViewById(R.id.locInstalacao);
 		leitura = (EditText)view.findViewById(R.id.leitura);
 		imovelCondominial = (TextView) view.findViewById(R.id.imovelCondominial);
+		imovelCondominialImage = (ImageView) view.findViewById(R.id.imovelCondominialImage);
 		imovelCondominialLayout = (LinearLayout) view.findViewById(R.id.imovelCondominialLayout);
 
 		endereco.setText(getImovelSelecionado().getEndereco());
@@ -103,6 +105,8 @@ public class MedidorAguaTab extends Fragment {
  			        	if (lista.get(i).equalsIgnoreCase(descricaoAnormalidade)){
  			                ((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).setSelection(i+1);
  			        		break;
+ 			        	}else{
+ 			                ((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).setSelection(0); 			        		
  			        	}
  			        }
  				}
@@ -127,7 +131,9 @@ public class MedidorAguaTab extends Fragment {
 			public void onItemSelected(AdapterView parent, View v, int position, long id){
  				String codigo = ControladorRota.getInstancia().getDataManipulator().selectCodigoByDescricaoFromTable(Constantes.TABLE_ANORMALIDADE, ((Spinner)view.findViewById(R.id.spinnerAnormalidade)).getSelectedItem().toString());
  				
- 				if (codigo.compareTo(((EditText)view.findViewById(R.id.codigoAnormalidade)).getText().toString()) != 0){
+ 				if (codigo.compareTo(((EditText)view.findViewById(R.id.codigoAnormalidade)).getText().toString()) != 0 &&
+ 					((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).getSelectedItemPosition() != 0){
+ 					
  					consideraEventoItemSelectedListenerCodigoAnormalidade = true;  
  					((EditText)view.findViewById(R.id.codigoAnormalidade)).setText(codigo);
 	        	}
@@ -153,6 +159,7 @@ public class MedidorAguaTab extends Fragment {
 									  + getImovelSelecionado().getQuantidadeImoveisCondominio());
 			
 			imovelCondominial.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			imovelCondominialImage.setImageResource(R.drawable.condominio);
 		}
 			
 		return view;

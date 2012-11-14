@@ -184,7 +184,7 @@ public class ValidacaoLeitura {
 		    if ( !error ){
 				int numeroDigitosHidrometro = 0;
 				
-				// Daniel - Obtém o número de dígitos do hidrometro.
+				// Obtém o número de dígitos do hidrometro.
 		 		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null){
 		 			
 		 			numeroDigitosHidrometro = getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).getNumDigitosLeitura();
@@ -204,7 +204,7 @@ public class ValidacaoLeitura {
 	
 		    if ( !error ){
 	
-		    	//	Daniel - verifica se valor esta fora de faixa    	
+		    	// verifica se valor esta fora de faixa    	
 				if ( 
 					( intLeitura != Constantes.NULO_INT && 
 							( (getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaInicial() < getImovelSelecionado().getMedidor(tipoValidacao).getLeituraEsperadaFinal()) &&

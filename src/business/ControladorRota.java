@@ -113,8 +113,6 @@ public class ControladorRota {
 
 				    int tipoRegistro = Integer.parseInt(line.substring(0, 2));
 				    
-//				    Log.i("Tipo linha", ""+tipoRegistro);
-				    
 				    switch (tipoRegistro) {
 				    
 						case REGISTRO_TIPO_IMOVEL:
@@ -257,84 +255,6 @@ public class ControladorRota {
         file.delete();
 	}    
 
-//  /**
-//  * Carrega as anormalidades no controlador Imoveis
-//  */
-// public static Vector carregarAnormalidades(boolean apenasComIndicadorUso1) throws IOException {
-//	
-//		if ( apenasComIndicadorUso1 && anormalidadesIndicadorUso1 != null ){
-//		    return anormalidadesIndicadorUso1;
-//		
-//		} else if ( !apenasComIndicadorUso1 && anormalidadesSemIndicadorUso1 != null ){
-//		    return anormalidadesSemIndicadorUso1;
-//		
-//		} else {	
-//		    
-//			// carrega os id's de cada anormalidade
-//			Vector anors = carregarVetorAnormalidades(ControladorImovel.anormalidades, apenasComIndicadorUso1);
-//			
-//		    if (apenasComIndicadorUso1) {
-//		    	anormalidadesIndicadorUso1 = anors;
-//		    } else {
-//		    	anormalidadesSemIndicadorUso1 = anors;
-//		    }
-//
-//		    return anors;
-//		    
-//		}
-// }
-//
-// /**
-//  * Carrega o array que mapeia o indice da anormalidade no identificador.
-//  * 
-//  * @param anormalidades
-//  *            Vetor de anormalidades.
-//  */
-// public static Vector carregarVetorAnormalidades(Vector anormalidades, boolean apenasComIndicadorUso1) {
-//		
-// 	if (anormalidades != null){
-//	    	
-// 		int len = anormalidades.size();
-//			
-//			// Daniel- corrigindo vetor de anormalidades	
-//			Vector retorno = new Vector();
-//			Anormalidade anor = new Anormalidade();
-//	
-//			int contador = 1;
-//		
-//			// Daniel- corrigindo vetor de anormalidades	
-//			for (int i = 1; i < len+1 ; i++) {
-//			    Anormalidade reg14 = (Anormalidade) anormalidades.elementAt(i-1);
-//			    
-//			    // Daniel - Descarta Anormalidade LEITURA_CONFIRMADA - Usuario não pode usar tal opção.
-//			    if (reg14.getCodigo() == LEITURA_CONFIRMADA){
-//			    	len = len -1;
-//			    	continue;
-//			    }
-//				
-//			    anor = reg14;
-//			    retorno.add(anor);
-//			}
-//
-//			if (apenasComIndicadorUso1) {
-//			    Vector retornoIndicadorUsoSim = new Vector();
-//			    
-//			    // Daniel- corrigindo vetor de anormalidades	
-//			    for (int i = 0; i < len+1; i++) {
-//					if ( ((Anormalidade)retorno.elementAt(i)).getIndcUso() == Constantes.SIM ) {
-//					    retornoIndicadorUsoSim.add(retorno.elementAt(i));
-//					}
-//			    }
-//
-//			    return retornoIndicadorUsoSim;
-//			
-//			} else {
-//			    return retorno;
-//			}
-// 	}
-// 	return null;
-// }
-//
     /**
      * Carrega as anormalidades direto da Tabela Anormalidade.
      * 

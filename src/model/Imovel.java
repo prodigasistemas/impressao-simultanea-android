@@ -1139,7 +1139,7 @@ public class Imovel {
 		    this.creditos = new Vector();
 		}
 	
-	//	Daniel - Controle do valor do Bonus Social
+		//	Controle do valor do Bonus Social
 		if ((reg.getCodigo().equalsIgnoreCase(CODIGO_BONUS_SOCIAL)) && (reg.getValor() > 4.2)){
 				
 			reg.setValor(String.valueOf(4.2));
@@ -1486,7 +1486,7 @@ public class Imovel {
 
 		double soma = 0d;
 	
-	//	Daniel - Tratamento de Bônus Social
+		//	Tratamento de Bônus Social
 		if (this.getCreditos(Constantes.SIM) != null) {
 		    
 			for (int i = 0; i < this.getCreditos(Constantes.SIM).size(); i++) {
@@ -1824,7 +1824,7 @@ public class Imovel {
 		// Verificamos o valor mínimo da conta
 		boolean enviarContaValorMaiorPermitido = isValorContaAcimaDoMinimo();
 	
-		// Daniel - Imovel deve ter sido impresso também.
+		// Imovel deve ter sido impresso também.
 		/**
 		 * Será necessário reenviar caso haja alteração na leitura de agua ou
 		 * anormalidade de agua ou na leitura de poco ou anormalidade de poco ou
@@ -2133,7 +2133,7 @@ public class Imovel {
 				efetuarRateioConsumoHelper.setConsumoLigacaoAguaTotal(efetuarRateioConsumoHelper.getConsumoLigacaoAguaTotal()
 								+ consumoAgua.getConsumoCobradoMesOriginal());
 				
-				//Daniel - Veifica se houve anormalidade de consumo para reter conta.
+				//Verifica se houve anormalidade de consumo para reter conta.
 				if (consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
 					consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
@@ -2143,14 +2143,14 @@ public class Imovel {
 //					efetuarRateioConsumoHelper.setReterImpressaoConta(Constantes.SIM);
 				}
 		
-				//Daniel - Veifica se houve anormalidade de leitura para reter conta.
+				//Verifica se houve anormalidade de leitura para reter conta.
 				if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
 					consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
 					
 					indcGeracaoConta = Constantes.NAO;
 //						efetuarRateioConsumoHelper.setReterImpressaoConta(Constantes.SIM);
 				}
-				// Daniel - desconsiderando caso de nao imprimir contas abaixo do permitido para condomínio.
+				// desconsiderando caso de nao imprimir contas abaixo do permitido para condomínio.
 	//			if (valorContaMaiorPermitido){
 	//				helper.setReterImpressaoConta(true);
 	//			}
@@ -2171,14 +2171,12 @@ public class Imovel {
 						+ consumoEsgoto.getConsumoCobradoMesOriginal());
 		    }
 			
-	//	    Repositorio.salvarObjeto(hidrometroMacro);
-	
-	//	    Daniel - Caso seja Hidrometro Macro
+		// Caso seja Hidrometro Macro
 		}else if (this.indcCondominio == Constantes.SIM && this.matriculaCondominio == Constantes.NULO_INT){
 	
 		    if (consumoAgua != null) {
 	
-	//Daniel - Veifica se houve anormalidade de consumo para reter conta.
+		    	//Verifica se houve anormalidade de consumo para reter conta.
 				if (consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ALTO_CONSUMO ||
 						consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO_MEDIA ||
 						consumoAgua.getAnormalidadeConsumo() == Consumo.CONSUMO_ANORM_ESTOURO ||
@@ -2188,7 +2186,7 @@ public class Imovel {
 //					this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
 				}
 		
-				//Daniel - Veifica se houve anormalidade de leitura para reter conta.
+				//Verifica se houve anormalidade de leitura para reter conta.
 				if (consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_LEITURA_IMPEDIDA_CLIENTE ||
 					consumoAgua.getAnormalidadeLeituraFaturada() == ControladorConta.ANORM_HIDR_PORTAO_FECHADO){
 					
@@ -2196,9 +2194,7 @@ public class Imovel {
 //					this.getEfetuarRateioConsumoHelper().setReterImpressaoConta(Constantes.SIM);
 				}
 		    }
-	//	    Repositorio.salvarObjeto(this);
 		}
-		
 	}
 
     public int getIndicadorParalizarFaturamentoAgua() {
@@ -2241,8 +2237,6 @@ public class Imovel {
 				
 				} else {
 				    Imovel imovelMacro = ControladorRota.getInstancia().getDataManipulator().selectImovel("matricula = " + this.getMatriculaCondominio());
-//				    Imovel imovelMacro = new Imovel();
-		//		    Repositorio.carregarObjeto(imovelMacro, this.getIdImovelCondominio());
 		
 				    if (imovelMacro.getIndcImovelImpresso() == Constantes.SIM) {
 				    	habilitar = false;

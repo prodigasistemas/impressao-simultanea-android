@@ -656,12 +656,11 @@ public class ArquivoRetorno {
     	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getSetorComercial() + ""));				
     	// Rota (3);
     	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + ""));
-// Daniel - Id da Rota   	
+    	// Id da Rota   	
     	if (ControladorRota.getInstancia().getDadosGerais().getIdRota() != 9999){
         	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(4, ControladorRota.getInstancia().getDadosGerais().getIdRota() + ""));		
     	}
-
-// Daniel - Indicador de rota dividida    	
+    	// Indicador de rota dividida    	
     	if (ControladorRota.getInstancia().getDadosGerais().getIndicadorRotaDividida() != 999999){
         	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(2, ControladorRota.getInstancia().getDadosGerais().getIndicadorRotaDividida() + ""));		
     	}else{
@@ -716,7 +715,7 @@ public class ArquivoRetorno {
     	    qtdImoveisCalculados = Configuracao.getInstancia().getQtdImoveis();
     	} else if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_CONCLUIDOS_ATE_AGORA || 
     		    tipoArquivoRetorno == ARQUIVO_INCOMPLETO ) {
-    // Daniel - considerar numero de imoveis impressos
+    		//considerar numero de imoveis impressos
 //    		qtdImoveisCalculados = Configuracao.getInstancia().getIdsImoveisConcluidos().size();
     		qtdImoveisCalculados = idsImoveisConcluidos.size();
     		
@@ -751,15 +750,10 @@ public class ArquivoRetorno {
     			double d = (double) (i+1) / qtdImoveisCalculados;
     			byte percentual = (byte) ((d) * 100);
 
-//    			p.setProgress(percentual);
-//    			p.repaint();
-    			
     			Imovel imovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + id);
     			
-//    			ControladorImoveis.getInstancia().setImovelSelecionado(imovel);
-//    			imovel = null;
-    	//Daniel - Rota completa - checa se o imovel selecionado é informativo ou nao.
-//    			Caso seja informativo, nao deve entrar no arquivo de retorno.
+    			//Rota completa - checa se o imovel selecionado é informativo ou nao.
+    			//Caso seja informativo, nao deve entrar no arquivo de retorno.
     			// Guardamos todos os sequencias e matriculas, para a rota de marcação
     			if (!imovel.isImovelInformativo()  || imovel.isImovelCondominio()){
     				System.out.println("Incluindo Imovel: " + imovel.getMatricula());
@@ -827,17 +821,11 @@ public class ArquivoRetorno {
     				    	imovel = null;
     				} else if ( tipoArquivoRetorno == ArquivoRetorno.ARQUIVO_TODOS_OS_CALCULADOS ){
     				    arquivo = null;
-//    				    Util.mostrarErro( "O imovel de matricula " + imovel.getMatricula() + " nao esta calculado. Favor recalcular" );
-//    				    out.close();
-//    				    fc.close();
-//    				    out = null;
-//    				    fc = null;
     				    
     				    retorno[0] = Boolean.TRUE;
     				    retorno[1] = null;
     				    
     				    ControladorImovel.getInstancia().setImovelSelecionado( imovel );
-//    				    Abas.getInstancia().criarAbas();
     				}
     		    }
     		}
