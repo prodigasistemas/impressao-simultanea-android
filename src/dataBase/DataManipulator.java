@@ -4,6 +4,7 @@ import helper.EfetuarRateioConsumoHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import model.Anormalidade;
@@ -1052,6 +1053,7 @@ public class DataManipulator {
 					
 				} catch (Exception e) {
 					e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 				}
 			
 			} while (cursor.moveToNext());

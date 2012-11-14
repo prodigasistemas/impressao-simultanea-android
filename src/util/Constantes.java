@@ -25,6 +25,7 @@ public class Constantes {
        
     public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
     public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
+    public static final String DIRETORIO_LOGS = "/external_sd/GcomMovel/Logs";
     
     public static final int LIMITE_SUPERIOR_FAIXA_FINAL = 999999;
     public static final int QUEBRA_CONTAS_IMOVEL_CONDOMINIO = 5;

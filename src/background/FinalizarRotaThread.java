@@ -3,9 +3,8 @@ package background;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Date;
 import java.util.List;
-
-import com.IS.MenuPrincipal;
 
 import model.Imovel;
 import ui.ArquivoRetorno;
@@ -18,6 +17,8 @@ import android.os.Handler;
 import android.os.Message;
 import business.ControladorAcessoOnline;
 import business.ControladorRota;
+
+import com.IS.MenuPrincipal;
 
 public class FinalizarRotaThread extends Thread {
 	
@@ -110,6 +111,7 @@ public class FinalizarRotaThread extends Thread {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		}
 	}
 	

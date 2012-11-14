@@ -3,6 +3,7 @@ package views;
 import helper.EfetuarRateioConsumoHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -893,6 +894,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			} catch (ZebraPrinterConnectionException e) {
 
 				e.printStackTrace();
+				Util.salvarLog(new Date(), e.fillInStackTrace());
 				progress.dismiss();
 				
 				Looper.prepare();
@@ -925,6 +927,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+				Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
 		}
 	}
@@ -1015,6 +1018,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			} catch (ZebraPrinterConnectionException e) {
 
 				e.printStackTrace();
+				Util.salvarLog(new Date(), e.fillInStackTrace());
 				progressImpressaoCondominial.dismiss();
 				
 				Looper.prepare();
@@ -1047,79 +1051,10 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+				Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
 		}
 	}
-	
-//	class ImpressaoExtratoCondominialThread extends Thread {
-//		String bluetoothAddress;
-//		Imovel imovelMacroToBePrinted;
-//		
-//		public ImpressaoExtratoCondominialThread(String address, Imovel imovelMacroToBePrinted) {
-//			this.bluetoothAddress = address;
-//			this.imovelMacroToBePrinted = imovelMacroToBePrinted;
-//		}
-//		
-//		@Override
-//		public void run() {
-//			
-//			conexao = new BluetoothPrinterConnection(bluetoothAddress);
-//			
-//			try {
-//				conexao.open();
-//
-//				if (conexao.isConnected()) {
-//					
-//					Looper.prepare();
-//
-//					String comando = new ImpressaoContaCosanpa().getComando(imovelMacroToBePrinted, Constantes.IMPRESSAO_FATURA);
-//					Log.i("COMANDO IMPRESSORA:", comando);
-//					conexao.write(comando.getBytes());
-//					conexao.close();
-//					
-//					getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
-//					
-//					Looper.loop();
-//					Looper.getMainLooper().quit();
-//				}
-//				
-//			} catch (ZebraPrinterConnectionException e) {
-//
-//				e.printStackTrace();
-//				
-//				Looper.prepare();
-//				
-//				AlertDialog.Builder a = new AlertDialog.Builder(MainTab.this);
-//				a.setTitle("Erro ao imprimir extrato de consumo do Condomínio");
-//				a.setMessage("impressora não encontrada");
-//				a.setPositiveButton("Selecionar impressora", new DialogInterface.OnClickListener() {
-//				     
-//					public void onClick(DialogInterface arg0, int arg1) {
-//						
-//						/* Caso não seja possível localizar a impressora,
-//						 * o campo de endereco bluetooth é apagado e em seguida é chamado o método de impressão 
-//						 */
-//						getDataManipulator().updateConfiguracao("bluetooth_address", null);
-//						
-//						imprimirExtratoCondominial();
-//					}
-//				});
-//				
-//				a.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-//				     
-//					public void onClick(DialogInterface arg0, int arg1) {}
-//				});
-//				
-//				a.show();
-//				
-//				Looper.loop();
-//				Looper.getMainLooper().quit();
-//				
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
 	protected void setupDataAfterPrinting(){
     	getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);

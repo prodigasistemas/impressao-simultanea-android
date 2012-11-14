@@ -3,7 +3,12 @@ package util;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -483,9 +488,11 @@ public class Util {
 	
 		} catch (IOException e) {
 		    e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		
 		} catch (Exception e) {
 		    e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		}
 	
 		// retorna o array de bytes
@@ -623,6 +630,7 @@ public class Util {
 		    }
 		} catch (NumberFormatException e) {
 		    e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		    System.out.println("Hidrometro caractere: "+ retorno);
 //		    Util.perguntarAcao( "Número do Hidrometro com problema: " + string + ". Visualizado ?", false, false );
 		    throw e;
@@ -1803,4 +1811,30 @@ public class Util {
         	// Retorna o identificador do pagamento formatado
         	return identificacaoPagamento;
             }
+        
+	public static void salvarLog(Date data, Throwable t) {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss");
+		try {
+			File diretorioLog = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_LOGS);
+			if (!diretorioLog.exists()) {
+				diretorioLog.mkdir();
+			}
+			
+			File arquivoLog = new File(diretorioLog, "Log.txt");
+			
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			t.printStackTrace(printWriter);
+			System.out.println(writer.toString());
+			
+			FileWriter fw = new FileWriter(arquivoLog, true);
+			fw.write(formatter.format(data) + "\n");
+			fw.write(String.valueOf(writer.toString() + "\n"));
+			fw.write("--------------------------------------------------------------------------\n");
+			fw.flush();
+			fw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

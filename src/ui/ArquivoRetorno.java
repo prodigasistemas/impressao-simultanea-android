@@ -152,8 +152,10 @@ public class ArquivoRetorno {
 		    
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		} catch (IOException e) {
 			e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		}    
     	
     	return listIdImoveis;
@@ -696,6 +698,7 @@ public class ArquivoRetorno {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		} 
         OutputStreamWriter out = new OutputStreamWriter(os);
     	
@@ -837,6 +840,7 @@ public class ArquivoRetorno {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 			}
     		
     		retorno[0] = Boolean.FALSE;
@@ -968,8 +972,10 @@ public class ArquivoRetorno {
 		    
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		} catch (IOException e) {
 			e.printStackTrace();
+Util.salvarLog(new Date(), e.fillInStackTrace());
 		}    
     	
     	return listIdImoveis; 
