@@ -412,28 +412,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	}
 		}
 	}
-//	public void imprimirExtratoCondominial() {
-//		
-//		/* Caso não haja nenhum endereco bluetooth préviamente salvo é mostrada a tela de pareamento de dispositivos.
-//		 * Caso contrário é realizada a conexão com a impressora e impressa a conta
-//		 */
-//		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
-//			
-//			// Carregamos as informações do imovel Macro
-//			Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
-//			
-//			String comando = new ImpressaoContaCosanpa().getComando(imovelMacro, Constantes.IMPRESSAO_EXTRATO_CONDOMINIAL);
-//			Log.i("COMANDO IMPRESSORA:", comando);
-//			
-//		}else{
-//			
-//			// Carregamos as informações do imovel Macro
-//			Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ getImovelSelecionado().getEfetuarRateioConsumoHelper().getMatriculaMacro());
-//			
-//			String bluetoothAddress = ControladorRota.getInstancia().getBluetoothAddress();
-//			new ImpressaoExtratoCondominialThread(bluetoothAddress, imovelMacro).start();
-//		}
-//	}
 	
 	public void controladorImpressaoCondominial(){
 	
@@ -529,13 +507,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    imovelMicro.getConsumoEsgoto());
 
 		    getDataManipulator().salvarImovel(imovelMicro);
-			
-
-		    // Caso o imóvel ja exista na lista não deve ser adicionado novamente
-//		    if (!imoveisParaEnvio.contains(imovelMicro)) {
-//		    	imoveisParaEnvio.addElement(imovelMicro);
-//		    }
-	
+				
 		    // Caso o valor da conta seja menor que o valor
 		    // permitido para ser impresso, não imprimir a conta
 		    // ou
@@ -1274,7 +1246,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	protected boolean isCondominioConcluido(){
 		boolean isConcluido = false; 
 		
-		List<Integer> listaIdsNaoCalculados = getImovelSelecionado().getEfetuarRateioConsumoHelper().getIdsAindaFaltamSerCalculador();
+		List<Integer> listaIdsNaoCalculados = getImovelSelecionado().getEfetuarRateioConsumoHelper().getIdsAindaFaltamSerCalculados();
 		
 		if ( listaIdsNaoCalculados != null && listaIdsNaoCalculados.size() == 0){
 			isConcluido = true;

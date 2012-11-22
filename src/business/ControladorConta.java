@@ -443,32 +443,6 @@ public class ControladorConta {
     	if (consumoAgua == null && consumoEsgoto == null
     		&& getImovelSelecionado().getValorDebitos() >= 0) {
 
-    	    if (getImovelSelecionado().isImovelCondominio()) {
-
-    	    	EfetuarRateioConsumoHelper helper = null;
-    			Imovel macro = null;
-    	
-    			if (getImovelSelecionado().getId() != getImovelSelecionado().getIdImovelCondominio()) {
-    			    
-    				macro =  getDataManipulator().selectImovel("matricula = " + getImovelSelecionado().getMatriculaCondominio(), true);
-    			    helper = macro.getEfetuarRateioConsumoHelper();
-    			
-    			} else if (getImovelSelecionado().getIndcCondominio() == Constantes.SIM) {
-    			    helper = getImovelSelecionado().getEfetuarRateioConsumoHelper();
-    			}
-    	
-//    			helper.getIdsAindaFaltamSerCalculador().removeElement(
-//    				new Integer(getImovelSelecionado().getId()));
-//    	
-//    			if (macro != null) {
-//    			    macro.setEfetuarRateioConsumoHelper(helper);
-//    			    Repositorio.salvarObjeto(macro);
-//    			} else {
-//    			    getImovelSelecionado()
-//    				    .setEfetuarRateioConsumoHelper(helper);
-//    			}
-    	    }
-
 //    	    Integer id = new Integer(getImovelSelecionado().getId());
 //    	    int quadra = getImovelSelecionado().getQuadra();
 //    	    String stringQuadra = Util.adicionarZerosEsquerdaNumero(4, String
@@ -517,9 +491,6 @@ public class ControladorConta {
     	}	
     	
 		getDataManipulator().salvarImovel(getImovelSelecionado());
-//		getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-//		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
-//		getDataManipulator().salvarRateioCondominio(getImovelSelecionado().getEfetuarRateioConsumoHelper());
 
     	// Verifica se o imóvel tem um percentual de esgoto alternativo
     	if (consumoEsgoto != null) {
@@ -1061,8 +1032,6 @@ public class ControladorConta {
 
     public void calcularValores() {
 
-//    	ControladorImoveis controladorImoveis = ControladorImoveis.getInstancia();
-    	
     	boolean imovelComDebitoTipoCortado = false;
     	
     	Debito debito = getImovelSelecionado().getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
@@ -1129,15 +1098,11 @@ public class ControladorConta {
 
     	// Salvamos o objeto
 		getDataManipulator().salvarImovel(getImovelSelecionado());
-//		getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-//		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
     }
 
     @SuppressWarnings("unchecked")
     public void calcularValoresCondominio(Imovel imovelMicro) {
 
-//    	ControladorImoveis controladorImoveis = ControladorImoveis.getInstancia();
-    	
     	boolean imovelComDebitoTipoCortado = false;
     	
     	Debito debito = imovelMicro.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
@@ -1282,8 +1247,6 @@ public class ControladorConta {
     //Novo método de calculo - condominio
     private double calcularContaAguaParaRateado(Imovel imovelMacro) {
 
-//    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
-
     	boolean imovelComDebitoTipoCortado = false;
     	
     	Debito debito = imovelMacro.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
@@ -1305,8 +1268,6 @@ public class ControladorConta {
 
   //Novo método de calculo - condominio
     private double calcularContaEsgotoParaRateado(Imovel imovelMacro) {
-
-//    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
 
     	if ( (imovelMacro.getIndcFaturamentoEsgoto() == SIM) && imovelMacro.getIndicadorParalizarFaturamentoEsgoto() == NAO) {
     		
@@ -1399,6 +1360,10 @@ public class ControladorConta {
 			    helper.getConsumoLigacaoEsgotoTotal());
 		}
 		
+		// Update helper do imovel Selecionado.
+		getImovelSelecionado().setEfetuarRateioConsumoHelper(helper);
+		
+		// Salva no banco de dados os valores de rateio.
 		getDataManipulator().salvarRateioCondominioHelper(helper);
 	}
 

@@ -52,7 +52,7 @@ public class EfetuarRateioConsumoHelper {
 		this.matriculaMacro = matriculaMacro;
 	}
 
-	public List<Integer> getIdsAindaFaltamSerCalculador() {
+	public List<Integer> getIdsAindaFaltamSerCalculados() {
 		
 		List<Integer> listaIdsCondominio = ControladorRota.getInstancia().getDataManipulator().getListaIdsCondominio(matriculaMacro);
 		List<Integer> listaIdsNaoCalculados = new ArrayList<Integer>();
@@ -65,8 +65,6 @@ public class EfetuarRateioConsumoHelper {
 			
 			if (consumoAgua == null && consumoEsgoto == null){
 				
-				// Imovel ainda nao calculado
-				// verificar situacao de imovel cortado tambem!!!
 				listaIdsNaoCalculados.add(listaIdsCondominio.get(i));
 			}
 		}
@@ -158,14 +156,6 @@ public class EfetuarRateioConsumoHelper {
 
     public EfetuarRateioConsumoHelper( int matriculaMacro){ 
     	this.matriculaMacro = matriculaMacro;
-    	// Cuidar do caso onde existe imovel cortado no condomínio. Este deve ser removido da lista de IDs
-
-//		this.matriculaUltimoImovelMicro = matriculaUltimoImovelMicro;
-//		this.idsAindaFaltamSerCalculador = new Vector( (matriculaUltimoImovelMicro+1) - matriculaMacro );
-//		
-//		for ( int i = matriculaMacro; i <= matriculaUltimoImovelMicro; i++ ){
-//		    this.idsAindaFaltamSerCalculador.addElement( new Integer( i ) );
-//		}
     }
     
     public EfetuarRateioConsumoHelper(){ 
