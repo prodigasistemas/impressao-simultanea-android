@@ -9,6 +9,17 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/textViewUser"
-        android:text="Todas as informações serão apagadas. Deseja continuar?"
+        android:text="Todas as informações serão apagadas. Para continuar digite a senha"
         android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/txtSenha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword" >
+
+        <requestFocus />
+    </EditText>
+    
 </LinearLayout>

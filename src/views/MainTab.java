@@ -24,6 +24,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -144,13 +146,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 	public void setTabColor() {
         for(int i=0;i<tabHost.getTabWidget().getChildCount();i++){
-            
         	if (getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_CONCLUIDO){
         		tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_green);
-            
             }
             else if(getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_PENDENTE){
-            	tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_white);            	
+            	tabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_custom_white);   
             }
         }
     }
@@ -797,6 +797,12 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			ft.add(android.R.id.tabcontent, new MedidorAguaTab());
 		else if (tabId.equals("conta"))
 			ft.add(android.R.id.tabcontent, new ContaTab());
+		
+//		if (getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_CONCLUIDO) {
+//			tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundResource(R.drawable.tab_custom_green);
+//		} else if (getImovelSelecionado().getImovelStatus() == Constantes.IMOVEL_STATUS_PENDENTE) {
+//			tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundResource(R.drawable.tab_custom_white);
+//		}
 		
     	ft.commit();
 	}

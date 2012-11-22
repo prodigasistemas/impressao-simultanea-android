@@ -1,8 +1,6 @@
 package com.IS;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -27,7 +25,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,12 +34,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import background.CarregarRotaThread;
 import background.EnviarImoveisConcluidosThread;
 import background.FinalizarRotaThread;
 import background.GerarArquivoCompletoThread;
@@ -386,16 +383,29 @@ public class MenuPrincipal extends Activity {
 	        	 
 	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        	public void onClick(DialogInterface dialog, int which) {
-	        		removeDialog(id);
-	        		ControladorRota.getInstancia().finalizeDataManipulator();
-	        		ControladorRota.getInstancia().deleteDatabase();
-	        		ControladorRota.getInstancia().setPermissionGranted(false);
-	        		ControladorRota.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
-	        		
-	        	    Toast.makeText(getBaseContext(),"Todas as informações foram apagadas com sucesso!",Toast.LENGTH_LONG).show();
+	        		EditText senha = (EditText) layoutConfirmationDialog.findViewById(R.id.txtSenha);
+	        		if (senha.getText().toString().equals("apagar")) {
+		        		removeDialog(id);
+		        		ControladorRota.getInstancia().finalizeDataManipulator();
+		        		ControladorRota.getInstancia().deleteDatabase();
+		        		ControladorRota.getInstancia().setPermissionGranted(false);
+		        		ControladorRota.getInstancia().initiateDataManipulator(layoutConfirmationDialog.getContext());
+		        		
+		        	    Toast.makeText(getBaseContext(),"Todas as informações foram apagadas com sucesso!",Toast.LENGTH_LONG).show();
+	
+	        		    Intent myIntent = new Intent(layoutConfirmationDialog.getContext(), Fachada.class);
+	        	        startActivity(myIntent);
+	        		} else {
+	        			AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+	        	        builder.setTitle("Erro");
+	        	        builder.setMessage("Senha inválida");
 
-        		    Intent myIntent = new Intent(layoutConfirmationDialog.getContext(), Fachada.class);
-        	        startActivity(myIntent);
+	        	        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {}
+						});
+	        	        
+	        	        builder.show();
+	        		}
 
 	        	}
 	        });
