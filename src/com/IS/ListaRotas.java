@@ -120,9 +120,11 @@ public class ListaRotas extends ListActivity {
 	    	for(int i=0; i < files.length; i++){
 	    		File file = files[i];
 	    		path.add(file.getPath());
+	    		
+	    		System.out.println(file.getName());
 
 	    		if(!file.isDirectory()){
-	    			if ( (file.getName().endsWith(".txt")) || (file.getName().endsWith(".gz")) ){
+	    			if ( ((file.getName().endsWith(".txt")) || (file.getName().endsWith(".gz"))) && !file.getName().startsWith("._")){
 	        				item.add(file.getName());
 	    			}
 	    		}
