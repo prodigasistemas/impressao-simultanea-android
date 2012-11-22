@@ -105,6 +105,7 @@ import model.Anormalidade;
 import model.Consumo;
 import model.ConsumoAnormalidadeAcao;
 import model.DadosCategoria;
+import model.DadosFaturamentoFaixa;
 import model.DadosGerais;
 import model.Debito;
 import model.HistoricoConsumo;
@@ -1132,6 +1133,7 @@ public class ControladorConta {
 //		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
     }
 
+    @SuppressWarnings("unchecked")
     public void calcularValoresCondominio(Imovel imovelMicro) {
 
 //    	ControladorImoveis controladorImoveis = ControladorImoveis.getInstancia();
@@ -1196,9 +1198,46 @@ public class ControladorConta {
     	}
 
     	// Salvamos o objeto
-		getDataManipulator().salvarImovel(getImovelSelecionado());
-//		getDataManipulator().salvarConsumoAgua(getImovelSelecionado().getConsumoAgua(), getImovelSelecionado().getMatricula());
-//		getDataManipulator().salvarConsumoEsgoto(getImovelSelecionado().getConsumoEsgoto(), getImovelSelecionado().getMatricula());
+		getDataManipulator().salvarImovel(imovelMicro);
+		
+		if (imovelMicro.getConsumoAgua() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoAgua(imovelMicro.getConsumoAgua(), imovelMicro.getMatricula());
+		}
+		
+		if(imovelMicro.getConsumoEsgoto() != null){
+			ControladorRota.getInstancia().getDataManipulator().salvarConsumoEsgoto(imovelMicro.getConsumoEsgoto(), imovelMicro.getMatricula());
+		}
+		
+		if (imovelMicro.getDadosCategoria().size() > 0) {
+			for (DadosCategoria dc : imovelMicro.getDadosCategoria()) {
+				if (dc.getFaturamentoAgua() != null) {
+					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoAgua())).intValue());
+					
+					if (ControladorRota.getInstancia().getDataManipulator().selectDadosFaturamentoFaixa(idFaturamento, Constantes.LIGACAO_AGUA).size() > 0)
+						break;
+					
+					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = imovelMicro.getDadosCategoria().get(imovelMicro.getDadosCategoria().indexOf(dc)).getFaturamentoAgua().getFaixas();
+					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
+						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
+						
+						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
+					}
+				} 
+
+				if (dc.getFaturamentoEsgoto() != null) {
+					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoEsgoto())).intValue());
+					
+					if (ControladorRota.getInstancia().getDataManipulator().selectDadosFaturamentoFaixa(idFaturamento, Constantes.LIGACAO_POCO).size() > 0)
+						break;
+					
+					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = imovelMicro.getDadosCategoria().get(imovelMicro.getDadosCategoria().indexOf(dc)).getFaturamentoEsgoto().getFaixas();
+					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
+						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
+						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
+					}
+				}
+			}
+		}
 	}
     
     public void calcularValores(Consumo consumoAgua, Consumo consumoEsgoto) {
@@ -1247,7 +1286,7 @@ public class ControladorConta {
 
     	boolean imovelComDebitoTipoCortado = false;
     	
-    	Debito debito = getImovelSelecionado().getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
+    	Debito debito = imovelMacro.getDebito( Debito.TARIFA_CORTADO_DEC_18_251_94 );
     	
     	if ( debito != null && debito.getIndcUso() == Constantes.SIM ){
     	    imovelComDebitoTipoCortado = true;
@@ -1269,7 +1308,7 @@ public class ControladorConta {
 
 //    	EfetuarRateioConsumoHelper helper = imovelMacro.getEfetuarRateioConsumoHelper();
 
-    	if ( (getImovelSelecionado().getIndcFaturamentoEsgoto() == SIM) && getImovelSelecionado().getIndicadorParalizarFaturamentoEsgoto() == NAO) {
+    	if ( (imovelMacro.getIndcFaturamentoEsgoto() == SIM) && imovelMacro.getIndicadorParalizarFaturamentoEsgoto() == NAO) {
     		
     		ControladorImovel.getInstancia().calcularValores(imovelMacro, 
     														  consumoEsgoto,

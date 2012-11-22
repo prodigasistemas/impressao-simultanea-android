@@ -190,20 +190,21 @@ public class BusinessConta {
 					if (ControladorRota.getInstancia().getDataManipulator().selectDadosFaturamentoFaixa(idFaturamento, Constantes.LIGACAO_AGUA).size() > 0)
 						break;
 					
-					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().indexOf(dc)).getFaturamentoAgua().getFaixas();
+					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = getImovelSelecionado().getDadosCategoria().get(getImovelSelecionado().getDadosCategoria().indexOf(dc)).getFaturamentoAgua().getFaixas();
 					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
 						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
 						
 						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
 					}
-					
-				} else if (dc.getFaturamentoEsgoto() != null) {
+				} 
+
+				if (dc.getFaturamentoEsgoto() != null) {
 					int idFaturamento = Math.abs(Long.valueOf(ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamento(dc.getFaturamentoEsgoto())).intValue());
 					
 					if (ControladorRota.getInstancia().getDataManipulator().selectDadosFaturamentoFaixa(idFaturamento, Constantes.LIGACAO_POCO).size() > 0)
 						break;
 					
-					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = ControladorImovel.getInstancia().getImovelSelecionado().getDadosCategoria().get(dc.getId()-1).getFaturamentoEsgoto().getFaixas();
+					List<DadosFaturamentoFaixa> dadosFaturamentoFaixas = getImovelSelecionado().getDadosCategoria().get(getImovelSelecionado().getDadosCategoria().indexOf(dc)).getFaturamentoEsgoto().getFaixas();
 					for (DadosFaturamentoFaixa dadosFaturamentoFaixa : dadosFaturamentoFaixas) {
 						dadosFaturamentoFaixa.setIdDadosFaturamento(idFaturamento);
 						ControladorRota.getInstancia().getDataManipulator().saveDadosFaturamentoFaixa(dadosFaturamentoFaixa);
