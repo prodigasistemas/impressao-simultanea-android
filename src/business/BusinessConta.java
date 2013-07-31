@@ -90,6 +90,7 @@ import views.MedidorPocoTab;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 
 public class BusinessConta {
 
@@ -310,6 +311,10 @@ public class BusinessConta {
 		
 		// Se nao for rota toda calculada pela média ou não descarta leitura e anormalidade informada pelo usário
 		if (ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.NAO && !descartaLeitura){
+			
+			// Latitude e Longitude
+			getImovelSelecionado().setLatitude(MedidorAguaTab.getLatitude());
+			getImovelSelecionado().setLongitude(MedidorAguaTab.getLongitude());
 			
 			if ( !getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)){
 			

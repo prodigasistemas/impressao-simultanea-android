@@ -12,14 +12,19 @@ import business.ControladorRota;
 
 import com.IS.R;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.telephony.CellLocation;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,9 +37,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class MedidorAguaTab extends Fragment {
+public class MedidorAguaTab extends Fragment implements LocationListener{
 	
 	
 	static boolean consideraEventoItemSelectedListenerCodigoAnormalidade;
@@ -50,6 +56,13 @@ public class MedidorAguaTab extends Fragment {
 	private TextView imovelCondominial;
 	private ImageView imovelCondominialImage;
 	private LinearLayout imovelCondominialLayout;
+	public LocationManager mLocManager;
+	Location lastKnownLocation;
+	private String provider;
+	private static double latitude = 0;
+	private static double longitude = 0;
+	public static Time currentTime;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +76,30 @@ public class MedidorAguaTab extends Fragment {
 			return null;
 		}
 		
-		view = inflater.inflate(R.layout.medidoraguatab, container, false);
+		
+        mLocManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if(mLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        	mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        }
+
+//        long networkTS = mLocManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getTime();
+//        currentTime = new Time(Time.getCurrentTimezone());
+//        currentTime.set(networkTS);
+        
+        Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		criteria.setCostAllowed(true);
+		provider = mLocManager.getBestProvider(criteria, false);
+		
+		Location location = mLocManager.getLastKnownLocation(provider);
+        if (location != null){
+        	latitude = location.getLatitude();
+        	longitude = location.getLongitude();
+        }
+		
+    	CellLocation.requestLocationUpdate();
+
+    	view = inflater.inflate(R.layout.medidoraguatab, container, false);
 		layout = view;
 		
 		// Define a imagem de fundo de acordo com a orientacao do dispositivo
@@ -202,6 +238,14 @@ public class MedidorAguaTab extends Fragment {
     	return getLeitura();
     }
 
+    public static double getLatitude() {
+    	return latitude;
+    }
+
+    public static double getLongitude() {
+    	return longitude;
+    }
+
     public static void setLeituraCampo(String leitura) {
     	((EditText)layout.findViewById(R.id.leitura)).setText(leitura);
     }
@@ -209,5 +253,32 @@ public class MedidorAguaTab extends Fragment {
     public Imovel getImovelSelecionado(){
     	return ControladorImovel.getInstancia().getImovelSelecionado();
     }
+
+	public void onLocationChanged(Location location) {
+		Log.i("latitude:", location.getLatitude()+"");
+		Log.i("longitude:", location.getLongitude()+"");
+    	latitude = location.getLatitude();
+    	longitude = location.getLongitude();
+	}
+
+	public void onProviderDisabled(String provider) {}
+	
+	public void onProviderEnabled(String provider) {}
+	
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+	/* Request updates at startup */
+	@Override
+	public void onResume() {
+		super.onResume();
+		mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1, this);
+	}
+
+	/* Remove the locationlistener updates when Activity is paused */
+	@Override
+	public void onPause() {
+		super.onPause();
+		mLocManager.removeUpdates(this);
+	}
 
 }

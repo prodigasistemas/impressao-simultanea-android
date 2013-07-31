@@ -36,6 +36,8 @@ public class Constantes {
      */
     public static final int IMPRESSAO_FATURA = 1;
     public static final int IMPRESSAO_EXTRATO_CONDOMINIAL = 2;
+    public static final int IMPRESSAO_NOTIFICACAO_DEBITO = 3;
+    public static final int IMPRESSAO_FATURA_E_NOTIFICACAO = 4;
 
     /**
      * Medição Tipo

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -78,18 +79,19 @@ public class ListaRotas extends ListActivity {
 	public void instanciate(){
 
     	String state = Environment.getExternalStorageState();
+    	File path = null;
     	
     	if (Environment.MEDIA_MOUNTED.equals(state)) {
     	    
     		// We can read and write the media
-            File path = Environment.getExternalStorageDirectory();
+            path = Util.getExternalStorageDirectory();
             path.getAbsolutePath();
             Log.i("ExternalStorage", "ExternalStorage :" + path.getAbsolutePath());
             root = path.getAbsolutePath() + Constantes.DIRETORIO_ROTAS;
             getDir(root);
 
             // Display a messagebox.
-    	    toast = Toast.makeText(getBaseContext(),"Por favor, escolha a rota a ser carregada.",Toast.LENGTH_LONG);
+    	    toast = Toast.makeText(getBaseContext(), "Por favor, escolha a rota a ser carregada.",Toast.LENGTH_LONG);
     	    toast.show();
     	}    	
 	}

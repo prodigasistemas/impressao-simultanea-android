@@ -16,6 +16,7 @@ import java.util.Vector;
 
 import model.Consumo;
 import model.DadosRelatorio;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -392,7 +393,7 @@ public class Util {
     	
     	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
     	
-        File fileRotaDiretorio = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO);
+        File fileRotaDiretorio = new File(getExternalStorageDirectory() + Constantes.DIRETORIO_RETORNO);
         if(!fileRotaDiretorio.exists()) {
         	fileRotaDiretorio.mkdirs();
         }
@@ -1729,9 +1730,9 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
     	}
 
     	return new Integer(dac);
-        }
+	}
 
-        public static String replaceAll(String text, String searchString, String replacementString) {
+	public static String replaceAll(String text, String searchString, String replacementString) {
 
     	StringBuffer sBuffer = new StringBuffer();
     	int pos = 0;
@@ -1810,12 +1811,30 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 
         	// Retorna o identificador do pagamento formatado
         	return identificacaoPagamento;
-            }
+	}
         
+    public static File getExternalStorageDirectory(){
+    	File path = null;
+
+    	if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+    		path = new File("/mnt/sdcard/");
+    		Log.i("first External Path", "ExternalStorage :" + path.getAbsolutePath());
+    	}else{
+   	     	path = new File("/mnt/extSdCard/");
+   	     	
+   	     	if(!path.exists() || !path.isDirectory()) {
+   	    		path = new File("/mnt/sdcard/");
+   	     	}
+   	     	
+            Log.i("first External Path", "ExternalStorage :" + path.getAbsolutePath());
+    	}
+    	return path;
+    }
+    
 	public static void salvarLog(Date data, Throwable t) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss");
 		try {
-			File diretorioLog = new File(Environment.getExternalStorageDirectory() + Constantes.DIRETORIO_LOGS);
+			File diretorioLog = new File(getExternalStorageDirectory() + Constantes.DIRETORIO_LOGS);
 			if (!diretorioLog.exists()) {
 				diretorioLog.mkdir();
 			}

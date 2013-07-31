@@ -52,11 +52,11 @@ import com.IS.R.color;
 @SuppressLint("NewApi")
 public class MenuPrincipal extends Activity {
 	
-	static final int MENU_LISTA_CADASTROS = 0;
+	static final int MENU_LISTA_IMOVEIS = 0;
 	static final int MENU_INFO = 1;
 	static final int MENU_CONSULTA = 2;
 	static final int MENU_ARQUIVO_COMPLETO = 3;
-	static final int MENU_CADASTROS_CONCLUIDOS = 4;
+	static final int MENU_IMOVEIS_CONCLUIDOS = 4;
 	static final int MENU_FINALIZAR = 5;
 	static final int MENU_RELATORIO = 6;
 	static final int MENU_NOVO_ROTEIRO = 7;
@@ -127,7 +127,7 @@ public class MenuPrincipal extends Activity {
         	public void onItemClick(AdapterView parent, View v, int position, long id){        
         		String text = parent.getItemAtPosition(position).toString();
 				
-            	if (position == MENU_LISTA_CADASTROS){
+            	if (position == MENU_LISTA_IMOVEIS){
             		
             		// Verifica se GPS esta ligado
             		/* Use the LocationManager class to obtain GPS locations */
@@ -135,11 +135,9 @@ public class MenuPrincipal extends Activity {
                     
                     boolean enabled = mLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-                    // Check if enabled and if not send user to the GSP settings
-                    // Better solution would be to display a dialog and suggesting to 
-                    // go to the settings
+                    // Check if enabled and if not send user to the GPS settings
                     if (!enabled){
-            	        dialogMessage = "GPS está desligado. Por favor, ligue-o para continuar o cadastro.";
+            	        dialogMessage = "GPS está desligado. Por favor, ligue-o para continuar a leitura.";
             	    	showDialog(Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO);
                     }
             		
@@ -181,7 +179,7 @@ public class MenuPrincipal extends Activity {
             	    	
         	    	}
             		
-            	}else if (position == MENU_CADASTROS_CONCLUIDOS){
+            	}else if (position == MENU_IMOVEIS_CONCLUIDOS){
 					if (ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados().size() > 0) {
 						showDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
 					} else {

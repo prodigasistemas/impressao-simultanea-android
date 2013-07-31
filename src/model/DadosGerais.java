@@ -36,12 +36,12 @@ public class DadosGerais {
 	
 	//indicador Rota Dividida
 	private int indicadorRotaDividida;
-
+	
 	// id da Rota
 	private int idRota;
 
 	// Indicador de calculo de consumo pela médio do HIDROMETRO.
-	private int indicadorCalculoPelaMedia = Constantes.NAO;
+	private int indicadorCalculoPelaMedia;
 
 	private int moduloVerificadorCodigoBarras;
 
@@ -286,14 +286,6 @@ public class DadosGerais {
 
 	public void setDataFim(String dataFim) {
 		this.dataFim = Util.getData(Util.verificarNuloString(dataFim));
-	}
-
-	public int getIndicadorCalculoPelaMedia() {
-		return indicadorCalculoPelaMedia;
-	}
-
-	public void setIndicadorCalculoPelaMedia(int indicadorCalculoPelaMedia) {
-		this.indicadorCalculoPelaMedia = indicadorCalculoPelaMedia;
 	}
 
 	public static short getCalculoPorCategora() {

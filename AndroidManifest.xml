@@ -45,10 +45,22 @@
         
 		<activity android:name="TelaRelatorio" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
-		    
+        		    
 		<activity android:name="Consulta" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar">
         </activity>
-		<activity android:name="views.ImovelTab"></activity>
+		
+		<activity android:name="views.ImovelTab" android:theme="@android:style/Theme.NoTitleBar">>
+		</activity>
+		
+		<activity android:name="views.ContaTab" android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+
+        <activity android:name="views.MedidorAguaTab" android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+
+        <activity android:name="views.MedidorPocoTab" android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+		
         
     </application>
 

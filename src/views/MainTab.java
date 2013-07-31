@@ -16,6 +16,7 @@ import util.Util;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -24,17 +25,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.telephony.CellLocation;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,6 +51,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
@@ -78,10 +84,25 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	private ProgressDialog progressImpressaoCondominial;
 	private ZebraPrinterConnection conexao;
 	private static int increment;
-	
+	private String dialogMessage = null;
+	public LocationManager mLocManager;
+
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.maintab);
+	    
+        /* Use the LocationManager class to obtain GPS locations */
+        mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        
+        boolean enabled = mLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        // Check if enabled and if not send user to the GPS settings
+        // Better solution would be to display a dialog and suggesting to 
+        // go to the settings
+        if (!enabled){
+	        dialogMessage = " GPS está desligado. Por favor, ligue-o para continuar o cadastro. ";
+	    	showDialog(Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO);
+        }	    
 	    
 	    tabHost = (TabHost) findViewById(android.R.id.tabhost);
 	    tabHost.setup();
@@ -117,6 +138,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    }
 
 	    tabHost.setCurrentTab(tabHost.getChildCount());
+	    
 	}
 	
 	// Instancia novas tabs
@@ -317,7 +339,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    new EnviarImovelOnlineThread(handler, this, increment, getImovelSelecionado()).start();
 	}
 	
-	public void imprimirConta(String bluetoothAddress) {
+	public void imprimirConta(String bluetoothAddress, String progressTitle, int impressaoTipo) {
 		
 		/* Caso não haja nenhum endereco bluetooth préviamente salvo é mostrada a tela de pareamento de dispositivos.
 		 * Caso contrário é realizada a conexão com a impressora e impressa a conta
@@ -325,9 +347,25 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
 			
-	    	Log.i("Comando", new ImpressaoContaCosanpa().getComando(getImovelSelecionado(), Constantes.IMPRESSAO_FATURA));
-			setupDataAfterPrinting();
 			
+		    switch (impressaoTipo) {
+		    case Constantes.IMPRESSAO_FATURA:
+		    	Log.i("Comando Fatura", new ImpressaoContaCosanpa().getComandoImpressaoFatura(getImovelSelecionado(), Constantes.IMPRESSAO_FATURA));
+		    	setupDataAfterPrinting(impressaoTipo);
+		    	break;
+
+		    case Constantes.IMPRESSAO_NOTIFICACAO_DEBITO:
+		    	Log.i("Comando Notificação Débito", new ImpressaoContaCosanpa().imprimirNotificacaoDebito(getImovelSelecionado()));
+		    	setupDataAfterPrinting(impressaoTipo);
+		    	break;
+
+		    case Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO:
+		    	Log.i("Comando Fatura", new ImpressaoContaCosanpa().getComandoImpressaoFatura(getImovelSelecionado(), Constantes.IMPRESSAO_FATURA));
+		    	Log.i("Comando Notificação Débito", new ImpressaoContaCosanpa().imprimirNotificacaoDebito(getImovelSelecionado()));
+		    	setupDataAfterPrinting(impressaoTipo);
+		    	break;
+		    }
+
 		}else{
 			
 			if (bluetoothAddress == null) {
@@ -338,7 +376,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	
 			} else {
 	    		progress = new ProgressDialog(this);
-	    		progress.setTitle("Imprimindo conta");
+	    		progress.setTitle(progressTitle);
 	    		progress.setMessage("Aguarde");
 	    		progress.setCancelable(false);
 	    		progress.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -353,7 +391,48 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				    }
 				});
 	    			
-	    		new ImpressaoThread(bluetoothAddress, getImovelSelecionado()).start();
+	    		new ImpressaoThread(bluetoothAddress, getImovelSelecionado(), impressaoTipo).start();
+	    		progress.show();
+	    	}
+		}
+	}
+
+	public void imprimirAvisoDebito(String bluetoothAddress) {
+		
+		/* Caso não haja nenhum endereco bluetooth préviamente salvo é mostrada a tela de pareamento de dispositivos.
+		 * Caso contrário é realizada a conexão com a impressora e impressa a conta
+		 */
+
+		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
+			
+	    	Log.i("Comando_Notificacao_Debito", new ImpressaoContaCosanpa().imprimirNotificacaoDebito(getImovelSelecionado()));
+			
+		}else{
+			
+			if (bluetoothAddress == null) {
+	
+				Intent intentBluetooth = new Intent();
+		        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+		        startActivityForResult(intentBluetooth, 0);
+	    	
+			} else {
+	    		progress = new ProgressDialog(this);
+	    		progress.setTitle("Imprimindo notificação de débito");
+	    		progress.setMessage("Aguarde");
+	    		progress.setCancelable(false);
+	    		progress.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				        if ( (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK) && 
+					         (event.getRepeatCount() == 0)) {
+					            
+					        return true; // Pretend we processed it
+				        }
+				        return false; // Any other keys are still processed as normal
+				    }
+				});
+	    			
+	    		new ImpressaoThread(bluetoothAddress, getImovelSelecionado(), Constantes.IMPRESSAO_NOTIFICACAO_DEBITO).start();
 	    		progress.show();
 	    	}
 		}
@@ -371,8 +450,13 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				int indiceImovelImpresso = getDataManipulator().getListaIdsCondominio(imovel.getEfetuarRateioConsumoHelper().getMatriculaMacro())
 						.indexOf(Long.valueOf(imovel.getId()).intValue());
 				
-				String comando = new ImpressaoContaCosanpa().getComando(imovel, Constantes.IMPRESSAO_FATURA);
-				Log.i("COMANDO IMPRESSORA:", comando);
+				String comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovel, Constantes.IMPRESSAO_FATURA);
+				Log.i("COMANDO FATURA:", comando);
+				
+				if (imovel.getContas() != null && imovel.getContas().size() > 0){
+					comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(imovel);
+					Log.i("COMANDO NOTIFICAÇÃO DÉBITO:", comando);
+				}
 				
 				progressImpressaoCondominial.setProgress(indiceImovelImpresso);
 				
@@ -452,7 +536,6 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			imprimirContasCondominio(helper, (int)(imovelMacro.getId() + 1), helper.getIdUltimoImovelMicro());
 		}
 	}
-	
 	
 	private void imprimirContasCondominio(EfetuarRateioConsumoHelper helper, int idImovelinicial, int idImovelFinal){
 		
@@ -738,17 +821,29 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		alertMessage.setButton(AlertDialog.BUTTON_POSITIVE, "Confirmar", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 
+				int impressaoTipo = Constantes.IMPRESSAO_FATURA;
+
 				// Nao deve imprimir fatura individual de imovel condominial
 				if (!getImovelSelecionado().isImovelCondominio()){
 					
 					if (BusinessConta.getInstancia(getApplicationContext()).isImpressaoPermitida()){
-						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress());
+						
+						if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0 ){
+							impressaoTipo = Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO;
+						}
+						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), "Imprimindo conta", impressaoTipo);
 						
 					} else{
-						showMessage(BusinessConta.getInstancia().getMensagemPermiteImpressao());
-						getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
-		    			setTabColor();
-						getDataManipulator().salvarImovel(getImovelSelecionado());
+						
+						if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0){
+							imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), "Imprimindo notificação de débito", Constantes.IMPRESSAO_NOTIFICACAO_DEBITO);
+							
+						}else{
+							showMessage(BusinessConta.getInstancia().getMensagemPermiteImpressao());
+							getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
+							setTabColor();
+							getDataManipulator().salvarImovel(getImovelSelecionado());
+						}
 					}
 				}else{
 					// imovel condominial avança para o próximo imovel.
@@ -818,7 +913,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		
 			dialog.dismiss();
 
-			imprimirConta(String.valueOf(((TextView) view).getText()).split("\n")[1]);
+			if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() >0){
+				imprimirConta(String.valueOf(((TextView) view).getText()).split("\n")[1], "Imprimindo fatura e notificação de débito", Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO);
+			}else{
+				imprimirConta(String.valueOf(((TextView) view).getText()).split("\n")[1], "Imprimindo fatura", Constantes.IMPRESSAO_FATURA);
+			}
 			
 		}else{
 			getDataManipulator().updateConfiguracao("bluetooth_address", String.valueOf(((TextView) view).getText()).split("\n")[1]);
@@ -832,10 +931,12 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	class ImpressaoThread extends Thread {
 		String bluetoothAddress;
 		Imovel imovelToBePrinted;
+		int impressaoTipo;
 		
-		public ImpressaoThread(String address, Imovel imovelToBePrinted) {
+		public ImpressaoThread(String address, Imovel imovelToBePrinted, int impressaoTipo) {
 			this.bluetoothAddress = address;
 			this.imovelToBePrinted = imovelToBePrinted;
+			this.impressaoTipo = impressaoTipo;
 		}
 		
 		@Override
@@ -851,9 +952,32 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					Looper.prepare();
 
 					progress.show();
-					String comando = new ImpressaoContaCosanpa().getComando(imovelToBePrinted, Constantes.IMPRESSAO_FATURA);
-					Log.i("COMANDO IMPRESSORA:", comando);
-					conexao.write(comando.getBytes());
+					
+					
+				    switch (impressaoTipo) {
+				    case Constantes.IMPRESSAO_FATURA:
+						String comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovelToBePrinted, Constantes.IMPRESSAO_FATURA);
+						Log.i("COMANDO FATURA:", comando);
+						conexao.write(comando.getBytes());
+				    	break;
+
+				    case Constantes.IMPRESSAO_NOTIFICACAO_DEBITO:
+						comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(imovelToBePrinted);
+						Log.i("COMANDO NOTIFICAÇÃO DÉBITO:", comando);
+						conexao.write(comando.getBytes());
+				    	break;
+	
+				    case Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO:
+						comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovelToBePrinted, Constantes.IMPRESSAO_FATURA);
+						Log.i("COMANDO FATURA:", comando);
+						conexao.write(comando.getBytes());
+
+						comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(imovelToBePrinted);
+						Log.i("COMANDO NOTIFICAÇÃO DÉBITO:", comando);
+						conexao.write(comando.getBytes());
+				    	break;
+				    }
+
 					conexao.close();
 					
 					getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
@@ -862,12 +986,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 					
 					// already printed!
 					if (!getImovelSelecionado().isImovelCondominio()){
-						setupDataAfterPrinting();
+						setupDataAfterPrinting(impressaoTipo);
 					}
 					
 					Looper.loop();
 					Looper.getMainLooper().quit();
-					
 				}
 				
 			} catch (ZebraPrinterConnectionException e) {
@@ -890,7 +1013,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						 */
 						getDataManipulator().updateConfiguracao("bluetooth_address", null);
 						
-						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress());
+						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), "Imprimindo conta", Constantes.IMPRESSAO_FATURA);
 					}
 				});
 				
@@ -917,7 +1040,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		int idImovelInicial;
 		int idImovelFinal;
 		
-		public ImpressaoCondominialThread(String address, List<Imovel> imovelToBePrinted, int idImovelInicial, int idImovelFinal) { //, Handler handler) {
+		public ImpressaoCondominialThread(String address, List<Imovel> imovelToBePrinted, int idImovelInicial, int idImovelFinal) {
 			this.bluetoothAddress = address;
 			this.imoveisToBePrinted = imovelToBePrinted;
 			this.idImovelInicial = idImovelInicial;
@@ -941,12 +1064,20 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						
 						System.out.println("Indice Imovel Impresso: " + indiceImovelImpresso);
 						
-						String comando = new ImpressaoContaCosanpa().getComando(imovel, Constantes.IMPRESSAO_FATURA);
-						Log.i("COMANDO IMPRESSORA:", comando);
+						String comando = null;
+						
+						comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovel, Constantes.IMPRESSAO_FATURA);
+						Log.i("COMANDO FATURA:", comando);
 						conexao.write(comando.getBytes());
 						
+						if (imovel.getContas() != null && imovel.getContas().size() > 0){
+							comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(imovel);
+							Log.i("COMANDO NOTIFICAÇÃO DÉBITO:", comando);
+							conexao.write(comando.getBytes());
+						}
+						
 						getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
-						Thread.sleep(1000);
+						Thread.sleep(1500);
 						
 						progressImpressaoCondominial.setProgress(indiceImovelImpresso);
 						
@@ -968,8 +1099,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 								// Carregamos as informações do imovel Macro
 								Imovel imovelMacro = getDataManipulator().selectImovel("matricula="+ imovel.getEfetuarRateioConsumoHelper().getMatriculaMacro(), true);
 
-								comando = new ImpressaoContaCosanpa().getComando(imovelMacro, Constantes.IMPRESSAO_EXTRATO_CONDOMINIAL);
-								Log.i("COMANDO IMPRESSORA:", comando);
+								comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovelMacro, Constantes.IMPRESSAO_EXTRATO_CONDOMINIAL);
+								Log.i("COMANDO EXTRATO CONDOMINIAL:", comando);
 								conexao.write(comando.getBytes());
 								
 								getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
@@ -1035,29 +1166,33 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		}
 	}
 
-	protected void setupDataAfterPrinting(){
-    	getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
-
-    	getImovelSelecionado().setQuantidadeContasImpressas(1+(getImovelSelecionado().getQuantidadeContasImpressas()));
-//    	.getImovelSelecionado().getValoresContasImpressas().addElement(String.valueOf(.getImovelSelecionado().getValorConta()));
-    	
-    	System.out.println("Quantidade de vezes impressas: " + getImovelSelecionado().getQuantidadeContasImpressas());
-    	
-    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
-    	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null && 
-    		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null){
-	    	
-    		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
-    	}
-    	
-    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
-
+	protected void setupDataAfterPrinting(int impressaoTipo){
 		
+		if (impressaoTipo == Constantes.IMPRESSAO_FATURA || impressaoTipo == Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO ){
+			getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
+
+	    	getImovelSelecionado().setQuantidadeContasImpressas(1+(getImovelSelecionado().getQuantidadeContasImpressas()));
+//	    	getImovelSelecionado().getValoresContasImpressas().addElement(String.valueOf(.getImovelSelecionado().getValorConta()));
+	    	
+	    	System.out.println("Quantidade de vezes impressas: " + getImovelSelecionado().getQuantidadeContasImpressas());
+
+	    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
+	    	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null && 
+	    		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null){
+		    	
+	    		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
+	    	}
+	    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
+		}
+    	
     	// Define imovel como concluido
     	getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
     	getDataManipulator().salvarImovel(getImovelSelecionado());
     	transmitirImovel();
-    	callProximoImovel();
+		
+    	if (impressaoTipo == Constantes.IMPRESSAO_FATURA || impressaoTipo == Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO){
+			callProximoImovel();
+		}
 	}
 	
 	protected boolean isTabMedidorAguaNeeded(){
@@ -1129,7 +1264,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		
 		// Verifica se deve reter impressao das contas condominiais.
 		if (getImovelSelecionado().getEfetuarRateioConsumoHelper().isCondominioRetido()){
-
+			
 			showMessage("Contas do condomínio retidas. Impressao não permitida!");
 
 			// Para todos os imoveis do condominio - Macro e micros
@@ -1193,7 +1328,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    	if (!getImovelSelecionado().isImovelCondominio()){
 			    		
 			    		if (BusinessConta.getInstancia(this).isImpressaoPermitida()){
-			    			imprimirConta(ControladorRota.getInstancia().getBluetoothAddress());
+			    			imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), "Imprimindo conta", Constantes.IMPRESSAO_FATURA);
 			    			
 			    		} else{
 			    			
@@ -1202,6 +1337,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    			getDataManipulator().salvarImovel(getImovelSelecionado());
 			    			transmitirImovel();
 			    		}
+			    		
 			    	}else {
 			    		// imovel condominial avança para o próximo imovel.
 				    	callProximoImovel();
@@ -1216,7 +1352,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 					if (BusinessConta.getInstancia(this).isImpressaoPermitida()) {
 
-						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress());
+						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), "Imprimindo conta", Constantes.IMPRESSAO_FATURA);
 
 					} else {
 
@@ -1236,7 +1372,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		} else {
 			if (!getImovelSelecionado().isImovelCondominio()) {
 				if (BusinessConta.getInstancia(this).isImpressaoPermitida()) {
-					imprimirConta(ControladorRota.getInstancia().getBluetoothAddress());
+					imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), "Imprimindo conta", Constantes.IMPRESSAO_FATURA);
 				}
 
 			} else {
@@ -1264,4 +1400,48 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
     public DataManipulator getDataManipulator(){
     	return ControladorRota.getInstancia().getDataManipulator();
     }
+
+	public void onProviderDisabled(String provider) {
+        // Check if enabled and if not send user to the GSP settings
+		dialogMessage = " GPS está desligado. Por favor, ligue-o para continuar o cadastro. ";
+    	showDialog(Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO);
+	}
+	
+	public void onProviderEnabled(String provider) {
+		Toast.makeText( getApplicationContext(),"GPS ligado",Toast.LENGTH_SHORT).show();
+	}
+	
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
+	
+	@Override
+	protected Dialog onCreateDialog(final int id) {
+	        
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		AlertDialog.Builder builder;
+	  
+		if (id == Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO){
+			
+	        View layout = inflater.inflate(R.layout.custon_dialog, (ViewGroup) findViewById(R.id.layout_root));
+	        ((TextView)layout.findViewById(R.id.messageDialog)).setText(dialogMessage);
+	        
+	        ((ImageView)layout.findViewById(R.id.imageDialog)).setImageResource(R.drawable.aviso);
+	        
+	        builder = new AlertDialog.Builder(this);
+	        builder.setView(layout);
+	        builder.setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+	        	
+	        	public void onClick(DialogInterface dialog, int whichButton) {
+	        		removeDialog(id);
+	        		Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+	        		startActivity(intent);
+	        	}
+	        });
+
+	        AlertDialog messageDialog = builder.create();
+	        return messageDialog;			
+		}
+        return null;
+	}
+
+
 }

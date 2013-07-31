@@ -20,10 +20,10 @@ public class DbHelper extends SQLiteOpenHelper {
 			"endereco TEXT, ano_mes_conta TEXT, digito_verificador_conta TEXT, codigo_responsavel TEXT, nome_responsavel TEXT, endereco_entrega TEXT, situacao_lig_agua TEXT, situacao_lig_esgoto TEXT, descricao_banco TEXT, codigo_agencia TEXT, matricula_condominio TEXT, indc_condominio TEXT, " +
 			"codigo_perfil TEXT, consumo_medio INTEGER, indc_faturamento_agua TEXT, indc_faturamento_esgoto TEXT, indc_emissao_conta TEXT, consumo_min_agua TEXT, consumo_min_esgoto TEXT, percent_coleta_esgoto TEXT, percent_cobranca_esgoto TEXT, tipo_poco TEXT, codigo_tarifa TEXT, consumo_estouro INTEGER, " +
 			"alto_consumo INTEGER, baixo_consumo INTEGER, fator_mult_estouro TEXT, fator_mult_media_alto_consumo TEXT, percent_baixo_consumo TEXT, consumo_maximo INTEGER, grupo_faturamento TEXT, codigo_rota INTEGER, numero_conta TEXT, tipo_calculo_tarifa TEXT, endereco_atendimento TEXT, telefone_localidade_ddd TEXT," +
-			" sequencial_rota INTEGER, mensagem_conta1 TEXT, mensagem_conta2 TEXT, mensagem_conta3 TEXT, consumo_minimo_imovel INTEGER, consumo_minimo_imovel_nao_medido INTEGER, numero_documento_notificacao_debito TEXT, numero_codigo_barra_notificacao_debito TEXT, cpf_cnpj_cliente TEXT, data_leitura_anterior_nao_medido DATE, indicador_abastecimento_agua TEXT," +
+			" sequencial_rota INTEGER, mensagem_conta1 TEXT, mensagem_conta2 TEXT, mensagem_conta3 TEXT, mensagem_quitacao_anual TEXT, consumo_minimo_imovel INTEGER, consumo_minimo_imovel_nao_medido INTEGER, numero_documento_notificacao_debito TEXT, numero_codigo_barra_notificacao_debito TEXT, cpf_cnpj_cliente TEXT, data_leitura_anterior_nao_medido DATE, indicador_abastecimento_agua TEXT," +
 			" indicador_imovel_sazonal TEXT, indicador_paralizar_faturamento_agua TEXT, indicador_paralizar_faturamento_esgoto TEXT, opcao_debito_automatico TEXT, percentual_alternativo_esgoto TEXT, consumo_percentual_alternativo_esgoto TEXT, data_emissao_documento DATE, quantidade_contas_impressas TEXT, contagem_validacao_agua TEXT," +
 			" contagem_validacao_poco TEXT, leitura_gravada_anterior TEXT, anormalidade_gravada_anterior TEXT, data_impressao_nao_medido DATE, valor_residual_credito TEXT, indc_adicionou_dados_iniciais_helper_rateio TEXT, valor_rateio_agua TEXT, valor_rateio_esgoto TEXT, consumo_rateio_agua TEXT, " +
-			"consumo_rateio_esgoto TEXT, mensagem_estouro_consumo_1 TEXT, mensagem_estouro_consumo_2 TEXT, mensagem_estouro_consumo_3 TEXT, imovel_status TEXT, imovel_enviado TEXT, indc_imovel_impresso TEXT, indc_geracao TEXT)";
+			"consumo_rateio_esgoto TEXT, mensagem_estouro_consumo_1 TEXT, mensagem_estouro_consumo_2 TEXT, mensagem_estouro_consumo_3 TEXT, imovel_status TEXT, imovel_enviado TEXT, indc_imovel_impresso TEXT, indc_geracao TEXT, latitude TEXT, longitude TEXT)";
 	
 	private static final String DATABASE_DADOS_CATEGORIA_QUERY =
     	"CREATE TABLE dados_categoria (id INTEGER PRIMARY KEY autoincrement, matricula INTEGER not null, codigo_categoria TEXT, descricao_categoria TEXT, codigo_subcategoria TEXT, descricao_subcategoria TEXT, " +
@@ -63,7 +63,7 @@ public class DbHelper extends SQLiteOpenHelper {
         "CREATE TABLE geral (id INTEGER PRIMARY KEY autoincrement, data_referencia_arrecadacao TEXT, ano_mes_faturamento TEXT, codigo_empresa_febraban TEXT, telefone0800 TEXT, " +
         "cnpj_empresa TEXT, inscricao_estadual_empresa TEXT, valor_minim_emissao_conta TXT, percent_tolerancia_rateio TEXT, decremento_maximo_consumo_economia TEXT, incremento_maximo_consumo_economia TEXT, indc_tarifa_catgoria TEXT, login TEXT, " +
         "senha TEXT, data_ajuste_leitura TEXT, indicador_ajuste_consumo TEXT, indicador_transmissao_offline TEXT, versao_celular TEXT, indc_atualizar_sequencia_rota TEXT, indc_bloquear_reemissao_conta TEXT, qtd_dias_ajuste_consumo TEXT, indicador_rota_dividida TEXT," +
-        "id_rota TEXT, modulo_verificador_codigo_barras TEXT, data_inicio TEXT, data_fim TEXT, data_referencia_arrecadada TEXT)";
+        "indicador_calculo_media TEXT, id_rota TEXT, modulo_verificador_codigo_barras TEXT, data_inicio TEXT, data_fim TEXT, data_referencia_arrecadada TEXT)";
     
     private static final String DATABASE_ANORMALIDADE_QUERY =
     	"CREATE TABLE anormalidade (id INTEGER PRIMARY KEY autoincrement, codigo INTEGER, descricao TEXT, indicador_leitura INTEGER, id_consumo_a_cobrar_sem_leitura INTEGER, " +

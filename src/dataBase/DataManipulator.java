@@ -330,7 +330,7 @@ public class DataManipulator {
 				"indicador_ajuste_consumo", "indicador_transmissao_offline",
 				"versao_celular", "indc_atualizar_sequencia_rota",
 				"indc_bloquear_reemissao_conta", "qtd_dias_ajuste_consumo",
-				"indicador_rota_dividida", "id_rota",
+				"indicador_rota_dividida", "indicador_calculo_media", "id_rota",
 				"modulo_verificador_codigo_barras", "data_inicio", "data_fim",
 				"data_referencia_arrecadada" }, null, null, null, null,
 				"id asc");
@@ -345,36 +345,28 @@ public class DataManipulator {
 			getDadosGerais().setInscricaoEstadualEmpresa(cursor.getString(5));
 			getDadosGerais().setValorMinimEmissaoConta(cursor.getString(6));
 			getDadosGerais().setPercentToleranciaRateio(cursor.getString(7));
-			getDadosGerais().setDecrementoMaximoConsumoEconomia(
-					cursor.getString(8));
-			getDadosGerais().setIncrementoMaximoConsumoEconomia(
-					cursor.getString(9));
+			getDadosGerais().setDecrementoMaximoConsumoEconomia(cursor.getString(8));
+			getDadosGerais().setIncrementoMaximoConsumoEconomia(cursor.getString(9));
 			getDadosGerais().setIndcTarifaCatgoria(cursor.getString(10));
 			getDadosGerais().setLogin(cursor.getString(11));
 			getDadosGerais().setSenha(cursor.getString(12));
 
 			getDadosGerais().setDataAjusteLeitura(cursor.getString(13));
 			getDadosGerais().setIndicadorAjusteConsumo(cursor.getString(14));
-			getDadosGerais().setIndicadorTransmissaoOffline(
-					cursor.getString(15));
+			getDadosGerais().setIndicadorTransmissaoOffline(cursor.getString(15));
 			getDadosGerais().setVersaoCelular(cursor.getString(16));
-			getDadosGerais().setIndcAtualizarSequencialRota(
-					cursor.getString(17));
-			getDadosGerais()
-					.setIndcBloquearReemissaoConta(cursor.getString(18));
+			getDadosGerais().setIndcAtualizarSequencialRota(cursor.getString(17));
+			getDadosGerais().setIndcBloquearReemissaoConta(cursor.getString(18));
 			getDadosGerais().setQtdDiasAjusteConsumo(cursor.getString(19));
 			getDadosGerais().setIndicadorRotaDividida(cursor.getString(20));
-			getDadosGerais().setIdRota(cursor.getString(21));
-			getDadosGerais().setModuloVerificadorCodigoBarras(
-					cursor.getString(22));
-			getDadosGerais().setDataInicio(cursor.getString(23));
-			getDadosGerais().setDataFim(cursor.getString(24));
+			getDadosGerais().setIdCalculoMedia(cursor.getString(21));
+			getDadosGerais().setIdRota(cursor.getString(22));
+			getDadosGerais().setModuloVerificadorCodigoBarras(cursor.getString(23));
+			getDadosGerais().setDataInicio(cursor.getString(24));
+			getDadosGerais().setDataFim(cursor.getString(25));
 			// getDadosGerais().setDataReferenciaArrecadacao(cursor.getString(8));
-
 		}
-
 		fecharCursor(cursor);
-		
 	}
 	
 	public Imovel selectImovel(String condition, boolean selectDependencias){
@@ -427,6 +419,7 @@ public class DataManipulator {
 																		"mensagem_conta1",
 																		"mensagem_conta2",
 																		"mensagem_conta3",
+																		"mensagem_quitacao_anual",
 																		"consumo_minimo_imovel",
 																		"consumo_minimo_imovel_nao_medido",
 																		"numero_documento_notificacao_debito",
@@ -459,7 +452,9 @@ public class DataManipulator {
 																		"imovel_status",
 																		"imovel_enviado",
 																		"indc_imovel_impresso",
-																		"indc_geracao"}, condition, null, null, null,  "id asc");
+																		"indc_geracao",
+																		"latitude",
+																		"longitude"}, condition, null, null, null,  "id asc");
 		Imovel imovel = null;
 		
 		if (cursor.moveToFirst()) {
@@ -514,39 +509,42 @@ public class DataManipulator {
           	imovel.setMensagemConta1(cursor.getString(45));
           	imovel.setMensagemConta2(cursor.getString(46));
           	imovel.setMensagemConta3(cursor.getString(47));
-          	imovel.setConsumoMinimoImovel(cursor.getString(48));
-          	imovel.setConsumoMinimoImovelNaoMedido(cursor.getString(49));
-          	imovel.setNumeroDocumentoNotificacaoDebito(cursor.getString(50));
-          	imovel.setNumeroCodigoBarraNotificacaoDebito(cursor.getString(51));
-          	imovel.setCpfCnpjCliente(cursor.getString(52));
-          	imovel.setDataLeituraAnteriorNaoMedido(cursor.getString(53));
-          	imovel.setIndicadorAbastecimentoAgua(cursor.getString(54));
-          	imovel.setIndicadorImovelSazonal(cursor.getString(55));
-          	imovel.setIndicadorParalizarFaturamentoAgua(cursor.getString(56));
-          	imovel.setIndicadorParalizarFaturamentoEsgoto(cursor.getString(57));
-          	imovel.setOpcaoDebitoAutomatico(cursor.getString(58));
-          	imovel.setPercentualAlternativoEsgoto(cursor.getString(59));
-          	imovel.setConsumoPercentualAlternativoEsgoto(cursor.getString(60));
-          	imovel.setDataEmissaoDocumento(cursor.getString(61));
-          	imovel.setQuantidadeContasImpressas(Integer.parseInt(cursor.getString(62)));
-          	imovel.setContagemValidacaoAgua(Integer.parseInt(cursor.getString(63)));
-          	imovel.setContagemValidacaoPoco(Integer.parseInt(cursor.getString(64)));
-          	imovel.setLeituraGravadaAnterior(Integer.parseInt(cursor.getString(65)));
-          	imovel.setAnormalidadeGravadaAnterior(Integer.parseInt(cursor.getString(66)));
-          	imovel.setDataImpressaoNaoMedido(cursor.getString(67));
-          	imovel.setValorResidualCredito(Double.parseDouble(cursor.getString(68)));
-          	imovel.setIndcAdicionouDadosIniciaisHelperRateio(Integer.parseInt(cursor.getString(69)));
-          	imovel.setValorRateioAgua(Double.parseDouble(cursor.getString(70)));
-          	imovel.setValorRateioEsgoto(Double.parseDouble(cursor.getString(71)));
-          	imovel.setConsumoRateioAgua(Integer.parseInt(cursor.getString(72)));
-          	imovel.setConsumoRateioEsgoto(Integer.parseInt(cursor.getString(73)));
-          	imovel.setMensagemEstouroConsumo1(cursor.getString(74));
-          	imovel.setMensagemEstouroConsumo2(cursor.getString(75));
-          	imovel.setMensagemEstouroConsumo3(cursor.getString(76));
-          	imovel.setImovelStatus(cursor.getString(77));
-          	imovel.setImovelEnviado(cursor.getString(78));
-          	imovel.setIndcImovelImpresso(Integer.parseInt(cursor.getString(79)));
-          	imovel.setIndcGeracaoConta(Integer.parseInt(cursor.getString(80)));
+          	imovel.setMensagemQuitacaoAnual(cursor.getString(48));
+          	imovel.setConsumoMinimoImovel(cursor.getString(49));
+          	imovel.setConsumoMinimoImovelNaoMedido(cursor.getString(50));
+          	imovel.setNumeroDocumentoNotificacaoDebito(cursor.getString(51));
+          	imovel.setNumeroCodigoBarraNotificacaoDebito(cursor.getString(52));
+          	imovel.setCpfCnpjCliente(cursor.getString(53));
+          	imovel.setDataLeituraAnteriorNaoMedido(cursor.getString(54));
+          	imovel.setIndicadorAbastecimentoAgua(cursor.getString(55));
+          	imovel.setIndicadorImovelSazonal(cursor.getString(56));
+          	imovel.setIndicadorParalizarFaturamentoAgua(cursor.getString(57));
+          	imovel.setIndicadorParalizarFaturamentoEsgoto(cursor.getString(58));
+          	imovel.setOpcaoDebitoAutomatico(cursor.getString(59));
+          	imovel.setPercentualAlternativoEsgoto(cursor.getString(60));
+          	imovel.setConsumoPercentualAlternativoEsgoto(cursor.getString(61));
+          	imovel.setDataEmissaoDocumento(cursor.getString(62));
+          	imovel.setQuantidadeContasImpressas(Integer.parseInt(cursor.getString(63)));
+          	imovel.setContagemValidacaoAgua(Integer.parseInt(cursor.getString(64)));
+          	imovel.setContagemValidacaoPoco(Integer.parseInt(cursor.getString(65)));
+          	imovel.setLeituraGravadaAnterior(Integer.parseInt(cursor.getString(66)));
+          	imovel.setAnormalidadeGravadaAnterior(Integer.parseInt(cursor.getString(67)));
+          	imovel.setDataImpressaoNaoMedido(cursor.getString(68));
+          	imovel.setValorResidualCredito(Double.parseDouble(cursor.getString(69)));
+          	imovel.setIndcAdicionouDadosIniciaisHelperRateio(Integer.parseInt(cursor.getString(70)));
+          	imovel.setValorRateioAgua(Double.parseDouble(cursor.getString(71)));
+          	imovel.setValorRateioEsgoto(Double.parseDouble(cursor.getString(72)));
+          	imovel.setConsumoRateioAgua(Integer.parseInt(cursor.getString(73)));
+          	imovel.setConsumoRateioEsgoto(Integer.parseInt(cursor.getString(74)));
+          	imovel.setMensagemEstouroConsumo1(cursor.getString(75));
+          	imovel.setMensagemEstouroConsumo2(cursor.getString(76));
+          	imovel.setMensagemEstouroConsumo3(cursor.getString(77));
+          	imovel.setImovelStatus(cursor.getString(78));
+          	imovel.setImovelEnviado(cursor.getString(79));
+          	imovel.setIndcImovelImpresso(Integer.parseInt(cursor.getString(80)));
+          	imovel.setIndcGeracaoConta(Integer.parseInt(cursor.getString(81)));
+          	imovel.setLatitude(Double.valueOf(cursor.getString(82)));
+          	imovel.setLongitude(Double.valueOf(cursor.getString(83)));
 		}
 		
 		fecharCursor(cursor);
@@ -1458,6 +1456,8 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		initialValues.put("data_fim", parser.obterDadoParser(8));
 		initialValues.put("id_rota", parser.obterDadoParser(4));
 		initialValues.put("indicador_rota_dividida", parser.obterDadoParser(2));
+//		initialValues.put("indicador_calculo_media", parser.obterDadoParser(2));
+		initialValues.put("indicador_calculo_media", String.valueOf(Constantes.NAO));
 
 		return db.insert(Constantes.TABLE_GERAL, null, initialValues);
 	}
@@ -1553,6 +1553,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		initialValues.put("mensagem_conta1", parser.obterDadoParser(100));
 		initialValues.put("mensagem_conta2", parser.obterDadoParser(100));
 		initialValues.put("mensagem_conta3", parser.obterDadoParser(100));
+		initialValues.put("mensagem_quitacao_anual", parser.obterDadoParser(120));
 		
 
 		// DADOS QUALIDADE DA ÁGUA
@@ -1678,6 +1679,8 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		initialValues.put("imovel_enviado", String.valueOf(Constantes.NAO));
 		initialValues.put("indc_imovel_impresso", String.valueOf(Constantes.NAO));
 		initialValues.put("indc_geracao", String.valueOf(Constantes.SIM));
+		initialValues.put("latitude", String.valueOf(Constantes.NULO_DOUBLE));
+		initialValues.put("longitude", String.valueOf(Constantes.NULO_DOUBLE));
 
     	// Verifica se o imóvel é informativo
 		boolean informativo = ControladorImovel.getInstancia().isImovelInformativo(Integer.parseInt(indcParalizarFaturamentoAgua), 
@@ -2172,6 +2175,11 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		initialValues.put("valor_rateio_esgoto", String.valueOf(imovel.getValorRateioEsgoto()));
 		initialValues.put("consumo_rateio_agua", String.valueOf(imovel.getConsumoRateioAgua()));
 		initialValues.put("consumo_rateio_esgoto", String.valueOf(imovel.getConsumoRateioEsgoto()));
+
+		if (imovel.getLatitude() != Constantes.NULO_DOUBLE){
+			initialValues.put("latitude", String.valueOf(imovel.getLatitude()));
+			initialValues.put("longitude", String.valueOf(imovel.getLongitude()));
+		}
 
 		db.update(Constantes.TABLE_IMOVEL, initialValues, "id=?", new String []{String.valueOf(imovel.getId())});
 	}

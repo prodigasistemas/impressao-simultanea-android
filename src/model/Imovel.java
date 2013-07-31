@@ -99,6 +99,7 @@ public class Imovel {
     private String mensagemConta1;
     private String mensagemConta2;
     private String mensagemConta3;
+    private String mensagemQuitacaoAnual;
     private int consumoMinimoImovel;
     private int consumoMinimoImovelNaoMedido;
     private String numeroDocumentoNotificacaoDebito;
@@ -139,6 +140,9 @@ public class Imovel {
     private int indcImovelEnviado = Constantes.NAO;
     private int indcImovelImpresso = Constantes.NAO;
     private int indcGeracaoConta = Constantes.SIM;
+	private double latitude = Constantes.NULO_DOUBLE;
+	private double longitude = Constantes.NULO_DOUBLE;
+
 
     // ====================================================================================
 
@@ -247,26 +251,6 @@ public class Imovel {
     }
 
     public EfetuarRateioConsumoHelper getEfetuarRateioConsumoHelper() {
-
-//    	if (this.isImovelCondominio()){
-//	
-//		    int matriculaImovelMacro = Constantes.NULO_INT;
-//	
-//		    if (this.indcCondominio == Constantes.SIM) {
-//		    	matriculaImovelMacro = this.getMatricula();
-//		    
-//		    } else {
-//		    	matriculaImovelMacro = this.matriculaCondominio;
-//		    }
-//	
-//		    if (this.efetuarRateioConsumoHelper == null) {
-//				this.efetuarRateioConsumoHelper = ControladorRota.getInstancia().getDataManipulator().selectEfetuarRateioConsumoHelper(matriculaImovelMacro);
-//		
-//				// Salvamos as informações obtidas
-////				Repositorio.salvarObjeto(this);
-//		    }
-//		}
-	
 		return efetuarRateioConsumoHelper;
     }
 
@@ -280,6 +264,14 @@ public class Imovel {
 
     public int getIndcImovelImpresso() {
     	return indcImovelImpresso;
+    }
+
+    public double getLatitude() {
+    	return latitude;
+    }
+
+    public double getLongitude() {
+    	return longitude;
     }
 
     public int getQuantidadeContasImpressas() {
@@ -374,6 +366,14 @@ public class Imovel {
 
     public void setIndcImovelImpresso(int imovelImpressao) {
     	this.indcImovelImpresso = imovelImpressao;
+	}
+
+    public void setLatitude(double latitude) {
+    	this.latitude = latitude;
+	}
+
+    public void setLongitude(double longitude) {
+    	this.longitude = longitude;
 	}
 
     public void setQuantidadeContasImpressas(int quantidadeImpressao) {
@@ -915,7 +915,9 @@ public class Imovel {
     	this.mensagemConta3 = Util.verificarNuloString(mensagemConta3);
     }
 
-    
+    public void setMensagemQuitacaoAnual(String mensagemQuitacaoAnual) {
+    	this.mensagemQuitacaoAnual = Util.verificarNuloString(mensagemQuitacaoAnual);
+    }
 
     public void setConsumoMinimoImovel(String consumoMinimoImovel) {
     	this.consumoMinimoImovel = Util.verificarNuloInt(consumoMinimoImovel);
@@ -1100,7 +1102,9 @@ public class Imovel {
     	return mensagemConta3;
     }
 
-    
+    public String getMensagemQuitacaoAnual() {
+    	return mensagemQuitacaoAnual;
+    }
 
     public int getConsumoMinimoImovel() {
     	return consumoMinimoImovel;

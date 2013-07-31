@@ -559,13 +559,17 @@ public class ControladorConta {
         		consumo.setConsumoCobradoMes(leitura - medidor.getLeituraInstalacaoHidrometro());
         		consumo.setLeituraAtual(leitura);
         	
+        		// Evitar que mesmo retendo, a conta apresenta valor elevados.
+        		if(!verificarEstouroConsumo(consumo, medidor)){
+        			verificarAltoConsumo(consumo, medidor);
+        		}
+        		
         	// Se for menor, faz o calculo pela média.
         	}else{
         		consumo.setConsumoMedidoMes(Constantes.NULO_INT);
         		consumo.setConsumoCobradoMes(cMedio);
         		consumo.setLeituraAtual(medidor.getLeituraInstalacaoHidrometro() + cMedio);
                 consumo.setTipoConsumo(CONSUMO_TIPO_MEDIA_HIDR);
-        		
         	}
 
 //    		Faz ajuste de consumo.
@@ -2738,7 +2742,7 @@ public class ControladorConta {
     	// Imovel Cortado nao necessita verificar.
     	if (!(getImovelSelecionado().getSituacaoLigAgua()).equals(Constantes.CORTADO)){
 		
-    		//Se data de instalaçao do hidrometro IGUAL data de leitura anterior informada   E   
+    		//Se data de instalaçao do hidrometro IGUAL data de leitura anterior faturada   E   
     		//Data de ligação de fornecimento ANTERIOR à data de instalaçao do Hidrometro E 
     		// Não houve leitura ou anormalidade no mês anterior.
         	if (Util.compararData(getImovelSelecionado().getMedidor(tipoMedicao).getDataInstalacaoHidrometro(), 
@@ -2834,7 +2838,7 @@ public class ControladorConta {
     	
     	if(!resultado){
 	    	List<HistoricoConsumo> listaHistoricosConsumo = getImovelSelecionado().getHistoricosConsumo();
-		    if (listaHistoricosConsumo != null) {
+		    if (listaHistoricosConsumo != null && listaHistoricosConsumo.size() > 0) {
 		    	
 		    	// Obtem o registro do mes anterior.
 		    	HistoricoConsumo historricoConsumoMesAnterior = (HistoricoConsumo)listaHistoricosConsumo.get(0);
