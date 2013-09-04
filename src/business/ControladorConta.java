@@ -295,7 +295,7 @@ public class ControladorConta {
     		Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA);
     	    
     		if (medidor != null) {
-    	    	consumoAgua.setDiasConsumo(Util.obterModuloDiferencasDatasDias(medidor.getDataLeituraAnteriorFaturada(), Util.dataAtual()));
+    	    	consumoAgua.setDiasConsumo(Util.obterModuloDiferencasDatasDias(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()));
     	    }
     	}
 
@@ -428,8 +428,7 @@ public class ControladorConta {
     	    
     			Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO);
     			if (medidor != null) {
-    				consumoEsgoto.setDiasConsumo(Util.obterModuloDiferencasDatasDias(medidor
-    						.getDataLeituraAnteriorFaturada(), Util.dataAtual()));
+    				consumoEsgoto.setDiasConsumo(Util.obterModuloDiferencasDatasDias(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()));
     			}
     	}
 
@@ -2466,6 +2465,7 @@ public class ControladorConta {
 	dataLeituraLeituraAtualFaturamento = medidor.getDataLeitura();
 
 	System.out.println("Leitura Anterior Faturamento: "+ dataLeituraAnteriorFaturamento);
+	System.out.println("Data Cronograma Mês Anterior : "+ getImovelSelecionado().getDataLeituraAnteriorNaoMedido());
 	System.out.println("Leitura Atual Faturamento: "+ dataLeituraLeituraAtualFaturamento);
 	
 	int quantidadeDiasConsumoAjustado = 0;
@@ -2481,8 +2481,7 @@ public class ControladorConta {
 
 	}else{
 		quantidadeDiasConsumo = (int) Util.obterModuloDiferencasDatasDias(
-		dataLeituraAnteriorFaturamento, dataLeituraLeituraAtualFaturamento);
-		
+				getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), dataLeituraLeituraAtualFaturamento);
 	}
 
 	/*
@@ -2494,20 +2493,14 @@ public class ControladorConta {
 
 	if (quantidadeDiasConsumo > 0) {
 
-		Date dataLeituraNaoMedidoAtual;
+		// Obtém a quantidade de dias de consumo ajustado
+		// Seta a data com a data de referencia da rota/grupo atual
+		Date dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
+
 		int diasConsumoLido  = (int) Util.obterModuloDiferencasDatasDias(medidor.getDataLeitura(), medidor.getDataInstalacao());
 		
 		//Imovel com nova instalacao de fornecimento hidrometrado.
 		if (isImovelNovaInstalacaoHidrometro(tipoMedicao)){
-
-			// Obtém a quantidade de dias de consumo ajustado
-			if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
-				// Seta a data com a data de referencia da rota/grupo atual
-			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
-
-			}else{
-			    dataLeituraNaoMedidoAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)30);
-			}
 
 			// Numero de dias ajustado é diferença entre a data de referencia nao-medido do mes atual e a data da instalaçao do hidrometro  		    
 			quantidadeDiasConsumoAjustado = (int) Util.obterModuloDiferencasDatasDias(medidor.getDataInstalacao(), dataLeituraNaoMedidoAtual);
@@ -2515,22 +2508,15 @@ public class ControladorConta {
 		
 		//Imovel antes fixo e agora hidrometrado.
 		}else if (isImovelFixoComHidrometroInstalado(tipoMedicao)){
-
-			if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
-			    quantidadeDiasConsumoAjustado = (int) ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo();			
-
-			}else{
-			    quantidadeDiasConsumoAjustado = 30;			
-				
-			}
-    	
+			quantidadeDiasConsumoAjustado = (int) ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo();			
 	    }
+
 		// Verifica se a data do ajuste é não nula
 		else if (ControladorRota.getInstancia().getDadosGerais().getDataAjusteLeitura() != null) {
 		// Obtém a quantidade de dias de consumo ajustado
 			quantidadeDiasConsumoAjustado = (int) Util
 				.obterModuloDiferencasDatasDias(
-					dataLeituraAnteriorFaturamento, ControladorRota.getInstancia().getDadosGerais().getDataAjusteLeitura());
+						getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), ControladorRota.getInstancia().getDadosGerais().getDataAjusteLeitura());
 
 	    } else {
 
@@ -2543,7 +2529,7 @@ public class ControladorConta {
 				Calendar data = Calendar.getInstance();
 	
 				// Seta a data com a data de leitura anterior faturamento
-				data.setTime(dataLeituraAnteriorFaturamento);
+				data.setTime(getImovelSelecionado().getDataLeituraAnteriorNaoMedido());
 	
 				// Obtém a quantidade de dias
 				int dias = Util.quantidadeDiasMes(data);
@@ -2574,14 +2560,8 @@ public class ControladorConta {
 					consumoDiario = Util.arredondar(((double) (medidor.getLeitura() - medidor.getLeituraInstalacaoHidrometro() )/ (double) diasConsumoLido), 3);
 				}
 				
-				Date dataLeituraReferenciaAtual;
-				
-				if(ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo() != Constantes.NULO_INT){
-					// Seta a data com a data de referencia da rota/grupo atual
-				    dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(medidor.getDataLeituraAnteriorFaturada(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
-				}else{
-				    dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(medidor.getDataLeituraAnteriorFaturada(), (long)30);
-				}
+				// Seta a data com a data de referencia da rota/grupo atual
+				Date dataLeituraReferenciaAtual = Util.adicionarNumeroDiasDeUmaData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), (long)ControladorRota.getInstancia().getDadosGerais().getQtdDiasAjusteConsumo());
 				
 				int diasConsumoLidoAjustado = (int) Util.obterModuloDiferencasDatasDias( dataLeituraReferenciaAtual, medidor.getDataInstalacao() );
 					

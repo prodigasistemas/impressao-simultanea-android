@@ -1488,10 +1488,17 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		initialValues.put("inscricao", inscricao);
 		initialValues.put("localidade", inscricao.substring(0, 3));
 		initialValues.put("setor", inscricao.substring(3, 6));
-		initialValues.put("quadra", inscricao.substring(6, 10));
-		initialValues.put("lote", inscricao.substring(10, 14));
-		initialValues.put("sublote", inscricao.substring(14, 17));
-		
+		// verifica se a inscrição possui 16 ou 17 digitos
+		if (inscricao.trim().length() == 16){
+			initialValues.put("quadra", inscricao.substring(6, 9));
+			initialValues.put("lote", inscricao.substring(9, 13));
+			initialValues.put("sublote", inscricao.substring(13, 16));
+		}else{
+			initialValues.put("quadra", inscricao.substring(6, 10));
+			initialValues.put("lote", inscricao.substring(10, 14));
+			initialValues.put("sublote", inscricao.substring(14, 17));
+		}
+
 		initialValues.put("endereco", parser.obterDadoParser(70));
 		initialValues.put("ano_mes_conta", parser.obterDadoParser(6));
 		initialValues.put("digito_verificador_conta", parser.obterDadoParser(1));

@@ -250,7 +250,7 @@ public class Util {
     	
     	inscricaoFormatada += inscricao.substring(0, 3) + ".";
     	inscricaoFormatada += inscricao.substring(3, 6) + ".";
-    	if (inscricao.length() == 16) {
+    	if (inscricao.trim().length() == 16) {
     		inscricaoFormatada += "0" + inscricao.substring(6, 9) + ".";
     		inscricaoFormatada += inscricao.substring(9, 13) + ".";
     		inscricaoFormatada += inscricao.substring(13, 16);

@@ -95,6 +95,7 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
         if (location != null){
         	latitude = location.getLatitude();
         	longitude = location.getLongitude();
+        	//location.getTime();
         }
 		
     	CellLocation.requestLocationUpdate();
@@ -259,6 +260,7 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
 		Log.i("longitude:", location.getLongitude()+"");
     	latitude = location.getLatitude();
     	longitude = location.getLongitude();
+//    	location.getTime();
 	}
 
 	public void onProviderDisabled(String provider) {}

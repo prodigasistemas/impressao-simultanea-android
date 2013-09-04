@@ -226,6 +226,7 @@ public class ImpressaoContaCosanpa {
 	        		repCodigoBarrasSemDigitoVerificador +
 	        		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
 	        		"T 5 0 352 1661 4\n"+
+	        		"T 5 0 680 1661 "+imovel.getSequencialRota()+"\n"+
 	        		"FORM\n"+
 	        		"PRINT\n";
         		
@@ -265,22 +266,14 @@ public class ImpressaoContaCosanpa {
     	
     	return comando;
     }
-    
-//    public static ImpressaoContaCosanpa getInstancia() {
-//    	if (instancia == null) {
-//    		instancia = new ImpressaoContaCosanpa();
-//    	}
-//    	
-//    	return instancia;
-//    }
-    
+        
     public String getComandoImpressaoFatura(Imovel imovel, int impressaoTipo) {
     	this.imovel = imovel;
-    	getDados(imovel, impressaoTipo);
+    	getDadosFatura(imovel, impressaoTipo);
     	return montarComandoImpressaoFatura(impressaoTipo);
     }
         
-    public void getDados(Imovel imovel, int tipoImpressao) {
+    public void getDadosFatura(Imovel imovel, int tipoImpressao) {
     	
 		if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
 			linesAndBoxes = "BOX 32 435 802 482 1\n"+
@@ -482,7 +475,7 @@ public class ImpressaoContaCosanpa {
 					anormalidadeLeitura += formarLinha(0, 2, 430, 374, "ANORM. LEITURA: " + FileManager.getAnormalidade(imovel.getConsumoAgua().getAnormalidadeLeituraFaturada()).getDescricao(), 0, 0);
 				} catch (IOException e) {
 					e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+					Util.salvarLog(new Date(), e.fillInStackTrace());
 				}
 			}
 		}
@@ -745,8 +738,9 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
     }
     
     public String imprimirNotificacaoDebito(Imovel imovel) {
+    	ImpressaoContaCosanpa.imovel = imovel;
+    	getDadosAvisoDebito(ImpressaoContaCosanpa.imovel);
 
-    	this.imovel = imovel;
     	String comando = "! 0 816 0 1720 1\n"+
 
 			//Incluindo data de impressao, Versao do Leitura e Impressao Simultanea e
@@ -779,11 +773,11 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 
     	
     		"T 7 1 300 350 AVISO DE DEBITO \n"+
-    		"T 7 0 37 390 Prezado Cliente,"+
-    		dividirLinha(7, 0, 37, 426, "Ate o presente momento nao registramos a confirmacao do Paga-mento da(s) conta(s) abaixo:", 61, 24) +
-    		"T 7 0 53 486 MES REFERENCIA"+
-    		"T 7 0 400 486 VENCIMENTO"+
-    		"T 7 0 697 486 VALOR(R$)";
+    		"T 7 0 37 390 Prezado Cliente, \n"+
+    		dividirLinha(7, 0, 37, 426, "Ate o presente momento nao registramos a confirmacao do Paga-mento da(s) conta(s) abaixo:", 61, 24)+
+    		"T 7 0 53 486 MES REFERENCIA \n"+
+    		"T 7 0 400 486 VENCIMENTO \n"+
+    		"T 7 0 697 486 VALOR(R$) \n";
     	
     	int totalLinhas = imovel.getContas().size();
     	int qtdLinhasDebitoImpressas = 0;
@@ -827,25 +821,65 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
     			dividirLinha(7, 0, 37, (606 + (qtdLinhasDebitoImpressas*24)) , "De acordo com a legislacao em vigor (Lei numero 11.445/07), o nao pagamento " +
     			"deste debito nos autoriza a suspender o forne-cimento de agua/esgoto para o seu imovel", 61, 24)+
     	
-    			dividirLinha(7, 0, 37, (690 + (qtdLinhasDebitoImpressas*24)) , "Estamos a sua disposição em nossas lojas de atendimento, escri-torios regionais e " +
+    			dividirLinha(7, 0, 37, (690 + (qtdLinhasDebitoImpressas*24)) , "Estamos a sua disposicao em nossas lojas de atendimento, escri-torios regionais e " +
     			"no telefone 0800-7071-195, ligacao gratuita, para esclarecer qualquer duvida.", 63, 24)+
     	
-    			dividirLinha(7, 0, 37, (774 + (qtdLinhasDebitoImpressas*24)) , "Para sua comodidade, utilize o codigo de barras abaixo para  pagamento deste debito" +
-    			" e fique sempre em dia com a COSANPA.  Lembre-se da importancia que a água tratada tem na sua vida.", 61, 24)+
+    			dividirLinha(7, 0, 37, (774 + (qtdLinhasDebitoImpressas*24)) , "Caso o(s) debito(s) ja esteja(m) quitado(s), pedimos desculpas e que desconsidere este aviso.", 62, 24)+
     	
-    			dividirLinha(7, 0, 37, (858 + (qtdLinhasDebitoImpressas*24)) , "Caso o(s) débito(s) ja esteja(m) quitado(s), pedimos desculpas e que desconsidere este aviso.", 62, 24)+
-    	
-    			formarLinha(7, 1, 160, 1210, Util.dateToString(imovel.getDataVencimento()), 0, 0)+
-    			formarLinha(4, 0, 640, 1210, Util.formatarDoubleParaMoedaReal(imovel.getValorDebitosAnteriores()), 0, 0)+
-    			formarLinha(0, 2, 155, 1265, "Nº Documento: ", 0, 0)+
-    			formarLinha(5, 0, 265, 1266, imovel.getNumeroDocumentoNotificacaoDebito(), 0, 0)+
-    			formarLinha(0, 2, 440, 1265, "OPCAO PELO DEB. AUTOMATICO: ", 0, 0) + formarLinha(5, 0, 663, 1266, ( imovel.getOpcaoDebitoAutomatico() == Constantes.NULO_INT ? "" : imovel.getOpcaoDebitoAutomatico()+"" ), 0, 0)+
-    			formarLinha(0, 2, 344, 1456, imovel.getMatricula() + "", 0, 0) + formarLinha(0, 2, 443, 1456, Util.formatarAnoMesParaMesAno(imovel.getAnoMesConta()), 0, 0) + formarLinha(0, 2, 558, 1456, Util.dateToString(imovel.getDataVencimento()), 0, 0) + formarLinha(0, 2, 694, 1456, Util.formatarDoubleParaMoedaReal(imovel.getValorDebitosAnteriores()), 0, 0)+
+    			formarLinha(0, 2, 155, 1265, "Numero do Documento de Notificacao de Debito: ", 0, 0)+
+    			formarLinha(5, 0, 555, 1265, imovel.getNumeroDocumentoNotificacaoDebito(), 0, 0)+
     			"FORM\n" + "PRINT ";
     	
     	return comando;
     }
     
+    public void getDadosAvisoDebito(Imovel imovel) {
+
+		if (imovel.getAnoMesConta().compareTo(Constantes.NULO_STRING) != 0){
+			descricaoAnoMesConta = "T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(imovel.getAnoMesConta()) + "\n";
+			
+		}else{
+			descricaoAnoMesConta = "T 7 1 669 90 "+ Util.retornaDescricaoAnoMes(ControladorRota.getInstancia().getDadosGerais().getAnoMesFaturamento()) + "\n";
+		}
+		
+    	List dc = imovel.getDadosCategoria();
+    	List quantidadeEconomias = categoriasEconomias(dc);
+    	
+    	situacaoAgua = imovel.getDescricaoSitLigacaoAgua(Integer.valueOf(imovel.getSituacaoLigAgua()));
+    	situacaoEsgoto = imovel.getDescricaoSitLigacaoEsgoto(Integer.valueOf(imovel.getSituacaoLigEsgoto()));
+    	consumoAgua = imovel.getConsumoAgua();
+        consumoEsgoto = imovel.getConsumoEsgoto();;
+    	
+    	String cpfCnpjFormatado = "";
+ 	    if (imovel.getCpfCnpjCliente() != null && !imovel.getCpfCnpjCliente().equals("")) {
+ 	    	cpfCnpjFormatado = imovel.getCpfCnpjCliente().trim();
+ 	    }
+    	if (imovel.getEnderecoEntrega().trim().length() == 0){
+		    endereco = 	formarLinha(0, 2, 52, 172, imovel.getNomeUsuario().trim(), 0, 0) + formarLinha(0, 2, 52, 199, cpfCnpjFormatado, 0, 0) + dividirLinha(0, 2, 434, 169, imovel.getEndereco(), 40, 27);
+	    }else{
+		    endereco =	formarLinha(0, 2, 52, 172, imovel.getNomeUsuario().trim(), 0, 0) + formarLinha(0, 2, 52, 199, cpfCnpjFormatado, 0, 0) + dividirLinha(0, 2, 434, 169, imovel.getEnderecoEntrega(), 40, 27);
+	    }
+	    
+	    for (int i = 0; i < quantidadeEconomias.size(); i++) {
+			Object[] dadosCategoria = (Object[]) quantidadeEconomias.get(i);
+			economias += formarLinha(0, 0, 470, 254, dadosCategoria[0] + "", i * 85, 0);
+			economias += formarLinha(7, 0, 539, 250, dadosCategoria[1] + "", i * 85, 0);
+	    }
+    	
+    	medidorAgua = imovel.getMedidor(Constantes.LIGACAO_AGUA);
+    	medidorPoco = imovel.getMedidor(Constantes.LIGACAO_POCO);
+    	
+	    if (medidorAgua != null) {
+			numeroMedidor = medidorAgua.getNumeroHidrometro();
+			dataInstalacao = Util.dateToString(medidorAgua.getDataInstalacao());
+
+	    } else if (medidorPoco != null) {
+
+			numeroMedidor = medidorPoco.getNumeroHidrometro();
+			dataInstalacao = Util.dateToString(medidorPoco.getDataInstalacao());
+	    }
+    }
+
     private static String dividirLinha(int fonte, int tamanhoFonte, int x, int y, String texto, int tamanhoLinha, int deslocarPorLinha) {
     	String retorno = "";
     	int contador = 0;
@@ -890,7 +924,8 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 			qtdLinhas++;
 			if (linhas.equals("")) {
 			    // 2
-			    linhas += formarLinha(7, 0, 53, 710, "AGUA", 0, 0);
+			    linhas += formarLinha(7, 0, 53, 710, "AGUA", 0, qtdLinhas * 25);
+			    qtdLinhas++;
 			}
 			// 3.1
 			int quantidaEconomias = 0;
@@ -1052,7 +1087,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		    // 1.2.3
 		    dados[0] += Util.formatarDoubleParaMoedaReal(imovel.getPercentCobrancaEsgoto());
 		    // 1.2.3
-		    dados[0] += " % DO VALOR DE ÁGUA";
+		    dados[0] += " % DO VALOR DE AGUA";
 		    // 1.4
 		    dados[2] = Util.formatarDoubleParaMoedaReal(valorEsgoto);
 		    retorno.add(dados);

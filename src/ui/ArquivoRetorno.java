@@ -28,11 +28,13 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import business.ControladorImovel;
 import business.ControladorRota;
 
 import com.IS.Fachada;
+import com.IS.R;
 
 public class ArquivoRetorno {
 	
@@ -116,7 +118,10 @@ public class ArquivoRetorno {
 		    } else {
 		    	listIdImoveis = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
 		    }
-		    
+
+	    	gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_TODOS_IMOVEIS);
+    		arquivo = arquivo.append(registroTipo0);
+
 		    for (int i = 0; i < listIdImoveis.size(); i++){
 
 		    	Imovel imovel = null;
@@ -129,12 +134,6 @@ public class ArquivoRetorno {
 		    	if (imovel.isImovelInformativo())
 		    		continue;
 		    	
-		    	gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_TODOS_IMOVEIS, imovel);
-		    	
-		    	if ( i == 0 ){
-		    		arquivo = arquivo.append(registroTipo0);
-		    	 }
-
 		    	gerarRegistroTipo1(imovel);
 		    	gerarRegistroTipo2e3(imovel);
 		    	gerarRegistroTipo4(imovel);
@@ -646,20 +645,21 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
     	arquivo.append(registrosTipo4);
     }
     
-    private void gerarRegistroTipo0(int tipoFinalizacao, Imovel imovel) {
+    private void gerarRegistroTipo0(int tipoFinalizacao) {
 
     	registroTipo0 = new StringBuffer();
-		
+    	List<String> infoRota = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
+    	
     	// Tipo de registro (1)
     	registroTipo0.append("0");				
     	// Tipo de finalização (1)
     	registroTipo0.append(tipoFinalizacao + "");    	
     	// Localidade(3)
-    	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getLocalidade() + ""));    	
+    	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(3, infoRota.get(1) + ""));    	
     	//Setor Comercial(3)
-    	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(3, imovel.getSetorComercial() + ""));				
+    	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(3, infoRota.get(2) + ""));				
     	// Rota (3);
-    	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(7, imovel.getCodigoRota() + ""));
+    	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(7, infoRota.get(3) + ""));
     	// Id da Rota   	
     	if (ControladorRota.getInstancia().getDadosGerais().getIdRota() != 9999){
         	registroTipo0.append(Util.adicionarZerosEsquerdaNumero(4, ControladorRota.getInstancia().getDadosGerais().getIdRota() + ""));		
@@ -724,14 +724,13 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 //    		qtdImoveisCalculados = Configuracao.getInstancia().getIdsImoveisConcluidos().size();
     		qtdImoveisCalculados = idsImoveisConcluidos.size();
     		
-    		Imovel primeiroImovel = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1", true);
     		
     		if ( tipoArquivoRetorno == ARQUIVO_COMPLETO ){			    
-    	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO , primeiroImovel);		
+    	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO);		
     	    } else if ( tipoArquivoRetorno == ARQUIVO_TODOS_OS_CALCULADOS ){
-    	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_TODOS_IMOVEIS , primeiroImovel );
+    	    	this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_TODOS_IMOVEIS);
     	    } else if ( tipoArquivoRetorno == ARQUIVO_INCOMPLETO ){
-    			this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_INCOMPLETO , primeiroImovel );
+    			this.gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO_INCOMPLETO);
     	    }
     		
     		
@@ -938,8 +937,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		    
 		     listIdImoveis = ControladorRota.getInstancia().getDataManipulator().selectIdsImoveisConcluidosENaoEnviados();
 		    
-		    Imovel imovelReferencia = ControladorRota.getInstancia().getDataManipulator().selectImovel("id = 1", true);
-		    gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO, imovelReferencia);
+		    gerarRegistroTipo0( Constantes.INDC_FINALIZAR_ROTEIRO);
 		    arquivo = arquivo.append(registroTipo0);
 		    int i = 0;
 		    

@@ -109,6 +109,8 @@ public class Consulta extends ListActivity {
 
 	    		Log.i("FILTRO", searchCondition);
 	    		
+	        	listStatusImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectStatusImoveis(searchCondition);
+	    		
     	    	ArrayList<String> listEnderecoImoveis = (ArrayList)ControladorRota.getInstancia().getDataManipulator().selectEnderecoImoveis(searchCondition);
 
     	    	if(listEnderecoImoveis != null && listEnderecoImoveis.size() > 0){
@@ -168,17 +170,19 @@ public class Consulta extends ListActivity {
 	        ((TextView)rowView.findViewById(R.id.nomerota)).setText(names.get(position));
 
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+
+			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_CONCLUIDO ){
+				imageView.setImageResource(R.drawable.done);
 			
-//			if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_PENDENTE ){
+			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_PENDENTE){
 				imageView.setImageResource(R.drawable.todo);
-//			
-//			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO){
-//				imageView.setImageResource(R.drawable.done);
 //			
 //			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_CONCLUIDO_COM_ANORMALIDADE ){
 //				imageView.setImageResource(R.drawable.done_anormal);
-//			}
-
+				
+			} else if ( Integer.parseInt(listStatusImoveis.get(position)) == Constantes.IMOVEL_STATUS_INFORMATIVO){
+				imageView.setImageResource(R.drawable.informativo);
+			}
 			return rowView;
 		}
 		
