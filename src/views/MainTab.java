@@ -1376,7 +1376,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    }
 			    mensagemAnormalidadeConsumo = null;
   			
-			} else {
+			} else if (getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.LIGADO) == false){
 
 				// Nao deve imprimir fatura individual de imovel condominial
 				if (!getImovelSelecionado().isImovelCondominio()) {
