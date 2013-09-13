@@ -1,11 +1,13 @@
 package views;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import model.Imovel;
 
 import util.Constantes;
+import util.Util;
 
 import business.ControladorImovel;
 import business.ControladorRota;
@@ -56,6 +58,7 @@ public class MedidorPocoTab extends Fragment implements LocationListener{
 	private String provider;
 	private static double latitude = 0;
 	private static double longitude = 0;
+	private static Date currentDateByGPS = Util.dataAtual();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +86,7 @@ public class MedidorPocoTab extends Fragment implements LocationListener{
 		if (location != null){
 			latitude = location.getLatitude();
 			longitude = location.getLongitude();
-			//location.getTime();
+        	currentDateByGPS = new Date(location.getTime());
 		}
 			
 	    CellLocation.requestLocationUpdate();
@@ -222,6 +225,10 @@ public class MedidorPocoTab extends Fragment implements LocationListener{
     	return longitude;
     }
 
+    public static Date getCurrentDateByGPS() {
+    	return currentDateByGPS;
+    }
+
     public static void setLeituraCampo(String leitura) {
     	((EditText)layout.findViewById(R.id.leitura)).setText(leitura);
     }
@@ -233,9 +240,11 @@ public class MedidorPocoTab extends Fragment implements LocationListener{
     public void onLocationChanged(Location location) {
 		Log.i("latitude:", location.getLatitude()+"");
 		Log.i("longitude:", location.getLongitude()+"");
+		Log.i("time:", Util.formatarData(new Date(location.getTime()))+"");
+
     	latitude = location.getLatitude();
     	longitude = location.getLongitude();
-    	//location.getTime();
+    	currentDateByGPS = new Date(location.getTime());
 	}
 
 	public void onProviderDisabled(String provider) {}

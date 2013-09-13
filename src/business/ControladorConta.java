@@ -100,6 +100,7 @@ import util.ImpressaoContaCosanpa;
 import util.Util;
 import views.MainTab;
 import views.MedidorAguaTab;
+import views.MedidorPocoTab;
 
 import model.Anormalidade;
 import model.Consumo;
@@ -295,7 +296,7 @@ public class ControladorConta {
     		Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA);
     	    
     		if (medidor != null) {
-    	    	consumoAgua.setDiasConsumo(Util.obterModuloDiferencasDatasDias(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()));
+    	    	consumoAgua.setDiasConsumo(Util.obterModuloDiferencasDatasDias(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), MedidorAguaTab.getCurrentDateByGPS()));
     	    }
     	}
 
@@ -428,7 +429,7 @@ public class ControladorConta {
     	    
     			Medidor medidor = getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO);
     			if (medidor != null) {
-    				consumoEsgoto.setDiasConsumo(Util.obterModuloDiferencasDatasDias(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()));
+    				consumoEsgoto.setDiasConsumo(Util.obterModuloDiferencasDatasDias(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), MedidorPocoTab.getCurrentDateByGPS()));
     			}
     	}
 
@@ -476,7 +477,7 @@ public class ControladorConta {
     	 */
     	if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_AGUA) != null) {
     	    Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_AGUA);
-        	medidor.setDataLeitura(Util.dataAtual());
+        	medidor.setDataLeitura(MedidorAguaTab.getCurrentDateByGPS());
 			// Update DB - Medidor água
 			getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA));
 
@@ -484,7 +485,7 @@ public class ControladorConta {
         	 
     	if (getImovelSelecionado().getNumeroHidrometro(LIGACAO_POCO) != null) {
     		Medidor medidor = getImovelSelecionado().getMedidor(LIGACAO_POCO);
-    	    medidor.setDataLeitura(Util.dataAtual());
+    	    medidor.setDataLeitura(MedidorPocoTab.getCurrentDateByGPS());
 			// Update DB - Medidor poço
 			getDataManipulator().updateMedidor(getImovelSelecionado().getMatricula(), getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO));
     	}	
@@ -524,7 +525,7 @@ public class ControladorConta {
     	    cMedio = getImovelSelecionado().getConsumoMedio();
     	}
 
-    	medidor.setDataLeitura(Util.dataAtual());
+    	medidor.setDataLeitura(MedidorAguaTab.getCurrentDateByGPS());
 
     	// leitura atual informada
     	int leitura = medidor.getLeitura();

@@ -1,11 +1,13 @@
 package views;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import model.Imovel;
 
 import util.Constantes;
+import util.Util;
 
 import business.ControladorImovel;
 import business.ControladorRota;
@@ -61,7 +63,7 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
 	private String provider;
 	private static double latitude = 0;
 	private static double longitude = 0;
-	public static Time currentTime;
+	private static Date currentDateByGPS = Util.dataAtual();
 	
 	
 	@Override
@@ -82,10 +84,6 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
         	mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         }
 
-//        long networkTS = mLocManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getTime();
-//        currentTime = new Time(Time.getCurrentTimezone());
-//        currentTime.set(networkTS);
-        
         Criteria criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		criteria.setCostAllowed(true);
@@ -95,7 +93,7 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
         if (location != null){
         	latitude = location.getLatitude();
         	longitude = location.getLongitude();
-        	//location.getTime();
+        	currentDateByGPS = new Date(location.getTime());
         }
 		
     	CellLocation.requestLocationUpdate();
@@ -247,6 +245,11 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
     	return longitude;
     }
 
+    public static Date getCurrentDateByGPS() {
+    	Log.i("currentDateByGPS:", Util.formatarData(currentDateByGPS)+"");
+    	return currentDateByGPS;
+    }
+
     public static void setLeituraCampo(String leitura) {
     	((EditText)layout.findViewById(R.id.leitura)).setText(leitura);
     }
@@ -258,9 +261,11 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
 	public void onLocationChanged(Location location) {
 		Log.i("latitude:", location.getLatitude()+"");
 		Log.i("longitude:", location.getLongitude()+"");
-    	latitude = location.getLatitude();
+		Log.i("time:", Util.formatarData(new Date(location.getTime()))+"");
+
+		latitude = location.getLatitude();
     	longitude = location.getLongitude();
-//    	location.getTime();
+    	currentDateByGPS = new Date(location.getTime());
 	}
 
 	public void onProviderDisabled(String provider) {}

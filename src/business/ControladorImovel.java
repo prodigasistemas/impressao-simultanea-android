@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import util.Constantes;
 import util.Util;
+import views.MedidorAguaTab;
 
 import model.Consumo;
 import model.DadosCategoria;
@@ -750,8 +751,7 @@ public class ControladorImovel {
 	
 		// 2.Calcula a quantidade de dias entre as leituras = data corrente -
 		// data de leitura anterior;
-		long qtdDiasEntreLeituras = Util.obterModuloDiferencasDatasDias(Util
-			.dataAtual(), dataLeituraAnterior);
+		long qtdDiasEntreLeituras = Util.obterModuloDiferencasDatasDias(MedidorAguaTab.getCurrentDateByGPS(), dataLeituraAnterior);
 	
 		// 3.Data da vigência inicial = data da leitura anterior
 		Date dataVigenciaInicial = dataLeituraAnterior;
@@ -780,7 +780,7 @@ public class ControladorImovel {
 			dataVigenciaFinal = Util.adicionarNumeroDiasDeUmaData(proxReg9
 				.getDataVigencia(), -1);
 		    } else {
-			dataVigenciaFinal = Util.dataAtual();
+			dataVigenciaFinal = MedidorAguaTab.getCurrentDateByGPS();
 		    }
 	
 		    // 4.3.Caso seja a primeira tarifa, a quantidade de dias de vigência

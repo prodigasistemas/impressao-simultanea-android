@@ -18,6 +18,7 @@ import model.Imovel;
 import model.Imposto;
 import model.Medidor;
 import ui.FileManager;
+import views.MedidorAguaTab;
 import android.util.Log;
 import business.ControladorConta;
 import business.ControladorImovel;
@@ -117,7 +118,7 @@ public class ImpressaoContaCosanpa {
     			
     			linesAndBoxes +
 
-    			"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ Util.getDataHora() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
+    			"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ MedidorAguaTab.getCurrentDateByGPS() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
         		"T 7 1 464 90 "+ imovel.getMatricula() + "\n" +
         		descricaoAnoMesConta +
         		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +
@@ -745,7 +746,7 @@ public class ImpressaoContaCosanpa {
 
 			//Incluindo data de impressao, Versao do Leitura e Impressao Simultanea e
 		    // Data e hora de impressão na conta impressa
-			"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ Util.getDataHora() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
+			"T 0 2 135 121 Versao: "+ Fachada.getAppVersion() + " - "+ MedidorAguaTab.getCurrentDateByGPS() + " /" + (imovel.getQuantidadeContasImpressas()+1) + "\n" +
 		    // Matricula do imovel e Ano mes de referencia da conta
     		"T 7 1 464 90 "+ imovel.getMatricula() + "\n" + descricaoAnoMesConta +
     		"T 0 0 201 47 "+ Util.formatarCnpj(ControladorRota.getInstancia().getDadosGerais().getCnpjEmpresa().trim()) + "\n" +

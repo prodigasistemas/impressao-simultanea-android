@@ -295,7 +295,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    case R.id.imprimirConta:
 	    	
 	    	//Verifica se a data atual é anterior ao mes de referencia da rota em andamento.
-	    	if(Util.compararData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), Util.dataAtual()) > 0){
+	    	if(Util.compararData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), MedidorAguaTab.getCurrentDateByGPS()) > 0){
 	    		// Data do celular esta correta.
 	    		showMessage("Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
 	    		
@@ -485,7 +485,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
 		    	if (imovel.getMedidor(Constantes.LIGACAO_AGUA) == null && 
 		    		imovel.getMedidor(Constantes.LIGACAO_POCO) == null){
-		    		imovel.setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
+		    		imovel.setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(MedidorAguaTab.getCurrentDateByGPS()));
 		    	}
 				getDataManipulator().salvarImovel(imovel);
 				
@@ -1108,7 +1108,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
 				    	if (imovel.getMedidor(Constantes.LIGACAO_AGUA) == null && 
 				    		imovel.getMedidor(Constantes.LIGACAO_POCO) == null){
-				    		imovel.setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
+				    		imovel.setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(MedidorAguaTab.getCurrentDateByGPS()));
 				    	}
 						getDataManipulator().salvarImovel(imovel);
 						
@@ -1202,7 +1202,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null && 
 	    		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null){
 		    	
-	    		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(Util.dataAtual()));
+	    		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(MedidorAguaTab.getCurrentDateByGPS()));
 	    	}
 	    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
 		}
