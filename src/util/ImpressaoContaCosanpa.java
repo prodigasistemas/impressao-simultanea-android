@@ -227,7 +227,7 @@ public class ImpressaoContaCosanpa {
 	        		repCodigoBarrasSemDigitoVerificador +
 	        		"T 5 0 109 1661 "+ grupoFaturamento + "\n" +
 	        		"T 5 0 352 1661 4\n"+
-	        		"T 5 0 680 1661 "+imovel.getSequencialRota()+"\n"+
+	        		"T 5 0 680 1661 "+imovel.getId()+"\n"+
 	        		"FORM\n"+
 	        		"PRINT\n";
         		
@@ -249,7 +249,7 @@ public class ImpressaoContaCosanpa {
         		    "T 7 0 367 850 IMPORTANTE \n"+
         		    "T 7 0 53 900 CASO O VALOR DO RATEIO ESTEJA ELEVADO \n"+
         		    "T 7 0 63 925 1. Confirme a leitura do macro \n"+
-        		    "T 7 0 63 950 2. Verifique os reservatórios \n"+
+        		    "T 7 0 63 950 2. Verifique os reservatorios \n"+
         		    "T 7 0 63 975 3. Verifique se ha apartamento ligado clandestinamente\n"+
         		    "T 7 0 53 1025 QUALQUER IRREGULARIDADE COMUNIQUE A COSANPA ATRAVES DO \n"+
         		    "T 7 0 53 1050 SETOR DE ATENDIMENTO \n"+

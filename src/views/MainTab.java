@@ -1296,13 +1296,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				Imovel imovelCondominial = getDataManipulator().selectImovel("id="+listaIdsCondominio.get(i), false);
 				imovelCondominial.setIndcGeracaoConta(Constantes.NAO);
 				imovelCondominial.setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
+				setTabColor();
 				getDataManipulator().salvarImovel(imovelCondominial);
 			}
-
-			finish();
-			ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + getImovelSelecionado().getId(), true));
-			Intent myIntent = new Intent(getApplicationContext(), MainTab.class);
-			startActivity(myIntent);
 
 		}else{
 			controladorImpressaoCondominial();

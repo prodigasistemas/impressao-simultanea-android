@@ -283,9 +283,9 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		    // Leitura Anterior do Hidrômetro
 		    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? medidorAgua.getLeituraAnterior() + "" : ""), ' ')); 
 		    // Latitude
-		    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(20, imovel.getLatitude() != Constantes.NULO_DOUBLE ? imovel.getLatitude()+"" : ""));
+		    registrosTipo1.append(Util.adicionarZerosDireitaNumero(20, imovel.getLatitude() != Constantes.NULO_DOUBLE ? imovel.getLatitude()+"" : ""));
 		    // Longitude
-		    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(20, imovel.getLongitude() != Constantes.NULO_DOUBLE ? imovel.getLongitude()+"" : ""));
+		    registrosTipo1.append(Util.adicionarZerosDireitaNumero(20, imovel.getLongitude() != Constantes.NULO_DOUBLE ? imovel.getLongitude()+"" : ""));
 		    // Versao do I.S. em uso
 		    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
 		    registrosTipo1.append("\n"); 
@@ -375,9 +375,9 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 			    // Leitura Anterior do Hidrômetro
 			    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorPoco != null ? medidorPoco.getLeituraAnterior() + "" : ""), ' ')); 
 			    // Latitude
-			    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(20, imovel.getLatitude() != Constantes.NULO_DOUBLE ? imovel.getLatitude()+"" : ""));
+			    registrosTipo1.append(Util.adicionarZerosDireitaNumero(20, imovel.getLatitude() != Constantes.NULO_DOUBLE ? imovel.getLatitude()+"" : ""));
 			    // Longitude
-			    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(20, imovel.getLongitude() != Constantes.NULO_DOUBLE ? imovel.getLongitude()+"" : ""));
+			    registrosTipo1.append(Util.adicionarZerosDireitaNumero(20, imovel.getLongitude() != Constantes.NULO_DOUBLE ? imovel.getLongitude()+"" : ""));
 			    // Versao do I.S. em uso
 			    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
 	    		registrosTipo1.append("\n"); 
@@ -445,9 +445,9 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 				    // Leitura Anterior do Hidrômetro
 				    registrosTipo1.append(Util.adicionarCharEsquerda(7, (medidorAgua != null ? (medidorAgua.getLeituraAnterior() == Constantes.NULO_INT ? "0" : medidorAgua.getLeituraAnterior()) + "" : ""), ' ')); 
 				    // Latitude
-				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(20, imovel.getLatitude() != Constantes.NULO_DOUBLE ? imovel.getLatitude()+"" : ""));
+				    registrosTipo1.append(Util.adicionarZerosDireitaNumero(20, imovel.getLatitude() != Constantes.NULO_DOUBLE ? imovel.getLatitude()+"" : ""));
 				    // Longitude
-				    registrosTipo1.append(Util.adicionarZerosEsquerdaNumero(20, imovel.getLongitude() != Constantes.NULO_DOUBLE ? imovel.getLongitude()+"" : ""));
+				    registrosTipo1.append(Util.adicionarZerosDireitaNumero(20, imovel.getLongitude() != Constantes.NULO_DOUBLE ? imovel.getLongitude()+"" : ""));
 				    // Versao do I.S. em uso
 				    registrosTipo1.append(Util.adicionarCharEsquerda(12, Fachada.getAppVersion(), ' ')); 
 				    registrosTipo1.append("\n");

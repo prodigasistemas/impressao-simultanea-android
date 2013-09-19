@@ -117,6 +117,8 @@ public class BusinessConta {
 	
 		    if(anormalidade != null){
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
+		    }else{
+		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade(Constantes.NULO_INT);
 		    }
 		}
 	
@@ -126,6 +128,8 @@ public class BusinessConta {
 
 		    if(anormalidade != null){
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
+		    }else{
+		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade(Constantes.NULO_INT);
 		    }
 		}
 	
