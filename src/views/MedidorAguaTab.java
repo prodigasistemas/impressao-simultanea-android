@@ -171,7 +171,10 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
  					
  					consideraEventoItemSelectedListenerCodigoAnormalidade = true;  
  					((EditText)view.findViewById(R.id.codigoAnormalidade)).setText(codigo);
-	        	}
+
+ 				}else if (((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).getSelectedItemPosition() == 0){
+ 					((EditText)view.findViewById(R.id.codigoAnormalidade)).setText("");
+ 				}
 			}
 			
 			public void onNothingSelected(AdapterView<?> arg0) {}

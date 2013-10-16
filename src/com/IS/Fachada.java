@@ -63,11 +63,15 @@ public class Fachada extends Activity {
             	v.clearAnimation();
             	
             	// Define URL GSAN
+            	
+            	// Producao
+            	ControladorAcessoOnline.getInstancia().setURL("http://200.178.173.131:8080/gsan/");
+            	
             	// Treinamento
 //            	ControladorAcessoOnline.getInstancia().setURL("http://200.178.173.136:8080/gsan/");
 
             	// Homologacao
-            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.100.25:8080/gsan/");
+//            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.100.25:8080/gsan/");
 
             	//Pamela
 //            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.0.107:8080/gsan/");

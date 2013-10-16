@@ -156,11 +156,17 @@ public class MedidorPocoTab extends Fragment implements LocationListener{
         	
 			public void onItemSelected(AdapterView parent, View v, int position, long id){
  				String codigo = ControladorRota.getInstancia().getDataManipulator().selectCodigoByDescricaoFromTable(Constantes.TABLE_ANORMALIDADE, ((Spinner)view.findViewById(R.id.spinnerAnormalidade)).getSelectedItem().toString());
+
  				
- 				if (codigo.compareTo(((EditText)view.findViewById(R.id.codigoAnormalidade)).getText().toString()) != 0){
- 					consideraEventoItemSelectedListenerCodigoAnormalidade = true;  
- 					((EditText)view.findViewById(R.id.codigoAnormalidade)).setText(codigo);
-	        	}
+ 				if (codigo.compareTo(((EditText)view.findViewById(R.id.codigoAnormalidade)).getText().toString()) != 0 &&
+ 	 				((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).getSelectedItemPosition() != 0){
+ 	 					
+ 	 				consideraEventoItemSelectedListenerCodigoAnormalidade = true;  
+ 	 				((EditText)view.findViewById(R.id.codigoAnormalidade)).setText(codigo);
+
+ 	 			}else if (((Spinner)(view.findViewById(R.id.spinnerAnormalidade))).getSelectedItemPosition() == 0){
+ 	 				((EditText)view.findViewById(R.id.codigoAnormalidade)).setText("");
+ 	 			}
 			}
 			
 			public void onNothingSelected(AdapterView<?> arg0) {}
