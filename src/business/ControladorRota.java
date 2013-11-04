@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import model.DadosGerais;
 import model.DadosQualidadeAgua;
+import model.Imovel;
 import model.SituacaoTipo;
 import util.Constantes;
 import util.Util;
@@ -37,6 +38,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.IS.Fachada;
+import com.IS.ListaImoveis;
 
 import dataBase.DataManipulator;
 
@@ -305,6 +307,21 @@ public class ControladorRota {
    		}
    	
    		return listaAnormalidades;
+    }
+
+    public void localizarImovelPendente() {
+    	
+    	ListaImoveis.tamanhoListaImoveis = ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis();
+		
+		Imovel imovelPendente = ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE, false);
+		
+		// Se nao encontrar imovel com status pendente
+		if (imovelPendente == null) {
+			return;
+		}
+		
+		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(Long.valueOf(imovelPendente.getId()).intValue()-1);
+	
     }
 
 }

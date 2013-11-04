@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import android.content.Context;
+import android.util.Log;
+
 import util.Constantes;
 import util.Util;
 import views.MedidorAguaTab;
@@ -989,4 +992,54 @@ public class ControladorImovel {
      	
     	return informativo;
     }
+    
+	public void setupDataAfterPrinting(int impressaoTipo, int increment){
+		
+		if (impressaoTipo == Constantes.IMPRESSAO_FATURA || impressaoTipo == Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO ){
+			getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
+
+	    	getImovelSelecionado().setQuantidadeContasImpressas(1+(getImovelSelecionado().getQuantidadeContasImpressas()));
+//	    	getImovelSelecionado().getValoresContasImpressas().addElement(String.valueOf(.getImovelSelecionado().getValorConta()));
+	    	
+	    	System.out.println("Quantidade de vezes impressas: " + getImovelSelecionado().getQuantidadeContasImpressas());
+
+	    	// Guarda a data da impressao da conta de imovel nao-medido. Já que não possui data de leitura.
+	    	if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) == null && 
+	    		getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO) == null){
+		    	
+	    		getImovelSelecionado().setDataImpressaoNaoMedido(Util.dateToAnoMesDiaString(MedidorAguaTab.getCurrentDateByGPS()));
+	    	}
+	    	Log.i(" Imovel Selecionado", String.valueOf(getImovelSelecionado().getMatricula()));
+		}
+    	
+    	// Define imovel como concluido
+    	getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
+    	ControladorRota.getInstancia().getDataManipulator().salvarImovel(getImovelSelecionado());
+	}
+
+	public int getImpressaoTipo(Context context){
+
+		int impressaoTipo = Constantes.IMPRESSAO_INEXISTENTE;
+		
+		if (BusinessConta.getInstancia(context).isImpressaoPermitida()){
+			
+//			if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0 ){
+//				impressaoTipo = Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO;
+//			}else{
+				impressaoTipo = Constantes.IMPRESSAO_FATURA;				
+//			}
+			
+		} else{
+			
+//			if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0){
+//				impressaoTipo = Constantes.IMPRESSAO_NOTIFICACAO_DEBITO;
+//				
+//			}else{
+				impressaoTipo = Constantes.IMPRESSAO_INEXISTENTE;
+//			}
+		}
+		
+		return impressaoTipo;
+	}
+
 }

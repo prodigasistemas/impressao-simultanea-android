@@ -4,7 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import background.EnviarImovelOnlineThread;
+
 import ui.MessageDispatcher;
+import util.Constantes;
 import util.Util;
 
 public class ControladorAcessoOnline {
@@ -193,4 +199,21 @@ public class ControladorAcessoOnline {
     	return requestOK;
     }
     
+	public void transmitirImovel(Context context,final int increment) {
+		
+		if (ControladorImovel.getInstancia().getImovelSelecionado().getIndcImovelEnviado() == Constantes.IMOVEL_TRANSMITIDO) {
+			return;
+		}
+		
+		final Handler handler = new Handler() {
+	        public void handleMessage(Message msg) {
+	            
+	        	// Get the current value of the variable total from the message data and update the progress bar.
+	        	int cadastroOnline = msg.getData().getInt("envioCadastroOnline" + String.valueOf(increment));
+	         }
+	    };
+	    
+	    new EnviarImovelOnlineThread(handler, context, increment, ControladorImovel.getInstancia().getImovelSelecionado()).start();
+	}
+
 }
