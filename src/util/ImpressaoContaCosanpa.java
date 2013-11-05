@@ -441,6 +441,8 @@ public class ImpressaoContaCosanpa {
 				    sumConsumo += Integer.parseInt(reg3.getConsumo());
 				}
 				media = (int) (sumConsumo / histConsumo.size()) + "";
+		    }else{
+		    	media = "0";
 		    }
 
 
@@ -484,25 +486,20 @@ public class ImpressaoContaCosanpa {
 
 	    List<HistoricoConsumo> historicosConsumo = imovel.getHistoricosConsumo();
 	    int k = 0;
-	    if (historicosConsumo.size() > 0) {
-	    	hcMensagem += "LINE 115 525 115 665 1\n"; 
-	    	for (HistoricoConsumo hc : historicosConsumo) {
-	    		anoMesReferencia += formarLinha(0, 2, 44, 522, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
-				
-				String anormalidade = "";
-			    if (hc.getAnormalidadeLeitura() != Constantes.NULO_INT && hc.getAnormalidadeLeitura() != 0) {
-			    	anormalidade = "A. Leit.:" + hc.getAnormalidadeLeitura() + "";
-			    } else if (hc.getAnormalidadeConsumo() != Constantes.NULO_INT && hc.getAnormalidadeConsumo() != 0) {
-			    	anormalidade = "A. Cons.:" + hc.getAnormalidadeConsumo() + "";
-			    }
-			    
-			    historicoConsumo += formarLinha(0, 2, 127, 522, Util.verificarNuloInt(hc.getConsumo()) + " m3 " + anormalidade, 0, k*25);
-			    k++;
-			}
-	    } else {
-	    	hcMensagem = "7 0 50 499 HISTORICO DE CONSUMO\nT 0 50 520 INEXISTENTE\n";
+	    hcMensagem += "LINE 115 525 115 665 1\n"; 
+	    for (HistoricoConsumo hc : historicosConsumo) {
+	    	anoMesReferencia += formarLinha(0, 2, 44, 522, Util.getAnoBarraMesReferencia(hc.getAnoMesReferencia()) + "", 0, k * 25);
+	    	
+	    	String anormalidade = "";
+	    	if (hc.getAnormalidadeLeitura() != Constantes.NULO_INT && hc.getAnormalidadeLeitura() != 0) {
+	    		anormalidade = "A. Leit.:" + hc.getAnormalidadeLeitura() + "";
+	    	} else if (hc.getAnormalidadeConsumo() != Constantes.NULO_INT && hc.getAnormalidadeConsumo() != 0) {
+	    		anormalidade = "A. Cons.:" + hc.getAnormalidadeConsumo() + "";
+	    	}
+	    	
+	    	historicoConsumo += formarLinha(0, 2, 127, 522, Util.verificarNuloInt(hc.getConsumo()) + " m3 " + anormalidade, 0, k*25);
+	    	k++;
 	    }
-	 
 	    
 	    if (tipoImpressao == Constantes.IMPRESSAO_FATURA){
 	

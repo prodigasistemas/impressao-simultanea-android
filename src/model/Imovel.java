@@ -1201,7 +1201,7 @@ public class Imovel {
     
     public boolean isHistoricoFaturamentoEmpty(){
     	boolean isEmpty = false;
-    	if (this.historicoConsumo == null){
+    	if (this.historicoConsumo == null || this.historicoConsumo.size() == 0){
     		isEmpty = true;
     	}
     	return isEmpty;
