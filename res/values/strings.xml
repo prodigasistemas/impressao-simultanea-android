@@ -26,6 +26,7 @@
     <string name="menu_novo_roteiro">Limpar Tudo</string>
     <string name="menu_arquivo_completo">Arquivo Completo</string>
     <string name="menu_selecionar_impressora">Selecionar Impressora</string>
+    <string name="menu_impresssao_fixos">Impressão Fixos</string>
     
     <string-array name="consulta">
 	    <item>Matrícula</item>

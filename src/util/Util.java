@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.text.TextWatcher;
 import android.util.Log;
+import business.BusinessConta;
 import business.ControladorRota;
 
 public class Util {
@@ -1856,4 +1857,13 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 			e.printStackTrace();
 		}
 	}
+	
+	public static boolean isEmulator(){
+		boolean result = false;
+		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){
+			result = true;
+		}
+		return result;
+	}
+	
 }

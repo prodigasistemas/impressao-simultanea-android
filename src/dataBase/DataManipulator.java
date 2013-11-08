@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import model.Anormalidade;
 import model.Configuracao;
 import model.Consumo;
@@ -28,7 +31,6 @@ import model.TarifacaoMinima;
 import util.Constantes;
 import util.ParserUtil;
 import util.Util;
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -39,7 +41,6 @@ import android.util.Log;
 import business.ControladorImovel;
 import business.ControladorRota;
 
-@SuppressLint("NewApi")
 public class DataManipulator {
 	private static Context context;
 	private DbHelper openHelper;
@@ -74,6 +75,41 @@ public class DataManipulator {
 		return numeroImoveis;
 	}
 
+	
+	public List<Integer> getListaIdsImoveisFixos(boolean isPrinted) {
+		
+		List<Integer> listaIdsImoveisFixos = new ArrayList<Integer>();
+
+		Cursor cursor = db.query(Constantes.TABLE_IMOVEL, new String[] { "imovel_status", 
+																		"indc_imovel_impresso", 
+																		"matricula",
+																		"id"
+																		}, null, null, null, null, "id asc");
+		
+		if (cursor.moveToFirst()) {
+			do {
+
+				// Imóvel não-informativo!
+				if ( Integer.parseInt(cursor.getString(0)) != Constantes.IMOVEL_STATUS_INFORMATIVO &&
+					 !imovelHasMedidor(Integer.parseInt(cursor.getString(2))) ){
+					
+					// lista de fixos impressos
+					if ( isPrinted && Integer.parseInt(cursor.getString(1)) == Constantes.SIM) {
+						listaIdsImoveisFixos.add(cursor.getInt(3));
+					
+					// lista de fixos nao-impressos
+					} else if (!isPrinted && Integer.parseInt(cursor.getString(1)) == Constantes.NAO){
+						listaIdsImoveisFixos.add(cursor.getInt(3));
+					}
+		        }				
+				
+			}while(cursor.moveToNext());
+		}
+		
+		fecharCursor(cursor);
+		return listaIdsImoveisFixos;
+	}
+	
 	public DadosGerais getDadosGerais() {
 		return ControladorRota.getInstancia().getDadosGerais();
 	}
@@ -990,6 +1026,8 @@ public class DataManipulator {
 		if (cursor.moveToFirst()) {
 			result = true;
 		}
+		
+		fecharCursor(cursor);
 		return result;
 	}
 
@@ -2162,6 +2200,15 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 	
 	public void salvarImovel(Imovel imovel){
 
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//	    System.out.println(gson.toJson(imovel));
+		
+		
+//	    Imovel obj2 = gson.fromJson(gson.toJson(imovel), Imovel.class);
+//	    System.out.println("AGORAAAAAAAAAAAAA");
+//	    System.out.println(gson.toJson(obj2));
+	    
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put("quantidade_contas_impressas", String.valueOf(imovel.getQuantidadeContasImpressas()));

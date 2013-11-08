@@ -3,14 +3,13 @@ package com.IS;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
-import model.Imovel;
 import util.Constantes;
+import util.ImpressaoContaCosanpa;
 import util.Util;
 import views.MainTab;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -25,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,13 +43,14 @@ import android.widget.Toast;
 import background.EnviarImoveisConcluidosThread;
 import background.FinalizarRotaThread;
 import background.GerarArquivoCompletoThread;
+import background.ImpressaoThread;
+import business.BusinessConta;
 import business.ControladorAcessoOnline;
 import business.ControladorImovel;
 import business.ControladorRota;
 
 import com.IS.R.color;
  
-@SuppressLint("NewApi")
 public class MenuPrincipal extends Activity {
 	
 	static final int MENU_LISTA_IMOVEIS = 0;
@@ -60,18 +61,22 @@ public class MenuPrincipal extends Activity {
 	static final int MENU_FINALIZAR = 5;
 	static final int MENU_RELATORIO = 6;
 	static final int MENU_NOVO_ROTEIRO = 7;
-	static final int MENU_SELECIONAR_IMPRESSORA = 8;
+	static final int MENU_IMPRESSAO_MASSA = 8;
 
 	private ProgressDialog progDialog;
+
 	private GerarArquivoCompletoThread progThread;
 	private EnviarImoveisConcluidosThread enviarImoveisThread;
 	private FinalizarRotaThread finalizarRotaThread;
+	private List<Integer> listaIdsImoveisFixos;
+
 	private String dialogMessage = null;
 	public LocationManager mLocManager;
 	private static int increment= 0;
 	private BluetoothAdapter bluetoothAdapter;
 	private ListView listaDispositivos;
 	private AlertDialog dialog;
+	private int contadorImpressao = 0;
 	
 	public static String mensagemRetorno;
 	
@@ -85,7 +90,7 @@ public class MenuPrincipal extends Activity {
             R.drawable.menu_finalizar,
             R.drawable.menu_relatorio,
             R.drawable.menu_novo_roteiro,
-            R.drawable.menu_select_impressora
+            R.drawable.menu_impressao_massa
     };
 
     //---the texts to display---
@@ -98,7 +103,7 @@ public class MenuPrincipal extends Activity {
             R.string.menu_finalizar,
             R.string.menu_relatorio,
             R.string.menu_novo_roteiro,
-            R.string.menu_selecionar_impressora
+            R.string.menu_impresssao_fixos
     };
 
     @Override    
@@ -220,17 +225,88 @@ public class MenuPrincipal extends Activity {
             		
             	}else if (position == MENU_NOVO_ROTEIRO){
         	    	showDialog(Constantes.DIALOG_ID_CLEAN_DB);
-				} else if (position == MENU_SELECIONAR_IMPRESSORA) {
+        	    	
+				} else if (position == MENU_IMPRESSAO_MASSA) {
 					
-					Intent intentBluetooth = new Intent();
-			        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
-			        startActivityForResult(intentBluetooth, 0);
+					listaIdsImoveisFixos = ControladorRota.getInstancia().getDataManipulator().getListaIdsImoveisFixos(false);
+
+					if (listaIdsImoveisFixos == null || listaIdsImoveisFixos.isEmpty()){
+						Toast.makeText(MenuPrincipal.this, "Todos os imóveis fixos já foram impressos", Toast.LENGTH_LONG).show();
+
+					}else{
+						progDialog = new ProgressDialog(MenuPrincipal.this);
+						progDialog.setTitle("Imprimindo contas imóveis fixos");
+						progDialog.setMessage("Imóveis impressos");
+						progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+						progDialog.setCancelable(false);
+						progDialog.setMax(listaIdsImoveisFixos.size());
+						progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+							
+							public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+								if ( (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK) && 
+										(event.getRepeatCount() == 0)) {
+									
+									return true; // Pretend we processed it
+								}
+								return false; // Any other keys are still processed as normal
+							}
+						});						
+						progDialog.show();
+						
+						if (Util.isEmulator()){
+
+							contadorImpressao = 0;
+
+							for (int imovelId : listaIdsImoveisFixos) {
+								ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + imovelId, true));
+								BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+								
+								int impressaoTipo = Constantes.IMPRESSAO_FATURA;
+								
+//								if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0 ){
+//									impressaoTipo = Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO;
+//								}
+								
+								Log.i("Comando Fatura", new ImpressaoContaCosanpa().getComandoImpressaoFatura(ControladorImovel.getInstancia().getImovelSelecionado(), Constantes.IMPRESSAO_FATURA));
+								ControladorImovel.getInstancia().setupDataAfterPrinting(impressaoTipo);
+								contadorImpressao++;
+								
+								if (listaIdsImoveisFixos.size() > contadorImpressao){
+									progDialog.setProgress(contadorImpressao);
+									
+								} else{
+									progDialog.dismiss();
+									dialogMessage = "Impressão dos imóveis não-hidrometrados finalizada.";
+									showDialog(Constantes.DIALOG_ID_SUCESSO);
+									increment += 17;
+								}
+							}
+							
+						}else{
+							if (ControladorRota.getInstancia().getBluetoothAddress() == null) {
+								progDialog.dismiss();
+					    		dialogMessage = "Impressão cancelada. Por favor selecione a impressora.";
+				    	    	showDialog(Constantes.DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO);
+							    increment += 17;
+								
+							}else{
+								contadorImpressao = 0;
+								ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listaIdsImoveisFixos.get(0), true));
+								BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+								
+								new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+										impressaoFixosHandler,
+										ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+										increment,
+										MenuPrincipal.this).start();
+							}
+						}
+					}
 				}
             }
         });        
 	}
 	
-	@TargetApi(5)
 	@Override
 	protected void onActivityResult(int arg0, int resultCode, Intent arg2) {
 		if (resultCode == 0) {
@@ -247,7 +323,7 @@ public class MenuPrincipal extends Activity {
 					String bluetoothAddress = String.valueOf(((TextView) view).getText()).split("\n")[1];
 					ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
 					
-					Toast.makeText(MenuPrincipal.this, "Impressora registrada", 5).show();
+					Toast.makeText(MenuPrincipal.this, "Impressora registrada", Toast.LENGTH_LONG).show();
 					
 					dialog.dismiss();
 				}
@@ -282,13 +358,70 @@ public class MenuPrincipal extends Activity {
             	
 	    		dialogMessage = "Arquivo de retorno COMPLETO gerado com sucesso. Enviar o arquivo ao supervisor para carregar via cabo USB.";
     	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
-			    increment += 15;
+			    increment += 17;
+            }
+         }
+    };
+
+    // Handler on the main (UI) thread that will receive messages from the second thread and update the progress.
+    final Handler impressaoFixosHandler = new Handler() {
+        @SuppressWarnings({ "deprecation" })
+        public void handleMessage(Message msg) {
+            
+        	// Get the current value of the variable total from the message data and update the progress bar.
+            if (msg.getData().getBoolean("impressaoConcluida")){
+            	contadorImpressao++;
+            	
+				if (listaIdsImoveisFixos.size() > contadorImpressao){
+
+					progDialog.setProgress(contadorImpressao);
+					ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listaIdsImoveisFixos.get(contadorImpressao), true));
+					BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+					new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+							impressaoFixosHandler,
+							ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+							increment,
+							MenuPrincipal.this).start();
+            		
+            	}else{
+            		progDialog.dismiss();
+    	    		dialogMessage = "Impressão dos imóveis não-hidrometrados finalizada.";
+        	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
+            	}
+			    increment += 17;
+
+            }else if (msg.getData().getBoolean("impressaoErro")){
+				AlertDialog.Builder a = new AlertDialog.Builder(MenuPrincipal.this);
+				a.setTitle("Erro ao imprimir fatura");
+				a.setMessage("Tentar imprimir novamente?");
+
+				a.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+
+						new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+								impressaoFixosHandler,
+								ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+								increment,
+								MenuPrincipal.this).start();
+								increment += 17;
+					}
+				});
+				
+				a.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+	            		progDialog.dismiss();
+			    		dialogMessage = "Não foi possível imprimir.";
+		    	    	showDialog(Constantes.DIALOG_ID_ERRO);
+					    increment += 17;
+					}
+				});
+				a.show();
             }
          }
     };
     
     final Handler imoveisNaoTransmitidosHandler = new Handler() {
-        @SuppressWarnings({ "deprecation", "static-access" })
+        @SuppressWarnings({ "deprecation"})
 		public void handleMessage(Message msg) {
             
         	// Get the current value of the variable total from the message data and update the progress bar.
@@ -296,18 +429,13 @@ public class MenuPrincipal extends Activity {
             progDialog.setProgress(totalArquivoCompleto);
             
             if (msg.getData().getBoolean("geracaoDosImoveisNaoTransmitidosConcluido")){
-                
             	dismissDialog(Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment);
-            	
             	showDialog(Constantes.DIALOG_ID_SPINNER+increment);
             }
             
             if (msg.getData().getBoolean("recebeuResposta")) {
-            	
             	dismissDialog(Constantes.DIALOG_ID_SPINNER+increment);
-            	
-            	increment += 15;
-            	
+            	increment += 17;
             	dialogMessage = mensagemRetorno;
             	
             	if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
@@ -316,12 +444,11 @@ public class MenuPrincipal extends Activity {
 	    			showDialog(Constantes.DIALOG_ID_SUCESSO);
 	    		}
             }
-            
          }
     };
     
     final Handler finalizarRotaHandler = new Handler() {
-        @SuppressWarnings({ "deprecation", "static-access" })
+        @SuppressWarnings({ "deprecation"})
 		public void handleMessage(Message msg) {
             
             if (msg.getData().getBoolean("arquivoJaExistente")) {
@@ -332,9 +459,7 @@ public class MenuPrincipal extends Activity {
                 progDialog.setProgress(totalArquivoCompleto);
             
 	            if (msg.getData().getBoolean("geracaoDosImoveisParaFinalizaRotaConcluido")){
-	                
 	            	dismissDialog(Constantes.DIALOG_ID_FINALIZA_ROTA+increment);
-	            	
 	            	showDialog(Constantes.DIALOG_ID_SPINNER+increment);
 	            }
             }
@@ -344,8 +469,7 @@ public class MenuPrincipal extends Activity {
             	if (!msg.getData().getBoolean("arquivoJaExistente"))
             		dismissDialog(Constantes.DIALOG_ID_SPINNER+increment);
             	
-            	increment += 15;
-            	
+            	increment += 17;
             	dialogMessage = mensagemRetorno;
             	
             	if (!ControladorAcessoOnline.getInstancia().isRequestOK()) {
@@ -354,7 +478,6 @@ public class MenuPrincipal extends Activity {
 	    			showDialog(Constantes.DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA+increment);
 	    		}
             }
-            
          }
     };
 
@@ -367,7 +490,7 @@ public class MenuPrincipal extends Activity {
 	    if (id == Constantes.DIALOG_ID_CLEAN_DB){
 	        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	        final View layoutConfirmationDialog = inflater.inflate(R.layout.confirmationdialog, (ViewGroup) findViewById(R.id.root));
-	  
+	        
 	        builder = new AlertDialog.Builder(this);
 	        builder.setTitle("Atenção!");
 	        builder.setView(layoutConfirmationDialog);
@@ -382,6 +505,7 @@ public class MenuPrincipal extends Activity {
 	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        	public void onClick(DialogInterface dialog, int which) {
 	        		EditText senha = (EditText) layoutConfirmationDialog.findViewById(R.id.txtSenha);
+
 	        		if (senha.getText().toString().equals("apagar")) {
 		        		removeDialog(id);
 		        		ControladorRota.getInstancia().finalizeDataManipulator();
@@ -393,11 +517,13 @@ public class MenuPrincipal extends Activity {
 	
 	        		    Intent myIntent = new Intent(layoutConfirmationDialog.getContext(), Fachada.class);
 	        	        startActivity(myIntent);
+
 	        		} else {
 	        			AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
 	        	        builder.setTitle("Erro");
 	        	        builder.setMessage("Senha inválida");
-
+	        	        ((EditText)layoutConfirmationDialog.findViewById(R.id.txtSenha)).setText("");
+	        	        
 	        	        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int which) {}
 						});
@@ -412,18 +538,19 @@ public class MenuPrincipal extends Activity {
 	        return passwordDialog;
 	    
 	    }else if (id == Constantes.DIALOG_ID_GERAR_ARQUIVO_COMPLETO + increment) {
-		    	progDialog = new ProgressDialog(this);
-	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	            progDialog.setCancelable(false);
-	            progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
-	            progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveisNaoInformativos());
-	            progThread = new GerarArquivoCompletoThread(arquivoCompletoHandler, this, increment);
-	            progThread.start();
-	            return progDialog;
+	    	progDialog = new ProgressDialog(this);
+	    	progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	    	progDialog.setCancelable(false);
+	    	progDialog.setMessage("Por favor, espere enquanto o Arquivo de Retorno Completo está sendo gerado...");
+	    	progDialog.setMax(ControladorRota.getInstancia().getDataManipulator().getNumeroImoveisNaoInformativos());
+	    	progThread = new GerarArquivoCompletoThread(arquivoCompletoHandler, this, increment);
+	    	progThread.start();
+	    	return progDialog;
 	            
 	    }else if (id ==  Constantes.DIALOG_ID_ERRO || 
 	    		  id ==  Constantes.DIALOG_ID_SUCESSO || 
-	    		  id ==  Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO){
+	    		  id ==  Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO ||
+	    		  id == Constantes.DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO){
 	    	
 			inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			  
@@ -433,7 +560,7 @@ public class MenuPrincipal extends Activity {
 	        if (id == Constantes.DIALOG_ID_SUCESSO){
 		        ((ImageView)layoutCustonDialog.findViewById(R.id.imageDialog)).setImageResource(R.drawable.save);
 
-	        }else if (id == Constantes.DIALOG_ID_ERRO || id == Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO){
+	        }else {
 		        ((ImageView)layoutCustonDialog.findViewById(R.id.imageDialog)).setImageResource(R.drawable.aviso);
 	        }
 	        
@@ -447,12 +574,18 @@ public class MenuPrincipal extends Activity {
 	        		if (id == Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO){
 	        			Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 	        			startActivity(intent);
+
+	        		}else if (id == Constantes.DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO){
+						Intent intentBluetooth = new Intent();
+				        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+				        startActivityForResult(intentBluetooth, 0);
 	        		}
 	        	}
 	        });
 
 	        AlertDialog messageDialog = builder.create();
 	        return messageDialog;
+	    	
 	    } else if (id == Constantes.DIALOG_ID_ENVIAR_IMOVEIS_NAO_TRANSMITIDOS+increment) {
 	    	progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -462,6 +595,7 @@ public class MenuPrincipal extends Activity {
             enviarImoveisThread = new EnviarImoveisConcluidosThread(imoveisNaoTransmitidosHandler, this, increment);
             enviarImoveisThread.start();
             return progDialog;
+            
 	    } else if (id == Constantes.DIALOG_ID_FINALIZA_ROTA+increment) {
 	    		progDialog = new ProgressDialog(this);
 	            progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -483,6 +617,7 @@ public class MenuPrincipal extends Activity {
 	            finalizarRotaThread = new FinalizarRotaThread(finalizarRotaHandler, this, increment);
 	            finalizarRotaThread.start();
 	            return progDialog;
+	            
 	    } else if (id == Constantes.DIALOG_ID_ROTA_NAO_FINALIZADA) {
 	    	
 	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -498,9 +633,7 @@ public class MenuPrincipal extends Activity {
 	        	
 	        	public void onClick(DialogInterface dialog, int whichButton) {
 	        		removeDialog(id);
-
-	        		localizarImovelPendente();
-	        		
+	        		ControladorRota.getInstancia().localizarImovelPendente();	        		
 	        		Intent myIntent = new Intent(getApplicationContext(),MainTab.class);
 	        		startActivity(myIntent);
 	        	}
@@ -513,9 +646,9 @@ public class MenuPrincipal extends Activity {
 	    	progDialog = new ProgressDialog(MenuPrincipal.this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setCancelable(false);
-            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");
-            
+            progDialog.setMessage("Por favor, aguarde enquanto os imóveis estão sendo enviados...");            
             return progDialog;
+            
 	    } else if (id == Constantes.DIALOG_ID_CONFIRMAR_FINALIZACAO_ROTA+increment) {
 	    	
 	    	inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -538,7 +671,6 @@ public class MenuPrincipal extends Activity {
 	        		
         		    Intent myIntent = new Intent(MenuPrincipal.this, Fachada.class);
         	        startActivity(myIntent);
-
 	        	}
 	        });
 	        
@@ -549,8 +681,7 @@ public class MenuPrincipal extends Activity {
 	    return null;
 	}
  
-    public class ImageAdapter extends BaseAdapter 
-    {
+    public class ImageAdapter extends BaseAdapter {
         private Context context;
 		public static final int ACTIVITY_CREATE = 10;
 
@@ -571,16 +702,13 @@ public class MenuPrincipal extends Activity {
         public long getItemId(int position) {
             return position;
         }
-        
-		
+        		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
 			
 			if(convertView==null){
-				
 				LayoutInflater inflator = getLayoutInflater();
-				view = inflator.inflate(R.layout.icon, null);
-				
+				view = inflator.inflate(R.layout.icon, null);				
 			
 			}else{
 				view = convertView;
@@ -597,21 +725,6 @@ public class MenuPrincipal extends Activity {
 			return view;
 		}
     }  
-    
-    public void localizarImovelPendente() {
-    	
-    	ListaImoveis.tamanhoListaImoveis = ControladorRota.getInstancia().getDataManipulator().getNumeroImoveis();
-		
-		Imovel imovelPendente = ControladorRota.getInstancia().getDataManipulator().selectImovel("imovel_status = "+Constantes.IMOVEL_STATUS_PENDENTE, false);
-		
-		// Se nao encontrar imovel com status pendente
-		if (imovelPendente == null) {
-			return;
-		}
-		
-		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(Long.valueOf(imovelPendente.getId()).intValue()-1);
-	
-    }
     
     public File arquivoFinalizacaoRota() {
 		File file = new File(Util.getRetornoRotaDirectory(), Util.getNomeArquivoEnviarConcluidos());
