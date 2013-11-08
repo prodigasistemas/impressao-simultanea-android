@@ -24,7 +24,6 @@ import com.zebra.android.comm.ZebraPrinterConnectionException;
 
 public class ImpressaoThread extends Thread {
 	String bluetoothAddress;
-	Imovel imovelToBePrinted;
 	int impressaoTipo;
 	String progressTitleMsg;
 	Context context;
@@ -32,9 +31,8 @@ public class ImpressaoThread extends Thread {
 	int increment;
 	private ZebraPrinterConnection conexao;
 
-	public ImpressaoThread(String address, Handler mHandler, Imovel imovelToBePrinted, int impressaoTipo, int increment, Context context) {
+	public ImpressaoThread(String address, Handler mHandler, int impressaoTipo, int increment, Context context) {
 		this.bluetoothAddress = address;
-		this.imovelToBePrinted = imovelToBePrinted;
 		this.impressaoTipo = impressaoTipo;
 		this.context = context;
 		this.mHandler = mHandler;
@@ -50,12 +48,12 @@ public class ImpressaoThread extends Thread {
 			conexao.open();
 
 			if (conexao.isConnected()) {
-				
-				Looper.prepare();				
-				
+
+				Looper.prepare();
+
 			    switch (impressaoTipo) {
 			    case Constantes.IMPRESSAO_FATURA:
-					String comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovelToBePrinted, Constantes.IMPRESSAO_FATURA);
+					String comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(getImovelSelecionado(), Constantes.IMPRESSAO_FATURA);
 					progressTitleMsg = "Imprimindo Fatura";
 					Log.i("COMANDO FATURA:", comando);
 					conexao.write(comando.getBytes());
@@ -63,18 +61,18 @@ public class ImpressaoThread extends Thread {
 
 			    case Constantes.IMPRESSAO_NOTIFICACAO_DEBITO:
 					progressTitleMsg = "Imprimindo Notificação de Débito";
-					comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(imovelToBePrinted);
+					comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(getImovelSelecionado());
 					Log.i("COMANDO NOTIFICAÇÃO DÉBITO:", comando);
 					conexao.write(comando.getBytes());
 			    	break;
 
 			    case Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO:
 					progressTitleMsg = "Imprimindo Fatura e Notificação de Débito";
-					comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(imovelToBePrinted, Constantes.IMPRESSAO_FATURA);
+					comando = new ImpressaoContaCosanpa().getComandoImpressaoFatura(getImovelSelecionado(), Constantes.IMPRESSAO_FATURA);
 					Log.i("COMANDO FATURA:", comando);
 					conexao.write(comando.getBytes());
 
-					comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(imovelToBePrinted);
+					comando = new ImpressaoContaCosanpa().imprimirNotificacaoDebito(getImovelSelecionado());
 					Log.i("COMANDO NOTIFICAÇÃO DÉBITO:", comando);
 					conexao.write(comando.getBytes());
 			    	break;
@@ -83,10 +81,10 @@ public class ImpressaoThread extends Thread {
 				conexao.close();
 				
 				ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", bluetoothAddress);
-				Thread.sleep(1500);
-				
-		    	ControladorImovel.getInstancia().setupDataAfterPrinting(impressaoTipo, increment);
-		    	ControladorAcessoOnline.getInstancia().transmitirImovel(context, increment);
+				ControladorImovel.getInstancia().setupDataAfterPrinting(impressaoTipo);
+				ControladorAcessoOnline.getInstancia().transmitirImovel(context, increment);
+
+				Thread.sleep(3000);
 		    	
 				Bundle b = new Bundle();
 				// Send message (with current value of total as data) to Handler on UI thread
@@ -94,43 +92,26 @@ public class ImpressaoThread extends Thread {
 				b.putBoolean("impressaoConcluida", true);
 				msg.setData(b);
 				mHandler.sendMessage(msg);
-				
-				Looper.loop();
-				Looper.getMainLooper().quit();
+
+		        Looper.loop();
+		        Looper.getMainLooper().quit();
 			}
 			
 		} catch (ZebraPrinterConnectionException e) {
 
+			Looper.prepare();
+
 			e.printStackTrace();
 			Util.salvarLog(new Date(), e.fillInStackTrace());
+
+	    	Bundle b = new Bundle();
+	    	Message msg = mHandler.obtainMessage();
+	    	b.putBoolean("impressaoErro", true);
+	        msg.setData(b);
+	        mHandler.sendMessage(msg);				
 			
-			Looper.prepare();
-			
-			AlertDialog.Builder a = new AlertDialog.Builder(context);
-			a.setTitle("Erro ao imprimir fatura");
-			a.setMessage("Tentar imprimir novamente?");
-			a.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-			     
-				public void onClick(DialogInterface arg0, int arg1) {
-					
-					new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
-										mHandler,
-										imovelToBePrinted, 
-										impressaoTipo, 
-										increment, 
-										context).start();
-				}
-			});
-			
-			a.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-			     
-				public void onClick(DialogInterface arg0, int arg1) {}
-			});
-			
-			a.show();
-			
-			Looper.loop();
-			Looper.getMainLooper().quit();
+	        Looper.loop();
+	        Looper.getMainLooper().quit();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

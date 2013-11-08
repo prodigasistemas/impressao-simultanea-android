@@ -993,7 +993,7 @@ public class ControladorImovel {
     	return informativo;
     }
     
-	public void setupDataAfterPrinting(int impressaoTipo, int increment){
+	public void setupDataAfterPrinting(int impressaoTipo){
 		
 		if (impressaoTipo == Constantes.IMPRESSAO_FATURA || impressaoTipo == Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO ){
 			getImovelSelecionado().setIndcImovelImpresso(Constantes.SIM);
@@ -1019,7 +1019,7 @@ public class ControladorImovel {
 
 	public int getImpressaoTipo(Context context){
 
-		int impressaoTipo = Constantes.IMPRESSAO_INEXISTENTE;
+		int impressaoTipo = Constantes.IMPRESSAO_NAO_PERMITIDA;
 		
 		if (BusinessConta.getInstancia(context).isImpressaoPermitida()){
 			
@@ -1035,7 +1035,7 @@ public class ControladorImovel {
 //				impressaoTipo = Constantes.IMPRESSAO_NOTIFICACAO_DEBITO;
 //				
 //			}else{
-				impressaoTipo = Constantes.IMPRESSAO_INEXISTENTE;
+				impressaoTipo = Constantes.IMPRESSAO_NAO_PERMITIDA;
 //			}
 		}
 		

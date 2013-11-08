@@ -41,7 +41,7 @@ public class Constantes {
     public static final int IMPRESSAO_EXTRATO_CONDOMINIAL = 2;
     public static final int IMPRESSAO_NOTIFICACAO_DEBITO = 3;
     public static final int IMPRESSAO_FATURA_E_NOTIFICACAO = 4;
-    public static final int IMPRESSAO_INEXISTENTE = 5;
+    public static final int IMPRESSAO_NAO_PERMITIDA = 5;
 
     /**
      * Medição Tipo

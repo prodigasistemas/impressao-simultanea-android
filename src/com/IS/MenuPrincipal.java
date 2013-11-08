@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 import util.Constantes;
+import util.ImpressaoContaCosanpa;
 import util.Util;
 import views.MainTab;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -25,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,13 +43,14 @@ import android.widget.Toast;
 import background.EnviarImoveisConcluidosThread;
 import background.FinalizarRotaThread;
 import background.GerarArquivoCompletoThread;
-import background.ImprimirFixosEmMassaThread;
+import background.ImpressaoThread;
+import business.BusinessConta;
 import business.ControladorAcessoOnline;
+import business.ControladorImovel;
 import business.ControladorRota;
 
 import com.IS.R.color;
  
-@SuppressLint("NewApi")
 public class MenuPrincipal extends Activity {
 	
 	static final int MENU_LISTA_IMOVEIS = 0;
@@ -67,7 +68,6 @@ public class MenuPrincipal extends Activity {
 	private GerarArquivoCompletoThread progThread;
 	private EnviarImoveisConcluidosThread enviarImoveisThread;
 	private FinalizarRotaThread finalizarRotaThread;
-	private ImprimirFixosEmMassaThread imprimirFixosEmMassaThread;
 	private List<Integer> listaIdsImoveisFixos;
 
 	private String dialogMessage = null;
@@ -76,6 +76,7 @@ public class MenuPrincipal extends Activity {
 	private BluetoothAdapter bluetoothAdapter;
 	private ListView listaDispositivos;
 	private AlertDialog dialog;
+	private int contadorImpressao = 0;
 	
 	public static String mensagemRetorno;
 	
@@ -231,15 +232,81 @@ public class MenuPrincipal extends Activity {
 
 					if (listaIdsImoveisFixos == null || listaIdsImoveisFixos.isEmpty()){
 						Toast.makeText(MenuPrincipal.this, "Todos os imóveis fixos já foram impressos", Toast.LENGTH_LONG).show();
+
 					}else{
-                		showDialog(Constantes.DIALOG_ID_IMPRESSAO + increment);
+						progDialog = new ProgressDialog(MenuPrincipal.this);
+						progDialog.setTitle("Imprimindo contas imóveis fixos");
+						progDialog.setMessage("Imóveis impressos");
+						progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+						progDialog.setCancelable(false);
+						progDialog.setMax(listaIdsImoveisFixos.size());
+						progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+							
+							public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+								if ( (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK) && 
+										(event.getRepeatCount() == 0)) {
+									
+									return true; // Pretend we processed it
+								}
+								return false; // Any other keys are still processed as normal
+							}
+						});						
+						progDialog.show();
+						
+						if (Util.isEmulator()){
+
+							contadorImpressao = 0;
+
+							for (int imovelId : listaIdsImoveisFixos) {
+								ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + imovelId, true));
+								BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+								
+								int impressaoTipo = Constantes.IMPRESSAO_FATURA;
+								
+//								if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0 ){
+//									impressaoTipo = Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO;
+//								}
+								
+								Log.i("Comando Fatura", new ImpressaoContaCosanpa().getComandoImpressaoFatura(ControladorImovel.getInstancia().getImovelSelecionado(), Constantes.IMPRESSAO_FATURA));
+								ControladorImovel.getInstancia().setupDataAfterPrinting(impressaoTipo);
+								contadorImpressao++;
+								
+								if (listaIdsImoveisFixos.size() > contadorImpressao){
+									progDialog.setProgress(contadorImpressao);
+									
+								} else{
+									progDialog.dismiss();
+									dialogMessage = "Impressão dos imóveis não-hidrometrados finalizada.";
+									showDialog(Constantes.DIALOG_ID_SUCESSO);
+									increment += 17;
+								}
+							}
+							
+						}else{
+							if (ControladorRota.getInstancia().getBluetoothAddress() == null) {
+								progDialog.dismiss();
+					    		dialogMessage = "Impressão cancelada. Por favor selecione a impressora.";
+				    	    	showDialog(Constantes.DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO);
+							    increment += 17;
+								
+							}else{
+								contadorImpressao = 0;
+								ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listaIdsImoveisFixos.get(0), true));
+								BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+								
+								new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+										impressaoFixosHandler,
+										ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+										increment,
+										MenuPrincipal.this).start();
+							}
+						}
 					}
 				}
             }
         });        
 	}
 	
-	@TargetApi(5)
 	@Override
 	protected void onActivityResult(int arg0, int resultCode, Intent arg2) {
 		if (resultCode == 0) {
@@ -302,26 +369,53 @@ public class MenuPrincipal extends Activity {
         public void handleMessage(Message msg) {
             
         	// Get the current value of the variable total from the message data and update the progress bar.
-        	int totalImpressaoFixos = msg.getData().getInt("impressaoFixos" + String.valueOf(increment));
-            progDialog.setProgress(totalImpressaoFixos);
-            
-            if (msg.getData().getBoolean("impressaoFixosConcluido")){
-            	dismissDialog(Constantes.DIALOG_ID_IMPRESSAO + increment);
-	    		dialogMessage = "Impressão dos imóveis não-hidrometrados finalizada.";
-    	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
-			    increment += 17;
-			    
-            }else if (msg.getData().getBoolean("enderecoBluetoothFaltando")){
-            	dismissDialog(Constantes.DIALOG_ID_IMPRESSAO + increment);
-	    		dialogMessage = "Impressão cancelada. Por favor selecione a impressora.";
-    	    	showDialog(Constantes.DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO);
+            if (msg.getData().getBoolean("impressaoConcluida")){
+            	contadorImpressao++;
+            	
+				if (listaIdsImoveisFixos.size() > contadorImpressao){
+
+					progDialog.setProgress(contadorImpressao);
+					ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listaIdsImoveisFixos.get(contadorImpressao), true));
+					BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+					new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+							impressaoFixosHandler,
+							ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+							increment,
+							MenuPrincipal.this).start();
+            		
+            	}else{
+            		progDialog.dismiss();
+    	    		dialogMessage = "Impressão dos imóveis não-hidrometrados finalizada.";
+        	    	showDialog(Constantes.DIALOG_ID_SUCESSO);
+            	}
 			    increment += 17;
 
             }else if (msg.getData().getBoolean("impressaoErro")){
-            	dismissDialog(Constantes.DIALOG_ID_IMPRESSAO + increment);
-	    		dialogMessage = "Não foi possível imprimir.";
-    	    	showDialog(Constantes.DIALOG_ID_ERRO);
-			    increment += 17;
+				AlertDialog.Builder a = new AlertDialog.Builder(MenuPrincipal.this);
+				a.setTitle("Erro ao imprimir fatura");
+				a.setMessage("Tentar imprimir novamente?");
+
+				a.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+
+						new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+								impressaoFixosHandler,
+								ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+								increment,
+								MenuPrincipal.this).start();
+								increment += 17;
+					}
+				});
+				
+				a.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+	            		progDialog.dismiss();
+			    		dialogMessage = "Não foi possível imprimir.";
+		    	    	showDialog(Constantes.DIALOG_ID_ERRO);
+					    increment += 17;
+					}
+				});
+				a.show();
             }
          }
     };
@@ -452,31 +546,6 @@ public class MenuPrincipal extends Activity {
 	    	progThread = new GerarArquivoCompletoThread(arquivoCompletoHandler, this, increment);
 	    	progThread.start();
 	    	return progDialog;
-	            
-	    }else if (id == Constantes.DIALOG_ID_IMPRESSAO + increment){
-	    	
-			progDialog = new ProgressDialog(MenuPrincipal.this);
-			progDialog.setTitle("Imprimindo contas imóveis fixos");
-			progDialog.setMessage("Imóveis impressos");
-			progDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			progDialog.setCancelable(false);
-			progDialog.setMax(listaIdsImoveisFixos.size());
-			
-			imprimirFixosEmMassaThread = new ImprimirFixosEmMassaThread(listaIdsImoveisFixos, impressaoFixosHandler, MenuPrincipal.this, increment);
-			imprimirFixosEmMassaThread.start();
-			
-			progDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-				
-				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-					if ( (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK) && 
-							(event.getRepeatCount() == 0)) {
-						
-						return true; // Pretend we processed it
-					}
-					return false; // Any other keys are still processed as normal
-				}
-			});						
-			return progDialog;						
 	            
 	    }else if (id ==  Constantes.DIALOG_ID_ERRO || 
 	    		  id ==  Constantes.DIALOG_ID_SUCESSO || 

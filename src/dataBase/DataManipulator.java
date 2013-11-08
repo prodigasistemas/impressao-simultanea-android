@@ -31,7 +31,6 @@ import model.TarifacaoMinima;
 import util.Constantes;
 import util.ParserUtil;
 import util.Util;
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -42,7 +41,6 @@ import android.util.Log;
 import business.ControladorImovel;
 import business.ControladorRota;
 
-@SuppressLint("NewApi")
 public class DataManipulator {
 	private static Context context;
 	private DbHelper openHelper;
