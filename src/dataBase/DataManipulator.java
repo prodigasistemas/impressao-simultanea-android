@@ -641,6 +641,8 @@ public class DataManipulator {
 																				 "id"}, 
 																				 "matricula = " + imovel.getMatricula(), null, null, null, null);
 
+		imovel.getDadosCategoria().clear();
+
 		if (cursor.moveToFirst()) {
 			do {
 				
@@ -822,6 +824,7 @@ public class DataManipulator {
 																				"matricula = " + imovel.getMatricula(), null, null, null, null);
 		
 		HistoricoConsumo hc;
+		imovel.getHistoricosConsumo().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -847,6 +850,7 @@ public class DataManipulator {
 		Cursor cursor = db.query(Constantes.TABLE_DEBITO, new String[] {"descricao","valor","codigo","indc_uso"}, 
 																		"matricula = " + imovel.getMatricula(), null, null, null, null);
 		Debito debito;
+		imovel.getDebitos().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -871,6 +875,7 @@ public class DataManipulator {
 				"matricula = " + imovel.getMatricula(), null, null, null, null);
 		
 		Credito credito;
+		imovel.getCreditos().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -897,6 +902,7 @@ public class DataManipulator {
 																		 "matricula = " + imovel.getMatricula(), null, null, null, null);
 		
 		Imposto imposto;
+		imovel.getImpostos().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -923,6 +929,7 @@ public class DataManipulator {
 																		"matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		Conta conta;
+		imovel.getContas().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -1038,6 +1045,7 @@ public class DataManipulator {
 																		"matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		TarifacaoMinima tm;
+		imovel.getTarifacoesMinimas().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {
@@ -1070,6 +1078,7 @@ public class DataManipulator {
 																						"matricula = " + imovel.getMatricula(), null, null, null, null);
 
 		TarifacaoComplementar tc;
+		imovel.getTarifacoesComplementares().clear();
 		
 		if (cursor.moveToFirst()) {
 			do {

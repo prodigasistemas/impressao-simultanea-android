@@ -12,7 +12,7 @@
     <color name="labelColor">#024659</color>
     <color name="textValueColor">#be7a0e</color>
     
-    <string name="app_versao">1.3.4</string>
+    <string name="app_versao">1.3.5</string>
     <string name="app_name">ImpressaoSimultanea</string>
     <string name="user">Usuário</string>
     <string name="password">Senha</string>
@@ -26,7 +26,7 @@
     <string name="menu_novo_roteiro">Limpar Tudo</string>
     <string name="menu_arquivo_completo">Arquivo Completo</string>
     <string name="menu_selecionar_impressora">Selecionar Impressora</string>
-    <string name="menu_impresssao_fixos">Impressão Fixos</string>
+    <string name="menu_impresssao_fixos">Imprimir Não-Hidrometrados</string>
     
     <string-array name="consulta">
 	    <item>Matrícula</item>

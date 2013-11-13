@@ -340,9 +340,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
             
         	// Get the current value of the variable total from the message data and update the progress bar.
             if (msg.getData().getBoolean("impressaoConcluida")){
-            	dismissDialog(Constantes.DIALOG_ID_IMPRESSAO + increment);
 				progress.dismiss();
 			    increment += 17;
+			    callProximoImovel();
 
             }else if (msg.getData().getBoolean("impressaoErro")){
 				progress.dismiss();

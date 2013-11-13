@@ -1151,26 +1151,26 @@ public class ImpressaoContaCosanpa {
     	String descricaoIndustrial = "";
     	String descricaoPublico = "";
     	for (int i = 0; i < regsTipo2.size(); i++) {
-    	    DadosCategoria reg2 = (DadosCategoria) regsTipo2.get(i);
-    	    String descricaoCategoria = reg2.getDescricaoCategoria();
+    	    DadosCategoria categoria = (DadosCategoria) regsTipo2.get(i);
+    	    String descricaoCategoria = categoria.getDescricaoCategoria();
     	    if (descricaoCategoria.length() > 8) {
     		descricaoCategoria = descricaoCategoria.substring(0, 8);
     	    }
-    	    switch (reg2.getCodigoCategoria()) {
+    	    switch (categoria.getCodigoCategoria()) {
     	    case DadosCategoria.RESIDENCIAL:
-    		quantidadeEconomiasResidencial += reg2.getQtdEconomiasSubcategoria();
+    		quantidadeEconomiasResidencial += categoria.getQtdEconomiasSubcategoria();
     		descricaoResidencial = descricaoCategoria;
     		break;
     	    case DadosCategoria.COMERCIAL:
-    		quantidadeEconomiasComercial += reg2.getQtdEconomiasSubcategoria();
+    		quantidadeEconomiasComercial += categoria.getQtdEconomiasSubcategoria();
     		descricaoComercial = descricaoCategoria;
     		break;
     	    case DadosCategoria.INDUSTRIAL:
-    		quantidadeEconomiasIndustrial += reg2.getQtdEconomiasSubcategoria();
+    		quantidadeEconomiasIndustrial += categoria.getQtdEconomiasSubcategoria();
     		descricaoIndustrial = descricaoCategoria;
     		break;
     	    case DadosCategoria.PUBLICO:
-    		quantidadeEconomiasPublico += reg2.getQtdEconomiasSubcategoria();
+    		quantidadeEconomiasPublico += categoria.getQtdEconomiasSubcategoria();
     		descricaoPublico = descricaoCategoria;
     		break;
     	    }
