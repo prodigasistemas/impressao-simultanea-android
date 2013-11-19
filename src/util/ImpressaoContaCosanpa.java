@@ -696,16 +696,52 @@ public class ImpressaoContaCosanpa {
 		    Log.i("opcao debito automatico", opcaoDebitoAutomatico);
 	
 			if (imovel.getMensagemQuitacaoAnual() != null && !imovel.getMensagemQuitacaoAnual().equals("")) {
-				mensagens = dividirLinha(0, 3, 35, 1300, imovel.getMensagemQuitacaoAnual(), 45, 30);
+				mensagens = dividirLinha(7, 0, 35, 1300, imovel.getMensagemQuitacaoAnual(), 60, 20);
 				
 			} else if (imovel.getMensagemEstouroConsumo1() != null && !imovel.getMensagemEstouroConsumo1().equals("")) {
-				mensagens = formarLinha(0, 3, 35, 1300, imovel.getMensagemEstouroConsumo1() != null && imovel.getMensagemEstouroConsumo1().length() > 45 ? imovel.getMensagemEstouroConsumo1().substring(0, 45) : imovel.getMensagemEstouroConsumo1(), 0, 0)
-				+ formarLinha(0, 3, 35, 1330, imovel.getMensagemEstouroConsumo2() != null && imovel.getMensagemEstouroConsumo2().length() > 45 ? imovel.getMensagemEstouroConsumo2().substring(0, 45) : imovel.getMensagemEstouroConsumo2(), 0, 0)
-				+ formarLinha(0, 3, 35, 1360, imovel.getMensagemEstouroConsumo3() != null && imovel.getMensagemEstouroConsumo3().length() > 45 ? imovel.getMensagemEstouroConsumo3().substring(0, 45) : imovel.getMensagemEstouroConsumo3(), 0, 0);
+				String mensagensEstouro = "";
+				if (imovel.getMensagemEstouroConsumo1() != null){
+					mensagensEstouro = imovel.getMensagemEstouroConsumo1();
+				}
+				
+				if (imovel.getMensagemEstouroConsumo2() != null){
+					mensagensEstouro += " " + imovel.getMensagemEstouroConsumo2();
+				}
+
+				if (imovel.getMensagemEstouroConsumo3() != null){
+					mensagensEstouro += " " + imovel.getMensagemEstouroConsumo3();
+				}
+
+				if (mensagensEstouro != null){
+					if (mensagensEstouro.length() > 240){
+						mensagens = dividirLinha(7, 0, 35, 1300, mensagensEstouro.substring(0, 240), 60, 20);
+					}else{
+						mensagens = dividirLinha(7, 0, 35, 1300, mensagensEstouro, 60, 20);							
+					}
+				}
+
 		    } else {
-		    	mensagens = formarLinha(0, 3, 35, 1300, imovel.getMensagemConta1() != null && imovel.getMensagemConta1().length() > 45 ? imovel.getMensagemConta1().substring(0, 45) : imovel.getMensagemConta1(), 0, 0)
-				+ formarLinha(0, 3, 35, 1330, imovel.getMensagemConta2() != null && imovel.getMensagemConta2().length() > 45 ? imovel.getMensagemConta2().substring(0, 45) : imovel.getMensagemConta2(), 0, 0)
-				+ formarLinha(0, 3, 35, 1360, imovel.getMensagemConta3() != null && imovel.getMensagemConta3().length() > 45 ? imovel.getMensagemConta3().substring(0, 45) : imovel.getMensagemConta3(), 0, 0);
+
+				String mensagensConta = "";
+				if (imovel.getMensagemConta1() != null){
+					mensagensConta = imovel.getMensagemConta1();
+				}
+				
+				if (imovel.getMensagemConta2() != null){
+					mensagensConta += " " + imovel.getMensagemConta2();
+				}
+
+				if (imovel.getMensagemConta3() != null){
+					mensagensConta += " " + imovel.getMensagemConta3();
+				}
+
+				if (mensagensConta != null){
+					if (mensagensConta.length() > 240){
+						mensagens = dividirLinha(7, 0, 35, 1300, mensagensConta.substring(0, 240), 60, 20);
+					}else{
+						mensagens = dividirLinha(7, 0, 35, 1300, mensagensConta, 60, 20);							
+					}
+				}
 		    }
 			
 		    matricula = ""+imovel.getMatricula();

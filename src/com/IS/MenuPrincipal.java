@@ -409,6 +409,7 @@ public class MenuPrincipal extends Activity {
 				
 				a.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
+						ControladorRota.getInstancia().getDataManipulator().updateConfiguracao("bluetooth_address", null);
 	            		progDialog.dismiss();
 			    		dialogMessage = "Não foi possível imprimir.";
 		    	    	showDialog(Constantes.DIALOG_ID_ERRO);
