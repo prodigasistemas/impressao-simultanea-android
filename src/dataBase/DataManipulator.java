@@ -616,6 +616,7 @@ public class DataManipulator {
 				imovel.setEfetuarRateioConsumoHelper(selectEfetuarRateioConsumoHelper(imovel.getMatricula()));
 			}
 		
+			selectSituacaoTipo(imovel);
 			selectDadosCategoria(imovel);
 			selectHistoricosConsumo(imovel);
 			selectDebitos(imovel);
@@ -627,6 +628,45 @@ public class DataManipulator {
 			selectTarifacoesComplementares(imovel);
 		}
 		return imovel;
+	}
+
+	public Imovel selectSituacaoTipo(Imovel imovel) {
+		
+		Cursor cursor = db.query(Constantes.TABLE_SITUACAO_TIPO, new String[] {"tipo_situacao_especial_feturamento",
+																			   "id_anormalidade_consumo_sem_leitura",
+																			   "id_anormalidade_consumo_com_leitura", 
+																			   "id_anormalidade_leitura_sem_leitura",
+																			   "id_anormalidade_leitura_com_leitura", 
+																			   "consumo_agua_medido_historico_faturamento",
+																			   "consumo_agua_nao_medido_historico_faturamento", 
+																			   "volume_esgoto_medido_historico_faturamento",
+																			   "volume_esgoto_nao_medido_historico_faturamento",
+																			   "indc_valida_agua",
+																			   "indc_valida_esgoto"}, 
+																			   "matricula = " + imovel.getMatricula(), null, null, null, null);
+		imovel.setSituacaoTipo(null);
+		
+		if (cursor.moveToFirst()) {
+			
+			SituacaoTipo situacaoTipo = new SituacaoTipo();
+			situacaoTipo.setTipoSituacaoEspecialFaturamento(cursor.getString(0));
+			situacaoTipo.setIdAnormalidadeConsumoSemLeitura(cursor.getString(1));
+			situacaoTipo.setIdAnormalidadeConsumoComLeitura(cursor.getString(2));
+			situacaoTipo.setIdAnormalidadeLeituraSemLeitura(cursor.getString(3));
+			situacaoTipo.setIdAnormalidadeLeituraComLeitura(cursor.getString(4));
+			situacaoTipo.setConsumoAguaMedidoHistoricoFaturamento(cursor.getString(5));
+			situacaoTipo.setConsumoAguaNaoMedidoHistoricoFaturamento(cursor.getString(6));
+			situacaoTipo.setVolumeEsgotoMedidoHistoricoFaturamento(cursor.getString(7));
+			situacaoTipo.setVolumeEsgotoNaoMedidoHistoricoFaturamento(cursor.getString(8));
+			situacaoTipo.setIndcValidaAgua(cursor.getString(9));
+			situacaoTipo.setIndcValidaEsgoto(cursor.getString(10));
+
+			imovel.setSituacaoTipo(situacaoTipo);
+		}
+		
+		fecharCursor(cursor);
+		return imovel;
+
 	}
 	
 	public Imovel selectDadosCategoria(Imovel imovel) {
