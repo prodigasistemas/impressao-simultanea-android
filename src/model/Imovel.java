@@ -2018,7 +2018,25 @@ public class Imovel {
     	return true;
     }
 
-    public boolean isImovelAlterado() {return true;}
+    public boolean isImovelAlterado() {
+    	boolean isImovelAlterado = false;
+
+    	if (this.getMedidor(Constantes.LIGACAO_AGUA) != null ||
+    	    this.getMedidor(Constantes.LIGACAO_POCO) != null){
+
+    		isImovelAlterado = true;
+    	}
+    	
+    	if (this.getMedidor(Constantes.LIGACAO_AGUA) == null &&
+	    	this.getMedidor(Constantes.LIGACAO_POCO) == null){
+
+	    	if (indcImovelImpresso == Constantes.NAO) {
+    	    	isImovelAlterado = true;
+    	    }
+    	}
+
+    	return isImovelAlterado;
+	}
     
     /**
      * Julga se é necessário zerar os consumos, pois o usuário apagou os dados
