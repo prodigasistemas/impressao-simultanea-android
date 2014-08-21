@@ -16,9 +16,7 @@ import static util.Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Vector;
 
 import model.DadosGerais;
@@ -120,62 +118,76 @@ public class ControladorRota {
 					linhasLidas++;
 
 					Log.i("Linha", "Linha :" + line);
+		    		Util.salvarLog("Linha: " + line, context);
 
 				    int tipoRegistro = Integer.parseInt(line.substring(0, 2));
 				    
 				    switch (tipoRegistro) {
 				    
 						case REGISTRO_TIPO_IMOVEL:
+				    		Util.salvarLog("Linha tipo Imovel", context);
 							dataManipulator.insertImovel(line);
 					    	dataManipulator.insertSituacaoTipo(SituacaoTipo.getInstancia());
 					    	dataManipulator.insertDadosQualidadeAgua(DadosQualidadeAgua.getInstancia());
 							break;
 							
 						case REGISTRO_TIPO_DADOS_CATEGORIA:
+				    		Util.salvarLog("Linha tipo Dados Categoria", context);
 							dataManipulator.insertDadosCategoria(line);
 							break;
 							
 						case REGISTRO_TIPO_HISTORICO_CONSUMO:
+				    		Util.salvarLog("Linha tipo Historico Consumo", context);
 							dataManipulator.insertHistoricoConsumo(line);
 							break;
 							
 						case REGISTRO_TIPO_DEBITO:
+				    		Util.salvarLog("Linha tipo Debito", context);
 							dataManipulator.insertDebito(line);
 							break;
 							
 						case REGISTRO_TIPO_CREDITO:
+				    		Util.salvarLog("Linha tipo Credito", context);
 							dataManipulator.insertCredito(line);
 							break;
 							
 						case REGISTRO_TIPO_IMPOSTO:
+				    		Util.salvarLog("Linha tipo Imposto", context);
 							dataManipulator.insertImposto(line);
 							break;
 							
 						case REGISTRO_TIPO_CONTA:
+				    		Util.salvarLog("Linha tipo Conta", context);
 							dataManipulator.insertConta(line);
 							break;
 							
 						case REGISTRO_TIPO_MEDIDOR:
+				    		Util.salvarLog("Linha tipo Medidor", context);
 							dataManipulator.insertMedidor(line);
 							break;
 							
 						case REGISTRO_TIPO_TARIFACAO_MINIMA:
+				    		Util.salvarLog("Linha tipo tarifacao Minima", context);
 							dataManipulator.insertTarifacaoMinima(line);
 							break;
 							
 						case REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR:
+				    		Util.salvarLog("Linha tipo tarifacao Complementar", context);
 							dataManipulator.insertTarifacaoComplementar(line);
 							break;
 							
 						case REGISTRO_TIPO_GERAL:
+				    		Util.salvarLog("Linha tipo tarifacao Minima", context);
 							dataManipulator.insertDadosGerais(line);
 							break;
 							
 						case REGISTRO_TIPO_ANORMALIDADE:
+				    		Util.salvarLog("Linha tipo Anormalidade", context);
 							dataManipulator.insertAnormalidade(line);
 							break;
 	
 						default:
+				    		Util.salvarLog("Erro no switch - classe Controlador" + String.format("tipo registro: %d", tipoRegistro), context);
 							Log.e("Erro no switch - classe Controlador", String.format("tipo registro: %d", tipoRegistro));
 							break;
 					}
@@ -204,10 +216,10 @@ public class ControladorRota {
 				
 			} catch (IOException e) {
         		e.printStackTrace();
-        		Util.salvarLog(new Date(), e.fillInStackTrace());
+        		Util.salvarExceptionLog(e.fillInStackTrace());
 			} catch (Exception e) {
 				
-				Util.salvarLog(new Date(), e.fillInStackTrace());
+				Util.salvarExceptionLog(e.fillInStackTrace());
 				
 				finalizeDataManipulator();
         		deleteDatabase();

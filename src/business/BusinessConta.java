@@ -85,6 +85,7 @@ import model.DadosCategoria;
 import model.DadosFaturamentoFaixa;
 import model.Imovel;
 import util.Constantes;
+import util.Util;
 import views.MedidorAguaTab;
 import views.MedidorPocoTab;
 import android.app.AlertDialog;
@@ -111,13 +112,19 @@ public class BusinessConta {
     @SuppressWarnings("unchecked")
     public static Consumo chamarCalculoConsumo() {
 
+    	Util.salvarLog("<---- Calculo de Consumo ------->");
+    	Util.salvarLog("---> IMOVEL: "+ getImovelSelecionado().getMatricula());
+
 		if (getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA) != null && !getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.CORTADO)) {
 			getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setLeitura(MedidorAguaTab.getLeitura());
-		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
+
+			Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorAguaTab.getCodigoAnormalidade(), true);
 	
 		    if(anormalidade != null){
+		    	Util.salvarLog("Anormalidade de leitura de agua: " + anormalidade.getCodigo());
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade((anormalidade.getCodigo()));
 		    }else{
+		    	Util.salvarLog("Anormalidade de leitura de água: NENHUMA");
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_AGUA).setAnormalidade(Constantes.NULO_INT);
 		    }
 		}
@@ -127,8 +134,10 @@ public class BusinessConta {
 		    Anormalidade anormalidade = ControladorRota.getInstancia().getDataManipulator().selectAnormalidadeByCodigo(MedidorPocoTab.getCodigoAnormalidade(), true);
 
 		    if(anormalidade != null){
+		    	Util.salvarLog("Anormalidade de leitura de esgoto: " + anormalidade.getCodigo());
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade((anormalidade.getCodigo()));
 		    }else{
+		    	Util.salvarLog("Anormalidade de leitura de esgoto: NENHUMA");
 		    	getImovelSelecionado().getMedidor(Constantes.LIGACAO_POCO).setAnormalidade(Constantes.NULO_INT);
 		    }
 		}
@@ -370,9 +379,11 @@ public class BusinessConta {
 			if (!descartaLeitura){
 			
 				if(ControladorRota.getInstancia().getDadosGerais().getIdCalculoMedia() == Constantes.SIM){
+		    		Util.salvarLog("Calculo consumo pela Media");
 					validacao = chamarCalculoConsumoMedio();			
 				
 				}else{
+		    		Util.salvarLog("Calculo de consumo");
 					validacao = chamarCalculoConsumo();			
 				}
 			}

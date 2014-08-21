@@ -3,13 +3,6 @@ package com.IS;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-
-import com.IS.R.color;
-
-import background.CarregarRotaThread;
-import business.ControladorImovel;
-import business.ControladorRota;
 
 import ui.FileManager;
 import util.Constantes;
@@ -25,12 +18,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,11 +74,9 @@ public class ListaRotas extends ListActivity {
     	
     	if (Environment.MEDIA_MOUNTED.equals(state)) {
     	    
-    		// We can read and write the media
-            path = Util.getExternalStorageDirectory();
-            path.getAbsolutePath();
-            Log.i("ExternalStorage", "ExternalStorage :" + path.getAbsolutePath());
-            root = path.getAbsolutePath() + Constantes.DIRETORIO_ROTAS;
+    		path = Util.getExternalStorageDirectory();
+
+    		root = path.getAbsolutePath() + Constantes.DIRETORIO_ROTAS;
             getDir(root);
 
             // Display a messagebox.
@@ -191,7 +180,7 @@ public class ListaRotas extends ListActivity {
             		
 			} catch (IOException e) {
 				e.printStackTrace();
-				Util.salvarLog(new Date(), e.fillInStackTrace());
+				Util.salvarExceptionLog(e.fillInStackTrace());
 			}
             			
             progThread = new CarregarRotaThread(handler, fileName, this);

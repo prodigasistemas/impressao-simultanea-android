@@ -1,14 +1,10 @@
 package background;
 
-import java.util.Date;
-
 import model.Imovel;
 import util.Constantes;
 import util.ImpressaoContaCosanpa;
 import util.Util;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -102,7 +98,7 @@ public class ImpressaoThread extends Thread {
 			Looper.prepare();
 
 			e.printStackTrace();
-			Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 
 	    	Bundle b = new Bundle();
 	    	Message msg = mHandler.obtainMessage();
@@ -115,7 +111,7 @@ public class ImpressaoThread extends Thread {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		}
 	}
 

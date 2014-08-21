@@ -12,9 +12,9 @@ import util.Util;
 import business.ControladorImovel;
 import business.ControladorRota;
 
+import com.IS.NotifyAlertDialogFragment;
 import com.IS.R;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.location.Criteria;
@@ -26,7 +26,6 @@ import android.support.v4.app.Fragment;
 import android.telephony.CellLocation;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +38,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class MedidorAguaTab extends Fragment implements LocationListener{
@@ -64,7 +62,7 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
 	private static double latitude = 0;
 	private static double longitude = 0;
 	private static Date currentDateByGPS = Util.dataAtual();
-	
+	private String dialogMessage = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,30 +71,35 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
 	
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-		
 		if (container == null) {
 			return null;
 		}
-		
-		
-        mLocManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if(mLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-        	mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        }
 
-        Criteria criteria = new Criteria();
+		/* Use the LocationManager class to obtain GPS locations */
+        mLocManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        
+        // Check if enabled and if not send user to the GPS settings
+        // Better solution would be to display a dialog and suggesting to 
+        // go to the settings
+        if (!mLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+	        dialogMessage = "GPS está desligado. Por favor, ligue-o para continuar o cadastro.";
+	        showNotifyDialog(R.drawable.aviso, "Alerta!", dialogMessage, Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO);
+        }
+        
+		Criteria criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		criteria.setCostAllowed(true);
 		provider = mLocManager.getBestProvider(criteria, false);
-		
 		Location location = mLocManager.getLastKnownLocation(provider);
-        if (location != null){
+
+        lastKnownLocation = mLocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    	CellLocation.requestLocationUpdate();
+
+    	if (location != null){
         	latitude = location.getLatitude();
         	longitude = location.getLongitude();
         	currentDateByGPS = new Date(location.getTime());
         }
-		
-    	CellLocation.requestLocationUpdate();
 
     	view = inflater.inflate(R.layout.medidoraguatab, container, false);
 		layout = view;
@@ -281,8 +284,20 @@ public class MedidorAguaTab extends Fragment implements LocationListener{
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		if (!mLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+	        dialogMessage = "GPS está desligado. Por favor, ligue-o para continuar o cadastro.";
+	        showNotifyDialog(R.drawable.aviso, "Alerta!", dialogMessage, Constantes.DIALOG_ID_ERRO_GPS_DESLIGADO);
+        }
+
 		mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1, this);
 	}
+
+	void showNotifyDialog(int iconId, String title, String message, int messageType) {
+		NotifyAlertDialogFragment newFragment = NotifyAlertDialogFragment.newInstance(iconId, title, message, messageType);
+		newFragment.setTargetFragment(this, Constantes.FRAGMENT_ID_MEDIDOR_AGUA);
+        newFragment.show(getActivity().getSupportFragmentManager(), "dialog");
+    }
 
 	/* Remove the locationlistener updates when Activity is paused */
 	@Override

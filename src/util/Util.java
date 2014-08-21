@@ -1,5 +1,6 @@
 package util;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -12,14 +13,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import model.Consumo;
 import model.DadosRelatorio;
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.Toast;
 import business.BusinessConta;
 import business.ControladorRota;
 
@@ -416,6 +420,30 @@ public class Util {
     	return rotaFileName;
     }
     
+    public static String getLogDiario(Context context){
+    	String logFileName = null;
+    	
+    	logFileName = "LOG_";
+    	SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd");
+    	logFileName += formatter.format(new Date()) + ".txt";
+    	
+    	return logFileName;
+    }
+
+    public static String getLogFileName(){
+    	String logFileName = null;
+    	
+    	List<String> info = ControladorRota.getInstancia().getDataManipulator().selectInformacoesRota();
+
+    	logFileName = "LOG";
+    	logFileName += "_" + info.get(1).trim();
+    	logFileName += "_" + info.get(2).trim();
+    	logFileName += "_" + info.get(3).trim();
+    	logFileName += "_" + info.get(4).trim() + ".txt";
+    	
+    	return logFileName;
+    }
+
     public static String getNomeArquivoEnviarConcluidos(){
     	String rotaFileName = null;
     	
@@ -490,11 +518,11 @@ public class Util {
 	
 		} catch (IOException e) {
 		    e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+		    Util.salvarExceptionLog(e.fillInStackTrace());
 		
 		} catch (Exception e) {
 		    e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+		    Util.salvarExceptionLog(e.fillInStackTrace());
 		}
 	
 		// retorna o array de bytes
@@ -632,7 +660,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		    }
 		} catch (NumberFormatException e) {
 		    e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+		    Util.salvarExceptionLog(e.fillInStackTrace());
 		    System.out.println("Hidrometro caractere: "+ retorno);
 //		    Util.perguntarAcao( "Número do Hidrometro com problema: " + string + ". Visualizado ?", false, false );
 		    throw e;
@@ -987,7 +1015,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 
     public static String retornaDescricaoMes(int mes) {
 
-		String meses[] = { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+		String meses[] = { "Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
 	
 		String mesPorExtenso = meses[mes - 1];// mes-1 pq o indice do array
 		// começa no zero
@@ -1816,23 +1844,36 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
         
     public static File getExternalStorageDirectory(){
     	File path = null;
-
+    	
     	if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-    		path = new File("/mnt/sdcard/");
+    		path = new File("/mnt/sdcard/external_sd/");
     		Log.i("first External Path", "ExternalStorage :" + path.getAbsolutePath());
-    	}else{
-   	     	path = new File("/mnt/extSdCard/");
-   	     	
-   	     	if(!path.exists() || !path.isDirectory()) {
-   	    		path = new File("/mnt/sdcard/");
-   	     	}
-   	     	
-            Log.i("first External Path", "ExternalStorage :" + path.getAbsolutePath());
-    	}
+    	
+        }else{
+        	path = new File("/mnt/extSdCard/");
+
+        	if(!path.exists() || !path.isDirectory()) {
+        		path = new File("/mnt/sdcard/external_sd/");
+        	}
+
+        	if(!path.exists() || !path.isDirectory()) {
+        		Map<String, File> externalLocations = ExternalStorage.getAllStorageLocations();
+        		path = externalLocations.get(ExternalStorage.EXTERNAL_SD_CARD);
+        		
+        		if (path != null){
+        			path.getAbsolutePath();
+        			Log.i("ExternalStorage", "ExternalStorage :" + path.getAbsolutePath());
+        		}else{
+        			path = externalLocations.get(ExternalStorage.EXTERNAL_SD);
+        			path.getAbsolutePath();
+        			Log.i("ExternalStorage", "ExternalStorage :" + path.getAbsolutePath());
+        		}
+        	}
+        }
     	return path;
     }
     
-	public static void salvarLog(Date data, Throwable t) {
+	public static void salvarExceptionLog(Throwable t) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss");
 		try {
 			File diretorioLog = new File(getExternalStorageDirectory() + Constantes.DIRETORIO_LOGS);
@@ -1840,7 +1881,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 				diretorioLog.mkdir();
 			}
 			
-			File arquivoLog = new File(diretorioLog, "Log.txt");
+			File arquivoLog = new File(diretorioLog, getLogFileName());
 			
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
@@ -1848,7 +1889,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 			System.out.println(writer.toString());
 			
 			FileWriter fw = new FileWriter(arquivoLog, true);
-			fw.write(formatter.format(data) + "\n");
+			fw.write(formatter.format(new Date()) + "\n");
 			fw.write(String.valueOf(writer.toString() + "\n"));
 			fw.write("--------------------------------------------------------------------------\n");
 			fw.flush();
@@ -1858,6 +1899,72 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		}
 	}
 	
+	public static void salvarLog(String content) {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss");
+		try {
+			File diretorioLog = new File(getExternalStorageDirectory() + Constantes.DIRETORIO_LOGS);
+			if (!diretorioLog.exists()) {
+				diretorioLog.mkdir();
+			}
+			
+			File arquivoLog = new File(diretorioLog, getLogFileName());
+			if (!arquivoLog.exists()){
+				try{
+					arquivoLog.createNewFile();
+					
+				} catch (IOException e){
+					e.printStackTrace();
+				}
+			}
+			
+			try{
+				//BufferedWriter for performance, true to set append to file flag
+				BufferedWriter bufWritter = new BufferedWriter(new FileWriter(arquivoLog, true)); 
+				bufWritter.append(formatter.format(new Date())).append(": - ").append(content);
+				bufWritter.newLine();
+				bufWritter.close();
+				
+			}catch (IOException e){
+				e.printStackTrace();
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public static void salvarLog(String content, Context context) {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss");
+		try {
+			File diretorioLog = new File(getExternalStorageDirectory() + Constantes.DIRETORIO_LOGS);
+			if (!diretorioLog.exists()) {
+				diretorioLog.mkdir();
+			}
+			
+			File arquivoLog = new File(diretorioLog, getLogDiario(context));
+			if (!arquivoLog.exists()){
+				try{
+					arquivoLog.createNewFile();
+					
+				} catch (IOException e){
+					e.printStackTrace();
+				}
+			}
+			
+			try{
+				//BufferedWriter for performance, true to set append to file flag
+				BufferedWriter bufWritter = new BufferedWriter(new FileWriter(arquivoLog, true)); 
+				bufWritter.append(formatter.format(new Date())).append(": - ").append(content);
+				bufWritter.newLine();
+				bufWritter.close();
+				
+			}catch (IOException e){
+				e.printStackTrace();
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
 	public static boolean isEmulator(){
 		boolean result = false;
 		if (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")){

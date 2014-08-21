@@ -152,10 +152,10 @@ public class ArquivoRetorno {
 		    
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		} catch (IOException e) {
 			e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		}    
     	
     	return listIdImoveis;
@@ -700,7 +700,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		} 
         OutputStreamWriter out = new OutputStreamWriter(os);
     	
@@ -841,7 +841,7 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+				Util.salvarExceptionLog(e.fillInStackTrace());
 			}
     		
     		retorno[0] = Boolean.FALSE;
@@ -972,10 +972,10 @@ Util.salvarLog(new Date(), e.fillInStackTrace());
 		    
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		} catch (IOException e) {
 			e.printStackTrace();
-Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		}    
     	
     	return listIdImoveis; 

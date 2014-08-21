@@ -3,11 +3,8 @@ package views;
 import java.util.ArrayList;
 
 import model.DadosCategoria;
-import com.IS.R.color;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

@@ -3,7 +3,6 @@ package views;
 import helper.EfetuarRateioConsumoHelper;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -123,10 +121,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 	    // Define a imagem de fundo de acordo com a orientacao do dispositivo
-	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT)
+	    if (getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_PORTRAIT){
 	    	tabHost.setBackgroundResource(R.drawable.fundocadastro);
-	    else
+	    }else{
 	    	tabHost.setBackgroundResource(R.drawable.landscape_background);
+	    }
 	    
 	    FragmentManager fm = getSupportFragmentManager();
 	    Fragment fragment = fm.findFragmentById(android.R.id.tabcontent);
@@ -286,9 +285,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	        
 	    case R.id.imprimirConta:
 	    	
+	    	
 	    	//Verifica se a data atual é anterior ao mes de referencia da rota em andamento.
 	    	if(Util.compararData(getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), MedidorAguaTab.getCurrentDateByGPS()) > 0){
 	    		// Data do celular esta correta.
+	    		Util.salvarLog("Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
 	    		showMessage("Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
 	    		
 	    	}else{
@@ -1037,7 +1038,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			} catch (ZebraPrinterConnectionException e) {
 
 				e.printStackTrace();
-				Util.salvarLog(new Date(), e.fillInStackTrace());
+				Util.salvarExceptionLog(e.fillInStackTrace());
 				progressImpressaoCondominial.dismiss();
 				
 				Looper.prepare();
@@ -1070,7 +1071,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				Util.salvarLog(new Date(), e.fillInStackTrace());
+				Util.salvarExceptionLog(e.fillInStackTrace());
 			}
 		}
 	}
@@ -1174,6 +1175,8 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		if ( (getImovelSelecionado().getImovelStatus() != Constantes.IMOVEL_STATUS_PENDENTE) &&
 			 (getImovelSelecionado().getConsumoAgua() != null || getImovelSelecionado().getConsumoEsgoto() != null) ) {
 			
+    		Util.salvarLog("Leitura e anormalidade desconsiderados");
+
 			// Nao será recalculado o consumo
 			Toast.makeText(this, "Novos valores de leitura e anormalidade serão desconsiderados.", Toast.LENGTH_LONG).show();
 			descartaLeitura = true;
@@ -1183,10 +1186,13 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		
 		if(!descartaLeitura){
 
+    		Util.salvarLog("Nao descarta leitura");
+
 			if (validacaoConsumo != null){
 				
 				String mensagemAnormalidadeConsumo = "";
 				mensagemAnormalidadeConsumo = Util.validarAnormalidadeConsumo(validacaoConsumo);
+	    		Util.salvarLog("Consumo = " + mensagemAnormalidadeConsumo);
 			    System.out.println("Consumo = " + mensagemAnormalidadeConsumo);
 			    
 			    // Se houve anormalidade de consumo
@@ -1194,6 +1200,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 				
 			    	if (getImovelSelecionado().getValorConta() != Constantes.NULO_DOUBLE) {
 					    System.out.println("Valor = " + getImovelSelecionado().getValorConta());
+			    		Util.salvarLog("Valor = " + getImovelSelecionado().getValorConta());
 					    mensagemConsumo(mensagemAnormalidadeConsumo, getImovelSelecionado().getValorConta());
 					}
 			    
@@ -1205,18 +1212,22 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 					    switch (ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext())) {
 					    case Constantes.IMPRESSAO_FATURA:
+				    		Util.salvarLog("Impressao de fatura");
 					    	imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA);
 					    	break;
 
 					    case Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO:
+				    		Util.salvarLog("Impressao de fatura e notificacao");
 					    	imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO);
 					    	break;
 					        
 					    case Constantes.IMPRESSAO_NOTIFICACAO_DEBITO:
+				    		Util.salvarLog("Impressao de notificacao");
 					    	imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_NOTIFICACAO_DEBITO);
 					    	break;
 
 					    case Constantes.IMPRESSAO_NAO_PERMITIDA:
+				    		Util.salvarLog("Impressao não permitida");
 			    			getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 			    			setTabColor();
 			    			getDataManipulator().salvarImovel(getImovelSelecionado());
@@ -1238,18 +1249,22 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 
 				    switch (ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext())) {
 				    case Constantes.IMPRESSAO_FATURA:
+				    	Util.salvarLog("Impressao de fatura");
 				    	imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA);
 				    	break;
 
 				    case Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO:
+			    		Util.salvarLog("Impressao de fatura e notificacao");
 				    	imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO);
 				        break;
 				        
 				    case Constantes.IMPRESSAO_NOTIFICACAO_DEBITO:
+			    		Util.salvarLog("Impressao de notificacao");
 				    	imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_NOTIFICACAO_DEBITO);
 				    	break;
 				    	
 				    case Constantes.IMPRESSAO_NAO_PERMITIDA:
+			    		Util.salvarLog("Impressao não permitida");
 		    			getImovelSelecionado().setImovelStatus(Constantes.IMOVEL_STATUS_CONCLUIDO);
 		    			setTabColor();
 		    			getDataManipulator().salvarImovel(getImovelSelecionado());
@@ -1265,12 +1280,16 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 		
 		// Se deve descartar leitura, imóvel já está calculado e salvo no DB.
 		} else {
+			
+    		Util.salvarLog("Descarta leitura");
+
 			if (!getImovelSelecionado().isImovelCondominio()) {
 				if (BusinessConta.getInstancia(this).isImpressaoPermitida()) {
 
 //					if (getImovelSelecionado().getContas() != null && getImovelSelecionado().getContas().size() > 0 ){
 //						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA_E_NOTIFICACAO);
 //					}else{
+						Util.salvarLog("Impressao de fatura");
 						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA);
 //					}
 				}
@@ -1313,6 +1332,11 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 	
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
+	public void doGpsDesligado() {
+		Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		startActivity(intent);
+    }
+
 	@Override
 	protected Dialog onCreateDialog(final int id) {
 	        

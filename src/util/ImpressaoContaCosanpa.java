@@ -114,6 +114,9 @@ public class ImpressaoContaCosanpa {
     private String anormalidadeLeitura = "";
     
     private String montarComandoImpressaoFatura(int tipoImpressao) {
+    	
+		Util.salvarLog("<------- Inicio Impressão Fatura ------>");
+
     	String comando = "! 0 200 200 1720 1\n"+
     			
     			linesAndBoxes +
@@ -261,8 +264,37 @@ public class ImpressaoContaCosanpa {
 	        		"T 5 0 352 1661 4\n"+
 	        		"FORM\n"+
 	        		"PRINT\n";
-        		}
+    	}
+ 
+
+		Util.salvarLog("App Version: " + Fachada.getAppVersion());
+		Util.salvarLog("Data Atual: " + MedidorAguaTab.getCurrentDateByGPS());
+		Util.salvarLog("Vezes que conta foi impressa: " + (imovel.getQuantidadeContasImpressas()+1));
     	
+    	
+		Util.salvarLog("situacaoAgua: " + situacaoAgua);
+		Util.salvarLog("situacaoEsgoto: " + situacaoEsgoto);
+		Util.salvarLog("leituraAnteriorInformada: " + leituraAnteriorInformada);
+		Util.salvarLog("leituraAtualInformada: " + leituraAtualInformada);
+		Util.salvarLog("dataLeituraAnteriorInformada: " + dataLeituraAnteriorInformada);
+		Util.salvarLog("dataLeituraAtualInformada: " + dataLeituraAtualInformada);
+		Util.salvarLog("consumo: " + consumo);
+		Util.salvarLog("diasConsumo: " + diasConsumo);
+		Util.salvarLog("anormalidadeConsumo: " + anormalidadeConsumo);
+		Util.salvarLog("anormalidadeLeitura: " + anormalidadeLeitura);
+		Util.salvarLog("leituraAnteriorFaturada: " + leituraAnteriorFaturada);
+		Util.salvarLog("leituraAnteriorFaturada: " + leituraAnteriorFaturada);
+		Util.salvarLog("dataLeituraAnteriorFaturada: " + dataLeituraAnteriorFaturada);
+		Util.salvarLog("dataLeituraAtualFaturada: " + dataLeituraAtualFaturada);
+		Util.salvarLog("valorConta: " + valorConta);
+		Util.salvarLog("matricula: " + matricula);
+		Util.salvarLog("referencia: " + referencia);
+		Util.salvarLog("dataVencimento: " + dataVencimento);
+		Util.salvarLog("totalAPagar: " + totalAPagar);
+		Util.salvarLog("situacaoAgua: " + situacaoAgua);
+
+		Util.salvarLog("<------- Fim Impressao Fatura ------>");
+
 //    	instancia = null;
     	
     	return comando;
@@ -478,7 +510,7 @@ public class ImpressaoContaCosanpa {
 					anormalidadeLeitura += formarLinha(0, 2, 430, 374, "ANORM. LEITURA: " + FileManager.getAnormalidade(imovel.getConsumoAgua().getAnormalidadeLeituraFaturada()).getDescricao(), 0, 0);
 				} catch (IOException e) {
 					e.printStackTrace();
-					Util.salvarLog(new Date(), e.fillInStackTrace());
+					Util.salvarExceptionLog(e.fillInStackTrace());
 				}
 			}
 		}

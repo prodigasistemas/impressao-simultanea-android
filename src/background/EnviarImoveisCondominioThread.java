@@ -38,7 +38,7 @@ public class EnviarImoveisCondominioThread extends Thread {
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.salvarLog(new Date(), e.fillInStackTrace());
+			Util.salvarExceptionLog(e.fillInStackTrace());
 		}
 	}
 

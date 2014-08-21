@@ -3,6 +3,7 @@ package model;
 import business.ControladorConta;
 import business.ControladorImovel;
 import util.Constantes;
+import util.Util;
 
 public class Consumo {
     
@@ -170,6 +171,8 @@ public class Consumo {
         }
 
         // [SB0009] 2.2.
+        
+    	Util.salvarLog("<---- Consumo Cobrado Mes: " + String.valueOf(this.consumoCobradoMes - restoDiv));
         this.setConsumoCobradoMes( this.consumoCobradoMes - restoDiv) ;
     }
 

@@ -228,10 +228,13 @@ public class MenuPrincipal extends Activity {
         	    	
 				} else if (position == MENU_IMPRESSAO_MASSA) {
 					
+		    		Util.salvarLog("<----- Impressao imoveis fixos em massa----->");
+					
 					listaIdsImoveisFixos = ControladorRota.getInstancia().getDataManipulator().getListaIdsImoveisFixos(false);
 
 					if (listaIdsImoveisFixos == null || listaIdsImoveisFixos.isEmpty()){
 						Toast.makeText(MenuPrincipal.this, "Todos os imóveis fixos já foram impressos", Toast.LENGTH_LONG).show();
+			    		Util.salvarLog("Todos os imoveis fixos ja foram impressos");
 
 					}else{
 						progDialog = new ProgressDialog(MenuPrincipal.this);
@@ -285,6 +288,7 @@ public class MenuPrincipal extends Activity {
 						}else{
 							if (ControladorRota.getInstancia().getBluetoothAddress() == null) {
 								progDialog.dismiss();
+					    		Util.salvarLog("Impressao cancelada. Por favor selecione a impressora.");
 					    		dialogMessage = "Impressão cancelada. Por favor selecione a impressora.";
 				    	    	showDialog(Constantes.DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO);
 							    increment += 17;

@@ -26,9 +26,9 @@ public class Constantes {
     public static final int DIALOG_ID_ENDERECO_BLUETOOTH_FALTANDO = 16;
     
        
-    public static final String DIRETORIO_ROTAS = "/external_sd/GcomMovel/Roteiros";
-    public static final String DIRETORIO_RETORNO = "/external_sd/GcomMovel/Retorno";
-    public static final String DIRETORIO_LOGS = "/external_sd/GcomMovel/Logs";
+    public static final String DIRETORIO_ROTAS = "/GcomMovel/Roteiros";
+    public static final String DIRETORIO_RETORNO = "/GcomMovel/Retorno";
+    public static final String DIRETORIO_LOGS = "/GcomMovel/Logs";
     
     public static final int LIMITE_SUPERIOR_FAIXA_FINAL = 999999;
     public static final int QUEBRA_CONTAS_IMOVEL_CONDOMINIO = 5;
@@ -188,4 +188,9 @@ public class Constantes {
     public static final int TIPO_GERACAO_ARQUIVO_COMPLETO = 1;
     public static final int TIPO_GERACAO_FINALIZAR_ROTA = 2;
     public static final int TIPO_GERACAO_IMOVEIS_CONCLUIDOS = 3;
+
+    public static final int FRAGMENT_ID_MEDIDOR_AGUA = 0;
+    public static final int FRAGMENT_ID_MEDIDOR_ESGOTO = 1;
+    public static final int FRAGMENT_ID_IMOVEL = 2;
+
 }
