@@ -1196,16 +1196,16 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    System.out.println("Consumo = " + mensagemAnormalidadeConsumo);
 			    
 			    // Se houve anormalidade de consumo
-			    if (mensagemAnormalidadeConsumo != null && !mensagemAnormalidadeConsumo.equals("")) {
-				
-			    	if (getImovelSelecionado().getValorConta() != Constantes.NULO_DOUBLE) {
-					    System.out.println("Valor = " + getImovelSelecionado().getValorConta());
-			    		Util.salvarLog("Valor = " + getImovelSelecionado().getValorConta());
-					    mensagemConsumo(mensagemAnormalidadeConsumo, getImovelSelecionado().getValorConta());
-					}
-			    
-			    // Nao houve anormalidade de consumo. 	
-			    }else{
+//			    if (mensagemAnormalidadeConsumo != null && !mensagemAnormalidadeConsumo.equals("")) {
+//				
+//			    	if (getImovelSelecionado().getValorConta() != Constantes.NULO_DOUBLE) {
+//					    System.out.println("Valor = " + getImovelSelecionado().getValorConta());
+//			    		Util.salvarLog("Valor = " + getImovelSelecionado().getValorConta());
+//					    mensagemConsumo(mensagemAnormalidadeConsumo, getImovelSelecionado().getValorConta());
+//					}
+//			    
+//			    // Nao houve anormalidade de consumo. 	
+//			    }else{
 
 					// Nao deve imprimir fatura individual de imovel condominial
 			    	if (!getImovelSelecionado().isImovelCondominio()){
@@ -1239,7 +1239,7 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 			    		// imovel condominial avança para o próximo imovel.
 				    	callProximoImovel();
 			    	}
-			    }
+//			    }
 			    mensagemAnormalidadeConsumo = null;
   			
 			} else if (getImovelSelecionado().getSituacaoLigAgua().equals(Constantes.LIGADO) == false){
@@ -1292,7 +1292,9 @@ public class MainTab extends FragmentActivity implements TabHost.OnTabChangeList
 						Util.salvarLog("Impressao de fatura");
 						imprimirConta(ControladorRota.getInstancia().getBluetoothAddress(), Constantes.IMPRESSAO_FATURA);
 //					}
-				}
+				} else {
+                    Toast.makeText(this, BusinessConta.getInstancia().getMensagemPermiteImpressao(), Toast.LENGTH_LONG).show();
+                }
 
 			} else {
 				// imovel condominial avança para o próximo imovel.

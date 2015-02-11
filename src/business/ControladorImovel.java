@@ -5,13 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import android.content.Context;
-import android.util.Log;
-
-import util.Constantes;
-import util.Util;
-import views.MedidorAguaTab;
-
 import model.Consumo;
 import model.DadosCategoria;
 import model.DadosFaturamento;
@@ -21,6 +14,12 @@ import model.Imovel;
 import model.Tarifa;
 import model.TarifacaoComplementar;
 import model.TarifacaoMinima;
+import util.Constantes;
+import util.Util;
+import views.MedidorAguaTab;
+import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 public class ControladorImovel {
 
@@ -1036,6 +1035,7 @@ public class ControladorImovel {
 //				
 //			}else{
 				impressaoTipo = Constantes.IMPRESSAO_NAO_PERMITIDA;
+				Toast.makeText(context, BusinessConta.getInstancia().getMensagemPermiteImpressao(), Toast.LENGTH_LONG).show();
 //			}
 		}
 		
