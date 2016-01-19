@@ -149,6 +149,17 @@ public class Util {
 
     }
 
+	public static Date getDataSemHora(Date data) {
+		Calendar calendar = Calendar.getInstance(); // locale-specific
+		calendar.setTime(data);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+
+		return calendar.getTime();
+	}
+
     /**
      * < <Descrição do método>>
      * 
