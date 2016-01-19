@@ -1,5 +1,8 @@
 package com.IS;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 import business.ControladorAcessoOnline;
 import business.ControladorImovel;
 import business.ControladorRota;
@@ -63,19 +66,11 @@ public class Fachada extends Activity {
             	v.clearAnimation();
             	
             	// Define URL GSAN
+            	String serverUrl = getServerUrl(Fachada.this);
             	
             	// Producao
-            	ControladorAcessoOnline.getInstancia().setURL("http://200.178.173.131:8080/gsan/");
+            	ControladorAcessoOnline.getInstancia().setURL(serverUrl);
             	
-            	// Homologacao
-//            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.100.25:8080/gsan/");
-
-            	//Pamela
-//            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.0.107:8080/gsan/");
-            	
-            	// Desenvolvimento 
-//            	ControladorAcessoOnline.getInstancia().setURL("http://10.20.100.37:8080/gsan/");
-  
 
                 if (ControladorRota.getInstancia().databaseExists(getBaseContext()) && 
                 	ControladorRota.getInstancia().isDatabaseRotaCarregadaOk() == Constantes.SIM){
@@ -220,6 +215,20 @@ public class Fachada extends Activity {
     
     public static String getAppVersion() {
     	return appVersion; 
+    }
+    
+    public static String getServerUrl(Context context) {
+    	try {
+			InputStream is = context.getAssets().open("app.properties");
+			Properties prop = new Properties();
+			prop.load(is);
+			
+			return prop.getProperty("url");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	return null;
     }
 	
 }
