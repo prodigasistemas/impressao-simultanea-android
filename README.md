@@ -9,3 +9,4 @@ Em seguida deve ser provida a chave para a IDE assinar a aplicação.
 
 Para armazenar os roteiros, pelos quais a applicação irá identificar os imóveis para leitura, é necessário que seja criada a seguinte estrutura de diretórios: ``external_sd/GcomMovel/Roteiros``. No diretório de roteiros poderão ser disponibilizados arquivos dos tipos .gz e .txt, para se realizar a carga das informações no aplicativo.
 
+Para a troca de informações com o servidor, deve ser criado um arquivo de propriedades app.properties e adicionar o ip e porta do servidor. No arquivo app.properties.exemple demonstra como utilizá-lo.
