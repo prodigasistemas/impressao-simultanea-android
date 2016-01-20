@@ -7,7 +7,7 @@
 	android:id="@+id/linearLayoutConsulta">
 
 	<LinearLayout     android:orientation="vertical" android:layout_width="fill_parent"  android:background="@drawable/linearlayout_rounded_corners" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
-	    <LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout1">
+	    <LinearLayout     android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/linearLayout2">
 		    <TextView android:text="Buscar por:" android:id="@+id/txtMetodoBusca" android:textColor="@color/textColorYellowBackground" android:textSize="15dp" android:layout_width="wrap_content" android:layout_height="wrap_content" ></TextView>
 			<Spinner android:id="@+id/spinnerMetodoBusca" android:layout_height="wrap_content" android:drawSelectorOnTop="true" android:layout_width="fill_parent"></Spinner>
 		</LinearLayout>
