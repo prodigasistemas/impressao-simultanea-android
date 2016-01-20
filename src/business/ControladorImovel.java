@@ -748,6 +748,7 @@ public class ControladorImovel {
 
 		// 2.Calcula a quantidade de dias entre as leituras = data corrente - data de leitura anterior;
 		long qtdDiasEntreLeituras = Util.obterModuloDiferencasDatasDias(dataLeituraAtual, dataLeituraAnterior);
+		qtdDiasEntreLeituras += 1;
 	
 		// 3.Data da vigência inicial = data da leitura anterior
 		Date dataVigenciaInicial = dataLeituraAnterior;
@@ -782,15 +783,11 @@ public class ControladorImovel {
 	
 			// 4.3.Caso seja a primeira tarifa, a quantidade de dias de vigência da tarifa dentro do período
 			// de leitura = data da vigência final – data da vigência inicial
-			long qtdDiasVigenciaTarifaDentroPeriodoLeitura;
+			long qtdDiasVigenciaTarifaDentroPeriodoLeitura = Util.obterModuloDiferencasDatasDias(dataVigenciaFinal, dataVigenciaInicial);
 	
 			if (i == 0) {
                 if (dataVigenciaFinal.after(dataVigenciaInicial) || dataVigenciaFinal.equals(dataVigenciaInicial)) {
-                    qtdDiasVigenciaTarifaDentroPeriodoLeitura = Util.obterModuloDiferencasDatasDias(dataVigenciaFinal, dataVigenciaInicial);
-
-                    if (dataVigenciaFinal.equals(dataVigenciaInicial)) {
-                        qtdDiasVigenciaTarifaDentroPeriodoLeitura = qtdDiasVigenciaTarifaDentroPeriodoLeitura + 1;
-                    }
+                	qtdDiasVigenciaTarifaDentroPeriodoLeitura += 1;
                 } else {
                     qtdDiasVigenciaTarifaDentroPeriodoLeitura = 0;
                 }
@@ -799,14 +796,7 @@ public class ControladorImovel {
 			// leitura = data da vigência final – data da vigência inicial + 1 dia;
 			} else {
 				if (dataVigenciaFinal.before(dataLeituraAtual) || dataVigenciaFinal.equals(dataLeituraAtual)) {
-                    qtdDiasVigenciaTarifaDentroPeriodoLeitura = Util.obterModuloDiferencasDatasDias(dataVigenciaFinal, dataVigenciaInicial);
-
-                    long qtdDiasLeituraInicialVigenciaInicial = Util.obterModuloDiferencasDatasDias(dataVigenciaInicial, dataLeituraAnterior);
-
-                    if ((qtdDiasVigenciaTarifaDentroPeriodoLeitura < qtdDiasEntreLeituras && qtdDiasLeituraInicialVigenciaInicial > 1)
-                            || dataVigenciaInicial.equals(dataVigenciaFinal)) {
-                        qtdDiasVigenciaTarifaDentroPeriodoLeitura = qtdDiasVigenciaTarifaDentroPeriodoLeitura + 1;
-                    }
+					qtdDiasVigenciaTarifaDentroPeriodoLeitura += 1;
                 } else {
                     qtdDiasVigenciaTarifaDentroPeriodoLeitura = 0;
                 }
