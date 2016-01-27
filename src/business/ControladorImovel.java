@@ -728,7 +728,7 @@ public class ControladorImovel {
 		 * da vigência. TODOS OS REGISTROS TIPO 9 PRESENTES NO IMOVEL JA
 		 * RESPEITAM AS CONDIÇÕES SUPRECITADAS, LOGO APENAS SELECIONAMOS
 		 */
-		List<TarifacaoMinima> tarifacoesMinimas = imovel.getTarifacoesMinimas();
+    	ArrayList<List<TarifacaoMinima>> tarifacoesMinimasPorCategoria = imovel.getTarifacoesMinimasPorCategoria();
 	
 		// Selecionamos a data de leitura anterior dando prioridade ao ligação de água	
 		Date dataLeituraAnterior = null;
@@ -750,153 +750,155 @@ public class ControladorImovel {
 		long qtdDiasEntreLeituras = Util.obterModuloDiferencasDatasDias(dataLeituraAtual, dataLeituraAnterior);
 		qtdDiasEntreLeituras += 1;
 	
-		// 3.Data da vigência inicial = data da leitura anterior
-		Date dataVigenciaInicial = dataLeituraAnterior;
-	
-		// 4.Para cada tarifa vigente para o período de leitura, obtida no passo 1.3, ordenando por data de início da
-		// vigência, o sistema efetua os seguintes procedimentos
-		for (int i = 0; i < tarifacoesMinimas.size(); i++) {
-			// 4.1.[SB0001 – Cálculo Simples Para Uma Única Tarifa];
-			TarifacaoMinima reg9 = (TarifacaoMinima) tarifacoesMinimas.get(i);
-			this.calculoSimples(imovel, consumo, tipoMedicao, reg9.getDataVigencia());
-	
-			// 4.2.Caso exista próxima tarifa vigente então data da vigência final = data de início da vigência da próxima
-			// tarifa vigente menos um dia, caso contrário, data da vigência final = data corrente;
-			Date dataVigenciaFinal = null;
-	
-			if (i < tarifacoesMinimas.size() - 1) {
-				TarifacaoMinima proxReg9 = (TarifacaoMinima) tarifacoesMinimas.get(i + 1);
-				System.out.println("Data REG 9" + Util.formatarData(proxReg9.getDataVigencia()));
-
-				if (proxReg9.getDataVigencia().before(dataLeituraAtual) || proxReg9.getDataVigencia().equals(dataLeituraAtual)) {
-                    dataVigenciaFinal = Util.adicionarNumeroDiasDeUmaData(proxReg9.getDataVigencia(), -1);
-                } else {
-                    dataVigenciaFinal = dataLeituraAtual;
-                }
-			} else {
-                if (reg9.getDataVigencia().before(dataLeituraAtual) || reg9.getDataVigencia().equals(dataLeituraAtual)) {
-                    dataVigenciaFinal = dataLeituraAtual;
-                } else {
-                    dataVigenciaFinal = reg9.getDataVigencia();
-                }
-			}
-	
-			// 4.3.Caso seja a primeira tarifa, a quantidade de dias de vigência da tarifa dentro do período
-			// de leitura = data da vigência final – data da vigência inicial
-			long qtdDiasVigenciaTarifaDentroPeriodoLeitura = Util.obterModuloDiferencasDatasDias(dataVigenciaFinal, dataVigenciaInicial);
-	
-			if (i == 0) {
-                if (dataVigenciaFinal.after(dataVigenciaInicial) || dataVigenciaFinal.equals(dataVigenciaInicial)) {
-                	qtdDiasVigenciaTarifaDentroPeriodoLeitura += 1;
-                } else {
-                    qtdDiasVigenciaTarifaDentroPeriodoLeitura = 0;
-                }
-
-			// 4.4.Caso contrário a quantidade de dias de vigência da tarifa dentro do período de
-			// leitura = data da vigência final – data da vigência inicial + 1 dia;
-			} else {
-				if (dataVigenciaFinal.before(dataLeituraAtual) || dataVigenciaFinal.equals(dataLeituraAtual)) {
-					qtdDiasVigenciaTarifaDentroPeriodoLeitura += 1;
-                } else {
-                    qtdDiasVigenciaTarifaDentroPeriodoLeitura = 0;
-                }
-			}
-	
-			// 4.5.Calcula o fator de vigência da tarifa = quantidade de dias de vigência da tarifa no período de
-			// leitura / quantidade de dias entre as leituras;
-			double fatorVigenciaTarifa = Util.arredondar((double) qtdDiasVigenciaTarifaDentroPeriodoLeitura / (double) qtdDiasEntreLeituras, 4);
-	
-			/*
-			 * 1.1.Para cada Categoria, aplica o fator de vigência da tarifa
-			 * sobre os seguintes atributos obtidos nos cálculos efetuados no
-			 * passo 4.1, arredondando para duas casas decimais: 1.1.1.Valor
-			 * faturado; 1.1.2.Valor da tarifa mínima; 1.1.3.Para cada faixa da
-			 * tarifa de consumo: 1.1.3.1.Valor faturado na faixa; 1.1.3.2.Valor
-			 * da tarifa na faixa.
-			 */
-			for (int j = 0; j < imovel.getDadosCategoria().size(); j++) {
-
-				DadosCategoria reg2 = (DadosCategoria) imovel.getDadosCategoria().get(j);
-
-				DadosFaturamento dadosFaturamento;
-
-				// cria o objteto de faturamento proporcional para somar os valores
-				// por categoria de cada data de vigencia
-				DadosFaturamento dadosFaturamentoProporcional;
-
-				if (tipoMedicao == Constantes.LIGACAO_AGUA) {
-					dadosFaturamento = reg2.getFaturamentoAgua();
-					dadosFaturamentoProporcional = reg2.getFaturamentoAguaProporcional();
-				} else {
-					dadosFaturamento = reg2.getFaturamentoEsgoto();
-					dadosFaturamentoProporcional = reg2.getFaturamentoEsgotoProporcional();
-				}
-
-				if (dadosFaturamentoProporcional == null
-                        || dadosFaturamentoProporcional.equals("") || i == 0) {
-					dadosFaturamentoProporcional = new DadosFaturamento();
-					dadosFaturamentoProporcional.setValorFaturado(0d);
-					dadosFaturamentoProporcional.setValorTarifaMinima(0d);
-				}
-
-				double valorFaturadoPorFator = dadosFaturamentoProporcional.getValorFaturado();
-				valorFaturadoPorFator = valorFaturadoPorFator + Util.arredondar(dadosFaturamento.getValorFaturado() * fatorVigenciaTarifa, 2);
-
-				double valorTarifaMinimaPorFator = dadosFaturamentoProporcional.getValorTarifaMinima();
-				valorTarifaMinimaPorFator = valorTarifaMinimaPorFator + Util.arredondar(dadosFaturamento.getValorTarifaMinima() * fatorVigenciaTarifa, 2);
-
-				// seta os valores adicionados para os dados de faturamento proporcional
-				dadosFaturamentoProporcional.setValorFaturado(valorFaturadoPorFator);
-				dadosFaturamentoProporcional.setValorTarifaMinima(valorTarifaMinimaPorFator);
-
-				// seta os dados do faturamento proporcional no dado de faturamento
-				dadosFaturamento.setValorFaturado(valorFaturadoPorFator);
-				dadosFaturamento.setValorTarifaMinima(valorTarifaMinimaPorFator);
-
-				Vector faixasProporcional = new Vector();
-
-				for (int k = 0; k < dadosFaturamento.getFaixas().size(); k++) {
-					DadosFaturamentoFaixa faixa = (DadosFaturamentoFaixa) dadosFaturamento.getFaixas().get(k);
-					DadosFaturamentoFaixa faixaProporcional = null;
-
-					if (dadosFaturamentoProporcional.getFaixas() == null || dadosFaturamentoProporcional.getFaixas().equals("") || i == 0) {
-						faixaProporcional = new DadosFaturamentoFaixa();
-						faixaProporcional.setValorFaturado(0d);
-						faixaProporcional.setValorTarifa(0d);
+		DadosFaturamento dadosFaturamento;			
+		// cria o objteto de faturamento proporcional para somar os valores por categoria de cada data de vigencia
+		DadosFaturamento dadosFaturamentoProporcional;
+		
+		for (List<TarifacaoMinima> tarifacoesMinimas : tarifacoesMinimasPorCategoria) {
+			
+			// 3.Data da vigência inicial = data da leitura anterior
+			Date dataVigenciaInicial = dataLeituraAnterior;
+			
+			// 4.Para cada tarifa vigente para o período de leitura, obtida no passo 1.3, ordenando por data de início da
+			// vigência, o sistema efetua os seguintes procedimentos
+			for (int i = 0; i < tarifacoesMinimas.size(); i++) {
+				// 4.1.[SB0001 – Cálculo Simples Para Uma Única Tarifa];
+				TarifacaoMinima reg9 = (TarifacaoMinima) tarifacoesMinimas.get(i);
+				this.calculoSimples(imovel, consumo, tipoMedicao, reg9.getDataVigencia());
+				
+				// 4.2.Caso exista próxima tarifa vigente então data da vigência final = data de início da vigência da próxima
+				// tarifa vigente menos um dia, caso contrário, data da vigência final = data corrente;
+				Date dataVigenciaFinal = null;
+				
+				if (i < tarifacoesMinimas.size() - 1) {
+					TarifacaoMinima proxReg9 = (TarifacaoMinima) tarifacoesMinimas.get(i + 1);
+					System.out.println("Data REG 9" + Util.formatarData(proxReg9.getDataVigencia()));
+					
+					if (proxReg9.getDataVigencia().before(dataLeituraAtual) || proxReg9.getDataVigencia().equals(dataLeituraAtual)) {
+						dataVigenciaFinal = Util.adicionarNumeroDiasDeUmaData(proxReg9.getDataVigencia(), -1);
 					} else {
-						faixaProporcional = (DadosFaturamentoFaixa) dadosFaturamentoProporcional.getFaixas().get(k);
+						dataVigenciaFinal = dataLeituraAtual;
 					}
-
-					double valorFaturadoPorFatorNaFaixa = faixaProporcional.getValorFaturado();
-					valorFaturadoPorFatorNaFaixa = valorFaturadoPorFatorNaFaixa + Util.arredondar(faixa.getValorFaturado() * fatorVigenciaTarifa, 2);
-
-                    double valorTarifaPorFatorNaFaixa = faixaProporcional.getValorTarifa();
-                    valorTarifaPorFatorNaFaixa = valorTarifaPorFatorNaFaixa + Util.arredondar(faixa.getValorTarifa() * fatorVigenciaTarifa, 2);
-
-					// seta os valores adicionados para os dados de faturamento proporcional
-					faixaProporcional.setValorFaturado(valorFaturadoPorFatorNaFaixa);
-					faixaProporcional.setValorTarifa(valorTarifaPorFatorNaFaixa);
-					faixasProporcional.addElement(faixaProporcional);
-
-					// seta os dados do faturamento proporcional no dado de faturamento
-					faixa.setValorFaturado(valorFaturadoPorFatorNaFaixa);
-					faixa.setValorTarifa(valorTarifaPorFatorNaFaixa);
-				}
-
-				// seta as faixas proporcionais no dado de faturamento proporcional
-				dadosFaturamentoProporcional.setFaixas(faixasProporcional);
-				if (tipoMedicao == Constantes.LIGACAO_AGUA) {
-					reg2.setFaturamentoAguaProporcional(dadosFaturamentoProporcional);
 				} else {
-					reg2.setFaturamentoEsgotoProporcional(dadosFaturamentoProporcional);
+					if (reg9.getDataVigencia().before(dataLeituraAtual) || reg9.getDataVigencia().equals(dataLeituraAtual)) {
+						dataVigenciaFinal = dataLeituraAtual;
+					} else {
+						dataVigenciaFinal = reg9.getDataVigencia();
+					}
 				}
+				
+				// 4.3.Caso seja a primeira tarifa, a quantidade de dias de vigência da tarifa dentro do período
+				// de leitura = data da vigência final – data da vigência inicial
+				long qtdDiasVigenciaTarifaDentroPeriodoLeitura = Util.obterModuloDiferencasDatasDias(dataVigenciaFinal, dataVigenciaInicial);
+				
+				if (i == 0) {
+					if (dataVigenciaFinal.after(dataVigenciaInicial) || dataVigenciaFinal.equals(dataVigenciaInicial)) {
+						qtdDiasVigenciaTarifaDentroPeriodoLeitura += 1;
+					} else {
+						qtdDiasVigenciaTarifaDentroPeriodoLeitura = 0;
+					}
+					
+					// 4.4.Caso contrário a quantidade de dias de vigência da tarifa dentro do período de
+					// leitura = data da vigência final – data da vigência inicial + 1 dia;
+				} else {
+					if (dataVigenciaFinal.before(dataLeituraAtual) || dataVigenciaFinal.equals(dataLeituraAtual)) {
+						qtdDiasVigenciaTarifaDentroPeriodoLeitura += 1;
+					} else {
+						qtdDiasVigenciaTarifaDentroPeriodoLeitura = 0;
+					}
+				}
+				
+				// 4.5.Calcula o fator de vigência da tarifa = quantidade de dias de vigência da tarifa no período de
+				// leitura / quantidade de dias entre as leituras;
+				double fatorVigenciaTarifa = Util.arredondar((double) qtdDiasVigenciaTarifaDentroPeriodoLeitura / (double) qtdDiasEntreLeituras, 4);
+				
+				/*
+				 * 1.1.Para cada Categoria, aplica o fator de vigência da tarifa
+				 * sobre os seguintes atributos obtidos nos cálculos efetuados no
+				 * passo 4.1, arredondando para duas casas decimais: 1.1.1.Valor
+				 * faturado; 1.1.2.Valor da tarifa mínima; 1.1.3.Para cada faixa da
+				 * tarifa de consumo: 1.1.3.1.Valor faturado na faixa; 1.1.3.2.Valor
+				 * da tarifa na faixa.
+				 */
+				for (int j = 0; j < imovel.getDadosCategoria().size(); j++) {
+					
+					DadosCategoria reg2 = (DadosCategoria) imovel.getDadosCategoria().get(j);
+					
+					if (tipoMedicao == Constantes.LIGACAO_AGUA) {
+						dadosFaturamento = reg2.getFaturamentoAgua();
+						dadosFaturamentoProporcional = reg2.getFaturamentoAguaProporcional();
+					} else {
+						dadosFaturamento = reg2.getFaturamentoEsgoto();
+						dadosFaturamentoProporcional = reg2.getFaturamentoEsgotoProporcional();
+					}
+					
+					if (dadosFaturamentoProporcional == null
+							|| dadosFaturamentoProporcional.equals("") || i == 0) {
+						dadosFaturamentoProporcional = new DadosFaturamento();
+						dadosFaturamentoProporcional.setValorFaturado(0d);
+						dadosFaturamentoProporcional.setValorTarifaMinima(0d);
+					}
+					
+					double valorFaturadoPorFator = dadosFaturamentoProporcional.getValorFaturado();
+					valorFaturadoPorFator = valorFaturadoPorFator + Util.arredondar(dadosFaturamento.getValorFaturado() * fatorVigenciaTarifa, 2);
+					
+					double valorTarifaMinimaPorFator = dadosFaturamentoProporcional.getValorTarifaMinima();
+					valorTarifaMinimaPorFator = valorTarifaMinimaPorFator + Util.arredondar(dadosFaturamento.getValorTarifaMinima() * fatorVigenciaTarifa, 2);
+					
+					// seta os valores adicionados para os dados de faturamento proporcional
+					dadosFaturamentoProporcional.setValorFaturado(valorFaturadoPorFator);
+					dadosFaturamentoProporcional.setValorTarifaMinima(valorTarifaMinimaPorFator);
+					
+					// seta os dados do faturamento proporcional no dado de faturamento
+					dadosFaturamento.setValorFaturado(valorFaturadoPorFator);
+					dadosFaturamento.setValorTarifaMinima(valorTarifaMinimaPorFator);
+					
+					Vector faixasProporcional = new Vector();
+					
+					for (int k = 0; k < dadosFaturamento.getFaixas().size(); k++) {
+						DadosFaturamentoFaixa faixa = (DadosFaturamentoFaixa) dadosFaturamento.getFaixas().get(k);
+						DadosFaturamentoFaixa faixaProporcional = null;
+						
+						if (dadosFaturamentoProporcional.getFaixas() == null || dadosFaturamentoProporcional.getFaixas().equals("") || i == 0) {
+							faixaProporcional = new DadosFaturamentoFaixa();
+							faixaProporcional.setValorFaturado(0d);
+							faixaProporcional.setValorTarifa(0d);
+						} else {
+							faixaProporcional = (DadosFaturamentoFaixa) dadosFaturamentoProporcional.getFaixas().get(k);
+						}
+						
+						double valorFaturadoPorFatorNaFaixa = faixaProporcional.getValorFaturado();
+						valorFaturadoPorFatorNaFaixa = valorFaturadoPorFatorNaFaixa + Util.arredondar(faixa.getValorFaturado() * fatorVigenciaTarifa, 2);
+						
+						double valorTarifaPorFatorNaFaixa = faixaProporcional.getValorTarifa();
+						valorTarifaPorFatorNaFaixa = valorTarifaPorFatorNaFaixa + Util.arredondar(faixa.getValorTarifa() * fatorVigenciaTarifa, 2);
+						
+						// seta os valores adicionados para os dados de faturamento proporcional
+						faixaProporcional.setValorFaturado(valorFaturadoPorFatorNaFaixa);
+						faixaProporcional.setValorTarifa(valorTarifaPorFatorNaFaixa);
+						faixasProporcional.addElement(faixaProporcional);
+						
+						// seta os dados do faturamento proporcional no dado de faturamento
+						faixa.setValorFaturado(valorFaturadoPorFatorNaFaixa);
+						faixa.setValorTarifa(valorTarifaPorFatorNaFaixa);
+					}
+					
+					// seta as faixas proporcionais no dado de faturamento proporcional
+					dadosFaturamentoProporcional.setFaixas(faixasProporcional);
+					if (tipoMedicao == Constantes.LIGACAO_AGUA) {
+						reg2.setFaturamentoAguaProporcional(dadosFaturamentoProporcional);
+					} else {
+						reg2.setFaturamentoEsgotoProporcional(dadosFaturamentoProporcional);
+					}
+				}
+				
+				// 4.8.Calcula data da vigência inicial = data da vigência final + 1 dia.
+				dataVigenciaFinal = Util.adicionarNumeroDiasDeUmaData(dataVigenciaFinal, +1);
+				
+				dataVigenciaInicial = dataVigenciaFinal;
 			}
-	
-			// 4.8.Calcula data da vigência inicial = data da vigência final + 1 dia.
-			dataVigenciaFinal = Util.adicionarNumeroDiasDeUmaData(dataVigenciaFinal, +1);
-	
-			dataVigenciaInicial = dataVigenciaFinal;
 		}
+		
 	}
 
     public boolean isPrintingAllowed(){

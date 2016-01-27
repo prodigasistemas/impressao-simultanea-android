@@ -7,11 +7,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import business.ControladorConta;
-import business.ControladorImovel;
-import business.ControladorRota;
 import util.Constantes;
 import util.Util;
+import business.ControladorConta;
+import business.ControladorRota;
 
 public class Imovel {
 
@@ -2569,6 +2568,35 @@ public class Imovel {
 	public List<TarifacaoMinima> getTarifacoesMinimas() {
 		return tarifacoesMinimas;
 	}
+	
+	public ArrayList<List<TarifacaoMinima>> getTarifacoesMinimasPorCategoria() {
+		
+		ArrayList<List<TarifacaoMinima>> tarifas = new ArrayList<List<TarifacaoMinima>>();
+		List<TarifacaoMinima> tarifasResidencial = new ArrayList<TarifacaoMinima>();
+		List<TarifacaoMinima> tarifasComercial = new ArrayList<TarifacaoMinima>();
+		List<TarifacaoMinima> tarifasIndustrial = new ArrayList<TarifacaoMinima>();
+		List<TarifacaoMinima> tarifasPublico = new ArrayList<TarifacaoMinima>();
+		
+		for (TarifacaoMinima tarifa : tarifacoesMinimas) {
+			
+			if (tarifa.getCodigoCategoria() == 1) {
+				tarifasResidencial.add(tarifa);
+			} else if (tarifa.getCodigoCategoria() == 2) {
+				tarifasComercial.add(tarifa);
+			} else if (tarifa.getCodigoCategoria() == 3) {
+				tarifasIndustrial.add(tarifa);
+			} else if (tarifa.getCodigoCategoria() == 4) {
+				tarifasPublico.add(tarifa);
+			}
+		}
+		
+		tarifas.add(tarifasResidencial);
+		tarifas.add(tarifasComercial);
+		tarifas.add(tarifasIndustrial);
+		tarifas.add(tarifasPublico);
+		
+		return tarifas;
+	}
 
 	public void setTarifacoesMinimas(List<TarifacaoMinima> tarifacoesMinimas) {
 		this.tarifacoesMinimas = tarifacoesMinimas;
@@ -2597,6 +2625,5 @@ public class Imovel {
 
 		return Util.arredondar(soma, 2);
 	}
-
-        
+     
 }
