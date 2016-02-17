@@ -12,7 +12,7 @@
     <color name="labelColor">#024659</color>
     <color name="textValueColor">#be7a0e</color>
     
-    <string name="app_versao">1.4.1</string>
+    <string name="app_versao">1.4.2</string>
     <string name="app_name">ImpressaoSimultanea</string>
     <string name="user">Usuário</string>
     <string name="password">Senha</string>

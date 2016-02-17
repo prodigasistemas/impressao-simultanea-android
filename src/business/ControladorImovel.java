@@ -243,11 +243,13 @@ public class ControladorImovel {
 
 		Object[] retorno = new Object[2];
 		Boolean calculoSimples = Boolean.TRUE;
-		Date[] dataInicioVigencia = new Date[4];
 		int tamanho = 0;
 		if (imovel.getTarifacoesMinimas() != null){
 			tamanho = imovel.getTarifacoesMinimas().size();
 	    }
+		
+		Date[] dataInicioVigencia = new Date[tamanho];
+		
 		int indiceData = 0;
 		// TarifacaoMinima registro = ( TarifacaoMinima ) this.registrosTipo9.elementAt( i
 		// );
