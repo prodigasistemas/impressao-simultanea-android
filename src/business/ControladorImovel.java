@@ -898,6 +898,12 @@ public class ControladorImovel {
 				dataVigenciaFinal = Util.adicionarNumeroDiasDeUmaData(dataVigenciaFinal, +1);
 				
 				dataVigenciaInicial = dataVigenciaFinal;
+				
+				if (dataVigenciaFinal.before(dataLeituraAnterior)) {
+                    dataVigenciaInicial = dataLeituraAnterior;
+                } else {
+                    dataVigenciaInicial = dataVigenciaFinal;
+                }
 			}
 		}
 		

@@ -10,6 +10,7 @@ import util.Constantes;
 import util.ImpressaoContaCosanpa;
 import util.Util;
 import views.MainTab;
+import views.MedidorAguaTab;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -294,15 +295,22 @@ public class MenuPrincipal extends Activity {
 							    increment += 17;
 								
 							}else{
-								contadorImpressao = 0;
-								ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listaIdsImoveisFixos.get(0), true));
-								BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
-								
-								new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
-										impressaoFixosHandler,
-										ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
-										increment,
-										MenuPrincipal.this).start();
+								 contadorImpressao = 0;
+	                                ControladorImovel.getInstancia().setImovelSelecionado(ControladorRota.getInstancia().getDataManipulator().selectImovel("id = " + listaIdsImoveisFixos.get(0), true));
+	                                if(Util.compararData(ControladorImovel.getInstancia().getImovelSelecionado().getDataLeituraAnteriorNaoMedido(), MedidorAguaTab.getCurrentDateByGPS()) > 0) {
+	                                    Bundle b = new Bundle();
+	                                    Message msg = impressaoFixosHandler.obtainMessage();
+	                                    b.putBoolean("dataComErro", true);
+	                                    msg.setData(b);
+	                                    impressaoFixosHandler.sendMessage(msg);
+	                                } else {
+	                                    BusinessConta.getInstancia(MenuPrincipal.this).imprimirCalculo(false);
+	                                    new ImpressaoThread(ControladorRota.getInstancia().getBluetoothAddress(),
+	                                            impressaoFixosHandler,
+	                                            ControladorImovel.getInstancia().getImpressaoTipo(getApplicationContext()),
+	                                            increment,
+	                                            MenuPrincipal.this).start();
+	                                }
 							}
 						}
 					}
@@ -421,7 +429,14 @@ public class MenuPrincipal extends Activity {
 					}
 				});
 				a.show();
-            }
+
+			}else if(msg.getData().getBoolean("dataComErro")) {
+               progDialog.dismiss();
+               Util.salvarLog("Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.");
+               dialogMessage = "Data do celular está errada. Por favor, verifique a configuração do celular e tente novamente.";
+               showDialog(Constantes.DIALOG_ID_ERRO);
+               increment += 17;
+           }
          }
     };
     
