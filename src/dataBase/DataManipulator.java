@@ -2342,6 +2342,17 @@ public class DataManipulator {
 		return listaIds;
 	}
 	
+	public String getNumeroVersao(String linhaArquivo) {
+		ParserUtil parser = new ParserUtil(linhaArquivo);
+		parser.obterDadoParser(2);
+
+		parser.obterDadoParser(156);
+		String versao = parser.obterDadoParser(10);
+
+		return versao;
+	
+	}
+	
 	public void fecharCursor(Cursor cursor) {
 		if (cursor != null && !cursor.isClosed()) {
 	           cursor.close();

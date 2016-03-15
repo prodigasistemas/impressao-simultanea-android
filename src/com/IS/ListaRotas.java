@@ -47,6 +47,7 @@ public class ListaRotas extends ListActivity {
 	private ProgressDialog progDialog;
 	MySimpleArrayAdapter fileList;
 	private Toast toast;
+	private String dialogMessage = "";
 
     /** Called when the activity is first created. */
     @Override
@@ -85,10 +86,17 @@ public class ListaRotas extends ListActivity {
     	}    	
 	}
 	
-	// Handler on the main (UI) thread that will receive messages from the second thread and update the progress.
     final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-            // Get the current value of the variable total from the message data and update the progress bar.
+        	
+        	if (!msg.getData().getBoolean("versaoCorreta")) {
+        		progDialog.dismiss();
+                Util.salvarLog("A versão do aplicativo é diferente da versão cadastrada no GSAN.");
+                dialogMessage = "A versão do aplicativo é diferente da versão cadastrada no GSAN.";
+                showDialog(Constantes.DIALOG_ID_ERRO);
+                return;
+        	}
+        	
             int total = msg.getData().getInt("total");
             progDialog.setProgress(total);
 
@@ -173,6 +181,7 @@ public class ListaRotas extends ListActivity {
             	int fileLineNumber = FileManager.getFileLineNumber(fileName);
 
             	if (fileLineNumber == Constantes.NULO_INT){
+            		dialogMessage = "Arquivo de rota não localizado. Verifique se o cartão de memória está em uso.";
             		showDialog(Constantes.DIALOG_ID_ERRO);
             		return null;
             	}
@@ -193,7 +202,7 @@ public class ListaRotas extends ListActivity {
     		AlertDialog.Builder builder;
     	              			
     	        View layout = inflater.inflate(R.layout.custon_dialog, (ViewGroup) findViewById(R.id.layout_root));
-    	        ((TextView)layout.findViewById(R.id.messageDialog)).setText("Arquivo de rota não localizado. Verifique se o cartão de memória está em uso.");
+    	        ((TextView)layout.findViewById(R.id.messageDialog)).setText(dialogMessage);
     	        
     	        ((ImageView)layout.findViewById(R.id.imageDialog)).setImageResource(R.drawable.aviso);
     	        
@@ -203,6 +212,7 @@ public class ListaRotas extends ListActivity {
     	        	
     	        	public void onClick(DialogInterface dialog, int whichButton) {
     	        		removeDialog(id);
+    	        		finish();
     	        	}
     	        });
 
