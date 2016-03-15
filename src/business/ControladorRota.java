@@ -14,8 +14,11 @@ import static util.Constantes.REGISTRO_TIPO_TARIFACAO_COMPLEMENTAR;
 import static util.Constantes.REGISTRO_TIPO_TARIFACAO_MINIMA;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -54,6 +57,8 @@ public class ControladorRota {
     private static Vector anormalidades = new Vector();
 
     private static int LEITURA_CONFIRMADA = 99;
+    
+    private StringBuilder arquivo = new StringBuilder();
 
     public static ControladorRota getInstancia() {
     	
@@ -106,8 +111,21 @@ public class ControladorRota {
 			try {
 
 			    Bundle b = new Bundle();
-
-			    while((line = input.readLine()) != null) {                         
+			    
+			    boolean versaoCorreta = isVersaoCorreta(input, context);
+			    Message message = mHandler.obtainMessage();
+		        b.putBoolean("versaoCorreta", versaoCorreta);
+		        message.setData(b);
+		        mHandler.sendMessage(message);
+			    
+			    if (!versaoCorreta) {
+			        return;
+			    }
+			    
+				InputStream is = new ByteArrayInputStream(arquivo.toString().getBytes());
+				BufferedReader in = new BufferedReader(new InputStreamReader(is));
+				
+			    while((line = in.readLine()) != null) {
 				    					
 				    if (linhasLidas == 0) {
 						qtdRegistros = Integer.parseInt(line);
@@ -247,6 +265,31 @@ public class ControladorRota {
         		
 			}
 		}
+    }
+    
+    public boolean isVersaoCorreta(BufferedReader input, Context context) {
+    	boolean versaoCorreta = false;
+    	String line = "";
+    	
+    	try {
+			while ((line = input.readLine()) != null) {
+				arquivo.append(line);
+				int tipoRegistro = Integer.parseInt(line.substring(0, 2));
+
+				if (tipoRegistro == REGISTRO_TIPO_GERAL) {
+					Util.salvarLog("Checando número de versão", context);
+					versaoCorreta = dataManipulator.getNumeroVersao(line).trim().equals(Fachada.getAppVersion());
+				}
+				arquivo.append("\n");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Util.salvarExceptionLog(e.fillInStackTrace());
+		}
+    	
+    	return versaoCorreta;
+    	
     }
     
 	public int getQtdRegistros() {
