@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import model.DadosGerais;
 import model.DadosQualidadeAgua;
@@ -278,7 +279,7 @@ public class ControladorRota {
 
 				if (tipoRegistro == REGISTRO_TIPO_GERAL) {
 					Util.salvarLog("Checando número de versão", context);
-					versaoCorreta = dataManipulator.getNumeroVersao(line).trim().equals(Fachada.getAppVersion());
+					versaoCorreta = isVersaoISMaiorIgualGsan(dataManipulator.getNumeroVersao(line));
 				}
 				arquivo.append("\n");
 			}
@@ -377,6 +378,29 @@ public class ControladorRota {
 		
 		ControladorImovel.getInstancia().setImovelSelecionadoByListPosition(Long.valueOf(imovelPendente.getId()).intValue()-1);
 	
+    }
+    
+    public boolean isVersaoISMaiorIgualGsan(String versaoGsan) {
+    	boolean resultado = false;
+    	
+    	String versaoIS = Fachada.getAppVersion();
+    	int comp = versaoIS.compareTo(versaoGsan.trim());
+    	resultado = (comp >= 0 ? true : false);
+    	
+    	return resultado;
+    }
+    
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 3);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
     }
 
 }
